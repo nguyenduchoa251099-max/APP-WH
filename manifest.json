@@ -1,0 +1,9 @@
+{
+  "name": "APP WH - He thong quan ly nhan su 3 kho",
+  "short_name": "APP WH",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#F4F7F8",
+  "theme_color": "#0096BE",
+  "icons": []
+}
