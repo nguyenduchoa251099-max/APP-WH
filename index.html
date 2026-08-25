@@ -29,7 +29,21 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
-<div id="root"></div>
+<div id="root">
+  <div style="padding:24px;font-family:Verdana,sans-serif;color:#666;text-align:center;">Đang tải APP WH…</div>
+</div>
+<div id="error-box" style="display:none;padding:20px;font-family:monospace;font-size:13px;color:#900;background:#FDECEC;white-space:pre-wrap;word-break:break-word;"></div>
+
+<script>
+  window.onerror = function (msg, url, line, col, err) {
+    var box = document.getElementById('error-box');
+    box.style.display = 'block';
+    box.textContent = 'LỖI: ' + msg + '\n(dòng ' + line + ', cột ' + col + ')\n\n' + (err && err.stack ? err.stack : '');
+    var root = document.getElementById('root');
+    if (root) root.innerHTML = '';
+    return false;
+  };
+</script>
 
 <script>
   const { useState, useEffect, useMemo, useRef } = React;
@@ -80,7 +94,7 @@ window.storage = {
 
 </script>
 
-<script type="text/babel" data-presets="react">
+<script type="text/plain" id="app-source">
 // ============ BỘ ICON THAY THẾ (không cần cài lucide-react) ============
 function IconBase({ size = 20, color = "currentColor", children }) {
   return (
@@ -1372,6 +1386,20 @@ function DayDetailModal({ dateKey, employees, leave, events, ot, onClose, onDele
 
 ReactDOM.createRoot(document.getElementById('root')).render(<AppWH />);
 
+</script>
+
+<script>
+  // Tự chuyển JSX -> JS bằng Babel, ép dùng "classic runtime" (React.createElement)
+  // để KHÔNG sinh ra dòng import (dòng import khiến trình duyệt báo lỗi vì đây không phải file module).
+  try {
+    var srcCode = document.getElementById('app-source').textContent;
+    var output = Babel.transform(srcCode, { presets: [["react", { runtime: "classic" }]] }).code;
+    var runScript = document.createElement('script');
+    runScript.textContent = output;
+    document.body.appendChild(runScript);
+  } catch (e) {
+    window.onerror(e.message, '', 0, 0, e);
+  }
 </script>
 </body>
 </html>
