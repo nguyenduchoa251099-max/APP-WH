@@ -416,25 +416,34 @@ function AppWH() {
   const [screen, setScreen] = useState("loading"); // loading | khoSelect | main
   const [currentKho, setCurrentKho] = useState(null);
 
+  // Không bao giờ chờ mạng quá 6 giây — nếu quá hạn, coi như "chưa có dữ liệu" và tự tạo dữ liệu mẫu để app VẪN HIỆN RA.
+  // (Dữ liệu thật sẽ tự đồng bộ lại ở lần persist() tiếp theo khi mạng ổn định trở lại.)
+  function withTimeout(promise, ms) {
+    return Promise.race([
+      promise,
+      new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), ms)),
+    ]);
+  }
+
   useEffect(() => {
     (async () => {
       // 1) Dữ liệu kho — DÙNG CHUNG cho mọi quản lý (shared: true)
       let loadedData;
       try {
-        const res = await window.storage.get(STORAGE_KEY, true);
+        const res = await withTimeout(window.storage.get(STORAGE_KEY, true), 6000);
         loadedData = JSON.parse(res.value);
       } catch (e) {
         loadedData = buildSeed();
-        try { await window.storage.set(STORAGE_KEY, JSON.stringify(loadedData), true); } catch (_) {}
+        try { window.storage.set(STORAGE_KEY, JSON.stringify(loadedData), true); } catch (_) {}
       }
       setData(loadedData);
 
       // 2) Kho đã chọn lần trước — RIÊNG cho từng người/thiết bị (shared: false)
       let lastKhoId = null;
       try {
-        const res2 = await window.storage.get(LAST_KHO_KEY, false);
+        const res2 = await withTimeout(window.storage.get(LAST_KHO_KEY, false), 3000);
         lastKhoId = JSON.parse(res2.value)?.khoId || null;
-      } catch (e) { /* chưa từng chọn, bỏ qua */ }
+      } catch (e) { /* chưa từng chọn, hoặc mạng chậm -> bỏ qua, cho chọn lại kho */ }
 
       const found = WAREHOUSES.find((w) => w.id === lastKhoId);
       if (found) { setCurrentKho(found); setScreen("main"); }
