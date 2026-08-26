@@ -91,11 +91,11 @@ window.storage = {
   get: async (key, shared) => {
     if (!shared) {
       const v = localStorage.getItem(key);
-      if (v === null) throw new Error("not found: " + key);
+      if (v === null) { const err = new Error("not-found: " + key); err.code = "not-found"; throw err; }
       return { key, value: v, shared };
     }
     const doc = await db.collection(COLLECTION).doc(key).get();
-    if (!doc.exists) throw new Error("not found: " + key);
+    if (!doc.exists) { const err = new Error("not-found: " + key); err.code = "not-found"; throw err; }
     return { key, value: doc.data().value, shared };
   },
   set: async (key, value, shared) => {
@@ -110,8 +110,7 @@ window.storage = {
 
 </script>
 
-<script type="text/plain" id="app-source">
-// ============ BỘ ICON THAY THẾ (không cần cài lucide-react) ============
+<script type="text/plain" id="app-source">// ============ BỘ ICON THAY THẾ (không cần cài lucide-react) ============
 function IconBase({ size = 20, color = "currentColor", children }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -169,20 +168,12 @@ const LAST_KHO_KEY = "appwh-last-kho-v1"; // Ghi nhớ RIÊNG cho từng ngườ
 const SHIFTS = ["Ca 1", "Ca 2", "Ca 3", "Ca HC"];
 const POSITIONS = ["Giám sát", "Nhập", "Xuất", "Stock"];
 const LEAVE_REASONS = ["Nghỉ phép", "Nghỉ không lương", "Nghỉ ốm", "Nghỉ việc riêng"];
-// Thứ tự ưu tiên hiển thị (ca + vị trí) do quản lý quy định — tổ hợp nào chưa liệt kê sẽ xếp sau, theo thứ tự Ca rồi Vị trí
-const SHIFT_POS_PRIORITY = [
-  ["Ca 1", "Nhập"],
-  ["Ca HC", "Xuất"],
-  ["Ca HC", "Stock"],
-  ["Ca 2", "Nhập"],
-  ["Ca 2", "Xuất"],
-];
+// Thứ tự ưu tiên hiển thị: Giám sát (mọi ca) -> Ca HC -> Ca 1 -> Ca 2 -> (Ca 3 / khác)
+const SHIFT_GROUP_ORDER = ["Ca HC", "Ca 1", "Ca 2"];
 function sortPriority(shift, position) {
-  if (position === "Giám sát") return -1000 + (SHIFTS.indexOf(shift) === -1 ? 9 : SHIFTS.indexOf(shift)); // Giám sát luôn ở trên cùng
-  const idx = SHIFT_POS_PRIORITY.findIndex(([s, p]) => s === shift && p === position);
-  if (idx !== -1) return idx;
-  const shiftIdx = SHIFTS.indexOf(shift); const posIdx = POSITIONS.indexOf(position);
-  return 1000 + (shiftIdx === -1 ? 99 : shiftIdx) * 10 + (posIdx === -1 ? 9 : posIdx);
+  if (position === "Giám sát") return -1; // Giám sát luôn ở trên cùng, bất kể ca
+  const idx = SHIFT_GROUP_ORDER.indexOf(shift);
+  return idx === -1 ? 99 : idx;
 }
 const LOGO_URI = "data:image/jpeg;base64,{{LOGO_B64}}";
 
@@ -288,7 +279,7 @@ function fmtHours(h) {
 // Tên dài (>13 ký tự, từ 3 từ trở lên) sẽ bỏ "họ" (từ đầu tiên) khi hiển thị trong danh sách để không bị tràn/cắt chữ
 function displayName(fullName) {
   const words = fullName.trim().split(/\s+/);
-  if (fullName.length > 13 && words.length >= 3) return words.slice(1).join(" ");
+  if (words.length >= 3) return words.slice(1).join(" ");
   return fullName;
 }
 
@@ -342,14 +333,13 @@ function Circle({ field, value }) {
   } else {
     style = { background: "#fff", border: "1.5px solid #ccc", color: "#333", boxShadow: "none" };
   }
-  const isYear = field === "year"; // số năm có thể dài (vd 140.5) -> dùng viên thuốc tự giãn thay vì hình tròn cố định
+  const isYear = field === "year"; // ô năm: dạng viên thuốc, chiều rộng CỐ ĐỊNH để luôn thẳng hàng với các dòng khác
   return (
     <div
       style={{
-        minWidth: 34, height: 34, borderRadius: isYear ? 17 : "50%",
-        padding: isYear ? "0 9px" : 0,
+        width: isYear ? 56 : 34, height: 34, borderRadius: isYear ? 17 : "50%",
         display: "flex", alignItems: "center", justifyContent: "center",
-        fontSize: isYear ? 12.5 : 12, fontWeight: 700, flexShrink: 0, whiteSpace: "nowrap", ...style,
+        fontSize: isYear ? 11.5 : 12, fontWeight: 700, flexShrink: 0, whiteSpace: "nowrap", overflow: "hidden", ...style,
       }}
       title={`${fmtHours(value)} (${field})`}
     >
@@ -413,11 +403,10 @@ function LimitWarning({ violations, employeeName }) {
 // ============ APP ROOT (screen router) ============
 function AppWH() {
   const [data, setData] = useState(null);
-  const [screen, setScreen] = useState("loading"); // loading | khoSelect | main
+  const [screen, setScreen] = useState("loading"); // loading | error | khoSelect | main
   const [currentKho, setCurrentKho] = useState(null);
+  const [reloadTick, setReloadTick] = useState(0); // tăng lên để kích hoạt tải lại
 
-  // Không bao giờ chờ mạng quá 6 giây — nếu quá hạn, coi như "chưa có dữ liệu" và tự tạo dữ liệu mẫu để app VẪN HIỆN RA.
-  // (Dữ liệu thật sẽ tự đồng bộ lại ở lần persist() tiếp theo khi mạng ổn định trở lại.)
   function withTimeout(promise, ms) {
     return Promise.race([
       promise,
@@ -426,16 +415,27 @@ function AppWH() {
   }
 
   useEffect(() => {
+    let cancelled = false;
     (async () => {
+      setScreen("loading");
       // 1) Dữ liệu kho — DÙNG CHUNG cho mọi quản lý (shared: true)
       let loadedData;
       try {
-        const res = await withTimeout(window.storage.get(STORAGE_KEY, true), 6000);
+        const res = await withTimeout(window.storage.get(STORAGE_KEY, true), 12000);
         loadedData = JSON.parse(res.value);
       } catch (e) {
-        loadedData = buildSeed();
-        try { window.storage.set(STORAGE_KEY, JSON.stringify(loadedData), true); } catch (_) {}
+        if (e && e.code === "not-found") {
+          // THỰC SỰ chưa từng có dữ liệu (lần đầu triển khai) -> an toàn để tạo dữ liệu mẫu
+          loadedData = buildSeed();
+          try { await window.storage.set(STORAGE_KEY, JSON.stringify(loadedData), true); } catch (_) {}
+        } else {
+          // Lỗi mạng / quá thời gian chờ -> dữ liệu THẬT có thể vẫn đang tồn tại trên máy chủ,
+          // TUYỆT ĐỐI không tự tạo dữ liệu mẫu rồi ghi đè. Chỉ báo lỗi và cho thử lại.
+          if (!cancelled) setScreen("error");
+          return;
+        }
       }
+      if (cancelled) return;
       setData(loadedData);
 
       // 2) Kho đã chọn lần trước — RIÊNG cho từng người/thiết bị (shared: false)
@@ -445,11 +445,13 @@ function AppWH() {
         lastKhoId = JSON.parse(res2.value)?.khoId || null;
       } catch (e) { /* chưa từng chọn, hoặc mạng chậm -> bỏ qua, cho chọn lại kho */ }
 
+      if (cancelled) return;
       const found = WAREHOUSES.find((w) => w.id === lastKhoId);
       if (found) { setCurrentKho(found); setScreen("main"); }
       else setScreen("khoSelect");
     })();
-  }, []);
+    return () => { cancelled = true; };
+  }, [reloadTick]);
 
   const persist = async (next) => {
     setData(next);
@@ -461,6 +463,20 @@ function AppWH() {
     setScreen("main");
     try { await window.storage.set(LAST_KHO_KEY, JSON.stringify({ khoId: kho.id }), false); } catch (_) {}
   };
+
+  if (screen === "error") {
+    return (
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100vh", fontFamily: "Verdana, sans-serif", color: "#444", padding: "0 32px", textAlign: "center", gap: 14 }}>
+        <div style={{ fontSize: 15, fontWeight: 700 }}>Không tải được dữ liệu</div>
+        <div style={{ fontSize: 13, color: "#888", lineHeight: 1.5 }}>
+          Có thể do mạng yếu hoặc chập chờn. Dữ liệu bạn đã nhập trước đó vẫn an toàn — app sẽ không tự xoá hay ghi đè, chỉ cần thử tải lại.
+        </div>
+        <button onClick={() => setReloadTick((t) => t + 1)} style={{ marginTop: 10, background: BRAND, color: "#fff", border: "none", borderRadius: 10, padding: "12px 28px", fontSize: 14, fontWeight: 700 }}>
+          Thử lại
+        </button>
+      </div>
+    );
+  }
 
   if (!data || screen === "loading") {
     return <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh", fontFamily: "Verdana, sans-serif", color: "#666" }}>Đang tải APP WH…</div>;
@@ -481,7 +497,7 @@ function AppWH() {
 function KhoSelectScreen({ employees, onPick }) {
   return (
     <div style={{ fontFamily: "Verdana, Geneva, sans-serif", height: "100vh", maxWidth: 480, margin: "0 auto", background: "#fff", display: "flex", flexDirection: "column", boxSizing: "border-box" }}>
-      <div style={{ textAlign: "center", padding: "48px 28px 28px" }}>
+      <div style={{ textAlign: "center", padding: "calc(env(safe-area-inset-top, 0px) + 32px) 28px 28px" }}>
         <img src={LOGO_URI} alt="Tessellation" style={{ height: 50, marginBottom: 18 }} />
         <div style={{ fontSize: 19, fontWeight: 800, color: "#222", lineHeight: 1.3 }}>Hệ thống quản lý nhân sự 3 kho</div>
       </div>
@@ -644,7 +660,7 @@ function MainScreen({ data, persist, currentKho, onSwitchKho }) {
 
   return (
     <div style={{ fontFamily: "Verdana, Geneva, sans-serif", background: "#F4F7F8", height: "100vh", display: "flex", flexDirection: "column", maxWidth: 480, margin: "0 auto", position: "relative" }}>
-      <div style={{ background: BRAND, color: "#fff", padding: "14px 18px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <div style={{ background: BRAND, color: "#fff", padding: "calc(env(safe-area-inset-top, 0px) + 14px) 18px 14px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <button onClick={onSwitchKho} style={{ background: "none", border: "none", color: "#fff", textAlign: "left", padding: 0 }}>
           <div style={{ fontSize: 11, opacity: 0.85, display: "flex", alignItems: "center", gap: 3 }}>APP WH <ChevronDown size={12} /></div>
           <div style={{ fontSize: 17, fontWeight: 800 }}>{currentKho.name}</div>
@@ -801,7 +817,7 @@ function EmployeeList({ employees, ot, today, openRowId, setOpenRowId, onTouchSt
                   {emp.shift || "Chưa xếp ca"}{emp.position ? ` - ${emp.position}` : ""}
                 </button>
               </div>
-              <div style={{ display: "flex", gap: 8 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "34px 34px 34px 56px", gap: 8, flexShrink: 0 }}>
                 <Circle field="day" value={day} />
                 <Circle field="week" value={week} />
                 <Circle field="month" value={month} />
@@ -1067,7 +1083,7 @@ function LeaveModal({ employees, defaultId, onClose, onSave }) {
   const [empId, setEmpId] = useState(defaultId || employees[0]?.id);
   const [date, setDate] = useState(todayKey());
   const [type, setType] = useState("nghi");
-  const [hours, setHours] = useState(0.25);
+  const [hours, setHours] = useState(0);
   const [reason, setReason] = useState(LEAVE_REASONS[0]);
   const types = [
     { key: "nghi", label: "Nghỉ cả ngày", color: "#D7263D" },
@@ -1147,7 +1163,7 @@ function QuickEntryTab({ employees, otRecords, leaveRecords, onSubmitOT, onSubmi
   const [loai, setLoai] = useState("tangca"); // tangca | nghi
   const [subType, setSubType] = useState("nghi"); // nghi | som | muon (chỉ dùng khi loai === "nghi")
   const [otHours, setOtHours] = useState(null);
-  const [leaveHours, setLeaveHours] = useState(0.25);
+  const [leaveHours, setLeaveHours] = useState(0);
   const [reason, setReason] = useState(LEAVE_REASONS[0]);
   const [note, setNote] = useState("");
   const [savedAt, setSavedAt] = useState(null);
@@ -1184,7 +1200,7 @@ function QuickEntryTab({ employees, otRecords, leaveRecords, onSubmitOT, onSubmi
       <div style={{ background: "#fff", border: "1px solid #eee", borderRadius: 14, padding: 16 }}>
         <Field label="Họ tên công nhân">
           <select style={inputStyle} value={empId} onChange={(e) => { setEmpId(e.target.value); setSavedAt(null); }}>
-            {employees.map((e) => <option key={e.id} value={e.id}>{e.name} — {e.shift}{e.position ? ` - ${e.position}` : ""}</option>)}
+            {employees.map((e) => <option key={e.id} value={e.id}>{e.name} — {e.shift}</option>)}
           </select>
         </Field>
 
@@ -1411,7 +1427,6 @@ function DayDetailModal({ dateKey, employees, leave, events, ot, onClose, onDele
 
 ReactDOM.createRoot(document.getElementById('root')).render(<AppWH />);
 window.__appwhMounted = true;
-
 </script>
 
 <script>
