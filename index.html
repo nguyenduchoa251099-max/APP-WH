@@ -23,10 +23,6 @@
 <script src="https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7/babel.min.js"></script>
-
-<!-- Firebase (nơi lưu dữ liệu dùng chung cho tất cả quản lý) -->
-<script src="https://cdn.jsdelivr.net/npm/firebase@10.7.1/firebase-app-compat.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/firebase@10.7.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
 <div id="root">
@@ -64,29 +60,25 @@
   const { useState, useEffect, useMemo, useRef } = React;
 
   // ============================================================
-  // ⚠️ DÁN CẤU HÌNH FIREBASE CỦA BẠN VÀO ĐÂY (xem hướng dẫn phần "Bước 1")
+  // Cấu hình Supabase (nơi lưu dữ liệu dùng chung cho tất cả quản lý)
   // ============================================================
-  const firebaseConfig = {
-    apiKey: "AIzaSyALIUpSkEcOOMIGh6BNRGM7mvcOsCkOPrw",
-    authDomain: "employee-wh.firebaseapp.com",
-    projectId: "employee-wh",
-    storageBucket: "employee-wh.firebasestorage.app",
-    messagingSenderId: "40562174666",
-    appId: "1:40562174666:web:22f02fc22688b4b8e22233"
-  };
-  firebase.initializeApp(firebaseConfig);
+  const SUPABASE_URL = "https://aabafalbpflaqoslopwt.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFhYmFmYWxicGZsYXFvc2xvcHd0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc4Mzc3OTAsImV4cCI6MjEwMzQxMzc5MH0.W4OczQuL-LmKL6HcTDqSzTs-jzBTm7iX1FsBPd1HEcg";
 </script>
 
 <script>
-// ============ THAY THẾ window.storage BẰNG FIREBASE + localStorage ============
-// - shared = true  -> lưu ở Firebase Firestore, MỌI quản lý cùng thấy (dữ liệu kho, nhân viên...)
-// - shared = false -> lưu ở localStorage, CHỈ RIÊNG điện thoại đó (VD: nhớ kho đã chọn lần trước)
-// Giữ nguyên interface .get()/.set() giống hệt window.storage của Claude, nên KHÔNG cần sửa code app bên dưới.
+// ============ THAY THẾ window.storage BẰNG SUPABASE (qua fetch REST API) + localStorage ============
+// - shared = true  -> lưu ở Supabase (bảng appwh_storage), MỌI quản lý cùng thấy
+// - shared = false -> lưu ở localStorage, CHỈ RIÊNG điện thoại đó
+// Giữ nguyên interface .get()/.set() giống hệt trước, nên KHÔNG cần sửa code app bên dưới.
+// Dùng fetch thẳng tới REST API của Supabase (PostgREST) — không cần cài thư viện supabase-js,
+// nên không phụ thuộc thêm CDN nào khác ngoài chính domain Supabase.
 
-const db = firebase.firestore();
-db.settings({ experimentalForceLongPolling: true, useFetchStreams: false });
-try { db.enablePersistence({ synchronizeTabs: true }); } catch (_) { /* một số trình duyệt/chế độ không hỗ trợ, bỏ qua */ }
-const COLLECTION = "appwh_storage";
+const TABLE = "appwh_storage";
+const SB_HEADERS = {
+  apikey: SUPABASE_ANON_KEY,
+  Authorization: "Bearer " + SUPABASE_ANON_KEY,
+};
 
 window.storage = {
   get: async (key, shared) => {
@@ -95,16 +87,26 @@ window.storage = {
       if (v === null) { const err = new Error("not-found: " + key); err.code = "not-found"; throw err; }
       return { key, value: v, shared };
     }
-    const doc = await db.collection(COLLECTION).doc(key).get();
-    if (!doc.exists) { const err = new Error("not-found: " + key); err.code = "not-found"; throw err; }
-    return { key, value: doc.data().value, shared };
+    const res = await fetch(
+      SUPABASE_URL + "/rest/v1/" + TABLE + "?key=eq." + encodeURIComponent(key) + "&select=value",
+      { headers: SB_HEADERS }
+    );
+    if (!res.ok) { const err = new Error("HTTP " + res.status + ": " + (await res.text())); err.code = "network"; throw err; }
+    const rows = await res.json();
+    if (!rows || rows.length === 0) { const err = new Error("not-found: " + key); err.code = "not-found"; throw err; }
+    return { key, value: rows[0].value, shared };
   },
   set: async (key, value, shared) => {
     if (!shared) {
       localStorage.setItem(key, value);
       return { key, value, shared };
     }
-    await db.collection(COLLECTION).doc(key).set({ value, updatedAt: Date.now() });
+    const res = await fetch(SUPABASE_URL + "/rest/v1/" + TABLE, {
+      method: "POST",
+      headers: { ...SB_HEADERS, "Content-Type": "application/json", Prefer: "resolution=merge-duplicates" },
+      body: JSON.stringify({ key, value, updated_at: new Date().toISOString() }),
+    });
+    if (!res.ok) { const err = new Error("HTTP " + res.status + ": " + (await res.text())); err.code = "network"; throw err; }
     return { key, value, shared };
   },
 };
