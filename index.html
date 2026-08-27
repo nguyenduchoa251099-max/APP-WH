@@ -406,6 +406,7 @@ function AppWH() {
   const [screen, setScreen] = useState("loading"); // loading | error | khoSelect | main
   const [currentKho, setCurrentKho] = useState(null);
   const [reloadTick, setReloadTick] = useState(0); // tăng lên để kích hoạt tải lại
+  const [errorDetail, setErrorDetail] = useState(""); // lưu lỗi kỹ thuật thật để hiện ra màn hình, không đoán mò nữa
 
   function withTimeout(promise, ms) {
     return Promise.race([
@@ -431,7 +432,10 @@ function AppWH() {
         } else {
           // Lỗi mạng / quá thời gian chờ -> dữ liệu THẬT có thể vẫn đang tồn tại trên máy chủ,
           // TUYỆT ĐỐI không tự tạo dữ liệu mẫu rồi ghi đè. Chỉ báo lỗi và cho thử lại.
-          if (!cancelled) setScreen("error");
+          if (!cancelled) {
+            setErrorDetail((e && (e.code || e.name) ? `[${e.code || e.name}] ` : "") + (e && e.message ? e.message : String(e)));
+            setScreen("error");
+          }
           return;
         }
       }
@@ -469,8 +473,13 @@ function AppWH() {
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100vh", fontFamily: "Verdana, sans-serif", color: "#444", padding: "0 32px", textAlign: "center", gap: 14 }}>
         <div style={{ fontSize: 15, fontWeight: 700 }}>Không tải được dữ liệu</div>
         <div style={{ fontSize: 13, color: "#888", lineHeight: 1.5 }}>
-          Có thể do mạng yếu hoặc chập chờn. Dữ liệu bạn đã nhập trước đó vẫn an toàn — app sẽ không tự xoá hay ghi đè, chỉ cần thử tải lại.
+          Dữ liệu bạn đã nhập trước đó vẫn an toàn — app sẽ không tự xoá hay ghi đè, chỉ cần thử tải lại.
         </div>
+        {errorDetail && (
+          <div style={{ fontSize: 11, color: "#D7263D", background: "#FDECEC", borderRadius: 8, padding: "10px 12px", fontFamily: "monospace", wordBreak: "break-word", maxWidth: "100%" }}>
+            {errorDetail}
+          </div>
+        )}
         <button onClick={() => setReloadTick((t) => t + 1)} style={{ marginTop: 10, background: BRAND, color: "#fff", border: "none", borderRadius: 10, padding: "12px 28px", fontSize: 14, fontWeight: 700 }}>
           Thử lại
         </button>
