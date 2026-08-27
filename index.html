@@ -84,7 +84,8 @@
 // Giữ nguyên interface .get()/.set() giống hệt window.storage của Claude, nên KHÔNG cần sửa code app bên dưới.
 
 const db = firebase.firestore();
-db.settings({ experimentalAutoDetectLongPolling: true, useFetchStreams: false });
+db.settings({ experimentalForceLongPolling: true, useFetchStreams: false });
+try { db.enablePersistence({ synchronizeTabs: true }); } catch (_) { /* một số trình duyệt/chế độ không hỗ trợ, bỏ qua */ }
 const COLLECTION = "appwh_storage";
 
 window.storage = {
