@@ -160,6 +160,9 @@ function Pencil(props) {
 function PenLine(props) {
   return <IconBase {...props}><path d="M12 20h9" /><path d="m16.5 3.5 4 4L7 21H3v-4L16.5 3.5Z" /></IconBase>;
 }
+function LayoutDashboard(props) {
+  return <IconBase {...props}><rect x="3" y="3" width="7" height="9" rx="1" /><rect x="14" y="3" width="7" height="5" rx="1" /><rect x="14" y="12" width="7" height="9" rx="1" /><rect x="3" y="16" width="7" height="5" rx="1" /></IconBase>;
+}
 
 
 // ============ CONSTANTS ============
@@ -766,6 +769,15 @@ function MainScreen({ data, persist, currentKho, onSwitchKho }) {
             onSubmitOT={quickSubmitOT} onSubmitLeave={quickSubmitLeave}
           />
         )}
+        {tab === "tongquan" && (
+          <DashboardTab
+            employees={khoEmployees}
+            ot={data.ot.filter((r) => khoEmployeeIds.has(r.employeeId))}
+            leave={data.leave.filter((l) => khoEmployeeIds.has(l.employeeId))}
+            giaCong={data.giaCong.filter((g) => g.warehouseId === currentKho.id)}
+            today={today}
+          />
+        )}
       </div>
 
       {tab === "calendar" && (
@@ -778,6 +790,7 @@ function MainScreen({ data, persist, currentKho, onSwitchKho }) {
         <TabBtn active={tab === "employees"} onClick={() => setTab("employees")} icon={<Users size={20} />} label="Nhân viên" />
         <TabBtn active={tab === "calendar"} onClick={() => setTab("calendar")} icon={<CalendarDays size={20} />} label="Lịch" />
         <TabBtn active={tab === "dangky"} onClick={() => setTab("dangky")} icon={<PenLine size={20} />} label="Đăng ký" />
+        <TabBtn active={tab === "tongquan"} onClick={() => setTab("tongquan")} icon={<LayoutDashboard size={20} />} label="Tổng quan" />
       </div>
 
       {otModal && (
@@ -870,6 +883,14 @@ function EmployeeList({ employees, ot, today, openRowId, setOpenRowId, onTouchSt
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px 6px", gap: 10 }}>
         <div style={{ fontSize: 11, color: "#888", lineHeight: 1.5 }}>Vuốt sang trái để chọn Tăng ca / Nghỉ phép · Bấm tên để xem/sửa giờ tăng ca · Bấm ca làm để đổi ca</div>
         <button onClick={onBulkOT} style={{ flexShrink: 0, background: BRAND, color: "#fff", border: "none", borderRadius: 8, padding: "7px 12px", fontSize: 12.5, fontWeight: 800, whiteSpace: "nowrap" }}>OT+</button>
+      </div>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "2px 14px 6px" }}>
+        <div style={{ fontSize: 11, fontWeight: 800, color: "#999", textTransform: "uppercase", letterSpacing: 0.3 }}>Họ tên</div>
+        <div style={{ display: "grid", gridTemplateColumns: "34px 34px 34px 56px", gap: 8 }}>
+          {["D", "W", "M", "Y"].map((l) => (
+            <div key={l} style={{ fontSize: 11, fontWeight: 800, color: "#999", textAlign: "center" }}>{l}</div>
+          ))}
+        </div>
       </div>
       {employees.map((emp) => {
         const day = sumOT(ot, emp.id, (d, ref) => d === toKey(ref), today);
@@ -1444,6 +1465,85 @@ function QuickEntryTab({ employees, otRecords, leaveRecords, onSubmitOT, onSubmi
   );
 }
 
+
+// ============ TAB TỔNG QUAN (dashboard, chỉ xem, không nhập liệu) ============
+function DashboardTab({ employees, ot, leave, giaCong, today }) {
+  const tKey = toKey(today);
+  const monthLabel = `Tháng ${today.getMonth() + 1}`;
+
+  // ---- Ô 1: Nhân sự hôm nay ----
+  const totalEmployees = employees.length;
+  const leaveTodayFull = leave.filter((l) => l.date === tKey && l.type === "nghi");
+  const somToday = leave.filter((l) => l.date === tKey && l.type === "som");
+  const muonToday = leave.filter((l) => l.date === tKey && l.type === "muon");
+  const workingToday = Math.max(0, totalEmployees - leaveTodayFull.length);
+  const somTodayHours = somToday.reduce((s, l) => s + (l.hours || 0), 0);
+  const muonTodayHours = muonToday.reduce((s, l) => s + (l.hours || 0), 0);
+
+  // ---- Ô 2: Tăng ca hôm nay ----
+  const otToday = ot.filter((r) => r.date === tKey);
+  const otTodayCount = new Set(otToday.map((r) => r.employeeId)).size;
+  const otTodayHours = otToday.reduce((s, r) => s + r.hours, 0);
+
+  // ---- Ô 3: Tổng theo tháng ----
+  const otMonthHours = ot.filter((r) => inCurrentMonth(r.date, today)).reduce((s, r) => s + r.hours, 0);
+  const muonMonthHours = leave.filter((l) => l.type === "muon" && inCurrentMonth(l.date, today)).reduce((s, l) => s + (l.hours || 0), 0);
+  const somMonthHours = leave.filter((l) => l.type === "som" && inCurrentMonth(l.date, today)).reduce((s, l) => s + (l.hours || 0), 0);
+
+  // ---- Ô 4: Gia công trong tháng ----
+  const giaCongMonthCount = giaCong.filter((g) => inCurrentMonth(g.date, today)).length;
+
+  return (
+    <div style={{ padding: 16, display: "flex", flexDirection: "column", gap: 14 }}>
+      <div style={{ fontSize: 12, color: "#999" }}>Cập nhật tự động — không cần nhập liệu ở tab này. Dữ liệu tính theo {fmtVN(today)}.</div>
+
+      {/* Ô 1: Nhân sự hôm nay */}
+      <div style={{ background: "#EAF2FE", borderRadius: 16, padding: 18, borderLeft: "5px solid #2F6FED" }}>
+        <div style={{ fontSize: 13, fontWeight: 800, color: "#2F6FED", marginBottom: 12 }}>NHÂN SỰ HÔM NAY</div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+          <DashStat label="Tổng số" value={`${totalEmployees} người`} />
+          <DashStat label="Đi làm" value={`${workingToday} người`} />
+          <DashStat label="Nghỉ phép" value={`${leaveTodayFull.length} người`} />
+          <DashStat label="Đi muộn" value={muonToday.length > 0 ? `${muonToday.length} người · ${fmtHours(muonTodayHours)}` : "0"} />
+          <DashStat label="Về sớm" value={somToday.length > 0 ? `${somToday.length} người · ${fmtHours(somTodayHours)}` : "0"} />
+        </div>
+      </div>
+
+      {/* Ô 2: Tăng ca hôm nay */}
+      <div style={{ background: "#FFF6E0", borderRadius: 16, padding: 18, borderLeft: "5px solid #F5B400" }}>
+        <div style={{ fontSize: 13, fontWeight: 800, color: "#B98600", marginBottom: 12 }}>TĂNG CA HÔM NAY</div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+          <DashStat label="Số người OT" value={`${otTodayCount} người`} />
+          <DashStat label="Tổng giờ OT" value={fmtHours(otTodayHours)} />
+        </div>
+      </div>
+
+      {/* Ô 3: Tổng theo tháng */}
+      <div style={{ background: "#E7F8EF", borderRadius: 16, padding: 18, borderLeft: "5px solid #2FAE59" }}>
+        <div style={{ fontSize: 13, fontWeight: 800, color: "#1F8A46", marginBottom: 12 }}>TỔNG THEO {monthLabel.toUpperCase()}</div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+          <DashStat label="Giờ tăng ca" value={fmtHours(otMonthHours)} />
+          <DashStat label="Giờ đi muộn" value={fmtHours(muonMonthHours)} />
+          <DashStat label="Giờ về sớm" value={fmtHours(somMonthHours)} />
+        </div>
+      </div>
+
+      {/* Ô 4: Gia công trong tháng */}
+      <div style={{ background: "#F5F0FF", borderRadius: 16, padding: 18, borderLeft: "5px solid #8B5CF6" }}>
+        <div style={{ fontSize: 13, fontWeight: 800, color: "#6D28D9", marginBottom: 12 }}>GIA CÔNG TRONG {monthLabel.toUpperCase()}</div>
+        <div style={{ fontSize: 30, fontWeight: 800, color: "#6D28D9" }}>{giaCongMonthCount} <span style={{ fontSize: 14, fontWeight: 700, color: "#8B5CF6" }}>chuyến xe</span></div>
+      </div>
+    </div>
+  );
+}
+function DashStat({ label, value }) {
+  return (
+    <div>
+      <div style={{ fontSize: 11.5, color: "#666", marginBottom: 2 }}>{label}</div>
+      <div style={{ fontSize: 16, fontWeight: 800, color: "#222" }}>{value}</div>
+    </div>
+  );
+}
 
 // ============ CALENDAR TAB ============
 function CalendarTab({ employees, leave, events, ot, giaCong, factories, monthCursor, setMonthCursor, today, onDayTap }) {
