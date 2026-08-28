@@ -1,0 +1,1636 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<title>APP WH</title>
+
+<!-- ==== Cấu hình để "Thêm vào Màn hình chính" trên iPhone chạy TOÀN MÀN HÌNH (không thanh Safari) ==== -->
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="APP WH" />
+<link rel="apple-touch-icon" href="data:image/jpeg;base64,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" />
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#0096BE" />
+
+<style>
+  html, body { margin: 0; padding: 0; background: #F4F7F8; overscroll-behavior: none; }
+  * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+  #root { min-height: 100vh; }
+</style>
+
+<!-- React (bản rút gọn, chạy thẳng trên trình duyệt, không cần build) -->
+<script src="https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7/babel.min.js"></script>
+</head>
+<body>
+<div id="root">
+  <div style="padding:24px;font-family:Verdana,sans-serif;color:#666;text-align:center;">Đang tải APP WH…</div>
+</div>
+<div id="error-box" style="display:none;padding:20px;font-family:monospace;font-size:13px;color:#900;background:#FDECEC;white-space:pre-wrap;word-break:break-word;"></div>
+
+<script>
+  window.onerror = function (msg, url, line, col, err) {
+    var box = document.getElementById('error-box');
+    box.style.display = 'block';
+    box.textContent = 'LỖI: ' + msg + '\n(dòng ' + line + ', cột ' + col + ')\n\n' + (err && err.stack ? err.stack : '');
+    var root = document.getElementById('root');
+    if (root) root.innerHTML = '';
+    return false;
+  };
+
+  // Nếu sau 10 giây vẫn còn kẹt ở màn "Đang tải..." (thư viện CDN không tải được / mạng chặn) -> báo rõ nguyên nhân
+  setTimeout(function () {
+    if (window.__appwhMounted) return; // app đã render thành công thì bỏ qua
+    var box = document.getElementById('error-box');
+    box.style.display = 'block';
+    box.textContent =
+      'Không tải được app sau 10 giây.\n\n' +
+      'Nguyên nhân thường gặp: mạng (wifi/4G) đang chặn hoặc tải rất chậm tới các địa chỉ thư viện cần thiết (cdn.jsdelivr.net).\n\n' +
+      'Cách khắc phục:\n' +
+      '1. Thử đổi từ 4G sang Wifi (hoặc ngược lại)\n' +
+      '2. Tắt VPN nếu đang bật\n' +
+      '3. Thử mạng khác (phát wifi từ điện thoại khác)\n' +
+      '4. Tải lại trang (kéo xuống để refresh)';
+  }, 10000);
+</script>
+
+<script>
+  const { useState, useEffect, useMemo, useRef } = React;
+
+  // ============================================================
+  // Cấu hình Supabase (nơi lưu dữ liệu dùng chung cho tất cả quản lý)
+  // ============================================================
+  const SUPABASE_URL = "https://aabafalbpflaqoslopwt.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFhYmFmYWxicGZsYXFvc2xvcHd0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc4Mzc3OTAsImV4cCI6MjEwMzQxMzc5MH0.W4OczQuL-LmKL6HcTDqSzTs-jzBTm7iX1FsBPd1HEcg";
+</script>
+
+<script>
+// ============ THAY THẾ window.storage BẰNG SUPABASE (qua fetch REST API) + localStorage ============
+// - shared = true  -> lưu ở Supabase (bảng appwh_storage), MỌI quản lý cùng thấy
+// - shared = false -> lưu ở localStorage, CHỈ RIÊNG điện thoại đó
+// Giữ nguyên interface .get()/.set() giống hệt trước, nên KHÔNG cần sửa code app bên dưới.
+// Dùng fetch thẳng tới REST API của Supabase (PostgREST) — không cần cài thư viện supabase-js,
+// nên không phụ thuộc thêm CDN nào khác ngoài chính domain Supabase.
+
+const TABLE = "appwh_storage";
+const SB_HEADERS = {
+  apikey: SUPABASE_ANON_KEY,
+  Authorization: "Bearer " + SUPABASE_ANON_KEY,
+};
+
+window.storage = {
+  get: async (key, shared) => {
+    if (!shared) {
+      const v = localStorage.getItem(key);
+      if (v === null) { const err = new Error("not-found: " + key); err.code = "not-found"; throw err; }
+      return { key, value: v, shared };
+    }
+    const res = await fetch(
+      SUPABASE_URL + "/rest/v1/" + TABLE + "?key=eq." + encodeURIComponent(key) + "&select=value",
+      { headers: SB_HEADERS }
+    );
+    if (!res.ok) { const err = new Error("HTTP " + res.status + ": " + (await res.text())); err.code = "network"; throw err; }
+    const rows = await res.json();
+    if (!rows || rows.length === 0) { const err = new Error("not-found: " + key); err.code = "not-found"; throw err; }
+    return { key, value: rows[0].value, shared };
+  },
+  set: async (key, value, shared) => {
+    if (!shared) {
+      localStorage.setItem(key, value);
+      return { key, value, shared };
+    }
+    const res = await fetch(SUPABASE_URL + "/rest/v1/" + TABLE, {
+      method: "POST",
+      headers: { ...SB_HEADERS, "Content-Type": "application/json", Prefer: "resolution=merge-duplicates" },
+      body: JSON.stringify({ key, value, updated_at: new Date().toISOString() }),
+    });
+    if (!res.ok) { const err = new Error("HTTP " + res.status + ": " + (await res.text())); err.code = "network"; throw err; }
+    return { key, value, shared };
+  },
+};
+
+</script>
+
+<script type="text/plain" id="app-source">// ============ BỘ ICON THAY THẾ (không cần cài lucide-react) ============
+function IconBase({ size = 20, color = "currentColor", children }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      {children}
+    </svg>
+  );
+}
+function Users(props) {
+  return <IconBase {...props}><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></IconBase>;
+}
+function CalendarDays(props) {
+  return <IconBase {...props}><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01" /></IconBase>;
+}
+function Plus(props) {
+  return <IconBase {...props}><path d="M12 5v14M5 12h14" /></IconBase>;
+}
+function X(props) {
+  return <IconBase {...props}><path d="M18 6 6 18M6 6l12 12" /></IconBase>;
+}
+function ChevronLeft(props) {
+  return <IconBase {...props}><path d="M15 18l-6-6 6-6" /></IconBase>;
+}
+function ChevronRight(props) {
+  return <IconBase {...props}><path d="M9 18l6-6-6-6" /></IconBase>;
+}
+function ChevronDown(props) {
+  return <IconBase {...props}><path d="M6 9l6 6 6-6" /></IconBase>;
+}
+function Clock(props) {
+  return <IconBase {...props}><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></IconBase>;
+}
+function Trash2(props) {
+  return <IconBase {...props}><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6h16Z" /><path d="M10 11v6M14 11v6" /></IconBase>;
+}
+function Warehouse(props) {
+  return <IconBase {...props}><path d="M3 21V10l9-6 9 6v11" /><path d="M3 21h18M8 21v-6h8v6" /></IconBase>;
+}
+function Settings(props) {
+  return <IconBase {...props}><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.7 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z" /></IconBase>;
+}
+function Pencil(props) {
+  return <IconBase {...props}><path d="m18 2 4 4-14 14H4v-4L18 2Z" /></IconBase>;
+}
+function PenLine(props) {
+  return <IconBase {...props}><path d="M12 20h9" /><path d="m16.5 3.5 4 4L7 21H3v-4L16.5 3.5Z" /></IconBase>;
+}
+
+
+// ============ CONSTANTS ============
+const BRAND = "#0096BE";
+const LIMITS = { day: 4, week: 12, month: 36, year: 280 };
+const DOW_LABELS = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"];
+const STORAGE_KEY = "appwh-data-v3";      // Dữ liệu DÙNG CHUNG: mọi người thấy như nhau (v3 = danh sách thật 58 người)
+const LAST_KHO_KEY = "appwh-last-kho-v1"; // Ghi nhớ RIÊNG cho từng người/thiết bị
+const SHIFTS = ["Ca 1", "Ca 2", "Ca 3", "Ca HC"];
+const POSITIONS = ["Giám sát", "Nhập", "Xuất", "Stock"];
+const LEAVE_REASONS = ["Nghỉ phép", "Nghỉ không lương", "Nghỉ ốm", "Nghỉ việc riêng"];
+
+// ============ GIA CÔNG ============
+const DEFAULT_FACTORIES = [
+  { name: "Tessellation", abbr: "TES" },
+  { name: "Đô Lương", abbr: "ĐL" },
+];
+const MAX_FACTORIES = 3;
+const VEHICLE_TYPES = [
+  { key: "Truck", label: "Truck", abbr: "TẢI" },
+  { key: "Cont20", label: "Cont20", abbr: "20\"" },
+  { key: "Cont40", label: "Cont40", abbr: "40\"" },
+];
+function giaCongCode(record, factories) {
+  const f = factories.find((x) => x.name === record.factory);
+  const v = VEHICLE_TYPES.find((x) => x.key === record.vehicleType);
+  return "OS" + (f ? f.abbr : "?") + (v ? v.abbr : "?");
+}
+// Thứ tự ưu tiên hiển thị: Giám sát (mọi ca) -> Ca HC -> Ca 1 -> Ca 2 -> (Ca 3 / khác)
+const SHIFT_GROUP_ORDER = ["Ca HC", "Ca 1", "Ca 2"];
+function sortPriority(shift, position) {
+  if (position === "Giám sát") return -1; // Giám sát luôn ở trên cùng, bất kể ca
+  const idx = SHIFT_GROUP_ORDER.indexOf(shift);
+  return idx === -1 ? 99 : idx;
+}
+const LOGO_URI = "data:image/jpeg;base64,{{LOGO_B64}}";
+
+const WAREHOUSES = [
+  { id: "vai", name: "Kho vải" },
+  { id: "phulieu", name: "Kho phụ liệu" },
+  { id: "thanhpham", name: "Kho thành phẩm" },
+];
+
+const SEED_EMPLOYEES = [
+  { id: "NV0001", name: "Nguyễn Văn Phúc", warehouseId: "vai", shift: "Ca HC", position: "Giám sát", otOpeningBalance: 79.5 },
+  { id: "NV0002", name: "Nguyễn Thị Ngọc Anh", warehouseId: "vai", shift: "Ca HC", position: "Giám sát", otOpeningBalance: 0 },
+  { id: "NV0003", name: "Nguyễn Trung Hiếu", warehouseId: "vai", shift: "Ca HC", position: "Xuất", otOpeningBalance: 148.5 },
+  { id: "NV0004", name: "Nguyễn Duy Sơn", warehouseId: "vai", shift: "Ca HC", position: "Xuất", otOpeningBalance: 59.5 },
+  { id: "NV0005", name: "Nguyễn Ngọc Mẫn", warehouseId: "vai", shift: "Ca HC", position: "Xuất", otOpeningBalance: 95 },
+  { id: "NV0006", name: "Nguyễn Hữu Thu", warehouseId: "vai", shift: "Ca HC", position: "Xuất", otOpeningBalance: 125 },
+  { id: "NV0007", name: "Trần Mạnh Đạt", warehouseId: "vai", shift: "Ca HC", position: "Xuất", otOpeningBalance: 134 },
+  { id: "NV0008", name: "Quách Đình Thanh", warehouseId: "vai", shift: "Ca HC", position: "Xuất", otOpeningBalance: 107 },
+  { id: "NV0009", name: "Nguyễn Ngọc Duy", warehouseId: "vai", shift: "Ca HC", position: "Xuất", otOpeningBalance: 163 },
+  { id: "NV0010", name: "Nguyễn Thanh Bằng", warehouseId: "vai", shift: "Ca HC", position: "Xuất", otOpeningBalance: 113.5 },
+  { id: "NV0011", name: "Nguyễn Văn Thành", warehouseId: "vai", shift: "Ca HC", position: "Xuất", otOpeningBalance: 146.5 },
+  { id: "NV0012", name: "Trần Trọng Khiên", warehouseId: "vai", shift: "Ca HC", position: "Xuất", otOpeningBalance: 125.5 },
+  { id: "NV0013", name: "Nguyễn Đình Niêm", warehouseId: "vai", shift: "Ca HC", position: "Xuất", otOpeningBalance: 49.5 },
+  { id: "NV0014", name: "Dương Phúc Đạt", warehouseId: "vai", shift: "Ca HC", position: "Xuất", otOpeningBalance: 82 },
+  { id: "NV0015", name: "Bạch Văn Toản", warehouseId: "vai", shift: "Ca HC", position: "Xuất", otOpeningBalance: 20 },
+  { id: "NV0016", name: "Nguyễn Hữu Sơn", warehouseId: "vai", shift: "Ca HC", position: "Xuất", otOpeningBalance: 69 },
+  { id: "NV0017", name: "Quách Công Nghĩa", warehouseId: "vai", shift: "Ca HC", position: "Xuất", otOpeningBalance: 0 },
+  { id: "NV0018", name: "Nguyễn Văn Lương", warehouseId: "vai", shift: "Ca HC", position: "Xuất", otOpeningBalance: 0 },
+  { id: "NV0019", name: "Nguyễn Minh Tuấn", warehouseId: "phulieu", shift: "Ca HC", position: "Giám sát", otOpeningBalance: 30.5 },
+  { id: "NV0020", name: "Trịnh Ngọc Hải", warehouseId: "phulieu", shift: "Ca HC", position: "Giám sát", otOpeningBalance: 137 },
+  { id: "NV0021", name: "Quách Đức Hiền", warehouseId: "phulieu", shift: "Ca HC", position: "Giám sát", otOpeningBalance: 38.5 },
+  { id: "NV0022", name: "Nguyễn Tự Nam", warehouseId: "phulieu", shift: "Ca HC", position: "Xuất", otOpeningBalance: 86 },
+  { id: "NV0023", name: "Đỗ Thị Duyên", warehouseId: "phulieu", shift: "Ca HC", position: "Xuất", otOpeningBalance: 40 },
+  { id: "NV0024", name: "Đinh Quang Nam", warehouseId: "phulieu", shift: "Ca HC", position: "Xuất", otOpeningBalance: 72 },
+  { id: "NV0025", name: "Nguyễn Thị Hương", warehouseId: "phulieu", shift: "Ca HC", position: "Xuất", otOpeningBalance: 30 },
+  { id: "NV0026", name: "Nguyễn Hoàng Anh", warehouseId: "phulieu", shift: "Ca HC", position: "Xuất", otOpeningBalance: 145 },
+  { id: "NV0027", name: "Phạm văn Lực", warehouseId: "phulieu", shift: "Ca HC", position: "Xuất", otOpeningBalance: 88.5 },
+  { id: "NV0028", name: "Nguyễn Đức Trung", warehouseId: "phulieu", shift: "Ca HC", position: "Xuất", otOpeningBalance: 118 },
+  { id: "NV0029", name: "Bùi Văn Anh", warehouseId: "phulieu", shift: "Ca HC", position: "Xuất", otOpeningBalance: 80 },
+  { id: "NV0030", name: "Nguyễn Hoàng Anh", warehouseId: "phulieu", shift: "Ca HC", position: "Xuất", otOpeningBalance: 145 },
+  { id: "NV0031", name: "Nguyễn Văn Nam", warehouseId: "phulieu", shift: "Ca HC", position: "Xuất", otOpeningBalance: 122 },
+  { id: "NV0032", name: "Bùi Văn Nguyên", warehouseId: "phulieu", shift: "Ca HC", position: "Xuất", otOpeningBalance: 123 },
+  { id: "NV0033", name: "Nguyễn Thị Huế", warehouseId: "phulieu", shift: "Ca HC", position: "Xuất", otOpeningBalance: 14 },
+  { id: "NV0034", name: "Bùi Văn Mạnh", warehouseId: "phulieu", shift: "Ca HC", position: "Xuất", otOpeningBalance: 0 },
+  { id: "NV0035", name: "Bùi Quốc Trượng", warehouseId: "phulieu", shift: "Ca HC", position: "Xuất", otOpeningBalance: 22 },
+  { id: "NV0036", name: "Nguyễn Minh Đạt", warehouseId: "phulieu", shift: "Ca HC", position: "Xuất", otOpeningBalance: 117 },
+  { id: "NV0037", name: "Hoàng Văn Huy", warehouseId: "phulieu", shift: "Ca HC", position: "Xuất", otOpeningBalance: 58 },
+  { id: "NV0038", name: "Hà Viết Thành", warehouseId: "phulieu", shift: "Ca HC", position: "Xuất", otOpeningBalance: 46 },
+  { id: "NV0039", name: "Hoàng Thị Thủy", warehouseId: "phulieu", shift: "Ca HC", position: "Xuất", otOpeningBalance: 98 },
+  { id: "NV0040", name: "Bùi Văn Thọ", warehouseId: "phulieu", shift: "Ca HC", position: "Xuất", otOpeningBalance: 49 },
+  { id: "NV0041", name: "Tạ Thị Hằng", warehouseId: "thanhpham", shift: "Ca HC", position: "Giám sát", otOpeningBalance: 50 },
+  { id: "NV0042", name: "Nguyễn Đức Hòa", warehouseId: "thanhpham", shift: "Ca HC", position: "Giám sát", otOpeningBalance: 140.5 },
+  { id: "NV0043", name: "Ngô Chí Thái", warehouseId: "thanhpham", shift: "Ca 2", position: "Nhập", otOpeningBalance: 40 },
+  { id: "NV0044", name: "Đỗ Hữu Tuyền", warehouseId: "thanhpham", shift: "Ca 1", position: "Nhập", otOpeningBalance: 114 },
+  { id: "NV0045", name: "Nguyễn Đình Chí", warehouseId: "thanhpham", shift: "Ca 1", position: "Nhập", otOpeningBalance: 119.5 },
+  { id: "NV0046", name: "Hoàng Hoài Bắc", warehouseId: "thanhpham", shift: "Ca 2", position: "Nhập", otOpeningBalance: 59.5 },
+  { id: "NV0047", name: "Lê Văn Luận", warehouseId: "thanhpham", shift: "Ca 2", position: "Xuất", otOpeningBalance: 109 },
+  { id: "NV0048", name: "Giang Quốc Tuấn", warehouseId: "thanhpham", shift: "Ca HC", position: "Xuất", otOpeningBalance: 41.5 },
+  { id: "NV0049", name: "Trần Văn Nam", warehouseId: "thanhpham", shift: "Ca 2", position: "Xuất", otOpeningBalance: 121 },
+  { id: "NV0050", name: "Bùi Chí Cương", warehouseId: "thanhpham", shift: "Ca HC", position: "Xuất", otOpeningBalance: 81 },
+  { id: "NV0051", name: "Phạm Hùng Cường", warehouseId: "thanhpham", shift: "Ca HC", position: "Xuất", otOpeningBalance: 75.5 },
+  { id: "NV0052", name: "Nguyễn Văn Vinh", warehouseId: "thanhpham", shift: "Ca HC", position: "Stock", otOpeningBalance: 81.5 },
+  { id: "NV0053", name: "Nguyễn Hữu Lợi", warehouseId: "thanhpham", shift: "Ca HC", position: "Xuất", otOpeningBalance: 118 },
+  { id: "NV0054", name: "Nguyễn Văn Kỷ", warehouseId: "thanhpham", shift: "Ca HC", position: "Xuất", otOpeningBalance: 108.5 },
+  { id: "NV0055", name: "Bùi Quốc Toản", warehouseId: "thanhpham", shift: "Ca HC", position: "Xuất", otOpeningBalance: 107.5 },
+  { id: "NV0056", name: "Hoàng Văn Toàn", warehouseId: "thanhpham", shift: "Ca HC", position: "Xuất", otOpeningBalance: 72 },
+  { id: "NV0057", name: "Đinh Văn Hoàng", warehouseId: "thanhpham", shift: "Ca HC", position: "Xuất", otOpeningBalance: 38.5 },
+  { id: "NV0058", name: "Bùi Văn Vũ", warehouseId: "thanhpham", shift: "Ca HC", position: "Stock", otOpeningBalance: 15.5 },
+];
+
+// ============ DATE UTILS ============
+const pad = (n) => String(n).padStart(2, "0");
+const toKey = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const fromKey = (k) => { const [y, m, d] = k.split("-").map(Number); return new Date(y, m - 1, d); };
+const todayKey = () => toKey(new Date());
+const addDays = (d, n) => { const nd = new Date(d); nd.setDate(nd.getDate() + n); return nd; };
+const getMonday = (d) => { const nd = new Date(d); const day = nd.getDay(); const diff = day === 0 ? -6 : 1 - day; nd.setDate(nd.getDate() + diff); nd.setHours(0, 0, 0, 0); return nd; };
+const fmtVN = (d) => `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+
+function inCurrentWeek(dateStr, ref) {
+  const monday = getMonday(ref);
+  const saturday = addDays(monday, 5);
+  const d = fromKey(dateStr);
+  return d >= monday && d <= saturday;
+}
+function inCurrentMonth(dateStr, ref) {
+  const d = fromKey(dateStr);
+  return d.getFullYear() === ref.getFullYear() && d.getMonth() === ref.getMonth();
+}
+function inCurrentYear(dateStr, ref) {
+  return fromKey(dateStr).getFullYear() === ref.getFullYear();
+}
+function sumOT(records, employeeId, filterFn, ref) {
+  return records
+    .filter((r) => r.employeeId === employeeId && filterFn(r.date, ref))
+    .reduce((s, r) => s + r.hours, 0);
+}
+function fmtHours(h) {
+  const hh = Math.floor(h + 1e-9);
+  const mm = Math.round((h - hh) * 60);
+  return mm > 0 ? `${hh}h${String(mm).padStart(2, "0")}` : `${hh}h`;
+}
+// Tên dài (>13 ký tự, từ 3 từ trở lên) sẽ bỏ "họ" (từ đầu tiên) khi hiển thị trong danh sách để không bị tràn/cắt chữ
+function displayName(fullName) {
+  const words = fullName.trim().split(/\s+/);
+  if (words.length >= 3) return words.slice(1).join(" ");
+  return fullName;
+}
+
+// Tính tổng dự kiến (ngày/tuần/tháng/năm) NẾU thêm bản ghi mới này, trả về danh sách mốc bị vượt hạn mức
+function checkOTLimits(otRecords, employeeId, date, hours, excludeRecordId, openingBalance = 0) {
+  const ref = fromKey(date);
+  const relevant = otRecords.filter((r) => r.employeeId === employeeId && r.id !== excludeRecordId);
+  const dayTotal = relevant.filter((r) => r.date === date).reduce((s, r) => s + r.hours, 0) + hours;
+  const weekTotal = sumOT(relevant, employeeId, inCurrentWeek, ref) + hours;
+  const monthTotal = sumOT(relevant, employeeId, inCurrentMonth, ref) + hours;
+  const yearTotal = sumOT(relevant, employeeId, inCurrentYear, ref) + hours + openingBalance;
+  const violations = [];
+  if (dayTotal > LIMITS.day) violations.push({ label: "Ngày", total: dayTotal, limit: LIMITS.day });
+  if (weekTotal > LIMITS.week) violations.push({ label: "Tuần", total: weekTotal, limit: LIMITS.week });
+  if (monthTotal > LIMITS.month) violations.push({ label: "Tháng", total: monthTotal, limit: LIMITS.month });
+  if (yearTotal > LIMITS.year) violations.push({ label: "Năm", total: yearTotal, limit: LIMITS.year });
+  return violations;
+}
+
+// ============ SEED DATA (demo) ============
+function buildSeed() {
+  // Không seed dữ liệu tăng ca/nghỉ phép giả nữa — dùng đúng 58 nhân sự thật.
+  // Giờ OT luỹ kế đến hết tháng 7 đã nằm trong otOpeningBalance của từng người (chỉ cộng vào vòng tròn "Năm").
+  return { employees: SEED_EMPLOYEES, ot: [], leave: [], events: [], giaCong: [], factories: DEFAULT_FACTORIES };
+}
+
+// ============ SMALL UI PARTS ============
+// Ngưỡng cảnh báo cho từng vòng tròn: trắng (bình thường) → vàng (gần đạt) → đỏ (đã đạt/vượt)
+const THRESHOLDS = {
+  day: { yellow: null, red: 4 },     // giữ nguyên: trắng viền đỏ khi chạm 4h, không có mức vàng
+  week: { yellow: 9, red: 12 },
+  month: { yellow: 21, red: 32 },
+  year: { yellow: 250, red: 280 },
+};
+
+function fmtCircleValue(v) {
+  const r = Math.round(v * 10) / 10;
+  return Number.isInteger(r) ? String(r) : r.toFixed(1);
+}
+
+function Circle({ field, value }) {
+  const t = THRESHOLDS[field];
+  let style;
+  if (field === "day") {
+    const danger = value >= t.red;
+    style = { background: "#fff", border: danger ? "2px solid #D7263D" : "1.5px solid #999", color: "#333", boxShadow: danger ? "0 0 0 2px rgba(215,38,61,0.25)" : "none" };
+  } else if (value >= t.red) {
+    style = { background: "#D7263D", border: "none", color: "#fff", boxShadow: "none" };
+  } else if (value >= t.yellow) {
+    style = { background: "#F5B400", border: "none", color: "#fff", boxShadow: "none" };
+  } else {
+    style = { background: "#fff", border: "1.5px solid #ccc", color: "#333", boxShadow: "none" };
+  }
+  const isYear = field === "year"; // ô năm: dạng viên thuốc, chiều rộng CỐ ĐỊNH để luôn thẳng hàng với các dòng khác
+  return (
+    <div
+      style={{
+        width: isYear ? 56 : 34, height: 34, borderRadius: isYear ? 17 : "50%",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        fontSize: isYear ? 11.5 : 12, fontWeight: 700, flexShrink: 0, whiteSpace: "nowrap", overflow: "hidden", ...style,
+      }}
+      title={`${fmtHours(value)} (${field})`}
+    >
+      {fmtCircleValue(value)}
+    </div>
+  );
+}
+
+function Modal({ title, onClose, children }) {
+  return (
+    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 50, display: "flex", alignItems: "flex-end" }} onClick={onClose}>
+      <div style={{ background: "#fff", width: "100%", borderRadius: "16px 16px 0 0", maxHeight: "88vh", overflowY: "auto" }} onClick={(e) => e.stopPropagation()}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px", borderBottom: "1px solid #eee", position: "sticky", top: 0, background: "#fff" }}>
+          <span style={{ fontWeight: 700, fontSize: 16 }}>{title}</span>
+          <button onClick={onClose} style={{ background: "none", border: "none", padding: 4 }}><X size={20} color="#666" /></button>
+        </div>
+        <div style={{ padding: 16 }}>{children}</div>
+      </div>
+    </div>
+  );
+}
+
+function ConfirmModal({ message, onCancel, onConfirm }) {
+  return (
+    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 60, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }} onClick={onCancel}>
+      <div style={{ background: "#fff", borderRadius: 16, padding: 20, width: "100%", maxWidth: 340 }} onClick={(e) => e.stopPropagation()}>
+        <div style={{ fontSize: 15, color: "#222", lineHeight: 1.5, marginBottom: 18 }}>{message}</div>
+        <div style={{ display: "flex", gap: 10 }}>
+          <button onClick={onCancel} style={{ flex: 1, padding: "11px 0", borderRadius: 10, border: "1px solid #ddd", background: "#fff", color: "#444", fontWeight: 700, fontSize: 14 }}>Huỷ</button>
+          <button onClick={onConfirm} style={{ flex: 1, padding: "11px 0", borderRadius: 10, border: "none", background: "#D7263D", color: "#fff", fontWeight: 700, fontSize: 14 }}>Xoá</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Field({ label, children }) {
+  return (
+    <div style={{ marginBottom: 14 }}>
+      <div style={{ fontSize: 13, color: "#555", marginBottom: 6, fontWeight: 600 }}>{label}</div>
+      {children}
+    </div>
+  );
+}
+
+const inputStyle = { width: "100%", padding: "10px 12px", border: "1px solid #ddd", borderRadius: 10, fontSize: 15, fontFamily: "inherit", boxSizing: "border-box" };
+const primaryBtn = { background: BRAND, color: "#fff", border: "none", borderRadius: 10, padding: "12px 16px", fontSize: 15, fontWeight: 700, width: "100%" };
+
+function LimitWarning({ violations, employeeName }) {
+  if (!violations || violations.length === 0) return null;
+  return (
+    <div style={{ background: "#FDECEC", border: "1px solid #F3B7BE", borderRadius: 10, padding: "10px 12px", marginBottom: 14 }}>
+      <div style={{ fontSize: 13, fontWeight: 800, color: "#D7263D", marginBottom: 4 }}>⚠ Vượt hạn mức tăng ca{employeeName ? ` — ${employeeName}` : ""}</div>
+      {violations.map((v) => (
+        <div key={v.label} style={{ fontSize: 12.5, color: "#B01E33" }}>{v.label}: {fmtHours(v.total)} (quy định ≤ {v.limit}h)</div>
+      ))}
+    </div>
+  );
+}
+
+// ============ APP ROOT (screen router) ============
+function AppWH() {
+  const [data, setData] = useState(null);
+  const [screen, setScreen] = useState("loading"); // loading | error | khoSelect | main
+  const [currentKho, setCurrentKho] = useState(null);
+  const [reloadTick, setReloadTick] = useState(0); // tăng lên để kích hoạt tải lại
+  const [errorDetail, setErrorDetail] = useState(""); // lưu lỗi kỹ thuật thật để hiện ra màn hình, không đoán mò nữa
+
+  function withTimeout(promise, ms) {
+    return Promise.race([
+      promise,
+      new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), ms)),
+    ]);
+  }
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setScreen("loading");
+      // 1) Dữ liệu kho — DÙNG CHUNG cho mọi quản lý (shared: true)
+      let loadedData;
+      try {
+        const res = await withTimeout(window.storage.get(STORAGE_KEY, true), 12000);
+        loadedData = JSON.parse(res.value);
+        if (!loadedData.giaCong) loadedData.giaCong = [];
+        if (!loadedData.factories) loadedData.factories = DEFAULT_FACTORIES;
+      } catch (e) {
+        if (e && e.code === "not-found") {
+          // THỰC SỰ chưa từng có dữ liệu (lần đầu triển khai) -> an toàn để tạo dữ liệu mẫu
+          loadedData = buildSeed();
+          try { await window.storage.set(STORAGE_KEY, JSON.stringify(loadedData), true); } catch (_) {}
+        } else {
+          // Lỗi mạng / quá thời gian chờ -> dữ liệu THẬT có thể vẫn đang tồn tại trên máy chủ,
+          // TUYỆT ĐỐI không tự tạo dữ liệu mẫu rồi ghi đè. Chỉ báo lỗi và cho thử lại.
+          if (!cancelled) {
+            setErrorDetail((e && (e.code || e.name) ? `[${e.code || e.name}] ` : "") + (e && e.message ? e.message : String(e)));
+            setScreen("error");
+          }
+          return;
+        }
+      }
+      if (cancelled) return;
+      setData(loadedData);
+
+      // 2) Kho đã chọn lần trước — RIÊNG cho từng người/thiết bị (shared: false)
+      let lastKhoId = null;
+      try {
+        const res2 = await withTimeout(window.storage.get(LAST_KHO_KEY, false), 3000);
+        lastKhoId = JSON.parse(res2.value)?.khoId || null;
+      } catch (e) { /* chưa từng chọn, hoặc mạng chậm -> bỏ qua, cho chọn lại kho */ }
+
+      if (cancelled) return;
+      const found = WAREHOUSES.find((w) => w.id === lastKhoId);
+      if (found) { setCurrentKho(found); setScreen("main"); }
+      else setScreen("khoSelect");
+    })();
+    return () => { cancelled = true; };
+  }, [reloadTick]);
+
+  const persist = async (next) => {
+    setData(next);
+    try { await window.storage.set(STORAGE_KEY, JSON.stringify(next), true); } catch (_) {}
+  };
+
+  const pickKho = async (kho) => {
+    setCurrentKho(kho);
+    setScreen("main");
+    try { await window.storage.set(LAST_KHO_KEY, JSON.stringify({ khoId: kho.id }), false); } catch (_) {}
+  };
+
+  if (screen === "error") {
+    return (
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100vh", fontFamily: "Verdana, sans-serif", color: "#444", padding: "0 32px", textAlign: "center", gap: 14 }}>
+        <div style={{ fontSize: 15, fontWeight: 700 }}>Không tải được dữ liệu</div>
+        <div style={{ fontSize: 13, color: "#888", lineHeight: 1.5 }}>
+          Dữ liệu bạn đã nhập trước đó vẫn an toàn — app sẽ không tự xoá hay ghi đè, chỉ cần thử tải lại.
+        </div>
+        {errorDetail && (
+          <div style={{ fontSize: 11, color: "#D7263D", background: "#FDECEC", borderRadius: 8, padding: "10px 12px", fontFamily: "monospace", wordBreak: "break-word", maxWidth: "100%" }}>
+            {errorDetail}
+          </div>
+        )}
+        <button onClick={() => setReloadTick((t) => t + 1)} style={{ marginTop: 10, background: BRAND, color: "#fff", border: "none", borderRadius: 10, padding: "12px 28px", fontSize: 14, fontWeight: 700 }}>
+          Thử lại
+        </button>
+      </div>
+    );
+  }
+
+  if (!data || screen === "loading") {
+    return <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh", fontFamily: "Verdana, sans-serif", color: "#666" }}>Đang tải APP WH…</div>;
+  }
+
+  if (screen === "khoSelect") {
+    return <KhoSelectScreen employees={data.employees} onPick={pickKho} />;
+  }
+  return (
+    <MainScreen
+      data={data} persist={persist} currentKho={currentKho}
+      onSwitchKho={() => setScreen("khoSelect")}
+    />
+  );
+}
+
+// ============ KHO SELECT SCREEN (màn mở đầu) ============
+function KhoSelectScreen({ employees, onPick }) {
+  const isDesktop = useIsDesktop();
+  return (
+    <div style={{ fontFamily: "Verdana, Geneva, sans-serif", minHeight: "100vh", background: isDesktop ? "#E9EEF0" : "#fff", display: "flex", justifyContent: "center", padding: isDesktop ? "40px 20px" : 0 }}>
+      <div style={{ width: "100%", maxWidth: isDesktop ? 520 : 480, background: "#fff", boxSizing: "border-box", borderRadius: isDesktop ? 20 : 0, boxShadow: isDesktop ? "0 8px 30px rgba(0,0,0,0.08)" : "none", overflow: "hidden", height: isDesktop ? "auto" : "100vh", display: "flex", flexDirection: "column" }}>
+        <div style={{ textAlign: "center", padding: isDesktop ? "44px 28px 28px" : "calc(env(safe-area-inset-top, 0px) + 32px) 28px 28px" }}>
+          <img src={LOGO_URI} alt="Tessellation" style={{ height: 50, marginBottom: 18 }} />
+          <div style={{ fontSize: 19, fontWeight: 800, color: "#222", lineHeight: 1.3 }}>Hệ thống quản lý nhân sự 3 kho</div>
+        </div>
+        <div style={{ padding: "0 20px 28px" }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: "#888", marginBottom: 12 }}>CHỌN KHO ĐỂ QUẢN LÝ</div>
+          {WAREHOUSES.map((w) => {
+            const count = employees.filter((e) => e.warehouseId === w.id).length;
+            return (
+              <button key={w.id} onClick={() => onPick(w)} style={{ width: "100%", background: "#fff", border: "1px solid #e2e2e2", borderRadius: 12, padding: "16px 16px", marginBottom: 12, display: "flex", alignItems: "center", justifyContent: "space-between", cursor: isDesktop ? "pointer" : "default" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <div style={{ width: 40, height: 40, borderRadius: 10, background: "#E6F6FA", display: "flex", alignItems: "center", justifyContent: "center" }}><Warehouse size={20} color={BRAND} /></div>
+                  <div style={{ textAlign: "left" }}>
+                    <div style={{ fontWeight: 700, fontSize: 15, color: "#222" }}>{w.name}</div>
+                    <div style={{ fontSize: 12, color: "#888" }}>{count} nhân sự</div>
+                  </div>
+                </div>
+                <ChevronRight size={18} color="#bbb" />
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ============ MAIN SCREEN ============
+// Phát hiện màn hình rộng (máy tính/laptop) để chỉnh bố cục — KHÔNG ảnh hưởng bản điện thoại (luôn < 900px thực tế)
+function useIsDesktop() {
+  const [isDesktop, setIsDesktop] = useState(() => (typeof window !== "undefined" ? window.innerWidth >= 900 : false));
+  useEffect(() => {
+    const onResize = () => setIsDesktop(window.innerWidth >= 900);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+  return isDesktop;
+}
+
+function nextEmployeeId(employees) {
+  const max = employees.reduce((m, e) => {
+    const n = parseInt(e.id.replace("NV", ""), 10);
+    return isNaN(n) ? m : Math.max(m, n);
+  }, 0);
+  return `NV${String(max + 1).padStart(4, "0")}`;
+}
+
+function MainScreen({ data, persist, currentKho, onSwitchKho }) {
+  const isDesktop = useIsDesktop();
+  const [tab, setTab] = useState("employees");
+  const [openRowId, setOpenRowId] = useState(null);
+  const [otModal, setOtModal] = useState(null);       // {employeeId} hoặc {record} khi sửa
+  const [leaveModal, setLeaveModal] = useState(null);
+  const [noteModal, setNoteModal] = useState(false);
+  const [addChoiceOpen, setAddChoiceOpen] = useState(false); // chọn "Lịch họp" hay "Gia công"
+  const [giaCongModal, setGiaCongModal] = useState(false);
+  const [addFactoryOpen, setAddFactoryOpen] = useState(false);
+  const [dayDetail, setDayDetail] = useState(null);
+  const [shiftModal, setShiftModal] = useState(null);
+  const [otHistoryId, setOtHistoryId] = useState(null); // xem lịch sử tăng ca của 1 người
+  const [manageOpen, setManageOpen] = useState(false);  // màn Quản lý nhân sự
+  const [empForm, setEmpForm] = useState(null);         // {mode:'add'|'edit', employee?}
+  const [bulkOtOpen, setBulkOtOpen] = useState(false);  // OT hàng loạt
+  const [confirm, setConfirm] = useState(null); // { message, onYes } — hộp thoại xác nhận tự viết (window.confirm bị chặn trong artifact)
+  const askConfirm = (message, onYes) => setConfirm({ message, onYes });
+  const [monthCursor, setMonthCursor] = useState(new Date());
+  const touchStartX = useRef(0);
+  const today = new Date();
+
+  const khoEmployees = useMemo(() => {
+    return data.employees
+      .filter((e) => e.warehouseId === currentKho.id)
+      .slice()
+      .sort((a, b) => {
+        const pa = sortPriority(a.shift, a.position), pb = sortPriority(b.shift, b.position);
+        return pa !== pb ? pa - pb : a.name.localeCompare(b.name, "vi");
+      });
+  }, [data.employees, currentKho]);
+  const khoEmployeeIds = useMemo(() => new Set(khoEmployees.map((e) => e.id)), [khoEmployees]);
+
+  // ---- Tăng ca: thêm / sửa / xoá ----
+  const addOT = (employeeId, date, hours) => {
+    persist({ ...data, ot: [...data.ot, { id: "ot" + Date.now(), employeeId, date, hours }] });
+    setOtModal(null);
+  };
+  const updateOT = (id, patch) => {
+    persist({ ...data, ot: data.ot.map((r) => r.id === id ? { ...r, ...patch } : r) });
+    setOtModal(null);
+  };
+  const deleteOT = (id) => {
+    askConfirm("Xoá bản ghi tăng ca này?", () => {
+      persist({ ...data, ot: data.ot.filter((r) => r.id !== id) });
+      setOtModal(null);
+    });
+  };
+  const addBulkOT = (employeeIds, date, hours) => {
+    const newRecords = employeeIds.map((employeeId, i) => ({
+      id: `ot${Date.now()}_${i}`, employeeId, date, hours,
+    }));
+    persist({ ...data, ot: [...data.ot, ...newRecords] });
+    setBulkOtOpen(false);
+  };
+
+  // ---- Đăng ký nhanh (tab Đăng ký): gửi lại cùng người/cùng ngày/cùng loại sẽ tự cập nhật ----
+  const quickSubmitOT = (employeeId, date, hours, note) => {
+    const existing = data.ot.find((r) => r.employeeId === employeeId && r.date === date);
+    if (existing) {
+      persist({ ...data, ot: data.ot.map((r) => r.id === existing.id ? { ...r, hours, note } : r) });
+    } else {
+      persist({ ...data, ot: [...data.ot, { id: "ot" + Date.now(), employeeId, date, hours, note }] });
+    }
+  };
+  const quickSubmitLeave = (employeeId, date, type, extra) => {
+    const existing = data.leave.find((l) => l.employeeId === employeeId && l.date === date && l.type === type);
+    if (existing) {
+      persist({ ...data, leave: data.leave.map((l) => l.id === existing.id ? { ...l, ...extra } : l) });
+    } else {
+      persist({ ...data, leave: [...data.leave, { id: "lv" + Date.now(), employeeId, date, type, ...extra }] });
+    }
+  };
+
+  // ---- Nghỉ phép ----
+  const addLeave = (employeeId, date, type, extra = {}) => {
+    persist({ ...data, leave: [...data.leave, { id: "lv" + Date.now(), employeeId, date, type, ...extra }] });
+    setLeaveModal(null);
+  };
+  const deleteLeave = (id) => {
+    askConfirm("Xoá mục nghỉ phép này?", () => {
+      persist({ ...data, leave: data.leave.filter((l) => l.id !== id) });
+    });
+  };
+
+  // ---- Sự kiện / ghi chú ----
+  const addEvent = (ev) => {
+    persist({ ...data, events: [...data.events, { id: "ev" + Date.now(), warehouseId: currentKho.id, ...ev }] });
+    setNoteModal(false);
+  };
+  const deleteEvent = (id) => {
+    askConfirm("Xoá sự kiện này?", () => {
+      persist({ ...data, events: data.events.filter((e) => e.id !== id) });
+    });
+  };
+
+  // ---- Gia công ----
+  const addGiaCong = (gc) => {
+    persist({ ...data, giaCong: [...data.giaCong, { id: "gc" + Date.now(), warehouseId: currentKho.id, ...gc }] });
+    setGiaCongModal(false);
+  };
+  const deleteGiaCong = (id) => {
+    askConfirm("Xoá mục gia công này?", () => {
+      persist({ ...data, giaCong: data.giaCong.filter((g) => g.id !== id) });
+    });
+  };
+  const addFactory = (factory) => {
+    persist({ ...data, factories: [...data.factories, factory] });
+    setAddFactoryOpen(false);
+  };
+
+  // ---- Ca làm việc ----
+  const setShift = (employeeId, shift, position) => {
+    persist({ ...data, employees: data.employees.map((e) => e.id === employeeId ? { ...e, shift, position } : e) });
+    setShiftModal(null);
+  };
+
+  // ---- Quản lý nhân sự: thêm / sửa / xoá người ----
+  const saveEmployee = (form, editingId) => {
+    if (editingId) {
+      persist({ ...data, employees: data.employees.map((e) => e.id === editingId ? { ...e, ...form } : e) });
+    } else {
+      const id = nextEmployeeId(data.employees);
+      persist({ ...data, employees: [...data.employees, { id, ...form }] });
+    }
+    setEmpForm(null);
+  };
+  const deleteEmployee = (id) => {
+    askConfirm("Xoá nhân viên này? Toàn bộ lịch sử tăng ca / nghỉ phép của người này cũng sẽ bị xoá.", () => {
+      persist({
+        ...data,
+        employees: data.employees.filter((e) => e.id !== id),
+        ot: data.ot.filter((r) => r.employeeId !== id),
+        leave: data.leave.filter((l) => l.employeeId !== id),
+      });
+    });
+  };
+
+  const onTouchStart = (e) => { touchStartX.current = e.touches[0].clientX; };
+  const onTouchEnd = (e, id) => {
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    if (dx < -40) setOpenRowId(id);
+    else if (dx > 40) setOpenRowId(null);
+  };
+
+  return (
+    <div style={{ fontFamily: "Verdana, Geneva, sans-serif", background: isDesktop ? "#E9EEF0" : "#F4F7F8", minHeight: "100vh", display: "flex", justifyContent: "center", padding: isDesktop ? "24px 20px" : 0 }}>
+    <div style={{ width: "100%", maxWidth: isDesktop ? 640 : 480, background: "#F4F7F8", display: "flex", flexDirection: "column", position: "relative", borderRadius: isDesktop ? 20 : 0, boxShadow: isDesktop ? "0 8px 30px rgba(0,0,0,0.08)" : "none", overflow: "hidden", height: isDesktop ? "calc(100vh - 48px)" : "100vh" }}>
+      <div style={{ background: BRAND, color: "#fff", padding: "calc(env(safe-area-inset-top, 0px) + 14px) 18px 14px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <button onClick={onSwitchKho} style={{ background: "none", border: "none", color: "#fff", textAlign: "left", padding: 0 }}>
+          <div style={{ fontSize: 11, opacity: 0.85, display: "flex", alignItems: "center", gap: 3 }}>APP WH <ChevronDown size={12} /></div>
+          <div style={{ fontSize: 17, fontWeight: 800 }}>{currentKho.name}</div>
+        </button>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div style={{ fontSize: 11, background: "rgba(255,255,255,0.18)", padding: "4px 10px", borderRadius: 20 }}>{fmtVN(today)}</div>
+          <button onClick={() => setManageOpen(true)} title="Quản lý nhân sự" style={{ background: "rgba(255,255,255,0.18)", border: "none", borderRadius: "50%", width: 30, height: 30, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <Settings size={16} color="#fff" />
+          </button>
+        </div>
+      </div>
+
+      <div style={{ flex: 1, overflowY: "auto", paddingBottom: 70 }}>
+        {tab === "employees" && (
+          <EmployeeList
+            employees={khoEmployees} ot={data.ot} today={today} openRowId={openRowId} setOpenRowId={setOpenRowId}
+            onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}
+            onTangCa={(id) => { setOpenRowId(null); setOtModal({ employeeId: id }); }}
+            onNghiPhep={(id) => { setOpenRowId(null); setLeaveModal({ employeeId: id }); }}
+            onShiftTap={(id) => setShiftModal({ employeeId: id })}
+            onNameTap={(id) => setOtHistoryId(id)}
+            onBulkOT={() => setBulkOtOpen(true)}
+          />
+        )}
+        {tab === "calendar" && (
+          <CalendarTab
+            employees={khoEmployees} leave={data.leave.filter((l) => khoEmployeeIds.has(l.employeeId))}
+            events={data.events.filter((e) => e.warehouseId === currentKho.id)}
+            ot={data.ot.filter((r) => khoEmployeeIds.has(r.employeeId))}
+            giaCong={data.giaCong.filter((g) => g.warehouseId === currentKho.id)} factories={data.factories}
+            monthCursor={monthCursor} setMonthCursor={setMonthCursor}
+            today={today} onDayTap={(k) => setDayDetail(k)}
+          />
+        )}
+        {tab === "dangky" && (
+          <QuickEntryTab
+            employees={khoEmployees} otRecords={data.ot} leaveRecords={data.leave}
+            onSubmitOT={quickSubmitOT} onSubmitLeave={quickSubmitLeave}
+          />
+        )}
+      </div>
+
+      {tab === "calendar" && (
+        <button onClick={() => currentKho.id === "thanhpham" ? setAddChoiceOpen(true) : setNoteModal(true)} style={{ position: "absolute", right: 18, bottom: 82, width: 52, height: 52, borderRadius: "50%", background: BRAND, border: "none", color: "#fff", boxShadow: "0 4px 12px rgba(0,0,0,0.25)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <Plus size={26} />
+        </button>
+      )}
+
+      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, display: "flex", borderTop: "1px solid #e2e2e2", background: "#fff" }}>
+        <TabBtn active={tab === "employees"} onClick={() => setTab("employees")} icon={<Users size={20} />} label="Nhân viên" />
+        <TabBtn active={tab === "calendar"} onClick={() => setTab("calendar")} icon={<CalendarDays size={20} />} label="Lịch" />
+        <TabBtn active={tab === "dangky"} onClick={() => setTab("dangky")} icon={<PenLine size={20} />} label="Đăng ký" />
+      </div>
+
+      {otModal && (
+        <OTModal
+          employees={khoEmployees} otRecords={data.ot} defaultId={otModal.employeeId} record={otModal.record}
+          onClose={() => setOtModal(null)} onSave={addOT} onUpdate={updateOT} onDelete={deleteOT}
+        />
+      )}
+      {bulkOtOpen && <BulkOTModal employees={khoEmployees} otRecords={data.ot} onClose={() => setBulkOtOpen(false)} onSave={addBulkOT} />}
+      {leaveModal && <LeaveModal employees={khoEmployees} defaultId={leaveModal.employeeId} onClose={() => setLeaveModal(null)} onSave={addLeave} />}
+      {addChoiceOpen && (
+        <AddChoiceModal
+          onClose={() => setAddChoiceOpen(false)}
+          onPickMeeting={() => { setAddChoiceOpen(false); setNoteModal(true); }}
+          onPickGiaCong={() => { setAddChoiceOpen(false); setGiaCongModal(true); }}
+        />
+      )}
+      {noteModal && <NoteModal onClose={() => setNoteModal(false)} onSave={addEvent} />}
+      {giaCongModal && (
+        <GiaCongModal
+          factories={data.factories}
+          onClose={() => setGiaCongModal(false)}
+          onSave={addGiaCong}
+          onAddFactory={() => setAddFactoryOpen(true)}
+        />
+      )}
+      {addFactoryOpen && <AddFactoryModal onClose={() => setAddFactoryOpen(false)} onSave={addFactory} />}
+      {shiftModal && <ShiftModal employee={khoEmployees.find((e) => e.id === shiftModal.employeeId)} onClose={() => setShiftModal(null)} onSave={setShift} />}
+      {dayDetail && (
+        <DayDetailModal
+          dateKey={dayDetail} employees={khoEmployees}
+          leave={data.leave.filter((l) => khoEmployeeIds.has(l.employeeId))}
+          events={data.events.filter((e) => e.warehouseId === currentKho.id)}
+          ot={data.ot.filter((r) => khoEmployeeIds.has(r.employeeId))}
+          giaCong={data.giaCong.filter((g) => g.warehouseId === currentKho.id)} factories={data.factories}
+          onClose={() => setDayDetail(null)} onDeleteLeave={deleteLeave} onDeleteEvent={deleteEvent} onDeleteOT={deleteOT} onDeleteGiaCong={deleteGiaCong}
+        />
+      )}
+      {otHistoryId && (
+        <OTHistoryModal
+          employee={khoEmployees.find((e) => e.id === otHistoryId)}
+          records={data.ot.filter((r) => r.employeeId === otHistoryId).sort((a, b) => b.date.localeCompare(a.date))}
+          onClose={() => setOtHistoryId(null)}
+          onEdit={(record) => { setOtHistoryId(null); setOtModal({ employeeId: record.employeeId, record }); }}
+          onDelete={deleteOT}
+          onAddNew={() => { setOtHistoryId(null); setOtModal({ employeeId: otHistoryId }); }}
+        />
+      )}
+      {manageOpen && (
+        <EmployeeManageModal
+          allEmployees={data.employees} defaultKhoId={currentKho.id}
+          onClose={() => setManageOpen(false)}
+          onAddNew={(khoId) => setEmpForm({ mode: "add", khoId })}
+          onEdit={(emp) => setEmpForm({ mode: "edit", employee: emp })}
+          onDelete={deleteEmployee}
+        />
+      )}
+      {empForm && (
+        <EmployeeFormModal
+          mode={empForm.mode} employee={empForm.employee} defaultKhoId={empForm.khoId || empForm.employee?.warehouseId}
+          onClose={() => setEmpForm(null)}
+          onSave={(form) => saveEmployee(form, empForm.employee?.id)}
+        />
+      )}
+      {confirm && (
+        <ConfirmModal
+          message={confirm.message}
+          onCancel={() => setConfirm(null)}
+          onConfirm={() => { confirm.onYes(); setConfirm(null); }}
+        />
+      )}
+    </div>
+    </div>
+  );
+}
+
+function TabBtn({ active, onClick, icon, label }) {
+  return (
+    <button onClick={onClick} style={{ flex: 1, padding: "10px 0 8px", background: "none", border: "none", display: "flex", flexDirection: "column", alignItems: "center", gap: 3, color: active ? BRAND : "#8a8a8a" }}>
+      {icon}
+      <span style={{ fontSize: 11, fontWeight: 700 }}>{label}</span>
+    </button>
+  );
+}
+
+// ============ EMPLOYEE LIST ============
+function EmployeeList({ employees, ot, today, openRowId, setOpenRowId, onTouchStart, onTouchEnd, onTangCa, onNghiPhep, onShiftTap, onNameTap, onBulkOT }) {
+  return (
+    <div>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px 6px", gap: 10 }}>
+        <div style={{ fontSize: 11, color: "#888", lineHeight: 1.5 }}>Vuốt sang trái để chọn Tăng ca / Nghỉ phép · Bấm tên để xem/sửa giờ tăng ca · Bấm ca làm để đổi ca</div>
+        <button onClick={onBulkOT} style={{ flexShrink: 0, background: BRAND, color: "#fff", border: "none", borderRadius: 8, padding: "7px 12px", fontSize: 12.5, fontWeight: 800, whiteSpace: "nowrap" }}>OT+</button>
+      </div>
+      {employees.map((emp) => {
+        const day = sumOT(ot, emp.id, (d, ref) => d === toKey(ref), today);
+        const week = sumOT(ot, emp.id, inCurrentWeek, today);
+        const month = sumOT(ot, emp.id, inCurrentMonth, today);
+        const year = sumOT(ot, emp.id, inCurrentYear, today) + (emp.otOpeningBalance || 0);
+        const open = openRowId === emp.id;
+        return (
+          <div key={emp.id} style={{ position: "relative", overflow: "hidden", borderBottom: "1px solid #ececec" }}>
+            <div style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: 160, display: "flex" }}>
+              <button onClick={() => onTangCa(emp.id)} style={{ flex: 1, background: BRAND, color: "#fff", border: "none", fontSize: 12, fontWeight: 700 }}>Tăng ca</button>
+              <button onClick={() => onNghiPhep(emp.id)} style={{ flex: 1, background: "#D7263D", color: "#fff", border: "none", fontSize: 12, fontWeight: 700 }}>Nghỉ phép</button>
+            </div>
+            <div
+              onTouchStart={onTouchStart}
+              onTouchEnd={(e) => onTouchEnd(e, emp.id)}
+              style={{
+                background: "#fff", padding: "12px 14px", display: "flex", alignItems: "center", justifyContent: "space-between",
+                transform: open ? "translateX(-160px)" : "translateX(0)", transition: "transform 0.2s ease",
+              }}
+            >
+              <div style={{ display: "flex", flexDirection: "column", gap: 4, minWidth: 0 }} onClick={() => onNameTap(emp.id)}>
+                <div style={{ fontSize: 15, fontWeight: 600, color: "#222", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{displayName(emp.name)}</div>
+                <button onClick={(e) => { e.stopPropagation(); onShiftTap(emp.id); }} style={{
+                  alignSelf: "flex-start", border: "none", borderRadius: 8, padding: "2px 8px", fontSize: 11, fontWeight: 700,
+                  background: (emp.shift === "Ca 1" || emp.shift === "Ca 2") ? "#FFF3C4" : "#EEF2F3",
+                  color: (emp.shift === "Ca 1" || emp.shift === "Ca 2") ? "#8A6D00" : "#555",
+                }}>
+                  {emp.shift || "Chưa xếp ca"}{emp.position ? ` - ${emp.position}` : ""}
+                </button>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "34px 34px 34px 56px", gap: 8, flexShrink: 0 }}>
+                <Circle field="day" value={day} />
+                <Circle field="week" value={week} />
+                <Circle field="month" value={month} />
+                <Circle field="year" value={year} />
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ============ SHIFT & VỊ TRÍ MODAL ============
+function ShiftModal({ employee, onClose, onSave }) {
+  const [shift, setShiftVal] = useState(employee?.shift);
+  const [position, setPositionVal] = useState(employee?.position);
+  if (!employee) return null;
+  return (
+    <Modal title={`Xếp ca & vị trí · ${employee.name}`} onClose={onClose}>
+      <Field label="Ca làm việc">
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+          {SHIFTS.map((s) => (
+            <button key={s} onClick={() => setShiftVal(s)} style={{
+              padding: "14px 0", borderRadius: 10, fontWeight: 700, fontSize: 15,
+              border: shift === s ? `2px solid ${BRAND}` : "1px solid #ddd",
+              background: shift === s ? "#E6F6FA" : "#fff", color: shift === s ? BRAND : "#333",
+            }}>{s}</button>
+          ))}
+        </div>
+      </Field>
+      <Field label="Vị trí làm việc">
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
+          {POSITIONS.map((p) => (
+            <button key={p} onClick={() => setPositionVal(p)} style={{
+              padding: "14px 0", borderRadius: 10, fontWeight: 700, fontSize: 14,
+              border: position === p ? `2px solid ${BRAND}` : "1px solid #ddd",
+              background: position === p ? "#E6F6FA" : "#fff", color: position === p ? BRAND : "#333",
+            }}>{p}</button>
+          ))}
+        </div>
+      </Field>
+      <button style={primaryBtn} onClick={() => onSave(employee.id, shift, position)}>Lưu</button>
+    </Modal>
+  );
+}
+
+// ============ OT HÀNG LOẠT (nhiều người, cùng ngày, cùng giờ) ============
+function BulkOTModal({ employees, otRecords, onClose, onSave }) {
+  const [selected, setSelected] = useState(new Set());
+  const [date, setDate] = useState(todayKey());
+  const [hours, setHours] = useState(null);
+
+  const toggle = (id) => {
+    const next = new Set(selected);
+    next.has(id) ? next.delete(id) : next.add(id);
+    setSelected(next);
+  };
+  const allChecked = employees.length > 0 && selected.size === employees.length;
+
+  const perPersonViolations = useMemo(() => {
+    if (!hours) return [];
+    return [...selected]
+      .map((id) => ({ id, name: employees.find((e) => e.id === id)?.name, v: checkOTLimits(otRecords, id, date, hours, null, employees.find((e) => e.id === id)?.otOpeningBalance || 0) }))
+      .filter((x) => x.v.length > 0);
+  }, [selected, date, hours, otRecords, employees]);
+
+  return (
+    <Modal title="Đăng ký tăng ca hàng loạt" onClose={onClose}>
+      <Field label={`Chọn nhân viên (${selected.size} đã chọn)`}>
+        <button
+          onClick={() => setSelected(allChecked ? new Set() : new Set(employees.map((e) => e.id)))}
+          style={{ background: "none", border: "none", color: BRAND, fontSize: 12.5, fontWeight: 700, padding: "0 0 8px" }}
+        >
+          {allChecked ? "Bỏ chọn tất cả" : "Chọn tất cả"}
+        </button>
+        <div style={{ maxHeight: 220, overflowY: "auto", border: "1px solid #eee", borderRadius: 10 }}>
+          {employees.map((e) => (
+            <label key={e.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "9px 12px", borderBottom: "1px solid #f2f2f2", fontSize: 14 }}>
+              <input type="checkbox" checked={selected.has(e.id)} onChange={() => toggle(e.id)} style={{ width: 17, height: 17 }} />
+              <span style={{ flex: 1 }}>{e.name}</span>
+              <span style={{ fontSize: 11, color: "#999" }}>{e.shift}</span>
+            </label>
+          ))}
+        </div>
+      </Field>
+      <Field label="Ngày (áp dụng cho tất cả người đã chọn)">
+        <input type="date" style={inputStyle} value={date} onChange={(e) => setDate(e.target.value)} />
+      </Field>
+      <Field label="Số giờ tăng ca (áp dụng chung, tối đa 4h/ngày)">
+        <HourMinutePicker hourOptions={[1, 2, 3, 4]} value={hours} onChange={setHours} />
+      </Field>
+      {perPersonViolations.length > 0 && (
+        <div style={{ background: "#FDECEC", border: "1px solid #F3B7BE", borderRadius: 10, padding: "10px 12px", marginBottom: 14 }}>
+          <div style={{ fontSize: 13, fontWeight: 800, color: "#D7263D", marginBottom: 4 }}>⚠ {perPersonViolations.length} người sẽ vượt hạn mức</div>
+          {perPersonViolations.map((x) => (
+            <div key={x.id} style={{ fontSize: 12.5, color: "#B01E33" }}>
+              {x.name}: {x.v.map((v) => `${v.label} ${fmtHours(v.total)} (>${fmtHours(v.limit)})`).join(", ")}
+            </div>
+          ))}
+        </div>
+      )}
+      <button disabled={!hours || selected.size === 0} style={{ ...primaryBtn, opacity: (!hours || selected.size === 0) ? 0.5 : 1, background: perPersonViolations.length ? "#D7263D" : BRAND }}
+        onClick={() => hours && selected.size > 0 && onSave([...selected], date, hours)}>
+        {perPersonViolations.length ? `Vẫn lưu cho ${selected.size} người (có vượt hạn mức)` : `Lưu cho ${selected.size} người`}
+      </button>
+    </Modal>
+  );
+}
+
+// ============ CHỌN GIỜ:PHÚT (kéo để chọn — dùng select để có bánh xe gốc trên iPhone) ============
+function HourMinutePicker({ hourOptions, value, onChange }) {
+  const h = value == null ? "" : Math.floor(value + 1e-9);
+  const m = value == null ? 0 : Math.round((value - Math.floor(value + 1e-9)) * 60);
+  return (
+    <div style={{ display: "flex", gap: 8 }}>
+      <select style={{ ...inputStyle, flex: 1 }} value={h} onChange={(e) => {
+        const nh = e.target.value === "" ? null : Number(e.target.value);
+        onChange(nh === null ? null : nh + m / 60);
+      }}>
+        <option value="">-- Giờ --</option>
+        {hourOptions.map((o) => <option key={o} value={o}>{o} giờ</option>)}
+      </select>
+      <select style={{ ...inputStyle, flex: 1 }} value={m} disabled={h === ""} onChange={(e) => onChange((h === "" ? 0 : h) + Number(e.target.value) / 60)}>
+        {[0, 15, 30, 45].map((o) => <option key={o} value={o}>{String(o).padStart(2, "0")} phút</option>)}
+      </select>
+    </div>
+  );
+}
+
+// ============ OT MODAL ============
+function OTModal({ employees, otRecords, defaultId, record, onClose, onSave, onUpdate, onDelete }) {
+  const isEdit = !!record;
+  const [empId, setEmpId] = useState(record?.employeeId || defaultId || employees[0]?.id);
+  const [date, setDate] = useState(record?.date || todayKey());
+  const [hours, setHours] = useState(record?.hours ?? null);
+  const violations = useMemo(
+    () => (hours ? checkOTLimits(otRecords, empId, date, hours, record?.id, employees.find((e) => e.id === empId)?.otOpeningBalance || 0) : []),
+    [otRecords, empId, date, hours, record?.id, employees]
+  );
+  return (
+    <Modal title={isEdit ? "Sửa giờ tăng ca" : "Đăng ký tăng ca"} onClose={onClose}>
+      <Field label="Nhân viên">
+        <select style={inputStyle} value={empId} onChange={(e) => setEmpId(e.target.value)} disabled={isEdit}>
+          {employees.map((e) => <option key={e.id} value={e.id}>{e.name} — {e.shift}{e.position ? ` - ${e.position}` : ""}</option>)}
+        </select>
+      </Field>
+      <Field label="Ngày"><input type="date" style={inputStyle} value={date} onChange={(e) => setDate(e.target.value)} /></Field>
+      <Field label="Số giờ tăng ca (tối đa 4h/ngày)">
+        <HourMinutePicker hourOptions={[1, 2, 3, 4]} value={hours} onChange={setHours} />
+      </Field>
+      <LimitWarning violations={violations} />
+      <button disabled={!hours} style={{ ...primaryBtn, opacity: hours ? 1 : 0.5, background: violations.length ? "#D7263D" : BRAND }}
+        onClick={() => hours && (isEdit ? onUpdate(record.id, { date, hours }) : onSave(empId, date, hours))}>
+        {violations.length ? "Vẫn lưu (vượt hạn mức)" : (isEdit ? "Lưu thay đổi" : "Lưu")}
+      </button>
+      {isEdit && (
+        <button onClick={() => onDelete(record.id)} style={{ width: "100%", background: "none", border: "none", color: "#D7263D", fontSize: 14, fontWeight: 700, padding: "12px 0 0" }}>
+          Xoá bản ghi này
+        </button>
+      )}
+    </Modal>
+  );
+}
+
+// ============ LỊCH SỬ TĂNG CA CỦA 1 NGƯỜI ============
+function OTHistoryModal({ employee, records, onClose, onEdit, onDelete, onAddNew }) {
+  if (!employee) return null;
+  return (
+    <Modal title={`Lịch sử tăng ca · ${employee.name}`} onClose={onClose}>
+      {records.length === 0 && <div style={{ color: "#888", fontSize: 14, marginBottom: 14 }}>Chưa có bản ghi tăng ca nào.</div>}
+      {records.map((r) => (
+        <div key={r.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderBottom: "1px solid #f0f0f0" }}>
+          <div>
+            <div style={{ fontSize: 14, fontWeight: 600 }}>{fmtVN(fromKey(r.date))}</div>
+            <div style={{ fontSize: 12, color: "#888" }}>{fmtHours(r.hours)} tăng ca</div>
+          </div>
+          <div style={{ display: "flex", gap: 10 }}>
+            <button onClick={() => onEdit(r)} style={{ background: "none", border: "none", padding: 2 }}><Pencil size={16} color={BRAND} /></button>
+            <button onClick={() => onDelete(r.id)} style={{ background: "none", border: "none", padding: 2 }}><Trash2 size={16} color="#D7263D" /></button>
+          </div>
+        </div>
+      ))}
+      <button onClick={onAddNew} style={{ ...primaryBtn, marginTop: 16 }}>+ Thêm bản ghi mới</button>
+    </Modal>
+  );
+}
+
+// ============ QUẢN LÝ NHÂN SỰ ============
+function EmployeeManageModal({ allEmployees, defaultKhoId, onClose, onAddNew, onEdit, onDelete }) {
+  const [khoId, setKhoId] = useState(defaultKhoId);
+  const list = allEmployees.filter((e) => e.warehouseId === khoId);
+  return (
+    <Modal title="Quản lý nhân sự" onClose={onClose}>
+      <Field label="Kho">
+        <select style={inputStyle} value={khoId} onChange={(e) => setKhoId(e.target.value)}>
+          {WAREHOUSES.map((w) => <option key={w.id} value={w.id}>{w.name}</option>)}
+        </select>
+      </Field>
+      <div style={{ fontSize: 12, color: "#888", margin: "6px 0 10px" }}>{list.length} nhân sự</div>
+      {list.map((e) => (
+        <div key={e.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderBottom: "1px solid #f0f0f0" }}>
+          <div>
+            <div style={{ fontSize: 14, fontWeight: 600 }}>{e.name}</div>
+            <div style={{ fontSize: 11, color: "#888" }}>{e.shift}{e.position ? ` - ${e.position}` : ""}</div>
+          </div>
+          <div style={{ display: "flex", gap: 10 }}>
+            <button onClick={() => onEdit(e)} style={{ background: "none", border: "none", padding: 2 }}><Pencil size={16} color={BRAND} /></button>
+            <button onClick={() => onDelete(e.id)} style={{ background: "none", border: "none", padding: 2 }}><Trash2 size={16} color="#D7263D" /></button>
+          </div>
+        </div>
+      ))}
+      <button onClick={() => onAddNew(khoId)} style={{ ...primaryBtn, marginTop: 16 }}>+ Thêm nhân viên vào {WAREHOUSES.find((w) => w.id === khoId)?.name}</button>
+    </Modal>
+  );
+}
+
+function EmployeeFormModal({ mode, employee, defaultKhoId, onClose, onSave }) {
+  const [name, setName] = useState(employee?.name || "");
+  const [khoId, setKhoId] = useState(defaultKhoId || WAREHOUSES[0].id);
+  const [shift, setShift] = useState(employee?.shift || SHIFTS[0]);
+  const [position, setPosition] = useState(employee?.position || POSITIONS[0]);
+  return (
+    <Modal title={mode === "edit" ? "Sửa thông tin nhân viên" : "Thêm nhân viên mới"} onClose={onClose}>
+      <Field label="Họ và tên"><input style={inputStyle} value={name} onChange={(e) => setName(e.target.value)} placeholder="VD: Nguyễn Văn A" /></Field>
+      <Field label="Kho">
+        <select style={inputStyle} value={khoId} onChange={(e) => setKhoId(e.target.value)}>
+          {WAREHOUSES.map((w) => <option key={w.id} value={w.id}>{w.name}</option>)}
+        </select>
+      </Field>
+      <Field label="Ca làm việc">
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+          {SHIFTS.map((s) => (
+            <button key={s} onClick={() => setShift(s)} style={{
+              padding: "10px 0", borderRadius: 10, fontWeight: 700, fontSize: 14,
+              border: shift === s ? `2px solid ${BRAND}` : "1px solid #ddd",
+              background: shift === s ? "#E6F6FA" : "#fff", color: shift === s ? BRAND : "#333",
+            }}>{s}</button>
+          ))}
+        </div>
+      </Field>
+      <Field label="Vị trí làm việc">
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+          {POSITIONS.map((p) => (
+            <button key={p} onClick={() => setPosition(p)} style={{
+              padding: "10px 0", borderRadius: 10, fontWeight: 700, fontSize: 13,
+              border: position === p ? `2px solid ${BRAND}` : "1px solid #ddd",
+              background: position === p ? "#E6F6FA" : "#fff", color: position === p ? BRAND : "#333",
+            }}>{p}</button>
+          ))}
+        </div>
+      </Field>
+      <button disabled={!name.trim()} style={{ ...primaryBtn, opacity: name.trim() ? 1 : 0.5 }}
+        onClick={() => name.trim() && onSave({ name: name.trim(), warehouseId: khoId, shift, position })}>
+        {mode === "edit" ? "Lưu thay đổi" : "Thêm nhân viên"}
+      </button>
+    </Modal>
+  );
+}
+
+// ============ LEAVE MODAL ============
+function LeaveModal({ employees, defaultId, onClose, onSave }) {
+  const [empId, setEmpId] = useState(defaultId || employees[0]?.id);
+  const [date, setDate] = useState(todayKey());
+  const [type, setType] = useState("nghi");
+  const [hours, setHours] = useState(0);
+  const [reason, setReason] = useState(LEAVE_REASONS[0]);
+  const types = [
+    { key: "nghi", label: "Nghỉ cả ngày", color: "#D7263D" },
+    { key: "muon", label: "Đi muộn", color: "#F5B400" },
+    { key: "som", label: "Về sớm", color: "#2FAE59" },
+  ];
+  return (
+    <Modal title="Đăng ký nghỉ phép" onClose={onClose}>
+      <Field label="Nhân viên">
+        <select style={inputStyle} value={empId} onChange={(e) => setEmpId(e.target.value)}>
+          {employees.map((e) => <option key={e.id} value={e.id}>{e.name} — {e.shift}{e.position ? ` - ${e.position}` : ""}</option>)}
+        </select>
+      </Field>
+      <Field label="Ngày"><input type="date" style={inputStyle} value={date} onChange={(e) => setDate(e.target.value)} /></Field>
+      <Field label="Loại">
+        <div style={{ display: "flex", gap: 8 }}>
+          {types.map((t) => (
+            <button key={t.key} onClick={() => setType(t.key)} style={{
+              flex: 1, padding: "10px 4px", borderRadius: 10, fontWeight: 700, fontSize: 12.5,
+              border: type === t.key ? `2px solid ${t.color}` : "1px solid #ddd",
+              background: type === t.key ? t.color + "20" : "#fff", color: type === t.key ? t.color : "#444",
+            }}>{t.label}</button>
+          ))}
+        </div>
+      </Field>
+      {type === "nghi" && (
+        <Field label="Lý do nghỉ">
+          <select style={inputStyle} value={reason} onChange={(e) => setReason(e.target.value)}>
+            {LEAVE_REASONS.map((r) => <option key={r} value={r}>{r}</option>)}
+          </select>
+        </Field>
+      )}
+      {type !== "nghi" && (
+        <Field label={`Thời gian ${type === "muon" ? "đi muộn" : "về sớm"}`}>
+          <HourMinutePicker hourOptions={[0, 1, 2, 3, 4, 5, 6, 7]} value={hours} onChange={setHours} />
+        </Field>
+      )}
+      <button disabled={type !== "nghi" && !hours} style={{ ...primaryBtn, opacity: (type !== "nghi" && !hours) ? 0.5 : 1 }}
+        onClick={() => onSave(empId, date, type, type === "nghi" ? { reason } : { hours })}>
+        Lưu
+      </button>
+    </Modal>
+  );
+}
+
+// ============ NOTE MODAL ============
+function NoteModal({ onClose, onSave }) {
+  const [title, setTitle] = useState("");
+  const [date, setDate] = useState(todayKey());
+  const [time, setTime] = useState("09:00");
+  const [room, setRoom] = useState("");
+  return (
+    <Modal title="Thêm ghi chú / lịch họp" onClose={onClose}>
+      <Field label="Tiêu đề"><input style={inputStyle} placeholder="VD: Họp kho" value={title} onChange={(e) => setTitle(e.target.value)} /></Field>
+      <Field label="Ngày"><input type="date" style={inputStyle} value={date} onChange={(e) => setDate(e.target.value)} /></Field>
+      <Field label="Giờ"><input type="time" style={inputStyle} value={time} onChange={(e) => setTime(e.target.value)} /></Field>
+      <Field label="Phòng"><input style={inputStyle} placeholder="VD: Phòng tuyển dụng" value={room} onChange={(e) => setRoom(e.target.value)} /></Field>
+      <button disabled={!title} style={{ ...primaryBtn, opacity: title ? 1 : 0.5 }} onClick={() => title && onSave({ title, date, time, room })}>Lưu</button>
+    </Modal>
+  );
+}
+
+// ============ CHỌN LOẠI GHI CHÚ: LỊCH HỌP / GIA CÔNG ============
+function AddChoiceModal({ onClose, onPickMeeting, onPickGiaCong }) {
+  return (
+    <Modal title="Thêm mới" onClose={onClose}>
+      <div style={{ display: "flex", gap: 10 }}>
+        <button onClick={onPickMeeting} style={{ flex: 1, padding: "22px 8px", borderRadius: 12, border: "1px solid #ddd", background: "#fff", fontWeight: 700, fontSize: 14.5, color: "#333" }}>
+          Lịch họp
+        </button>
+        <button onClick={onPickGiaCong} style={{ flex: 1, padding: "22px 8px", borderRadius: 12, border: "1px solid #ddd", background: "#fff", fontWeight: 700, fontSize: 14.5, color: "#333" }}>
+          Gia công
+        </button>
+      </div>
+    </Modal>
+  );
+}
+
+// ============ GIA CÔNG MODAL ============
+function GiaCongModal({ factories, onClose, onSave, onAddFactory }) {
+  const [title, setTitle] = useState("");
+  const [factory, setFactory] = useState(factories[0]?.name || "");
+  const [vehicleType, setVehicleType] = useState(VEHICLE_TYPES[0].key);
+  const [date, setDate] = useState(todayKey());
+  const [note, setNote] = useState("");
+
+  const slots = [...factories, ...Array(Math.max(0, MAX_FACTORIES - factories.length)).fill(null)].slice(0, MAX_FACTORIES);
+
+  return (
+    <Modal title="Thêm gia công" onClose={onClose}>
+      <Field label="Tiêu đề"><input style={inputStyle} placeholder="VD: BK20" value={title} onChange={(e) => setTitle(e.target.value)} /></Field>
+
+      <Field label="Nhà máy">
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+          {slots.map((f, i) =>
+            f ? (
+              <button key={f.name} onClick={() => setFactory(f.name)} style={{
+                padding: "12px 4px", borderRadius: 10, fontWeight: 700, fontSize: 12.5,
+                border: factory === f.name ? `2px solid ${BRAND}` : "1px solid #ddd",
+                background: factory === f.name ? "#E6F6FA" : "#fff", color: factory === f.name ? BRAND : "#333",
+              }}>{f.name}</button>
+            ) : (
+              <button key={"empty" + i} onClick={onAddFactory} style={{ padding: "12px 4px", borderRadius: 10, border: "1px dashed #ccc", background: "#fafafa", color: "#999", fontSize: 20, fontWeight: 700 }}>+</button>
+            )
+          )}
+        </div>
+      </Field>
+
+      <Field label="Loại xe">
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+          {VEHICLE_TYPES.map((v) => (
+            <button key={v.key} onClick={() => setVehicleType(v.key)} style={{
+              padding: "12px 4px", borderRadius: 10, fontWeight: 700, fontSize: 13,
+              border: vehicleType === v.key ? `2px solid ${BRAND}` : "1px solid #ddd",
+              background: vehicleType === v.key ? "#E6F6FA" : "#fff", color: vehicleType === v.key ? BRAND : "#333",
+            }}>{v.label}</button>
+          ))}
+        </div>
+      </Field>
+
+      <Field label="Ngày"><input type="date" style={inputStyle} value={date} onChange={(e) => setDate(e.target.value)} /></Field>
+      <Field label="Ghi chú"><textarea style={{ ...inputStyle, minHeight: 60, resize: "vertical" }} placeholder="VD: vải ở ngoài" value={note} onChange={(e) => setNote(e.target.value)} /></Field>
+
+      <button disabled={!title || !factory} style={{ ...primaryBtn, opacity: (title && factory) ? 1 : 0.5 }}
+        onClick={() => title && factory && onSave({ title, factory, vehicleType, date, note })}>
+        Lưu
+      </button>
+    </Modal>
+  );
+}
+
+// ============ THÊM NHÀ MÁY MỚI ============
+function AddFactoryModal({ onClose, onSave }) {
+  const [name, setName] = useState("");
+  const [abbr, setAbbr] = useState("");
+  return (
+    <Modal title="Thêm nhà máy" onClose={onClose}>
+      <Field label="Tên nhà máy"><input style={inputStyle} placeholder="VD: Nghi Sơn" value={name} onChange={(e) => setName(e.target.value)} /></Field>
+      <Field label="Viết tắt (hiện trên lịch)"><input style={inputStyle} placeholder="VD: NS" maxLength={4} value={abbr} onChange={(e) => setAbbr(e.target.value.toUpperCase())} /></Field>
+      <button disabled={!name || !abbr} style={{ ...primaryBtn, opacity: (name && abbr) ? 1 : 0.5 }}
+        onClick={() => name && abbr && onSave({ name, abbr })}>
+        Thêm
+      </button>
+    </Modal>
+  );
+}
+
+function buildMonthGrid(cursor) {
+  const year = cursor.getFullYear(), month = cursor.getMonth();
+  const first = new Date(year, month, 1);
+  const startOffset = (first.getDay() + 6) % 7;
+  const gridStart = addDays(first, -startOffset);
+  const cells = [];
+  for (let i = 0; i < 42; i++) cells.push(addDays(gridStart, i));
+  return cells;
+}
+
+// ============ TAB ĐĂNG KÝ (nhập nhanh) ============
+function QuickEntryTab({ employees, otRecords, leaveRecords, onSubmitOT, onSubmitLeave }) {
+  const [empId, setEmpId] = useState(employees[0]?.id || "");
+  const [date, setDate] = useState(todayKey());
+  const [loai, setLoai] = useState("tangca"); // tangca | nghi
+  const [subType, setSubType] = useState("nghi"); // nghi | som | muon (chỉ dùng khi loai === "nghi")
+  const [otHours, setOtHours] = useState(null);
+  const [leaveHours, setLeaveHours] = useState(0);
+  const [reason, setReason] = useState(LEAVE_REASONS[0]);
+  const [note, setNote] = useState("");
+  const [savedAt, setSavedAt] = useState(null);
+
+  const employee = employees.find((e) => e.id === empId);
+
+  const otViolations = useMemo(
+    () => (loai === "tangca" && otHours ? checkOTLimits(otRecords, empId, date, otHours, null, employee?.otOpeningBalance || 0) : []),
+    [loai, otHours, otRecords, empId, date, employee]
+  );
+
+  const canSubmit = loai === "tangca" ? !!otHours : (subType === "nghi" ? !!reason : !!leaveHours);
+
+  const submit = () => {
+    if (!empId || !canSubmit) return;
+    if (loai === "tangca") {
+      onSubmitOT(empId, date, otHours, note || undefined);
+    } else if (subType === "nghi") {
+      onSubmitLeave(empId, date, "nghi", { reason, note: note || undefined });
+    } else {
+      onSubmitLeave(empId, date, subType, { hours: leaveHours, note: note || undefined });
+    }
+    setSavedAt(new Date());
+  };
+
+  const subTypes = [
+    { key: "nghi", label: "Nghỉ cả ngày" },
+    { key: "som", label: "Về sớm" },
+    { key: "muon", label: "Đi muộn" },
+  ];
+
+  return (
+    <div style={{ padding: 16 }}>
+      <div style={{ background: "#fff", border: "1px solid #eee", borderRadius: 14, padding: 16 }}>
+        <Field label="Họ tên công nhân">
+          <select style={inputStyle} value={empId} onChange={(e) => { setEmpId(e.target.value); setSavedAt(null); }}>
+            {employees.map((e) => <option key={e.id} value={e.id}>{e.name} — {e.shift}</option>)}
+          </select>
+        </Field>
+
+        <Field label="Loại">
+          <div style={{ display: "flex", gap: 8 }}>
+            <button onClick={() => { setLoai("tangca"); setSavedAt(null); }} style={{
+              flex: 1, padding: "13px 0", borderRadius: 10, fontWeight: 800, fontSize: 14.5,
+              border: loai === "tangca" ? `2px solid ${BRAND}` : "1px solid #ddd",
+              background: loai === "tangca" ? BRAND : "#fff", color: loai === "tangca" ? "#fff" : "#444",
+            }}>Tăng ca</button>
+            <button onClick={() => { setLoai("nghi"); setSavedAt(null); }} style={{
+              flex: 1, padding: "13px 0", borderRadius: 10, fontWeight: 800, fontSize: 14.5,
+              border: loai === "nghi" ? "2px solid #D7263D" : "1px solid #ddd",
+              background: loai === "nghi" ? "#D7263D" : "#fff", color: loai === "nghi" ? "#fff" : "#444",
+            }}>Nghỉ phép</button>
+          </div>
+          {loai === "nghi" && (
+            <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
+              {subTypes.map((s) => (
+                <button key={s.key} onClick={() => { setSubType(s.key); setSavedAt(null); }} style={{
+                  flex: 1, padding: "8px 2px", borderRadius: 8, fontWeight: 700, fontSize: 11.5,
+                  border: subType === s.key ? "2px solid #D7263D" : "1px solid #ddd",
+                  background: subType === s.key ? "#FDECEC" : "#fafafa", color: subType === s.key ? "#D7263D" : "#666",
+                }}>{s.label}</button>
+              ))}
+            </div>
+          )}
+        </Field>
+
+        <Field label="Ngày">
+          <input type="date" style={inputStyle} value={date} onChange={(e) => { setDate(e.target.value); setSavedAt(null); }} />
+        </Field>
+
+        {loai === "tangca" && (
+          <Field label="Số giờ tăng ca (tối đa 4h/ngày)">
+            <HourMinutePicker hourOptions={[1, 2, 3, 4]} value={otHours} onChange={(v) => { setOtHours(v); setSavedAt(null); }} />
+          </Field>
+        )}
+        {loai === "tangca" && <LimitWarning violations={otViolations} />}
+
+        {loai === "nghi" && subType === "nghi" && (
+          <Field label="Lý do nghỉ">
+            <select style={inputStyle} value={reason} onChange={(e) => { setReason(e.target.value); setSavedAt(null); }}>
+              {LEAVE_REASONS.map((r) => <option key={r} value={r}>{r}</option>)}
+            </select>
+          </Field>
+        )}
+        {loai === "nghi" && subType !== "nghi" && (
+          <Field label={`Thời gian ${subType === "muon" ? "đi muộn" : "về sớm"}`}>
+            <HourMinutePicker hourOptions={[0, 1, 2, 3, 4, 5, 6, 7]} value={leaveHours} onChange={(v) => { setLeaveHours(v); setSavedAt(null); }} />
+          </Field>
+        )}
+
+        <Field label="Ghi chú (không bắt buộc)">
+          <textarea style={{ ...inputStyle, minHeight: 60, resize: "vertical" }} placeholder="VD: tăng ca cắt gấp đơn XYZ" value={note} onChange={(e) => { setNote(e.target.value); setSavedAt(null); }} />
+        </Field>
+
+        <button disabled={!canSubmit} style={{ ...primaryBtn, opacity: canSubmit ? 1 : 0.5, background: (loai === "tangca" && otViolations.length) ? "#D7263D" : BRAND }} onClick={submit}>
+          Gửi
+        </button>
+
+        {savedAt && (
+          <div style={{ marginTop: 10, fontSize: 12.5, color: "#2FAE59", fontWeight: 700 }}>
+            ✓ Đã lưu lúc {pad(savedAt.getHours())}:{pad(savedAt.getMinutes())} — {employee?.name}, {fmtVN(fromKey(date))}
+          </div>
+        )}
+        <div style={{ marginTop: 8, fontSize: 11.5, color: "#999" }}>
+          Gửi lại cùng tên, cùng ngày, cùng loại sẽ tự cập nhật (không tạo bản ghi trùng).
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+// ============ CALENDAR TAB ============
+function CalendarTab({ employees, leave, events, ot, giaCong, factories, monthCursor, setMonthCursor, today, onDayTap }) {
+  const cells = useMemo(() => buildMonthGrid(monthCursor), [monthCursor]);
+  const empName = (id) => employees.find((e) => e.id === id)?.name || "?";
+
+  const dayInfo = (dateKey) => {
+    const dayLeaves = leave.filter((l) => l.date === dateKey);
+    const dayEvents = events.filter((e) => e.date === dateKey);
+    const dayOT = ot.filter((r) => r.date === dateKey);
+    const dayGiaCong = giaCong.filter((g) => g.date === dateKey);
+    const otCount = new Set(dayOT.map((r) => r.employeeId)).size;
+    const nghi = dayLeaves.filter((l) => l.type === "nghi");
+    const som = dayLeaves.filter((l) => l.type === "som");
+    const muon = dayLeaves.filter((l) => l.type === "muon");
+    return { nghi, som, muon, events: dayEvents, otCount, otList: dayOT, giaCong: dayGiaCong, hasAny: dayLeaves.length + dayEvents.length + dayOT.length + dayGiaCong.length > 0 };
+  };
+
+  return (
+    <div style={{ padding: "10px 10px 0" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "6px 6px 12px" }}>
+        <button onClick={() => setMonthCursor(new Date(monthCursor.getFullYear(), monthCursor.getMonth() - 1, 1))} style={{ background: "none", border: "none" }}><ChevronLeft color={BRAND} /></button>
+        <div style={{ fontWeight: 800, fontSize: 16 }}>Tháng {monthCursor.getMonth() + 1} {monthCursor.getFullYear()}</div>
+        <button onClick={() => setMonthCursor(new Date(monthCursor.getFullYear(), monthCursor.getMonth() + 1, 1))} style={{ background: "none", border: "none" }}><ChevronRight color={BRAND} /></button>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", textAlign: "center", fontSize: 11, color: "#888", fontWeight: 700, marginBottom: 4 }}>
+        {DOW_LABELS.map((l) => <div key={l}>{l}</div>)}
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", gap: 3 }}>
+        {cells.map((d, i) => {
+          const inMonth = d.getMonth() === monthCursor.getMonth();
+          const k = toKey(d);
+          const isToday = k === toKey(today);
+          const info = dayInfo(k);
+          return (
+            <div key={i} onClick={() => info.hasAny && onDayTap(k)}
+              style={{
+                minHeight: 62, background: "#fff", borderRadius: 8, padding: 4,
+                opacity: inMonth ? 1 : 0.35, cursor: info.hasAny ? "pointer" : "default",
+                border: isToday ? `1.5px solid ${BRAND}` : "1px solid #eee",
+              }}>
+              <div style={{
+                width: 20, height: 20, borderRadius: "50%", fontSize: 11, fontWeight: 700,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                background: isToday ? BRAND : "transparent", color: isToday ? "#fff" : "#333",
+              }}>{d.getDate()}</div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 2, marginTop: 3 }}>
+                {info.nghi.length === 1 && <DayChip color="#D7263D" label={empName(info.nghi[0].employeeId).split(" ").slice(-1)[0]} />}
+                {info.nghi.length > 1 && <DayDot color="#D7263D" label={`${info.nghi.length}N`} />}
+                {info.som.length === 1 && <DayDot color="#2FAE59" label="1S" sup={fmtHours(info.som[0].hours)} />}
+                {info.som.length > 1 && <DayDot color="#2FAE59" label={`${info.som.length}S`} />}
+                {info.muon.length === 1 && <DayDot color="#F5B400" label="1M" sup={fmtHours(info.muon[0].hours)} />}
+                {info.muon.length > 1 && <DayDot color="#F5B400" label={`${info.muon.length}M`} />}
+                {info.otCount > 0 && <DayChip color="#2F6FED" label={`${info.otCount}-OT`} />}
+                {info.giaCong.map((g) => (
+                  <DayChip key={g.id} color="#8B5CF6" label={giaCongCode(g, factories)} />
+                ))}
+                {info.events.length > 0 && <div style={{ fontSize: 9, color: BRAND, fontWeight: 700 }}>● {info.events.length} sự kiện</div>}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function DayDot({ color, label, sup }) {
+  return (
+    <div style={{ position: "relative", display: "inline-block" }}>
+      <div style={{ background: color, color: "#fff", fontSize: 9, fontWeight: 800, borderRadius: "50%", width: 20, height: 20, display: "flex", alignItems: "center", justifyContent: "center" }}>{label}</div>
+      {sup != null && <div style={{ position: "absolute", bottom: -5, right: -8, background: "#fff", color, border: `1px solid ${color}`, borderRadius: 6, minWidth: 16, height: 12, padding: "0 2px", fontSize: 7, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", whiteSpace: "nowrap" }}>{sup}</div>}
+    </div>
+  );
+}
+function DayChip({ color, label }) {
+  return <div style={{ background: color, color: "#fff", fontSize: 8.5, fontWeight: 700, borderRadius: 5, padding: "2px 4px", maxWidth: 62, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{label}</div>;
+}
+
+// ============ DAY DETAIL MODAL ============
+function DayDetailModal({ dateKey, employees, leave, events, ot, giaCong, factories, onClose, onDeleteLeave, onDeleteEvent, onDeleteOT, onDeleteGiaCong }) {
+  const emp = (id) => employees.find((e) => e.id === id);
+  const dayLeaves = leave.filter((l) => l.date === dateKey);
+  const dayEvents = events.filter((e) => e.date === dateKey);
+  const dayOT = ot.filter((r) => r.date === dateKey);
+  const dayGiaCong = giaCong.filter((g) => g.date === dateKey);
+  const labelOf = { nghi: "Nghỉ cả ngày", som: "Về sớm", muon: "Đi muộn" };
+  const colorOf = { nghi: "#D7263D", som: "#2FAE59", muon: "#F5B400" };
+
+  return (
+    <Modal title={`Chi tiết ${fmtVN(fromKey(dateKey))}`} onClose={onClose}>
+      {dayLeaves.length === 0 && dayEvents.length === 0 && dayOT.length === 0 && dayGiaCong.length === 0 && <div style={{ color: "#888", fontSize: 14 }}>Không có dữ liệu.</div>}
+
+      {dayOT.length > 0 && (
+        <div style={{ marginBottom: 10 }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: "#888", marginBottom: 6 }}>TĂNG CA ({dayOT.length} người)</div>
+          {dayOT.map((r) => {
+            const e = emp(r.employeeId);
+            return (
+              <div key={r.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "9px 0", borderBottom: "1px solid #f0f0f0" }}>
+                <div>
+                  <div style={{ fontSize: 14, fontWeight: 600 }}>{e?.name || "?"}</div>
+                  <div style={{ fontSize: 11, color: "#888" }}>{e?.shift}{e?.position ? ` - ${e.position}` : ""}</div>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: "#2F6FED", background: "#2F6FED18", padding: "3px 8px", borderRadius: 12 }}>OT {fmtHours(r.hours)}</span>
+                  <button onClick={() => onDeleteOT(r.id)} style={{ background: "none", border: "none", padding: 2 }}><Trash2 size={15} color="#bbb" /></button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {dayLeaves.length > 0 && (
+        <div style={{ marginBottom: 10 }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: "#888", margin: "6px 0" }}>NGHỈ PHÉP ({dayLeaves.length} người)</div>
+          {dayLeaves.map((l) => {
+            const e = emp(l.employeeId);
+            return (
+              <div key={l.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderBottom: "1px solid #f0f0f0" }}>
+                <div>
+                  <div style={{ fontSize: 14, fontWeight: 600 }}>{e?.name || "?"}</div>
+                  <div style={{ fontSize: 11, color: "#888" }}>{e?.shift}{e?.position ? ` - ${e.position}` : ""}{l.reason ? ` · ${l.reason}` : ""}</div>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: colorOf[l.type], background: colorOf[l.type] + "18", padding: "3px 8px", borderRadius: 12 }}>
+                    {labelOf[l.type]}{l.hours ? ` · ${fmtHours(l.hours)}` : ""}
+                  </span>
+                  <button onClick={() => onDeleteLeave(l.id)} style={{ background: "none", border: "none", padding: 2 }}><Trash2 size={15} color="#bbb" /></button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+      {dayEvents.length > 0 && (
+        <div style={{ marginTop: 12 }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: "#888", marginBottom: 6 }}>SỰ KIỆN</div>
+          {dayEvents.map((e) => (
+            <div key={e.id} style={{ padding: "8px 10px", background: "#F4F7F8", borderRadius: 8, marginBottom: 6, display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+              <div>
+                <div style={{ fontSize: 14, fontWeight: 700 }}>{e.title}</div>
+                <div style={{ fontSize: 12, color: "#666", display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}><Clock size={12} /> {e.time} {e.room && `· ${e.room}`}</div>
+              </div>
+              <button onClick={() => onDeleteEvent(e.id)} style={{ background: "none", border: "none", padding: 2 }}><Trash2 size={15} color="#bbb" /></button>
+            </div>
+          ))}
+        </div>
+      )}
+      {dayGiaCong.length > 0 && (
+        <div style={{ marginTop: 12 }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: "#888", marginBottom: 6 }}>GIA CÔNG ({dayGiaCong.length})</div>
+          {dayGiaCong.map((g) => (
+            <div key={g.id} style={{ padding: "10px 10px", background: "#F5F0FF", borderRadius: 8, marginBottom: 6, display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+              <div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: "#6D28D9" }}>{g.title}</div>
+                <div style={{ fontSize: 12, color: "#666", marginTop: 3 }}>Nhà máy: {g.factory}</div>
+                <div style={{ fontSize: 12, color: "#666" }}>Loại xe: {VEHICLE_TYPES.find((v) => v.key === g.vehicleType)?.label || g.vehicleType}</div>
+                {g.note && <div style={{ fontSize: 12, color: "#666" }}>Ghi chú: {g.note}</div>}
+              </div>
+              <button onClick={() => onDeleteGiaCong(g.id)} style={{ background: "none", border: "none", padding: 2 }}><Trash2 size={15} color="#bbb" /></button>
+            </div>
+          ))}
+        </div>
+      )}
+    </Modal>
+  );
+}
+
+
+ReactDOM.createRoot(document.getElementById('root')).render(<AppWH />);
+window.__appwhMounted = true;
+</script>
+
+<script>
+  // Tự chuyển JSX -> JS bằng Babel, ép dùng "classic runtime" (React.createElement)
+  // để KHÔNG sinh ra dòng import (dòng import khiến trình duyệt báo lỗi vì đây không phải file module).
+  try {
+    var srcCode = document.getElementById('app-source').textContent;
+    var output = Babel.transform(srcCode, { presets: [["react", { runtime: "classic" }]] }).code;
+    var runScript = document.createElement('script');
+    runScript.textContent = output;
+    document.body.appendChild(runScript);
+  } catch (e) {
+    window.onerror(e.message, '', 0, 0, e);
+  }
+</script>
+</body>
+</html>
