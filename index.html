@@ -343,30 +343,29 @@ function fmtCircleValue(v) {
   return Number.isInteger(r) ? String(r) : r.toFixed(1);
 }
 
-function Circle({ field, value }) {
+const FIELD_LABEL = { day: "Ngày", week: "Tuần", month: "Tháng", year: "Năm" };
+function progressStatus(field, value) {
   const t = THRESHOLDS[field];
-  let style;
-  if (field === "day") {
-    const danger = value >= t.red;
-    style = { background: "#fff", border: danger ? "2px solid #D7263D" : "1.5px solid #999", color: "#333", boxShadow: danger ? "0 0 0 2px rgba(215,38,61,0.25)" : "none" };
-  } else if (value >= t.red) {
-    style = { background: "#D7263D", border: "none", color: "#fff", boxShadow: "none" };
-  } else if (value >= t.yellow) {
-    style = { background: "#F5B400", border: "none", color: "#fff", boxShadow: "none" };
-  } else {
-    style = { background: "#fff", border: "1.5px solid #ccc", color: "#333", boxShadow: "none" };
-  }
-  const isYear = field === "year"; // ô năm: dạng viên thuốc, chiều rộng CỐ ĐỊNH để luôn thẳng hàng với các dòng khác
+  if (field === "day") return value >= t.red ? "danger" : "normal";
+  if (value >= t.red) return "danger";
+  if (value >= t.yellow) return "warning";
+  return "normal";
+}
+const STATUS_COLOR = { normal: "#2F6FED", warning: "#F5B400", danger: "#D7263D" };
+
+function ProgressBar({ field, value }) {
+  const limit = LIMITS[field];
+  const status = progressStatus(field, value);
+  const color = STATUS_COLOR[status];
+  const pct = Math.max(0, Math.min(100, (value / limit) * 100));
   return (
-    <div
-      style={{
-        width: isYear ? 56 : 34, height: 34, borderRadius: isYear ? 17 : "50%",
-        display: "flex", alignItems: "center", justifyContent: "center",
-        fontSize: isYear ? 11.5 : 12, fontWeight: 700, flexShrink: 0, whiteSpace: "nowrap", overflow: "hidden", ...style,
-      }}
-      title={`${fmtHours(value)} (${field})`}
-    >
-      {fmtCircleValue(value)}
+    <div style={{ flex: 1, minWidth: 0 }} title={`${FIELD_LABEL[field]}: ${fmtHours(value)} / ${limit}h`}>
+      <div style={{ fontSize: 10, fontWeight: 800, color, textAlign: "center", marginBottom: 3, whiteSpace: "nowrap" }}>
+        {fmtCircleValue(value)}<span style={{ color: "#bbb", fontWeight: 600 }}>/{limit}</span>
+      </div>
+      <div style={{ height: 6, borderRadius: 3, background: "#EDEEF0", overflow: "hidden" }}>
+        <div style={{ height: "100%", width: pct + "%", background: color, borderRadius: 3 }} />
+      </div>
     </div>
   );
 }
@@ -884,11 +883,11 @@ function EmployeeList({ employees, ot, today, openRowId, setOpenRowId, onTouchSt
         <div style={{ fontSize: 11, color: "#888", lineHeight: 1.5 }}>Vuốt sang trái để chọn Tăng ca / Nghỉ phép · Bấm tên để xem/sửa giờ tăng ca · Bấm ca làm để đổi ca</div>
         <button onClick={onBulkOT} style={{ flexShrink: 0, background: BRAND, color: "#fff", border: "none", borderRadius: 8, padding: "7px 12px", fontSize: 12.5, fontWeight: 800, whiteSpace: "nowrap" }}>OT+</button>
       </div>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 14px", position: "sticky", top: 0, background: "#E6F6FA", zIndex: 5, border: "1px solid #B9E6F0", borderRadius: 8, margin: "0 10px 6px" }}>
-        <div style={{ fontSize: 11.5, fontWeight: 800, color: BRAND, textTransform: "uppercase", letterSpacing: 0.3 }}>Họ tên</div>
-        <div style={{ display: "grid", gridTemplateColumns: "34px 34px 34px 56px", gap: 8 }}>
+      <div style={{ display: "flex", alignItems: "center", padding: "8px 14px", position: "sticky", top: 0, background: "#E6F6FA", zIndex: 5, border: "1px solid #B9E6F0", borderRadius: 8, margin: "0 10px 6px" }}>
+        <div style={{ fontSize: 11.5, fontWeight: 800, color: BRAND, textTransform: "uppercase", letterSpacing: 0.3, width: 96, flexShrink: 0 }}>Họ tên</div>
+        <div style={{ display: "flex", gap: 10, flex: 1, marginLeft: 10 }}>
           {["D", "W", "M", "Y"].map((l) => (
-            <div key={l} style={{ fontSize: 11.5, fontWeight: 800, color: BRAND, textAlign: "center" }}>{l}</div>
+            <div key={l} style={{ flex: 1, fontSize: 11, fontWeight: 800, color: BRAND, textAlign: "center" }}>{l}</div>
           ))}
         </div>
       </div>
@@ -912,21 +911,21 @@ function EmployeeList({ employees, ot, today, openRowId, setOpenRowId, onTouchSt
                 transform: open ? "translateX(-160px)" : "translateX(0)", transition: "transform 0.2s ease",
               }}
             >
-              <div style={{ display: "flex", flexDirection: "column", gap: 4, minWidth: 0 }} onClick={() => onNameTap(emp.id)}>
-                <div style={{ fontSize: 15, fontWeight: 600, color: "#222", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{displayName(emp.name)}</div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 4, width: 96, flexShrink: 0 }} onClick={() => onNameTap(emp.id)}>
+                <div style={{ fontSize: 14.5, fontWeight: 600, color: "#222", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{displayName(emp.name)}</div>
                 <button onClick={(e) => { e.stopPropagation(); onShiftTap(emp.id); }} style={{
-                  alignSelf: "flex-start", border: "none", borderRadius: 8, padding: "2px 8px", fontSize: 11, fontWeight: 700,
+                  alignSelf: "flex-start", border: "none", borderRadius: 8, padding: "2px 6px", fontSize: 10, fontWeight: 700, maxWidth: "100%", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
                   background: (emp.shift === "Ca 1" || emp.shift === "Ca 2") ? "#FFF3C4" : "#EEF2F3",
                   color: (emp.shift === "Ca 1" || emp.shift === "Ca 2") ? "#8A6D00" : "#555",
                 }}>
                   {emp.shift || "Chưa xếp ca"}{emp.position ? ` - ${emp.position}` : ""}
                 </button>
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "34px 34px 34px 56px", gap: 8, flexShrink: 0 }}>
-                <Circle field="day" value={day} />
-                <Circle field="week" value={week} />
-                <Circle field="month" value={month} />
-                <Circle field="year" value={year} />
+              <div style={{ display: "flex", gap: 10, flex: 1, minWidth: 0, marginLeft: 10 }}>
+                <ProgressBar field="day" value={day} />
+                <ProgressBar field="week" value={week} />
+                <ProgressBar field="month" value={month} />
+                <ProgressBar field="year" value={year} />
               </div>
             </div>
           </div>
