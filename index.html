@@ -163,6 +163,9 @@ function PenLine(props) {
 function LayoutDashboard(props) {
   return <IconBase {...props}><rect x="3" y="3" width="7" height="9" rx="1" /><rect x="14" y="3" width="7" height="5" rx="1" /><rect x="14" y="12" width="7" height="9" rx="1" /><rect x="3" y="16" width="7" height="5" rx="1" /></IconBase>;
 }
+function Send(props) {
+  return <IconBase {...props}><path d="m22 2-7 20-4-9-9-4Z" /><path d="M22 2 11 13" /></IconBase>;
+}
 
 
 // ============ CONSTANTS ============
@@ -305,20 +308,25 @@ function displayName(fullName) {
   if (words.length >= 3) return words.slice(1).join(" ");
   return fullName;
 }
+function normalizeSearch(str) {
+  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d").replace(/Đ/g, "D").toLowerCase();
+}
 
 // Tính tổng dự kiến (ngày/tuần/tháng/năm) NẾU thêm bản ghi mới này, trả về danh sách mốc bị vượt hạn mức
-function checkOTLimits(otRecords, employeeId, date, hours, excludeRecordId, openingBalance = 0) {
+function checkOTLimits(otRecords, employeeId, date, hours, excludeRecordId, openingBalance = 0, monthLimitSetting) {
   const ref = fromKey(date);
   const relevant = otRecords.filter((r) => r.employeeId === employeeId && r.id !== excludeRecordId);
   const dayTotal = relevant.filter((r) => r.date === date).reduce((s, r) => s + r.hours, 0) + hours;
   const weekTotal = sumOT(relevant, employeeId, inCurrentWeek, ref) + hours;
   const monthTotal = sumOT(relevant, employeeId, inCurrentMonth, ref) + hours;
   const yearTotal = sumOT(relevant, employeeId, inCurrentYear, ref) + hours + openingBalance;
+  const monthLimit = monthLimitFor(monthLimitSetting);
+  const yearLimit = yearProratedLimit(ref);
   const violations = [];
   if (dayTotal > LIMITS.day) violations.push({ label: "Ngày", total: dayTotal, limit: LIMITS.day });
   if (weekTotal > LIMITS.week) violations.push({ label: "Tuần", total: weekTotal, limit: LIMITS.week });
-  if (monthTotal > LIMITS.month) violations.push({ label: "Tháng", total: monthTotal, limit: LIMITS.month });
-  if (yearTotal > LIMITS.year) violations.push({ label: "Năm", total: yearTotal, limit: LIMITS.year });
+  if (monthTotal > monthLimit) violations.push({ label: "Tháng", total: monthTotal, limit: monthLimit });
+  if (yearTotal > yearLimit) violations.push({ label: "Năm (tính theo tiến độ ngày trong năm)", total: yearTotal, limit: yearLimit });
   return violations;
 }
 
@@ -326,7 +334,7 @@ function checkOTLimits(otRecords, employeeId, date, hours, excludeRecordId, open
 function buildSeed() {
   // Không seed dữ liệu tăng ca/nghỉ phép giả nữa — dùng đúng 58 nhân sự thật.
   // Giờ OT luỹ kế đến hết tháng 7 đã nằm trong otOpeningBalance của từng người (chỉ cộng vào vòng tròn "Năm").
-  return { employees: SEED_EMPLOYEES, ot: [], leave: [], events: [], giaCong: [], factories: DEFAULT_FACTORIES };
+  return { employees: SEED_EMPLOYEES, ot: [], leave: [], events: [], giaCong: [], factories: DEFAULT_FACTORIES, monthLimitSetting: 24 };
 }
 
 // ============ SMALL UI PARTS ============
@@ -338,24 +346,54 @@ const THRESHOLDS = {
   year: { yellow: 250, red: 280 },
 };
 
+// Giới hạn "Năm" co giãn theo tỷ lệ số ngày đã qua trong năm (thay vì cố định 280h suốt năm)
+function yearProratedLimit(refDate) {
+  const y = refDate.getFullYear();
+  const start = new Date(y, 0, 1);
+  const daysInYear = ((y % 4 === 0 && y % 100 !== 0) || y % 400 === 0) ? 366 : 365;
+  const dayOfYear = Math.floor((refDate - start) / 86400000) + 1;
+  return Math.max(1, Math.round(LIMITS.year * (dayOfYear / daysInYear)));
+}
+// Giới hạn "Tháng" theo cài đặt 24h (mặc định, chưa xin duyệt) hoặc 36h (đã được lãnh đạo duyệt)
+function monthLimitFor(setting) {
+  return setting === 36 ? 36 : 24; // mặc định 24 nếu chưa cài đặt gì
+}
+function monthThresholdsFor(setting) {
+  return setting === 36 ? { yellow: 21, red: 32 } : { yellow: 18, red: 24 };
+}
+// Tính limit/threshold thực tế đang áp dụng cho 1 field, dựa trên bối cảnh (ngày tham chiếu + cài đặt tháng)
+function effectiveLimit(field, ctx) {
+  if (field === "month") return monthLimitFor(ctx.monthLimitSetting);
+  if (field === "year") return yearProratedLimit(ctx.refDate || new Date());
+  return LIMITS[field];
+}
+function effectiveThresholds(field, ctx) {
+  if (field === "month") return monthThresholdsFor(ctx.monthLimitSetting);
+  if (field === "year") {
+    const lim = yearProratedLimit(ctx.refDate || new Date());
+    return { yellow: Math.round(lim * (250 / 280)), red: lim };
+  }
+  return THRESHOLDS[field];
+}
+
 function fmtCircleValue(v) {
   const r = Math.round(v * 10) / 10;
   return Number.isInteger(r) ? String(r) : r.toFixed(1);
 }
 
 const FIELD_LABEL = { day: "Ngày", week: "Tuần", month: "Tháng", year: "Năm" };
-function progressStatus(field, value) {
-  const t = THRESHOLDS[field];
+function progressStatus(field, value, ctx) {
+  const t = effectiveThresholds(field, ctx);
   if (field === "day") return value >= t.red ? "danger" : "normal";
   if (value >= t.red) return "danger";
-  if (value >= t.yellow) return "warning";
+  if (t.yellow != null && value >= t.yellow) return "warning";
   return "normal";
 }
 const STATUS_COLOR = { normal: "#2F6FED", warning: "#F5B400", danger: "#D7263D" };
 
-function ProgressBar({ field, value }) {
-  const limit = LIMITS[field];
-  const status = progressStatus(field, value);
+function ProgressBar({ field, value, ctx }) {
+  const limit = effectiveLimit(field, ctx);
+  const status = progressStatus(field, value, ctx);
   const color = STATUS_COLOR[status];
   const pct = Math.max(0, Math.min(100, (value / limit) * 100));
   return (
@@ -448,6 +486,7 @@ function AppWH() {
         loadedData = JSON.parse(res.value);
         if (!loadedData.giaCong) loadedData.giaCong = [];
         if (!loadedData.factories) loadedData.factories = DEFAULT_FACTORIES;
+        if (!loadedData.monthLimitSetting) loadedData.monthLimitSetting = 24;
       } catch (e) {
         if (e && e.code === "not-found") {
           // THỰC SỰ chưa từng có dữ liệu (lần đầu triển khai) -> an toàn để tạo dữ liệu mẫu
@@ -743,7 +782,7 @@ function MainScreen({ data, persist, currentKho, onSwitchKho }) {
       <div style={{ flex: 1, overflowY: "auto", paddingBottom: 70 }}>
         {tab === "employees" && (
           <EmployeeList
-            employees={khoEmployees} ot={data.ot} today={today} openRowId={openRowId} setOpenRowId={setOpenRowId}
+            employees={khoEmployees} ot={data.ot} today={today} monthLimitSetting={data.monthLimitSetting} openRowId={openRowId} setOpenRowId={setOpenRowId}
             onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}
             onTangCa={(id) => { setOpenRowId(null); setOtModal({ employeeId: id }); }}
             onNghiPhep={(id) => { setOpenRowId(null); setLeaveModal({ employeeId: id }); }}
@@ -764,7 +803,7 @@ function MainScreen({ data, persist, currentKho, onSwitchKho }) {
         )}
         {tab === "dangky" && (
           <QuickEntryTab
-            employees={khoEmployees} otRecords={data.ot} leaveRecords={data.leave}
+            employees={khoEmployees} otRecords={data.ot} leaveRecords={data.leave} monthLimitSetting={data.monthLimitSetting}
             onSubmitOT={quickSubmitOT} onSubmitLeave={quickSubmitLeave}
           />
         )}
@@ -794,11 +833,11 @@ function MainScreen({ data, persist, currentKho, onSwitchKho }) {
 
       {otModal && (
         <OTModal
-          employees={khoEmployees} otRecords={data.ot} defaultId={otModal.employeeId} record={otModal.record}
+          employees={khoEmployees} otRecords={data.ot} monthLimitSetting={data.monthLimitSetting} defaultId={otModal.employeeId} record={otModal.record}
           onClose={() => setOtModal(null)} onSave={addOT} onUpdate={updateOT} onDelete={deleteOT}
         />
       )}
-      {bulkOtOpen && <BulkOTModal employees={khoEmployees} otRecords={data.ot} onClose={() => setBulkOtOpen(false)} onSave={addBulkOT} />}
+      {bulkOtOpen && <BulkOTModal employees={khoEmployees} otRecords={data.ot} monthLimitSetting={data.monthLimitSetting} onClose={() => setBulkOtOpen(false)} onSave={addBulkOT} />}
       {leaveModal && <LeaveModal employees={khoEmployees} defaultId={leaveModal.employeeId} onClose={() => setLeaveModal(null)} onSave={addLeave} />}
       {addChoiceOpen && (
         <AddChoiceModal
@@ -841,6 +880,7 @@ function MainScreen({ data, persist, currentKho, onSwitchKho }) {
       {manageOpen && (
         <EmployeeManageModal
           allEmployees={data.employees} defaultKhoId={currentKho.id}
+          monthLimitSetting={data.monthLimitSetting} onSetMonthLimit={(v) => persist({ ...data, monthLimitSetting: v })}
           onClose={() => setManageOpen(false)}
           onAddNew={(khoId) => setEmpForm({ mode: "add", khoId })}
           onEdit={(emp) => setEmpForm({ mode: "edit", employee: emp })}
@@ -876,7 +916,8 @@ function TabBtn({ active, onClick, icon, label }) {
 }
 
 // ============ EMPLOYEE LIST ============
-function EmployeeList({ employees, ot, today, openRowId, setOpenRowId, onTouchStart, onTouchEnd, onTangCa, onNghiPhep, onShiftTap, onNameTap, onBulkOT }) {
+function EmployeeList({ employees, ot, today, monthLimitSetting, openRowId, setOpenRowId, onTouchStart, onTouchEnd, onTangCa, onNghiPhep, onShiftTap, onNameTap, onBulkOT }) {
+  const ctx = { monthLimitSetting, refDate: today };
   return (
     <div>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px 6px", gap: 10 }}>
@@ -884,7 +925,7 @@ function EmployeeList({ employees, ot, today, openRowId, setOpenRowId, onTouchSt
         <button onClick={onBulkOT} style={{ flexShrink: 0, background: BRAND, color: "#fff", border: "none", borderRadius: 8, padding: "7px 12px", fontSize: 12.5, fontWeight: 800, whiteSpace: "nowrap" }}>OT+</button>
       </div>
       <div style={{ display: "flex", alignItems: "center", padding: "8px 14px", position: "sticky", top: 0, background: "#E6F6FA", zIndex: 5, border: "1px solid #B9E6F0", borderRadius: 8, margin: "0 10px 6px" }}>
-        <div style={{ fontSize: 11.5, fontWeight: 800, color: BRAND, textTransform: "uppercase", letterSpacing: 0.3, width: 96, flexShrink: 0 }}>Họ tên</div>
+        <div style={{ fontSize: 11.5, fontWeight: 800, color: BRAND, textTransform: "uppercase", letterSpacing: 0.3, width: 108, flexShrink: 0 }}>Họ tên</div>
         <div style={{ display: "flex", gap: 10, flex: 1, marginLeft: 10 }}>
           {["D", "W", "M", "Y"].map((l) => (
             <div key={l} style={{ flex: 1, fontSize: 11, fontWeight: 800, color: BRAND, textAlign: "center" }}>{l}</div>
@@ -911,10 +952,10 @@ function EmployeeList({ employees, ot, today, openRowId, setOpenRowId, onTouchSt
                 transform: open ? "translateX(-160px)" : "translateX(0)", transition: "transform 0.2s ease",
               }}
             >
-              <div style={{ display: "flex", flexDirection: "column", gap: 4, width: 96, flexShrink: 0 }} onClick={() => onNameTap(emp.id)}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 4, width: 108, flexShrink: 0 }} onClick={() => onNameTap(emp.id)}>
                 <div style={{ fontSize: 14.5, fontWeight: 600, color: "#222", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{displayName(emp.name)}</div>
                 <button onClick={(e) => { e.stopPropagation(); onShiftTap(emp.id); }} style={{
-                  alignSelf: "flex-start", border: "none", borderRadius: 8, padding: "2px 6px", fontSize: 10, fontWeight: 700, maxWidth: "100%", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+                  alignSelf: "flex-start", border: "none", borderRadius: 8, padding: "2px 6px", fontSize: 9.5, fontWeight: 700, maxWidth: "100%", whiteSpace: "normal", lineHeight: 1.25, textAlign: "left",
                   background: (emp.shift === "Ca 1" || emp.shift === "Ca 2") ? "#FFF3C4" : "#EEF2F3",
                   color: (emp.shift === "Ca 1" || emp.shift === "Ca 2") ? "#8A6D00" : "#555",
                 }}>
@@ -922,10 +963,10 @@ function EmployeeList({ employees, ot, today, openRowId, setOpenRowId, onTouchSt
                 </button>
               </div>
               <div style={{ display: "flex", gap: 10, flex: 1, minWidth: 0, marginLeft: 10 }}>
-                <ProgressBar field="day" value={day} />
-                <ProgressBar field="week" value={week} />
-                <ProgressBar field="month" value={month} />
-                <ProgressBar field="year" value={year} />
+                <ProgressBar field="day" value={day} ctx={ctx} />
+                <ProgressBar field="week" value={week} ctx={ctx} />
+                <ProgressBar field="month" value={month} ctx={ctx} />
+                <ProgressBar field="year" value={year} ctx={ctx} />
               </div>
             </div>
           </div>
@@ -970,7 +1011,7 @@ function ShiftModal({ employee, onClose, onSave }) {
 }
 
 // ============ OT HÀNG LOẠT (nhiều người, cùng ngày, cùng giờ) ============
-function BulkOTModal({ employees, otRecords, onClose, onSave }) {
+function BulkOTModal({ employees, otRecords, monthLimitSetting, onClose, onSave }) {
   const [selected, setSelected] = useState(new Set());
   const [date, setDate] = useState(todayKey());
   const [hours, setHours] = useState(null);
@@ -985,7 +1026,7 @@ function BulkOTModal({ employees, otRecords, onClose, onSave }) {
   const perPersonViolations = useMemo(() => {
     if (!hours) return [];
     return [...selected]
-      .map((id) => ({ id, name: employees.find((e) => e.id === id)?.name, v: checkOTLimits(otRecords, id, date, hours, null, employees.find((e) => e.id === id)?.otOpeningBalance || 0) }))
+      .map((id) => ({ id, name: employees.find((e) => e.id === id)?.name, v: checkOTLimits(otRecords, id, date, hours, null, employees.find((e) => e.id === id)?.otOpeningBalance || 0, monthLimitSetting) }))
       .filter((x) => x.v.length > 0);
   }, [selected, date, hours, otRecords, employees]);
 
@@ -1053,13 +1094,13 @@ function HourMinutePicker({ hourOptions, value, onChange }) {
 }
 
 // ============ OT MODAL ============
-function OTModal({ employees, otRecords, defaultId, record, onClose, onSave, onUpdate, onDelete }) {
+function OTModal({ employees, otRecords, monthLimitSetting, defaultId, record, onClose, onSave, onUpdate, onDelete }) {
   const isEdit = !!record;
   const [empId, setEmpId] = useState(record?.employeeId || defaultId || employees[0]?.id);
   const [date, setDate] = useState(record?.date || todayKey());
   const [hours, setHours] = useState(record?.hours ?? null);
   const violations = useMemo(
-    () => (hours ? checkOTLimits(otRecords, empId, date, hours, record?.id, employees.find((e) => e.id === empId)?.otOpeningBalance || 0) : []),
+    () => (hours ? checkOTLimits(otRecords, empId, date, hours, record?.id, employees.find((e) => e.id === empId)?.otOpeningBalance || 0, monthLimitSetting) : []),
     [otRecords, empId, date, hours, record?.id, employees]
   );
   return (
@@ -1111,11 +1152,26 @@ function OTHistoryModal({ employee, records, onClose, onEdit, onDelete, onAddNew
 }
 
 // ============ QUẢN LÝ NHÂN SỰ ============
-function EmployeeManageModal({ allEmployees, defaultKhoId, onClose, onAddNew, onEdit, onDelete }) {
+function EmployeeManageModal({ allEmployees, defaultKhoId, monthLimitSetting, onSetMonthLimit, onClose, onAddNew, onEdit, onDelete }) {
   const [khoId, setKhoId] = useState(defaultKhoId);
   const list = allEmployees.filter((e) => e.warehouseId === khoId);
   return (
     <Modal title="Quản lý nhân sự" onClose={onClose}>
+      <Field label="Hạn mức tăng ca / tháng">
+        <div style={{ display: "flex", gap: 8 }}>
+          <button onClick={() => onSetMonthLimit(24)} style={{
+            flex: 1, padding: "10px 4px", borderRadius: 10, fontWeight: 700, fontSize: 13,
+            border: (monthLimitSetting || 24) === 24 ? `2px solid ${BRAND}` : "1px solid #ddd",
+            background: (monthLimitSetting || 24) === 24 ? "#E6F6FA" : "#fff", color: (monthLimitSetting || 24) === 24 ? BRAND : "#333",
+          }}>24h (mặc định)</button>
+          <button onClick={() => onSetMonthLimit(36)} style={{
+            flex: 1, padding: "10px 4px", borderRadius: 10, fontWeight: 700, fontSize: 13,
+            border: monthLimitSetting === 36 ? `2px solid ${BRAND}` : "1px solid #ddd",
+            background: monthLimitSetting === 36 ? "#E6F6FA" : "#fff", color: monthLimitSetting === 36 ? BRAND : "#333",
+          }}>36h (đã xin duyệt)</button>
+        </div>
+        <div style={{ fontSize: 11, color: "#999", marginTop: 6 }}>Áp dụng chung cho cả kho — chọn 36h khi lãnh đạo đã duyệt tăng hạn mức tháng.</div>
+      </Field>
       <Field label="Kho">
         <select style={inputStyle} value={khoId} onChange={(e) => setKhoId(e.target.value)}>
           {WAREHOUSES.map((w) => <option key={w.id} value={w.id}>{w.name}</option>)}
@@ -1346,7 +1402,7 @@ function buildMonthGrid(cursor) {
 }
 
 // ============ TAB ĐĂNG KÝ (nhập nhanh) ============
-function QuickEntryTab({ employees, otRecords, leaveRecords, onSubmitOT, onSubmitLeave }) {
+function QuickEntryTab({ employees, otRecords, leaveRecords, monthLimitSetting, onSubmitOT, onSubmitLeave }) {
   const [empId, setEmpId] = useState(employees[0]?.id || "");
   const [date, setDate] = useState(todayKey());
   const [loai, setLoai] = useState("tangca"); // tangca | nghi
@@ -1356,11 +1412,13 @@ function QuickEntryTab({ employees, otRecords, leaveRecords, onSubmitOT, onSubmi
   const [reason, setReason] = useState(LEAVE_REASONS[0]);
   const [note, setNote] = useState("");
   const [savedAt, setSavedAt] = useState(null);
+  const [empPickerOpen, setEmpPickerOpen] = useState(false);
+  const [empSearch, setEmpSearch] = useState("");
 
   const employee = employees.find((e) => e.id === empId);
 
   const otViolations = useMemo(
-    () => (loai === "tangca" && otHours ? checkOTLimits(otRecords, empId, date, otHours, null, employee?.otOpeningBalance || 0) : []),
+    () => (loai === "tangca" && otHours ? checkOTLimits(otRecords, empId, date, otHours, null, employee?.otOpeningBalance || 0, monthLimitSetting) : []),
     [loai, otHours, otRecords, empId, date, employee]
   );
 
@@ -1384,30 +1442,49 @@ function QuickEntryTab({ employees, otRecords, leaveRecords, onSubmitOT, onSubmi
     { key: "muon", label: "Đi muộn" },
   ];
 
+  const initials = (employee?.name || "?").trim().split(/\s+/).slice(-2).map((w) => w[0]).join("").toUpperCase();
+  const sectionStyle = { padding: "14px 16px", borderBottom: "1px solid #F0F1F2" };
+  const labelStyle = { fontSize: 11.5, color: "#888", marginBottom: 7, fontWeight: 600 };
+
   return (
     <div style={{ padding: 16 }}>
-      <div style={{ background: "#fff", border: "1px solid #eee", borderRadius: 14, padding: 16 }}>
-        <Field label="Họ tên công nhân">
-          <select style={inputStyle} value={empId} onChange={(e) => { setEmpId(e.target.value); setSavedAt(null); }}>
-            {employees.map((e) => <option key={e.id} value={e.id}>{e.name} — {e.shift}</option>)}
-          </select>
-        </Field>
+      <div style={{ background: "#fff", border: "1px solid #eee", borderRadius: 16, overflow: "hidden", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
 
-        <Field label="Loại">
-          <div style={{ display: "flex", gap: 8 }}>
+        {/* Người đăng ký — dạng thẻ liên hệ, chạm vào để mở bảng tìm kiếm tên */}
+        <button onClick={() => { setEmpSearch(""); setEmpPickerOpen(true); }} style={{ ...sectionStyle, width: "100%", background: "none", border: "none", borderBottom: sectionStyle.borderBottom, textAlign: "left", padding: sectionStyle.padding }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <div style={{ width: 42, height: 42, borderRadius: "50%", background: "#E6F6FA", color: BRAND, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 14, flexShrink: 0 }}>{initials}</div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 15, fontWeight: 700, color: "#222", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{employee?.name || "Chọn nhân viên"}</div>
+              <div style={{ fontSize: 11.5, color: "#999" }}>{employee?.shift}{employee?.position ? ` · ${employee.position}` : ""} · đổi người</div>
+            </div>
+            <ChevronDown size={18} color="#bbb" />
+          </div>
+        </button>
+
+        {/* Loại đăng ký */}
+        <div style={sectionStyle}>
+          <div style={labelStyle}>Loại đăng ký</div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
             <button onClick={() => { setLoai("tangca"); setSavedAt(null); }} style={{
-              flex: 1, padding: "13px 0", borderRadius: 10, fontWeight: 800, fontSize: 14.5,
-              border: loai === "tangca" ? `2px solid ${BRAND}` : "1px solid #ddd",
-              background: loai === "tangca" ? BRAND : "#fff", color: loai === "tangca" ? "#fff" : "#444",
-            }}>Tăng ca</button>
+              padding: "12px 8px", borderRadius: 12, textAlign: "center",
+              border: loai === "tangca" ? `2px solid ${BRAND}` : "1px solid #e2e2e2",
+              background: loai === "tangca" ? "#E6F6FA" : "#fff",
+            }}>
+              <Clock size={19} color={loai === "tangca" ? BRAND : "#999"} />
+              <div style={{ fontSize: 13, fontWeight: 700, color: loai === "tangca" ? BRAND : "#666", marginTop: 4 }}>Tăng ca</div>
+            </button>
             <button onClick={() => { setLoai("nghi"); setSavedAt(null); }} style={{
-              flex: 1, padding: "13px 0", borderRadius: 10, fontWeight: 800, fontSize: 14.5,
-              border: loai === "nghi" ? "2px solid #D7263D" : "1px solid #ddd",
-              background: loai === "nghi" ? "#D7263D" : "#fff", color: loai === "nghi" ? "#fff" : "#444",
-            }}>Nghỉ phép</button>
+              padding: "12px 8px", borderRadius: 12, textAlign: "center",
+              border: loai === "nghi" ? "2px solid #D7263D" : "1px solid #e2e2e2",
+              background: loai === "nghi" ? "#FDECEC" : "#fff",
+            }}>
+              <CalendarDays size={19} color={loai === "nghi" ? "#D7263D" : "#999"} />
+              <div style={{ fontSize: 13, fontWeight: 700, color: loai === "nghi" ? "#D7263D" : "#666", marginTop: 4 }}>Nghỉ phép</div>
+            </button>
           </div>
           {loai === "nghi" && (
-            <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
+            <div style={{ display: "flex", gap: 6, marginTop: 10 }}>
               {subTypes.map((s) => (
                 <button key={s.key} onClick={() => { setSubType(s.key); setSavedAt(null); }} style={{
                   flex: 1, padding: "8px 2px", borderRadius: 8, fontWeight: 700, fontSize: 11.5,
@@ -1417,49 +1494,108 @@ function QuickEntryTab({ employees, otRecords, leaveRecords, onSubmitOT, onSubmi
               ))}
             </div>
           )}
-        </Field>
+        </div>
 
-        <Field label="Ngày">
-          <input type="date" style={inputStyle} value={date} onChange={(e) => { setDate(e.target.value); setSavedAt(null); }} />
-        </Field>
+        {/* Ngày + chi tiết (giờ tăng ca / lý do nghỉ) đặt cạnh nhau */}
+        <div style={{ ...sectionStyle, display: "flex", gap: 12 }}>
+          <div style={{ flex: 1 }}>
+            <div style={{ ...labelStyle, display: "flex", alignItems: "center", gap: 4 }}><CalendarDays size={13} color="#aaa" /> Ngày</div>
+            <input type="date" style={inputStyle} value={date} onChange={(e) => { setDate(e.target.value); setSavedAt(null); }} />
+          </div>
+          {loai === "nghi" && subType === "nghi" && (
+            <div style={{ flex: 1 }}>
+              <div style={{ ...labelStyle, display: "flex", alignItems: "center", gap: 4 }}><Pencil size={12} color="#aaa" /> Lý do nghỉ</div>
+              <select style={inputStyle} value={reason} onChange={(e) => { setReason(e.target.value); setSavedAt(null); }}>
+                {LEAVE_REASONS.map((r) => <option key={r} value={r}>{r}</option>)}
+              </select>
+            </div>
+          )}
+        </div>
 
         {loai === "tangca" && (
-          <Field label="Số giờ tăng ca (tối đa 4h/ngày)">
+          <div style={sectionStyle}>
+            <div style={{ ...labelStyle, display: "flex", alignItems: "center", gap: 4 }}><Clock size={13} color="#aaa" /> Số giờ tăng ca (tối đa 4h/ngày)</div>
             <HourMinutePicker hourOptions={[1, 2, 3, 4]} value={otHours} onChange={(v) => { setOtHours(v); setSavedAt(null); }} />
-          </Field>
-        )}
-        {loai === "tangca" && <LimitWarning violations={otViolations} />}
-
-        {loai === "nghi" && subType === "nghi" && (
-          <Field label="Lý do nghỉ">
-            <select style={inputStyle} value={reason} onChange={(e) => { setReason(e.target.value); setSavedAt(null); }}>
-              {LEAVE_REASONS.map((r) => <option key={r} value={r}>{r}</option>)}
-            </select>
-          </Field>
-        )}
-        {loai === "nghi" && subType !== "nghi" && (
-          <Field label={`Thời gian ${subType === "muon" ? "đi muộn" : "về sớm"}`}>
-            <HourMinutePicker hourOptions={[0, 1, 2, 3, 4, 5, 6, 7]} value={leaveHours} onChange={(v) => { setLeaveHours(v); setSavedAt(null); }} />
-          </Field>
-        )}
-
-        <Field label="Ghi chú (không bắt buộc)">
-          <textarea style={{ ...inputStyle, minHeight: 60, resize: "vertical" }} placeholder="VD: tăng ca cắt gấp đơn XYZ" value={note} onChange={(e) => { setNote(e.target.value); setSavedAt(null); }} />
-        </Field>
-
-        <button disabled={!canSubmit} style={{ ...primaryBtn, opacity: canSubmit ? 1 : 0.5, background: (loai === "tangca" && otViolations.length) ? "#D7263D" : BRAND }} onClick={submit}>
-          Gửi
-        </button>
-
-        {savedAt && (
-          <div style={{ marginTop: 10, fontSize: 12.5, color: "#2FAE59", fontWeight: 700 }}>
-            ✓ Đã lưu lúc {pad(savedAt.getHours())}:{pad(savedAt.getMinutes())} — {employee?.name}, {fmtVN(fromKey(date))}
+            <LimitWarning violations={otViolations} />
           </div>
         )}
-        <div style={{ marginTop: 8, fontSize: 11.5, color: "#999" }}>
-          Gửi lại cùng tên, cùng ngày, cùng loại sẽ tự cập nhật (không tạo bản ghi trùng).
+        {loai === "nghi" && subType !== "nghi" && (
+          <div style={sectionStyle}>
+            <div style={{ ...labelStyle, display: "flex", alignItems: "center", gap: 4 }}><Clock size={13} color="#aaa" /> Thời gian {subType === "muon" ? "đi muộn" : "về sớm"}</div>
+            <HourMinutePicker hourOptions={[0, 1, 2, 3, 4, 5, 6, 7]} value={leaveHours} onChange={(v) => { setLeaveHours(v); setSavedAt(null); }} />
+          </div>
+        )}
+
+        {/* Ghi chú */}
+        <div style={sectionStyle}>
+          <div style={{ ...labelStyle, display: "flex", alignItems: "center", gap: 4 }}><Pencil size={12} color="#aaa" /> Ghi chú (không bắt buộc)</div>
+          <textarea style={{ ...inputStyle, minHeight: 56, resize: "vertical" }} placeholder="VD: tăng ca cắt gấp đơn XYZ" value={note} onChange={(e) => { setNote(e.target.value); setSavedAt(null); }} />
+        </div>
+
+        {/* Gửi */}
+        <div style={{ padding: "14px 16px" }}>
+          <button disabled={!canSubmit} onClick={submit} style={{
+            width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+            padding: "13px 0", borderRadius: 12, border: "none", fontSize: 15, fontWeight: 700, color: "#fff",
+            background: (loai === "tangca" && otViolations.length) ? "#D7263D" : BRAND,
+            opacity: canSubmit ? 1 : 0.5,
+          }}>
+            <Send size={17} /> Gửi đăng ký
+          </button>
+
+          {savedAt && (
+            <div style={{ marginTop: 10, fontSize: 12.5, color: "#2FAE59", fontWeight: 700, textAlign: "center" }}>
+              ✓ Đã lưu lúc {pad(savedAt.getHours())}:{pad(savedAt.getMinutes())} — {employee?.name}, {fmtVN(fromKey(date))}
+            </div>
+          )}
+          <div style={{ marginTop: 8, fontSize: 11, color: "#aaa", textAlign: "center" }}>
+            Gửi lại cùng tên, cùng ngày, cùng loại sẽ tự cập nhật (không tạo bản ghi trùng).
+          </div>
         </div>
       </div>
+
+      {empPickerOpen && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 50, display: "flex", alignItems: "flex-end" }} onClick={() => setEmpPickerOpen(false)}>
+          <div style={{ background: "#fff", width: "100%", borderRadius: "16px 16px 0 0", maxHeight: "80vh", display: "flex", flexDirection: "column" }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px", borderBottom: "1px solid #eee" }}>
+              <span style={{ fontWeight: 700, fontSize: 16 }}>Chọn nhân viên</span>
+              <button onClick={() => setEmpPickerOpen(false)} style={{ background: "none", border: "none", padding: 4 }}><X size={20} color="#666" /></button>
+            </div>
+            <div style={{ padding: "12px 16px" }}>
+              <input
+                autoFocus type="text" placeholder="Gõ tên để tìm (không cần dấu)..." value={empSearch}
+                onChange={(e) => setEmpSearch(e.target.value)}
+                style={{ ...inputStyle, fontSize: 15 }}
+              />
+            </div>
+            <div style={{ overflowY: "auto", flex: 1, padding: "0 8px 12px" }}>
+              {employees
+                .filter((e) => normalizeSearch(e.name).includes(normalizeSearch(empSearch)))
+                .map((e) => (
+                  <button
+                    key={e.id}
+                    onClick={() => { setEmpId(e.id); setSavedAt(null); setEmpPickerOpen(false); }}
+                    style={{
+                      width: "100%", display: "flex", alignItems: "center", gap: 10, padding: "10px 8px", borderRadius: 10,
+                      background: e.id === empId ? "#E6F6FA" : "transparent", border: "none", textAlign: "left",
+                    }}
+                  >
+                    <div style={{ width: 34, height: 34, borderRadius: "50%", background: "#EEF2F3", color: "#666", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 12, flexShrink: 0 }}>
+                      {e.name.trim().split(/\s+/).slice(-2).map((w) => w[0]).join("").toUpperCase()}
+                    </div>
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ fontSize: 14.5, fontWeight: 600, color: "#222" }}>{e.name}</div>
+                      <div style={{ fontSize: 11.5, color: "#999" }}>{e.shift}{e.position ? ` · ${e.position}` : ""}</div>
+                    </div>
+                  </button>
+                ))}
+              {employees.filter((e) => normalizeSearch(e.name).includes(normalizeSearch(empSearch))).length === 0 && (
+                <div style={{ padding: "20px 12px", textAlign: "center", color: "#999", fontSize: 13 }}>Không tìm thấy ai khớp "{empSearch}"</div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
