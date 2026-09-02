@@ -1626,6 +1626,9 @@ function DashboardTab({ employees, ot, leave, giaCong, today }) {
   const otMonthHours = ot.filter((r) => inCurrentMonth(r.date, viewDate)).reduce((s, r) => s + r.hours, 0);
   const muonMonthHours = leave.filter((l) => l.type === "muon" && inCurrentMonth(l.date, viewDate)).reduce((s, l) => s + (l.hours || 0), 0);
   const somMonthHours = leave.filter((l) => l.type === "som" && inCurrentMonth(l.date, viewDate)).reduce((s, l) => s + (l.hours || 0), 0);
+  const nghiMonthRecords = leave.filter((l) => l.type === "nghi" && inCurrentMonth(l.date, viewDate));
+  const nghiMonthLuot = nghiMonthRecords.length;
+  const nghiMonthNguoi = new Set(nghiMonthRecords.map((l) => l.employeeId)).size;
 
   // ---- Ô 4: Gia công trong tháng ----
   const giaCongMonthCount = giaCong.filter((g) => inCurrentMonth(g.date, viewDate)).length;
@@ -1670,6 +1673,7 @@ function DashboardTab({ employees, ot, leave, giaCong, today }) {
           <DashStat label="Giờ tăng ca" value={fmtHours(otMonthHours)} />
           <DashStat label="Giờ đi muộn" value={fmtHours(muonMonthHours)} />
           <DashStat label="Giờ về sớm" value={fmtHours(somMonthHours)} />
+          <DashStat label="Người nghỉ phép" value={nghiMonthLuot > 0 ? `${nghiMonthNguoi} người · ${nghiMonthLuot} lượt` : "0"} />
         </div>
       </div>
 
