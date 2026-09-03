@@ -170,6 +170,23 @@ function Send(props) {
 
 // ============ CONSTANTS ============
 const BRAND = "#0096BE";
+// ---- Design tokens (Phương án B) ----
+const COLOR = {
+  brand: BRAND,
+  bgApp: "#F5F7F8",
+  bgCard: "#FFFFFF",
+  border: "#EAEAEA",
+  textMain: "#1F2328",
+  textSub: "#7A8288",
+  success: "#1F8A46",
+  warning: "#B98600",
+  danger: "#D7263D",
+};
+function levelColor(percent) {
+  if (percent >= 90) return COLOR.danger;
+  if (percent >= 70) return COLOR.warning;
+  return COLOR.success;
+}
 const LIMITS = { day: 4, week: 12, month: 36, year: 280 };
 const DOW_LABELS = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"];
 const STORAGE_KEY = "appwh-data-v3";      // Dữ liệu DÙNG CHUNG: mọi người thấy như nhau (v3 = danh sách thật 58 người)
@@ -389,7 +406,7 @@ function progressStatus(field, value, ctx) {
   if (t.yellow != null && value >= t.yellow) return "warning";
   return "normal";
 }
-const STATUS_COLOR = { normal: "#2F6FED", warning: "#F5B400", danger: "#D7263D" };
+const STATUS_COLOR = { normal: COLOR.success, warning: COLOR.warning, danger: COLOR.danger };
 
 function ProgressBar({ field, value, ctx }) {
   const limit = effectiveLimit(field, ctx);
@@ -1468,19 +1485,19 @@ function QuickEntryTab({ employees, otRecords, leaveRecords, monthLimitSetting, 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
             <button onClick={() => { setLoai("tangca"); setSavedAt(null); }} style={{
               padding: "12px 8px", borderRadius: 12, textAlign: "center",
-              border: loai === "tangca" ? `2px solid ${BRAND}` : "1px solid #e2e2e2",
-              background: loai === "tangca" ? "#E6F6FA" : "#fff",
+              border: loai === "tangca" ? `2px solid ${COLOR.brand}` : `1px solid ${COLOR.border}`,
+              background: COLOR.bgCard,
             }}>
-              <Clock size={19} color={loai === "tangca" ? BRAND : "#999"} />
-              <div style={{ fontSize: 13, fontWeight: 700, color: loai === "tangca" ? BRAND : "#666", marginTop: 4 }}>Tăng ca</div>
+              <Clock size={19} color={loai === "tangca" ? COLOR.brand : COLOR.textSub} />
+              <div style={{ fontSize: 13, fontWeight: 700, color: loai === "tangca" ? COLOR.brand : COLOR.textSub, marginTop: 4 }}>Tăng ca</div>
             </button>
             <button onClick={() => { setLoai("nghi"); setSavedAt(null); }} style={{
               padding: "12px 8px", borderRadius: 12, textAlign: "center",
-              border: loai === "nghi" ? "2px solid #D7263D" : "1px solid #e2e2e2",
-              background: loai === "nghi" ? "#FDECEC" : "#fff",
+              border: loai === "nghi" ? `2px solid ${COLOR.danger}` : `1px solid ${COLOR.border}`,
+              background: COLOR.bgCard,
             }}>
-              <CalendarDays size={19} color={loai === "nghi" ? "#D7263D" : "#999"} />
-              <div style={{ fontSize: 13, fontWeight: 700, color: loai === "nghi" ? "#D7263D" : "#666", marginTop: 4 }}>Nghỉ phép</div>
+              <CalendarDays size={19} color={loai === "nghi" ? COLOR.danger : COLOR.textSub} />
+              <div style={{ fontSize: 13, fontWeight: 700, color: loai === "nghi" ? COLOR.danger : COLOR.textSub, marginTop: 4 }}>Nghỉ phép</div>
             </button>
           </div>
           {loai === "nghi" && (
@@ -1488,8 +1505,8 @@ function QuickEntryTab({ employees, otRecords, leaveRecords, monthLimitSetting, 
               {subTypes.map((s) => (
                 <button key={s.key} onClick={() => { setSubType(s.key); setSavedAt(null); }} style={{
                   flex: 1, padding: "8px 2px", borderRadius: 8, fontWeight: 700, fontSize: 11.5,
-                  border: subType === s.key ? "2px solid #D7263D" : "1px solid #ddd",
-                  background: subType === s.key ? "#FDECEC" : "#fafafa", color: subType === s.key ? "#D7263D" : "#666",
+                  border: subType === s.key ? `2px solid ${COLOR.danger}` : `1px solid ${COLOR.border}`,
+                  background: subType === s.key ? "#FDECEC" : COLOR.bgCard, color: subType === s.key ? COLOR.danger : COLOR.textSub,
                 }}>{s.label}</button>
               ))}
             </div>
@@ -1646,8 +1663,7 @@ function DashboardTab({ employees, ot, leave, giaCong, today }) {
       </div>
 
       {/* Ô 1: Nhân sự hôm nay */}
-      <div style={{ background: "#EAF2FE", borderRadius: 16, padding: 18, borderLeft: "5px solid #2F6FED" }}>
-        <div style={{ fontSize: 13, fontWeight: 800, color: "#2F6FED", marginBottom: 12 }}>NHÂN SỰ HÔM NAY</div>
+      <DashCard title="NHÂN SỰ HÔM NAY" dotColor={COLOR.brand}>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
           <DashStat label="Tổng số" value={`${totalEmployees} người`} />
           <DashStat label="Đi làm" value={`${workingToday} người`} />
@@ -1655,41 +1671,49 @@ function DashboardTab({ employees, ot, leave, giaCong, today }) {
           <DashStat label="Đi muộn" value={muonToday.length > 0 ? `${muonToday.length} người · ${fmtHours(muonTodayHours)}` : "0"} />
           <DashStat label="Về sớm" value={somToday.length > 0 ? `${somToday.length} người · ${fmtHours(somTodayHours)}` : "0"} />
         </div>
-      </div>
+      </DashCard>
 
       {/* Ô 2: Tăng ca hôm nay */}
-      <div style={{ background: "#FFF6E0", borderRadius: 16, padding: 18, borderLeft: "5px solid #F5B400" }}>
-        <div style={{ fontSize: 13, fontWeight: 800, color: "#B98600", marginBottom: 12 }}>TĂNG CA HÔM NAY</div>
+      <DashCard title="TĂNG CA HÔM NAY" dotColor={COLOR.warning}>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
           <DashStat label="Số người OT" value={`${otTodayCount} người`} />
           <DashStat label="Tổng giờ OT" value={fmtHours(otTodayHours)} />
         </div>
-      </div>
+      </DashCard>
 
       {/* Ô 3: Tổng theo tháng */}
-      <div style={{ background: "#E7F8EF", borderRadius: 16, padding: 18, borderLeft: "5px solid #2FAE59" }}>
-        <div style={{ fontSize: 13, fontWeight: 800, color: "#1F8A46", marginBottom: 12 }}>TỔNG THEO {monthLabel.toUpperCase()}</div>
+      <DashCard title={`TỔNG THEO ${monthLabel.toUpperCase()}`} dotColor={COLOR.success}>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
           <DashStat label="Giờ tăng ca" value={fmtHours(otMonthHours)} />
           <DashStat label="Giờ đi muộn" value={fmtHours(muonMonthHours)} />
           <DashStat label="Giờ về sớm" value={fmtHours(somMonthHours)} />
           <DashStat label="Người nghỉ phép" value={nghiMonthLuot > 0 ? `${nghiMonthNguoi} người · ${nghiMonthLuot} lượt` : "0"} />
         </div>
-      </div>
+      </DashCard>
 
       {/* Ô 4: Gia công trong tháng */}
-      <div style={{ background: "#F5F0FF", borderRadius: 16, padding: 18, borderLeft: "5px solid #8B5CF6" }}>
-        <div style={{ fontSize: 13, fontWeight: 800, color: "#6D28D9", marginBottom: 12 }}>GIA CÔNG TRONG {monthLabel.toUpperCase()}</div>
-        <div style={{ fontSize: 30, fontWeight: 800, color: "#6D28D9" }}>{giaCongMonthCount} <span style={{ fontSize: 14, fontWeight: 700, color: "#8B5CF6" }}>chuyến xe</span></div>
+      <DashCard title={`GIA CÔNG TRONG ${monthLabel.toUpperCase()}`} dotColor="#8B5CF6">
+        <div style={{ fontSize: 30, fontWeight: 800, color: COLOR.textMain }}>{giaCongMonthCount} <span style={{ fontSize: 14, fontWeight: 700, color: COLOR.textSub }}>chuyến xe</span></div>
+      </DashCard>
+    </div>
+  );
+}
+function DashCard({ title, dotColor, children }) {
+  return (
+    <div style={{ background: COLOR.bgCard, border: `1px solid ${COLOR.border}`, borderRadius: 16, padding: 18 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+        <span style={{ width: 8, height: 8, borderRadius: "50%", background: dotColor, flexShrink: 0 }} />
+        <span style={{ fontSize: 12.5, fontWeight: 800, color: COLOR.textMain, letterSpacing: 0.2 }}>{title}</span>
       </div>
+      {children}
     </div>
   );
 }
 function DashStat({ label, value }) {
   return (
     <div>
-      <div style={{ fontSize: 11.5, color: "#666", marginBottom: 2 }}>{label}</div>
-      <div style={{ fontSize: 16, fontWeight: 800, color: "#222" }}>{value}</div>
+      <div style={{ fontSize: 11.5, color: COLOR.textSub, marginBottom: 2 }}>{label}</div>
+      <div style={{ fontSize: 16, fontWeight: 800, color: COLOR.textMain }}>{value}</div>
     </div>
   );
 }
