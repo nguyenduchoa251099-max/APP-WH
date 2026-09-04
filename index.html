@@ -26,7 +26,7 @@
 </head>
 <body>
 <div id="root">
-  <div style="padding:24px;font-family:Verdana,sans-serif;color:#666;text-align:center;">Đang tải APP WH…</div>
+  <div style="padding:24px;font-family:-apple-system, BlinkMacSystemFont, 'SF Pro Text', Roboto, 'Segoe UI', sans-serif;color:#666;text-align:center;">Đang tải APP WH…</div>
 </div>
 <div id="error-box" style="display:none;padding:20px;font-family:monospace;font-size:13px;color:#900;background:#FDECEC;white-space:pre-wrap;word-break:break-word;"></div>
 
@@ -550,7 +550,7 @@ function AppWH() {
 
   if (screen === "error") {
     return (
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100vh", fontFamily: "Verdana, sans-serif", color: "#444", padding: "0 32px", textAlign: "center", gap: 14 }}>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100vh", fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', Roboto, 'Segoe UI', sans-serif", color: "#444", padding: "0 32px", textAlign: "center", gap: 14 }}>
         <div style={{ fontSize: 15, fontWeight: 700 }}>Không tải được dữ liệu</div>
         <div style={{ fontSize: 13, color: "#888", lineHeight: 1.5 }}>
           Dữ liệu bạn đã nhập trước đó vẫn an toàn — app sẽ không tự xoá hay ghi đè, chỉ cần thử tải lại.
@@ -568,7 +568,7 @@ function AppWH() {
   }
 
   if (!data || screen === "loading") {
-    return <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh", fontFamily: "Verdana, sans-serif", color: "#666" }}>Đang tải APP WH…</div>;
+    return <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh", fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', Roboto, 'Segoe UI', sans-serif", color: "#666" }}>Đang tải APP WH…</div>;
   }
 
   if (screen === "khoSelect") {
@@ -586,7 +586,7 @@ function AppWH() {
 function KhoSelectScreen({ employees, onPick }) {
   const isDesktop = useIsDesktop();
   return (
-    <div style={{ fontFamily: "Verdana, Geneva, sans-serif", minHeight: "100vh", background: isDesktop ? "#E9EEF0" : "#fff", display: "flex", justifyContent: "center", padding: isDesktop ? "40px 20px" : 0 }}>
+    <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', Roboto, 'Segoe UI', sans-serif", minHeight: "100vh", background: isDesktop ? "#E9EEF0" : "#fff", display: "flex", justifyContent: "center", padding: isDesktop ? "40px 20px" : 0 }}>
       <div style={{ width: "100%", maxWidth: isDesktop ? 520 : 480, background: "#fff", boxSizing: "border-box", borderRadius: isDesktop ? 20 : 0, boxShadow: isDesktop ? "0 8px 30px rgba(0,0,0,0.08)" : "none", overflow: "hidden", height: isDesktop ? "auto" : "100vh", display: "flex", flexDirection: "column" }}>
         <div style={{ textAlign: "center", padding: isDesktop ? "44px 28px 28px" : "calc(env(safe-area-inset-top, 0px) + 32px) 28px 28px" }}>
           <img src={LOGO_URI} alt="Tessellation" style={{ height: 50, marginBottom: 18 }} />
@@ -781,7 +781,7 @@ function MainScreen({ data, persist, currentKho, onSwitchKho }) {
   };
 
   return (
-    <div style={{ fontFamily: "Verdana, Geneva, sans-serif", background: isDesktop ? "#E9EEF0" : "#F4F7F8", minHeight: "100vh", display: "flex", justifyContent: "center", padding: isDesktop ? "24px 20px" : 0 }}>
+    <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', Roboto, 'Segoe UI', sans-serif", background: isDesktop ? "#E9EEF0" : "#F4F7F8", minHeight: "100vh", display: "flex", justifyContent: "center", padding: isDesktop ? "24px 20px" : 0 }}>
     <div style={{ width: "100%", maxWidth: isDesktop ? 640 : 480, background: "#F4F7F8", display: "flex", flexDirection: "column", position: "relative", borderRadius: isDesktop ? 20 : 0, boxShadow: isDesktop ? "0 8px 30px rgba(0,0,0,0.08)" : "none", overflow: "hidden", height: isDesktop ? "calc(100vh - 48px)" : "100vh" }}>
       <div style={{ background: BRAND, color: "#fff", padding: "calc(env(safe-area-inset-top, 0px) + 14px) 18px 14px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <button onClick={onSwitchKho} style={{ background: "none", border: "none", color: "#fff", textAlign: "left", padding: 0 }}>
@@ -1427,12 +1427,23 @@ function QuickEntryTab({ employees, otRecords, leaveRecords, monthLimitSetting, 
   const [otHours, setOtHours] = useState(null);
   const [leaveHours, setLeaveHours] = useState(0);
   const [reason, setReason] = useState(LEAVE_REASONS[0]);
-  const [note, setNote] = useState("");
   const [savedAt, setSavedAt] = useState(null);
   const [empPickerOpen, setEmpPickerOpen] = useState(false);
   const [empSearch, setEmpSearch] = useState("");
+  const empListRef = useRef(null);
 
   const employee = employees.find((e) => e.id === empId);
+  const nowRef = new Date();
+  const otMonthSoFar = useMemo(() => {
+    if (!empId) return 0;
+    return otRecords
+      .filter((r) => r.employeeId === empId && inCurrentMonth(r.date, nowRef) && r.date <= todayKey())
+      .reduce((s, r) => s + r.hours, 0);
+  }, [otRecords, empId]);
+  const nghiMonthSoFarCount = useMemo(() => {
+    if (!empId) return 0;
+    return leaveRecords.filter((l) => l.employeeId === empId && l.type === "nghi" && inCurrentMonth(l.date, nowRef)).length;
+  }, [leaveRecords, empId]);
 
   const otViolations = useMemo(
     () => (loai === "tangca" && otHours ? checkOTLimits(otRecords, empId, date, otHours, null, employee?.otOpeningBalance || 0, monthLimitSetting) : []),
@@ -1444,11 +1455,11 @@ function QuickEntryTab({ employees, otRecords, leaveRecords, monthLimitSetting, 
   const submit = () => {
     if (!empId || !canSubmit) return;
     if (loai === "tangca") {
-      onSubmitOT(empId, date, otHours, note || undefined);
+      onSubmitOT(empId, date, otHours);
     } else if (subType === "nghi") {
-      onSubmitLeave(empId, date, "nghi", { reason, note: note || undefined });
+      onSubmitLeave(empId, date, "nghi", { reason });
     } else {
-      onSubmitLeave(empId, date, subType, { hours: leaveHours, note: note || undefined });
+      onSubmitLeave(empId, date, subType, { hours: leaveHours });
     }
     setSavedAt(new Date());
   };
@@ -1460,22 +1471,22 @@ function QuickEntryTab({ employees, otRecords, leaveRecords, monthLimitSetting, 
   ];
 
   const initials = (employee?.name || "?").trim().split(/\s+/).slice(-2).map((w) => w[0]).join("").toUpperCase();
-  const sectionStyle = { padding: "14px 16px", borderBottom: "1px solid #F0F1F2" };
-  const labelStyle = { fontSize: 11.5, color: "#888", marginBottom: 7, fontWeight: 600 };
+  const sectionStyle = { padding: "14px 16px", borderBottom: `1px solid ${COLOR.border}` };
+  const labelStyle = { fontSize: 11.5, color: COLOR.textSub, marginBottom: 7, fontWeight: 600 };
 
   return (
     <div style={{ padding: 16 }}>
-      <div style={{ background: "#fff", border: "1px solid #eee", borderRadius: 16, overflow: "hidden", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
+      <div style={{ background: COLOR.bgCard, border: `1px solid ${COLOR.border}`, borderRadius: 16, overflow: "hidden" }}>
 
         {/* Người đăng ký — dạng thẻ liên hệ, chạm vào để mở bảng tìm kiếm tên */}
-        <button onClick={() => { setEmpSearch(""); setEmpPickerOpen(true); }} style={{ ...sectionStyle, width: "100%", background: "none", border: "none", borderBottom: sectionStyle.borderBottom, textAlign: "left", padding: sectionStyle.padding }}>
+        <button onClick={() => { setEmpSearch(""); setEmpPickerOpen(true); }} style={{ ...sectionStyle, width: "100%", background: "linear-gradient(180deg, #EAF7FA 0%, #ffffff 100%)", border: "none", borderBottom: sectionStyle.borderBottom, textAlign: "left", padding: sectionStyle.padding }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <div style={{ width: 42, height: 42, borderRadius: "50%", background: "#E6F6FA", color: BRAND, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 14, flexShrink: 0 }}>{initials}</div>
+            <div style={{ width: 42, height: 42, borderRadius: "50%", background: COLOR.brand, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 14, flexShrink: 0 }}>{initials}</div>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 15, fontWeight: 700, color: "#222", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{employee?.name || "Chọn nhân viên"}</div>
-              <div style={{ fontSize: 11.5, color: "#999" }}>{employee?.shift}{employee?.position ? ` · ${employee.position}` : ""} · đổi người</div>
+              <div style={{ fontSize: 15, fontWeight: 700, color: COLOR.textMain, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{employee?.name || "Chọn nhân viên"}</div>
+              <div style={{ fontSize: 11.5, color: COLOR.textSub }}>{employee?.shift}{employee?.position ? ` · ${employee.position}` : ""} · đổi người</div>
             </div>
-            <ChevronDown size={18} color="#bbb" />
+            <ChevronDown size={18} color={COLOR.textSub} />
           </div>
         </button>
 
@@ -1543,10 +1554,29 @@ function QuickEntryTab({ employees, otRecords, leaveRecords, monthLimitSetting, 
           </div>
         )}
 
-        {/* Ghi chú */}
+        {/* Số liệu tháng này — thay cho Ghi chú */}
         <div style={sectionStyle}>
-          <div style={{ ...labelStyle, display: "flex", alignItems: "center", gap: 4 }}><Pencil size={12} color="#aaa" /> Ghi chú (không bắt buộc)</div>
-          <textarea style={{ ...inputStyle, minHeight: 56, resize: "vertical" }} placeholder="VD: tăng ca cắt gấp đơn XYZ" value={note} onChange={(e) => { setNote(e.target.value); setSavedAt(null); }} />
+          {loai === "tangca" ? (
+            <div style={{ display: "flex", alignItems: "center", gap: 10, background: "#EAF7FA", border: `1px solid #CFEBF1`, borderRadius: 12, padding: "12px 14px" }}>
+              <div style={{ width: 34, height: 34, borderRadius: 10, background: COLOR.brand, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <Clock size={17} color="#fff" />
+              </div>
+              <div>
+                <div style={{ fontSize: 11.5, color: COLOR.textSub }}>{employee?.name || "Nhân viên"} đã tăng ca trong tháng (đến hôm nay)</div>
+                <div style={{ fontSize: 17, fontWeight: 800, color: COLOR.brand }}>{fmtHours(otMonthSoFar)}</div>
+              </div>
+            </div>
+          ) : (
+            <div style={{ display: "flex", alignItems: "center", gap: 10, background: "#FDECEC", border: `1px solid #F6CCCF`, borderRadius: 12, padding: "12px 14px" }}>
+              <div style={{ width: 34, height: 34, borderRadius: 10, background: COLOR.danger, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <CalendarDays size={17} color="#fff" />
+              </div>
+              <div>
+                <div style={{ fontSize: 11.5, color: COLOR.textSub }}>{employee?.name || "Nhân viên"} đã nghỉ trong tháng này</div>
+                <div style={{ fontSize: 17, fontWeight: 800, color: COLOR.danger }}>{nghiMonthSoFarCount} lượt</div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Gửi */}
@@ -1572,44 +1602,42 @@ function QuickEntryTab({ employees, otRecords, leaveRecords, monthLimitSetting, 
       </div>
 
       {empPickerOpen && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 50, display: "flex", alignItems: "flex-end" }} onClick={() => setEmpPickerOpen(false)}>
-          <div style={{ background: "#fff", width: "100%", borderRadius: "16px 16px 0 0", maxHeight: "80vh", display: "flex", flexDirection: "column" }} onClick={(e) => e.stopPropagation()}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px", borderBottom: "1px solid #eee" }}>
-              <span style={{ fontWeight: 700, fontSize: 16 }}>Chọn nhân viên</span>
-              <button onClick={() => setEmpPickerOpen(false)} style={{ background: "none", border: "none", padding: 4 }}><X size={20} color="#666" /></button>
-            </div>
-            <div style={{ padding: "12px 16px" }}>
-              <input
-                autoFocus type="text" placeholder="Gõ tên để tìm (không cần dấu)..." value={empSearch}
-                onChange={(e) => setEmpSearch(e.target.value)}
-                style={{ ...inputStyle, fontSize: 15 }}
-              />
-            </div>
-            <div style={{ overflowY: "auto", flex: 1, padding: "0 8px 12px" }}>
-              {employees
-                .filter((e) => normalizeSearch(e.name).includes(normalizeSearch(empSearch)))
-                .map((e) => (
-                  <button
-                    key={e.id}
-                    onClick={() => { setEmpId(e.id); setSavedAt(null); setEmpPickerOpen(false); }}
-                    style={{
-                      width: "100%", display: "flex", alignItems: "center", gap: 10, padding: "10px 8px", borderRadius: 10,
-                      background: e.id === empId ? "#E6F6FA" : "transparent", border: "none", textAlign: "left",
-                    }}
-                  >
-                    <div style={{ width: 34, height: 34, borderRadius: "50%", background: "#EEF2F3", color: "#666", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 12, flexShrink: 0 }}>
-                      {e.name.trim().split(/\s+/).slice(-2).map((w) => w[0]).join("").toUpperCase()}
-                    </div>
-                    <div style={{ minWidth: 0 }}>
-                      <div style={{ fontSize: 14.5, fontWeight: 600, color: "#222" }}>{e.name}</div>
-                      <div style={{ fontSize: 11.5, color: "#999" }}>{e.shift}{e.position ? ` · ${e.position}` : ""}</div>
-                    </div>
-                  </button>
-                ))}
-              {employees.filter((e) => normalizeSearch(e.name).includes(normalizeSearch(empSearch))).length === 0 && (
-                <div style={{ padding: "20px 12px", textAlign: "center", color: "#999", fontSize: 13 }}>Không tìm thấy ai khớp "{empSearch}"</div>
-              )}
-            </div>
+        <div style={{ position: "fixed", inset: 0, background: COLOR.bgCard, zIndex: 50, display: "flex", flexDirection: "column", height: "100dvh" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px", borderBottom: `1px solid ${COLOR.border}`, flexShrink: 0 }}>
+            <span style={{ fontWeight: 700, fontSize: 16, color: COLOR.textMain }}>Chọn nhân viên</span>
+            <button onClick={() => setEmpPickerOpen(false)} style={{ background: "none", border: "none", padding: 4 }}><X size={20} color={COLOR.textSub} /></button>
+          </div>
+          <div style={{ padding: "12px 16px", flexShrink: 0 }}>
+            <input
+              autoFocus type="text" placeholder="Gõ tên để tìm (không cần dấu)..." value={empSearch}
+              onChange={(e) => { setEmpSearch(e.target.value); if (empListRef.current) empListRef.current.scrollTop = 0; }}
+              style={{ ...inputStyle, fontSize: 15 }}
+            />
+          </div>
+          <div ref={empListRef} style={{ overflowY: "auto", flex: 1, padding: "0 8px 12px", WebkitOverflowScrolling: "touch" }}>
+            {employees
+              .filter((e) => normalizeSearch(e.name).includes(normalizeSearch(empSearch)))
+              .map((e) => (
+                <button
+                  key={e.id}
+                  onClick={() => { setEmpId(e.id); setSavedAt(null); setEmpPickerOpen(false); }}
+                  style={{
+                    width: "100%", display: "flex", alignItems: "center", gap: 10, padding: "10px 8px", borderRadius: 10,
+                    background: e.id === empId ? "#EAF7FA" : "transparent", border: "none", textAlign: "left",
+                  }}
+                >
+                  <div style={{ width: 34, height: 34, borderRadius: "50%", background: e.id === empId ? COLOR.brand : "#EEF2F3", color: e.id === empId ? "#fff" : COLOR.textSub, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 12, flexShrink: 0 }}>
+                    {e.name.trim().split(/\s+/).slice(-2).map((w) => w[0]).join("").toUpperCase()}
+                  </div>
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ fontSize: 14.5, fontWeight: 600, color: COLOR.textMain }}>{e.name}</div>
+                    <div style={{ fontSize: 11.5, color: COLOR.textSub }}>{e.shift}{e.position ? ` · ${e.position}` : ""}</div>
+                  </div>
+                </button>
+              ))}
+            {employees.filter((e) => normalizeSearch(e.name).includes(normalizeSearch(empSearch))).length === 0 && (
+              <div style={{ padding: "20px 12px", textAlign: "center", color: COLOR.textSub, fontSize: 13 }}>Không tìm thấy ai khớp "{empSearch}"</div>
+            )}
           </div>
         </div>
       )}
