@@ -1690,8 +1690,19 @@ function DashboardTab({ employees, ot, leave, giaCong, today }) {
         <button onClick={() => setViewDate(addDays(viewDate, 1))} style={{ background: "none", border: "none", padding: 6 }}><ChevronRight size={18} color={BRAND} /></button>
       </div>
 
+      {/* Chuyển nhanh giữa các tháng */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: COLOR.bgCard, border: `1px solid ${COLOR.border}`, borderRadius: 12, padding: "6px 10px" }}>
+        <button onClick={() => setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() - 1, 1))} style={{ display: "flex", alignItems: "center", gap: 2, background: "none", border: "none", padding: "6px 8px", color: COLOR.textSub, fontSize: 12, fontWeight: 700 }}>
+          <ChevronLeft size={14} color={COLOR.textSub} /> Tháng trước
+        </button>
+        <div style={{ fontSize: 12.5, fontWeight: 800, color: COLOR.brand }}>{monthLabel} / {viewDate.getFullYear()}</div>
+        <button onClick={() => setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 1))} style={{ display: "flex", alignItems: "center", gap: 2, background: "none", border: "none", padding: "6px 8px", color: COLOR.textSub, fontSize: 12, fontWeight: 700 }}>
+          Tháng sau <ChevronRight size={14} color={COLOR.textSub} />
+        </button>
+      </div>
+
       {/* Ô 1: Nhân sự hôm nay */}
-      <DashCard title="NHÂN SỰ HÔM NAY" dotColor={COLOR.brand}>
+      <DashCard title="NHÂN SỰ HÔM NAY" dotColor={COLOR.brand} tint="#EAF7FA">
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
           <DashStat label="Tổng số" value={`${totalEmployees} người`} />
           <DashStat label="Đi làm" value={`${workingToday} người`} />
@@ -1702,7 +1713,7 @@ function DashboardTab({ employees, ot, leave, giaCong, today }) {
       </DashCard>
 
       {/* Ô 2: Tăng ca hôm nay */}
-      <DashCard title="TĂNG CA HÔM NAY" dotColor={COLOR.warning}>
+      <DashCard title="TĂNG CA HÔM NAY" dotColor={COLOR.warning} tint="#FFF8E6">
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
           <DashStat label="Số người OT" value={`${otTodayCount} người`} />
           <DashStat label="Tổng giờ OT" value={fmtHours(otTodayHours)} />
@@ -1710,7 +1721,7 @@ function DashboardTab({ employees, ot, leave, giaCong, today }) {
       </DashCard>
 
       {/* Ô 3: Tổng theo tháng */}
-      <DashCard title={`TỔNG THEO ${monthLabel.toUpperCase()}`} dotColor={COLOR.success}>
+      <DashCard title={`TỔNG THEO ${monthLabel.toUpperCase()}`} dotColor={COLOR.success} tint="#EAF8EF">
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
           <DashStat label="Giờ tăng ca" value={fmtHours(otMonthHours)} />
           <DashStat label="Giờ đi muộn" value={fmtHours(muonMonthHours)} />
@@ -1720,15 +1731,15 @@ function DashboardTab({ employees, ot, leave, giaCong, today }) {
       </DashCard>
 
       {/* Ô 4: Gia công trong tháng */}
-      <DashCard title={`GIA CÔNG TRONG ${monthLabel.toUpperCase()}`} dotColor="#8B5CF6">
+      <DashCard title={`GIA CÔNG TRONG ${monthLabel.toUpperCase()}`} dotColor="#8B5CF6" tint="#F4EEFD">
         <div style={{ fontSize: 30, fontWeight: 800, color: COLOR.textMain }}>{giaCongMonthCount} <span style={{ fontSize: 14, fontWeight: 700, color: COLOR.textSub }}>chuyến xe</span></div>
       </DashCard>
     </div>
   );
 }
-function DashCard({ title, dotColor, children }) {
+function DashCard({ title, dotColor, tint, children }) {
   return (
-    <div style={{ background: COLOR.bgCard, border: `1px solid ${COLOR.border}`, borderRadius: 16, padding: 18 }}>
+    <div style={{ background: tint || COLOR.bgCard, border: `1px solid ${COLOR.border}`, borderRadius: 16, padding: 18 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
         <span style={{ width: 8, height: 8, borderRadius: "50%", background: dotColor, flexShrink: 0 }} />
         <span style={{ fontSize: 12.5, fontWeight: 800, color: COLOR.textMain, letterSpacing: 0.2 }}>{title}</span>
