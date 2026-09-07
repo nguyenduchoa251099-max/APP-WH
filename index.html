@@ -221,7 +221,27 @@
   .xh-nav input[type=date]{padding:5px 8px; font-size:13px; margin:0; width:auto; border-radius:8px;}
   /* overflow phải để visible thì dòng tiêu đề mới dính theo trang; màn hình hẹp mới bật cuộn ngang */
   .xh-wrap{overflow:visible; border:1px solid var(--line-soft); border-radius:8px; margin-top:10px;}
-  .xh-tbl{border-collapse:separate; border-spacing:0; width:100%; min-width:1000px; margin:0;}
+  .xh-tbl{border-collapse:separate; border-spacing:0; width:100%; min-width:1000px; margin:0; table-layout:fixed;}
+  .xh-tbl th{position:relative;}
+  .xh-grip{position:absolute; top:0; right:-3px; width:7px; height:100%; cursor:col-resize; z-index:3;}
+  .xh-grip:hover{background:var(--blue); opacity:.55;}
+  .xh-tbl .xh-stt{cursor:pointer; user-select:none;}
+  .xh-tbl thead th[data-xcol]{cursor:pointer; user-select:none;}
+  .xh-tbl thead th[data-xcol]:hover{background:#C9D8F0;}
+  .xh-tbl #xhAll{cursor:pointer; color:var(--blue);}
+  .xh-tbl tbody tr.rsel .xh-stt{background:var(--blue); color:#fff; font-weight:800;}
+  .xh-tbl td.cs{background:#DCEAFB;}                       /* ô trong vùng chọn */
+  .xh-tbl td.cs input.xh-in{background:transparent;}
+  .xh-tbl td.ca{box-shadow:inset 0 0 0 2px var(--blue);}   /* ô đang đứng */
+  .xh-tbl td.hl{background:#FFF3A8 !important;}            /* tô vàng luôn thắng mọi nền khác */
+  .xh-tbl td.cs.hl{background:#FBE79A !important;}
+  .xh-tbl td.ct input.xh-in{text-align:center;}
+  .xh-tbl input.xh-in.b{font-weight:800; color:#12213a;}
+  .xh-tools{display:inline-flex; gap:4px; align-items:center; border:1px solid var(--line);
+    border-radius:9px; padding:3px; background:var(--paper);}
+  .xh-tools button{min-width:34px; padding:5px 8px; font-size:13px; border-radius:6px;}
+  .xh-selinfo{font-size:12px; font-weight:700; color:var(--blue); text-transform:none; letter-spacing:0;}
+
   .xh-tbl th, .xh-tbl td{border-right:1px solid #c7d3e4; border-bottom:1px solid #c7d3e4; padding:0;}
   .xh-tbl th:last-child, .xh-tbl td:last-child{border-right:0;}
   .xh-tbl .xh-title{position:sticky; top:64px; z-index:11; height:42px;
@@ -252,9 +272,19 @@
   .hint-btn:hover{background:var(--blue); color:#fff;}
   .hint-btn.on{background:var(--blue); color:#fff;}
   .hint-box{margin-top:6px;}
+  .hint-box[hidden]{display:none !important;}   /* phải có, nếu không display khác sẽ ghi đè hidden */
   body:not(.phone) #otHint, body:not(.phone) #otHintBar{display:none !important;}  /* hướng dẫn vuốt chỉ dành cho điện thoại */
-  body.phone #otHintBar{margin:0 0 6px;}
-  body.phone #otHint{margin-bottom:8px;}
+  body.phone #otHintBar{display:none !important;}      /* nút ! đã dời lên thanh tiêu đề */
+  body.phone #otHint{margin:0 0 8px;}
+  body.phone .headright{flex-wrap:wrap; justify-content:flex-end; row-gap:5px; max-width:58%;}
+  body.phone .headright #btnBulkOT{background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.34);
+    color:#fff; font-size:11.5px; font-weight:800; padding:5px 9px; min-height:0; border-radius:9px;}
+  body.phone .headright .hint-btn{width:26px; height:26px; background:rgba(255,255,255,.18);
+    border:1px solid rgba(255,255,255,.34); color:#fff;}
+  body.phone .headright .hint-btn.on{background:#fff; color:var(--blue); border-color:#fff;}
+  /* bảng bắt đầu ngay, không còn khoảng trống thừa */
+  body.phone #sub-ds > .panel{padding-top:10px;}
+  body.phone #xhWarn:empty, body.phone #qkStat:empty{display:none;}
   /* Số liệu trong tháng của người được chọn (tab Đăng ký) */
   .qk-stat{border:1px solid var(--line-soft); border-radius:10px; background:var(--paper); padding:10px 12px; margin-top:10px;}
   .qk-stat .hd{font-size:11.5px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-soft); margin-bottom:7px;}
@@ -317,7 +347,8 @@
   .ot-row{position:relative; overflow:hidden;}
   .ot-slide{background:#fff; position:relative; z-index:1;}
   .ot-swipe{display:none;}
-  .ot-head{background:var(--blue-bg); border:1px solid #cfe0e8; border-radius:8px; margin-bottom:6px; font-size:11.5px; font-weight:800; color:var(--blue); text-transform:uppercase; letter-spacing:.03em;}
+  .ot-head{background:var(--blue-bg); border:1px solid #cfe0e8; border-radius:8px; margin-bottom:6px; font-size:11.5px; font-weight:800; color:var(--blue); text-transform:uppercase; letter-spacing:.03em;
+    position:sticky; top:64px; z-index:9;}
   .ot-row{border-bottom:1px solid var(--line-soft);}
   .ot-row:hover .ot-slide{background:#faf9f6;}
   .ot-name{flex:1; min-width:0;}
@@ -494,7 +525,7 @@
   body.phone header.top{margin:0 -10px; padding:11px 13px; border-radius:0 0 12px 12px;}
   body.phone header.top .eyebrow{display:none;}
   body.phone header.top h1{font-size:16px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-  body.phone header.top .subline{font-size:11.5px; margin-top:4px; flex-wrap:wrap; gap:6px;}
+  body.phone header.top .subline{font-size:11px; margin-top:3px; flex-wrap:nowrap; gap:5px; overflow:hidden;}
   body.phone nav.tabnav{display:none !important;}
   body.phone .headright .icon-btn{width:34px; height:34px; font-size:15px; border-radius:9px;}
   /* điện thoại không cần mấy nút quản trị này — cần thì bấm "Bản đầy đủ" */
@@ -536,9 +567,8 @@
   body.phone .ot-legend{display:none;}                     /* bỏ chú giải màu cho gọn */
   body.phone #btnOtLimit{display:none !important;}
   body.phone #sub-ds > .panel{padding-top:12px;}
-  body.phone #otHint{position:relative; padding-right:74px; min-height:46px; display:flex; align-items:center;}
-  body.phone #otHint #btnBulkOT{position:absolute; top:50%; transform:translateY(-50%); right:8px;
-    font-size:12.5px; font-weight:800; padding:8px 12px; min-height:0; border-radius:9px;}
+
+
   body.phone .ot-hint{font-size:12px; color:var(--ink-soft); background:var(--paper); border-radius:8px;
     padding:8px 10px; margin-bottom:8px; line-height:1.5;}
 
@@ -992,13 +1022,32 @@
           <button class="ghost sm" id="xhNext" title="Ngày sau">▶</button>
           <button class="secondary sm" id="xhToday">Hôm nay</button>
         </span>
+        <span class="xh-tools">
+          <button class="ghost sm" id="xhBold" title="In đậm (Ctrl+B)"><b>B</b></button>
+          <button class="ghost sm" id="xhHl" title="Tô nền vàng">🟡</button>
+          <button class="ghost sm" id="xhCenter" title="Căn giữa ô">Giữa</button>
+          <button class="ghost sm" id="xhClr" title="Xoá định dạng của vùng đang chọn">Bỏ ĐD</button>
+          <button class="ghost sm" id="xhCopy" title="Copy vùng đang chọn (Ctrl+C)">📋 Copy</button>
+        </span>
+        <span class="xh-selinfo" id="xhSelInfo"></span>
         <button class="ghost sm" id="xhAddRow">+ Thêm dòng</button>
         <button class="ghost sm" id="xhClean">🧹 Dọn dòng trống</button>
         <button class="secondary sm" id="xhXlsx">⬇ Xuất Excel</button>
       </h2>
       <div id="xhWarn"></div>
+      <div class="hintbar"><button class="hint-btn" data-hint="xhHint" title="Xem hướng dẫn">!</button></div>
+      <div class="note hint-box" id="xhHint" hidden>
+        <b>Chọn ô:</b> bấm 1 ô · bấm giữ rồi <b>kéo</b> để chọn cả vùng · <b>Shift+bấm</b> để nới vùng ·
+        bấm <b>số thứ tự</b> chọn cả dòng · bấm <b>tên cột</b> chọn cả cột · bấm ô <b>◤</b> góc trên chọn hết bảng.<br>
+        <b>Định dạng:</b> chọn ô rồi bấm <b>B</b> (in đậm, hoặc Ctrl+B) · <b>🟡</b> (tô vàng) · <b>Giữa</b> (căn giữa) · <b>Bỏ ĐD</b> (xoá định dạng).<br>
+        <b>Copy / dán:</b> chọn vùng rồi <b>Ctrl+C</b> (hoặc nút 📋) để dán sang Excel · copy từ Excel rồi <b>Ctrl+V</b> để dán vào bảng ·
+        <b>Delete</b> xoá nội dung vùng chọn.<br>
+        <b>Cột:</b> chữ dài hơn cột thì cột <b>tự nới</b> · kéo <b>vạch chia</b> ở tên cột để chỉnh tay · <b>bấm đúp</b> vạch chia cho vừa chữ dài nhất.<br>
+        <b>Di chuyển:</b> Enter xuống dòng dưới · Tab sang ô phải · mũi tên ↑ ↓ đổi dòng.
+      </div>
       <div class="xh-wrap">
         <table class="xh-tbl" id="xhTable">
+          <colgroup id="xhCg"></colgroup>
           <thead>
             <tr><th class="xh-title" id="xhTitle" colspan="10">—</th></tr>
             <tr id="xhHead"></tr>
@@ -1860,11 +1909,16 @@ function applyPhoneMode(){
     if(on && $('btnSyncNow').parentElement !== hr){ hr.prepend($('btnDiag')); hr.prepend($('btnSyncNow')); }
     if(!on && $('btnSyncNow').parentElement === hr){ nav.appendChild($('btnSyncNow')); nav.appendChild($('btnDiag')); }
   }
-  // nút "OT hàng loạt" nằm trong tiêu đề panel (bị ẩn trên điện thoại) -> đưa ra dòng hướng dẫn
-  const bulk = $('btnBulkOT'), hint = $('otHint');
-  if(bulk && hint){
-    if(on && bulk.parentElement !== hint){ hint.appendChild(bulk); bulk.textContent = '⏱ OT+'; }
-    if(!on && bulk.parentElement === hint){ $('btnManageEmp').before(bulk); bulk.textContent = 'OT hàng loạt'; }
+  // điện thoại: dời nút "OT hàng loạt" và nút "!" lên thanh tiêu đề, xếp dưới nút "Đầy đủ"
+  const bulk = $('btnBulkOT'), bar = $('otHintBar');
+  const hintBtn = document.querySelector('.hint-btn[data-hint="otHint"]');
+  if(bulk && hr){
+    if(on && bulk.parentElement !== hr){ hr.appendChild(bulk); bulk.textContent = '⏱ OT+'; }
+    if(!on && bulk.parentElement === hr){ $('btnManageEmp').before(bulk); bulk.textContent = 'OT hàng loạt'; }
+  }
+  if(hintBtn && hr && bar){
+    if(on && hintBtn.parentElement !== hr) hr.appendChild(hintBtn);
+    if(!on && hintBtn.parentElement === hr) bar.appendChild(hintBtn);
   }
   if(on){
     // Điện thoại: chốt về kho thành phẩm, tab Tăng ca/Nghỉ phép
@@ -1979,7 +2033,7 @@ function render(){
   if(activeTab === 'phancong'){ renderStatusLine(); renderCycleTag(); renderAssignTable(); renderEmpTable(); }
   if(activeTab === 'lichsu'){ renderHistoryFilterOptions(); renderHistory(); }
   if(activeTab === 'so5s') renderZones();
-  if(activeTab === 'xuathang'){ renderXuatHang(); xhBind(); }
+  if(activeTab === 'xuathang'){ renderXuatHang(); xhBind(); xhGripBind(); }
   if(activeTab === 'doica') renderRotation();
   if(activeTab === 'tangca'){
     $('otKhoName').textContent = w.name.toLowerCase();
@@ -3812,10 +3866,13 @@ function exportTP(kind){
 </script>
 <script>
 // =====================================================================
-// 11e. BẢNG XUẤT HÀNG (chỉ kho thành phẩm)
-//   - Mỗi ngày một bảng riêng, lưu theo khoá ngày YYYY-MM-DD
-//   - Dòng tiêu đề "Thứ ... - dd/mm/yyyy" tự nhảy theo ngày đang xem
-//   - Gõ vào dòng cuối là tự sinh thêm dòng mới
+// 11e. BẢNG XUẤT HÀNG (chỉ kho thành phẩm) — bảng tính kiểu Excel
+//   · Mỗi ngày một bảng riêng, lưu theo khoá ngày YYYY-MM-DD
+//   · Chọn ô: bấm 1 ô, kéo để chọn vùng, bấm số thứ tự chọn cả dòng,
+//     bấm tên cột chọn cả cột, Shift+bấm để nới vùng chọn
+//   · Định dạng: in đậm · tô nền vàng · căn giữa (áp cho vùng đang chọn)
+//   · Copy vùng chọn ra Excel, dán từ Excel vào bảng
+//   · Ô giữ 1 dòng; cột tự nới rộng khi chữ dài hơn cột
 // =====================================================================
 let XH_DATE = null;                       // null = đang xem hôm nay
 function xhKey(){ return XH_DATE || todayKey(); }
@@ -3827,42 +3884,155 @@ function xhRows(){
 }
 function xhEmptyRow(){ const o = {}; XH_COLS.forEach(c=>o[c.key] = ''); return o; }
 function xhRowEmpty(r){ return XH_COLS.every(c=>!String(r[c.key] || '').trim()); }
+function xhColKey(ci){ return XH_COLS[ci] ? XH_COLS[ci].key : null; }
 
+// ---- Bề rộng cột (kéo tay hoặc tự nới, dùng chung cho mọi ngày) ----
+function xhCols(){ const K = curKho(); if(!K.xhCols || typeof K.xhCols !== 'object') K.xhCols = {}; return K.xhCols; }
+function xhColW(c){ const w = Number(xhCols()[c.key]); return (w && w >= 46) ? w : c.w; }
+function xhSetColW(key, w){
+  w = Math.max(46, Math.min(560, Math.round(w)));
+  xhCols()[key] = w;
+  const col = document.querySelector(`#xhCg col[data-gc="${key}"]`);
+  if(col) col.style.width = w + 'px';
+  return w;
+}
+// Đo bề rộng chữ bằng đúng phông của bảng
+function xhTextW(t){
+  const cv = xhTextW._cv || (xhTextW._cv = document.createElement('canvas'));
+  const ctx = cv.getContext('2d');
+  if(!xhTextW._font){
+    const mau = document.querySelector('#xhBody input.xh-in');
+    const cs = mau ? getComputedStyle(mau) : null;
+    xhTextW._font = cs ? `700 ${cs.fontSize} ${cs.fontFamily}` : '700 13.5px sans-serif';
+  }
+  ctx.font = xhTextW._font;
+  return ctx.measureText(String(t || '')).width;
+}
+
+// ---- Định dạng từng ô: b = in đậm, h = tô vàng, c = căn giữa ----
+function xhFmt(r, key){ return (r && r.fmt && r.fmt[key]) || null; }
+function xhSetFmt(r, key, prop, on){
+  if(!r.fmt) r.fmt = {};
+  if(!r.fmt[key]) r.fmt[key] = {};
+  if(on) r.fmt[key][prop] = 1; else delete r.fmt[key][prop];
+  if(!Object.keys(r.fmt[key]).length) delete r.fmt[key];
+  if(r.fmt && !Object.keys(r.fmt).length) delete r.fmt;
+}
+
+// ---- Vùng đang chọn: 2 góc A và B (theo chỉ số dòng/cột) ----
+let XH_A = null, XH_B = null, XH_DRAG = false;
+function xhVung(){
+  if(!XH_A || !XH_B) return null;
+  return {
+    r1: Math.min(XH_A.r, XH_B.r), r2: Math.max(XH_A.r, XH_B.r),
+    c1: Math.min(XH_A.c, XH_B.c), c2: Math.max(XH_A.c, XH_B.c),
+  };
+}
+function xhSoO(){ const v = xhVung(); return v ? (v.r2 - v.r1 + 1) * (v.c2 - v.c1 + 1) : 0; }
+function xhChonO(r, c, noiRong){
+  const cell = { r, c };
+  if(noiRong && XH_A) XH_B = cell; else { XH_A = cell; XH_B = cell; }
+  xhVeVung();
+}
+// Tô lại vùng chọn mà không dựng lại cả bảng (giữ con trỏ đang gõ)
+function xhVeVung(){
+  const body = $('xhBody'); if(!body) return;
+  const v = xhVung();
+  body.querySelectorAll('td[data-c]').forEach(td=>{
+    const r = Number(td.dataset.r), c = Number(td.dataset.c);
+    td.classList.toggle('cs', !!v && r >= v.r1 && r <= v.r2 && c >= v.c1 && c <= v.c2);
+    td.classList.toggle('ca', !!XH_A && XH_A.r === r && XH_A.c === c);
+  });
+  body.querySelectorAll('tr').forEach(tr=>{
+    const r = Number(tr.dataset.xr);
+    tr.classList.toggle('rsel', !!v && r >= v.r1 && r <= v.r2);
+  });
+  const el = $('xhSelInfo');
+  if(el){
+    const n = xhSoO();
+    el.textContent = (!v || n <= 1) ? '' : `Đang chọn ${v.r2 - v.r1 + 1} dòng × ${v.c2 - v.c1 + 1} cột`;
+  }
+}
+function xhOInput(r, c){ return document.querySelector(`#xhBody input[data-xr="${r}"][data-xc="${xhColKey(c)}"]`); }
+function xhVaoO(r, c, boiDen){
+  const rows = xhRows();
+  r = Math.max(0, Math.min(rows.length - 1, r));
+  c = Math.max(0, Math.min(XH_COLS.length - 1, c));
+  const inp = xhOInput(r, c);
+  if(!inp) return;
+  xhChonO(r, c, false);
+  inp.focus();
+  if(boiDen) inp.select();
+}
+
+// ---- Dựng bảng ----
 function xhRowHtml(r, i){
   const filled = !xhRowEmpty(r);
   return `<tr data-xr="${i}" class="${filled ? 'xh-filled' : ''}">
-    <td class="xh-stt">${i + 1}</td>
-    ${XH_COLS.map(c=>`<td><input class="xh-in" data-xr="${i}" data-xc="${c.key}" value="${esc(r[c.key] || '')}"></td>`).join('')}
+    <td class="xh-stt" data-xrow="${i}" title="Bấm để chọn cả dòng">${i + 1}</td>
+    ${XH_COLS.map((c, ci)=>{
+      const f = xhFmt(r, c.key) || {};
+      const cls = ['xh-cell', f.h ? 'hl' : '', f.c ? 'ct' : ''].filter(Boolean).join(' ');
+      return `<td class="${cls}" data-r="${i}" data-c="${ci}"><input class="xh-in${f.b ? ' b' : ''}" data-xr="${i}" data-xc="${c.key}" value="${esc(r[c.key] || '')}" spellcheck="false"></td>`;
+    }).join('')}
     <td class="xh-del"><button class="danger sm" data-xdel="${i}" title="Xoá dòng này">✕</button></td>
   </tr>`;
 }
 function renderXuatHang(){
   const key = xhKey(), rows = xhRows();
-  // luôn có tối thiểu 10 dòng và luôn thừa 1 dòng trống ở cuối để gõ tiếp
   while(rows.length < XH_MIN_ROWS) rows.push(xhEmptyRow());
   if(!xhRowEmpty(rows[rows.length - 1])) rows.push(xhEmptyRow());
 
   $('xhDate').value = key;
   $('xhTitle').textContent = xhTieuDe(key);
   $('xhTitle').setAttribute('colspan', XH_COLS.length + 2);
-  $('xhHead').innerHTML = `<th class="xh-stt">stt</th>`
-    + XH_COLS.map(c=>`<th style="min-width:${c.w}px">${esc(c.label)}</th>`).join('')
+  $('xhHead').innerHTML = `<th class="xh-stt" id="xhAll" title="Chọn toàn bộ bảng">◤</th>`
+    + XH_COLS.map((c, ci)=>`<th data-xcol="${ci}" title="Bấm để chọn cả cột">${esc(c.label)}<span class="xh-grip" data-gcol="${c.key}" title="Kéo để giãn cột · bấm đúp cho vừa chữ"></span></th>`).join('')
     + `<th class="xh-del"></th>`;
+  $('xhCg').innerHTML = `<col style="width:52px">`
+    + XH_COLS.map(c=>`<col data-gc="${c.key}" style="width:${xhColW(c)}px">`).join('')
+    + `<col style="width:40px">`;
   $('xhBody').innerHTML = rows.map(xhRowHtml).join('');
+  xhVeVung();
 
   const soDong = rows.filter(r=>!xhRowEmpty(r)).length;
   const homNay = key === todayKey();
   $('xhWarn').innerHTML = `<div class="note"${homNay ? '' : ' style="border-left-color:var(--amber); background:var(--amber-bg); color:#7a5310;"'}>
     ${homNay ? '📅 Đang nhập cho <b>hôm nay</b>' : '📅 Đang xem ngày <b>' + esc(fmtVN(fromKey(key))) + '</b> (không phải hôm nay)'}
-    · đã nhập <b>${soDong}</b> dòng. Gõ vào dòng cuối là tự thêm dòng mới.</div>`;
+    · đã nhập <b>${soDong}</b> dòng.</div>`;
 }
-// Gõ chữ -> ghi vào bộ nhớ, tự thêm dòng, lưu sau 0,6 giây
+
+// ---- Lưu (gõ xong 0,6 giây là lưu; đổi tab / đóng trang cũng lưu nốt) ----
 let xhTimer = null, xhDirty = false;
+function xhLuuSau(){
+  xhDirty = true;
+  clearTimeout(xhTimer);
+  xhTimer = setTimeout(()=>{ xhDirty = false; saveKho(); }, 600);
+}
 function flushXuatHang(){
   if(!xhDirty) return;
   clearTimeout(xhTimer); xhDirty = false;
   saveKho();
 }
+
+// ---- Cột tự nới khi chữ dài hơn ô (vẫn giữ 1 dòng) ----
+function xhNoiCotNeuCan(key, text){
+  const col = document.querySelector(`#xhCg col[data-gc="${key}"]`);
+  if(!col) return;
+  const hienTai = col.offsetWidth || parseInt(col.style.width, 10) || 100;
+  const can = Math.ceil(xhTextW(text)) + 26;
+  if(can > hienTai && hienTai < 560){ xhSetColW(key, Math.min(560, can)); xhLuuSau(); }
+}
+function xhAutoFit(key){
+  const cot = XH_COLS.find(c=>c.key === key);
+  let w = xhTextW(cot ? cot.label : '') + 30;
+  xhRows().forEach(r=>{ const t = r[key]; if(t) w = Math.max(w, xhTextW(t) + 26); });
+  xhSetColW(key, w);
+  saveKho();
+  toast(`✓ Cột "${cot ? cot.label : key}" vừa với nội dung`);
+}
+
+// ---- Gắn sự kiện cho bảng ----
 function xhBind(){
   const body = $('xhBody');
   if(!body || body.dataset.bound) return;
@@ -3871,21 +4041,58 @@ function xhBind(){
   body.addEventListener('input', (e)=>{
     const inp = e.target;
     if(!inp.classList.contains('xh-in')) return;
-    const rows = xhRows(), i = Number(inp.dataset.xr);
+    const rows = xhRows(), i = Number(inp.dataset.xr), key = inp.dataset.xc;
     if(!rows[i]) return;
-    rows[i][inp.dataset.xc] = inp.value;
+    rows[i][key] = inp.value;
     const tr = inp.closest('tr');
     if(tr) tr.classList.toggle('xh-filled', !xhRowEmpty(rows[i]));
-    // đang gõ ở dòng cuối -> nối thêm 1 dòng trống, không vẽ lại cả bảng để không mất con trỏ
+    xhNoiCotNeuCan(key, inp.value);
     if(i === rows.length - 1 && !xhRowEmpty(rows[i])){
       rows.push(xhEmptyRow());
       body.insertAdjacentHTML('beforeend', xhRowHtml(rows[rows.length - 1], rows.length - 1));
     }
-    xhDirty = true;
-    clearTimeout(xhTimer);
-    xhTimer = setTimeout(()=>{ xhDirty = false; saveKho(); }, 600);
+    xhLuuSau();
   });
   body.addEventListener('change', (e)=>{ if(e.target.classList.contains('xh-in')) flushXuatHang(); });
+
+  // bấm / kéo chọn vùng ô
+  body.addEventListener('mousedown', (e)=>{
+    if(e.target.closest('[data-xdel]')) return;
+    const rowHead = e.target.closest('[data-xrow]');
+    if(rowHead){
+      const r = Number(rowHead.dataset.xrow);
+      if(e.shiftKey && XH_A){ XH_B = { r, c: XH_COLS.length - 1 }; }
+      else { XH_A = { r, c: 0 }; XH_B = { r, c: XH_COLS.length - 1 }; }
+      xhVeVung();
+      if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
+      e.preventDefault();
+      return;
+    }
+    const td = e.target.closest('td[data-c]');
+    if(!td) return;
+    const r = Number(td.dataset.r), c = Number(td.dataset.c);
+    if(e.shiftKey){ XH_B = { r, c }; xhVeVung(); e.preventDefault(); return; }
+    XH_A = { r, c }; XH_B = { r, c }; XH_DRAG = true;
+    xhVeVung();
+  });
+  body.addEventListener('mouseover', (e)=>{
+    if(!XH_DRAG) return;
+    const td = e.target.closest('td[data-c]');
+    if(!td) return;
+    const r = Number(td.dataset.r), c = Number(td.dataset.c);
+    if(XH_B && XH_B.r === r && XH_B.c === c) return;
+    XH_B = { r, c };
+    if(xhSoO() > 1 && document.activeElement && document.activeElement.blur) document.activeElement.blur();
+    xhVeVung();
+  });
+  body.addEventListener('focusin', (e)=>{
+    if(!e.target.classList.contains('xh-in')) return;
+    const td = e.target.closest('td[data-c]');
+    if(!td) return;
+    const r = Number(td.dataset.r), c = Number(td.dataset.c);
+    if(!XH_A || XH_A.r !== r || XH_A.c !== c || xhSoO() > 1) xhChonO(r, c, false);
+  });
+
   body.addEventListener('click', async (e)=>{
     const b = e.target.closest('[data-xdel]');
     if(!b) return;
@@ -3893,30 +4100,210 @@ function xhBind(){
     if(!rows[i]) return;
     if(!xhRowEmpty(rows[i]) && !await confirmBox('Xoá dòng này? Nội dung đã nhập sẽ mất.')) return;
     rows.splice(i, 1);
+    XH_A = XH_B = null;
     await saveKho(); renderXuatHang(); toast('✓ Đã xoá dòng');
   });
-  // Enter = xuống ô cùng cột ở dòng dưới cho nhanh
+
+  // phím tắt di chuyển như Excel
   body.addEventListener('keydown', (e)=>{
-    if(e.key !== 'Enter' || !e.target.classList.contains('xh-in')) return;
-    e.preventDefault();
-    const c = e.target.dataset.xc, i = Number(e.target.dataset.xr);
-    const next = $('xhBody').querySelector(`input[data-xr="${i + 1}"][data-xc="${c}"]`);
-    if(next){ next.focus(); next.select(); }
+    if(!e.target.classList.contains('xh-in')) return;
+    const r = Number(e.target.dataset.xr);
+    const c = XH_COLS.findIndex(x=>x.key === e.target.dataset.xc);
+    if(e.key === 'Enter'){ e.preventDefault(); xhVaoO(r + (e.shiftKey ? -1 : 1), c, true); }
+    else if(e.key === 'Tab'){ e.preventDefault(); xhVaoO(r, c + (e.shiftKey ? -1 : 1), true); }
+    else if(e.key === 'ArrowDown'){ e.preventDefault(); xhVaoO(r + 1, c, true); }
+    else if(e.key === 'ArrowUp'){ e.preventDefault(); xhVaoO(r - 1, c, true); }
   });
 }
-// Chuyển ngày
+function xhGripBind(){
+  const head = $('xhHead');
+  if(!head || head.dataset.gbound) return;
+  head.dataset.gbound = '1';
+  head.addEventListener('mousedown', (e)=>{
+    // ô ◤ góc trên bên trái = chọn toàn bộ bảng (gắn kiểu uỷ quyền vì tiêu đề bị dựng lại mỗi lần vẽ)
+    if(e.target.closest('#xhAll')){
+      XH_A = { r: 0, c: 0 }; XH_B = { r: xhRows().length - 1, c: XH_COLS.length - 1 };
+      xhVeVung();
+      if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
+      e.preventDefault();
+      return;
+    }
+    const g = e.target.closest('.xh-grip');
+    if(g){
+      e.preventDefault();
+      const key = g.dataset.gcol, col = document.querySelector(`#xhCg col[data-gc="${key}"]`);
+      xhDrag = { key, col, x0: e.clientX, w0: col.offsetWidth || parseInt(col.style.width, 10) || 100 };
+      document.body.style.cursor = 'col-resize';
+      return;
+    }
+    const th = e.target.closest('[data-xcol]');
+    if(th){                                     // bấm tên cột = chọn cả cột
+      const c = Number(th.dataset.xcol), n = xhRows().length - 1;
+      XH_A = { r: 0, c }; XH_B = { r: n, c };
+      xhVeVung();
+      if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
+      e.preventDefault();
+    }
+  });
+  head.addEventListener('dblclick', (e)=>{
+    const g = e.target.closest('.xh-grip');
+    if(g) xhAutoFit(g.dataset.gcol);
+  });
+}
+// kéo giãn cột
+let xhDrag = null;
+document.addEventListener('mousemove', (e)=>{
+  if(!xhDrag) return;
+  xhDrag.col.style.width = Math.max(46, xhDrag.w0 + (e.clientX - xhDrag.x0)) + 'px';
+});
+document.addEventListener('mouseup', async ()=>{
+  XH_DRAG = false;
+  if(!xhDrag) return;
+  const { key, col } = xhDrag; xhDrag = null;
+  document.body.style.cursor = '';
+  xhSetColW(key, parseInt(col.style.width, 10) || col.offsetWidth);
+  await saveKho();
+});
+
+// ---- Định dạng vùng đang chọn ----
+function xhODangChon(){
+  const v = xhVung(), rows = xhRows(), out = [];
+  if(!v) return out;
+  for(let r = v.r1; r <= v.r2; r++){
+    if(!rows[r]) continue;
+    for(let c = v.c1; c <= v.c2; c++) out.push({ r: rows[r], key: xhColKey(c) });
+  }
+  return out;
+}
+function xhVeLai(){
+  const a = XH_A ? { ...XH_A } : null, b = XH_B ? { ...XH_B } : null;
+  renderXuatHang();
+  XH_A = a; XH_B = b; xhVeVung();
+}
+async function xhToggleFmt(prop){
+  const os = xhODangChon();
+  if(!os.length){ toast('⚠ Bấm vào ô (hoặc kéo chọn vùng) rồi bấm nút định dạng'); return; }
+  const dangBat = os.every(o=>xhFmt(o.r, o.key) && xhFmt(o.r, o.key)[prop]);
+  os.forEach(o=>xhSetFmt(o.r, o.key, prop, !dangBat));
+  await saveKho();
+  xhVeLai();
+  const ten = { b: 'in đậm', h: 'tô vàng', c: 'căn giữa' }[prop];
+  toast(`✓ ${dangBat ? 'Đã bỏ' : 'Đã'} ${ten} ${os.length} ô`);
+}
+async function xhXoaDinhDang(){
+  const os = xhODangChon();
+  if(!os.length){ toast('⚠ Chọn ô trước đã'); return; }
+  os.forEach(o=>['b','h','c'].forEach(p=>xhSetFmt(o.r, o.key, p, false)));
+  await saveKho(); xhVeLai();
+  toast('✓ Đã xoá định dạng');
+}
+
+// ---- Copy vùng chọn (dán thẳng vào Excel) ----
+function xhTsv(){
+  const v = xhVung(), rows = xhRows();
+  if(!v) return '';
+  const out = [];
+  for(let r = v.r1; r <= v.r2; r++){
+    const line = [];
+    for(let c = v.c1; c <= v.c2; c++) line.push(String((rows[r] && rows[r][xhColKey(c)]) || '').replace(/[\t\n]/g, ' '));
+    out.push(line.join('\t'));
+  }
+  return out.join('\n');
+}
+function xhHtmlBang(){
+  const v = xhVung(), rows = xhRows();
+  if(!v) return '';
+  let h = '<table>';
+  for(let r = v.r1; r <= v.r2; r++){
+    h += '<tr>';
+    for(let c = v.c1; c <= v.c2; c++){
+      const key = xhColKey(c), f = xhFmt(rows[r], key) || {};
+      const st = [f.h ? 'background:#FFF3A8' : '', f.b ? 'font-weight:bold' : '', f.c ? 'text-align:center' : ''].filter(Boolean).join(';');
+      h += `<td style="${st}">${esc((rows[r] && rows[r][key]) || '')}</td>`;
+    }
+    h += '</tr>';
+  }
+  return h + '</table>';
+}
+function xhDatClipboard(ev){
+  const tsv = xhTsv();
+  if(!tsv) return false;
+  ev.clipboardData.setData('text/plain', tsv);
+  ev.clipboardData.setData('text/html', xhHtmlBang());
+  ev.preventDefault();
+  return true;
+}
+function xhCopy(){
+  if(!xhVung()){ toast('⚠ Chọn ô hoặc vùng cần copy trước'); return; }
+  const n = xhSoO();
+  let ok = false;
+  const h = (ev)=>{ ok = xhDatClipboard(ev); };
+  document.addEventListener('copy', h, true);
+  try{
+    if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
+    document.execCommand('copy');
+  }catch(e){}
+  document.removeEventListener('copy', h, true);
+  if(ok){ toast(`✓ Đã copy ${n} ô — dán thẳng vào Excel được`); return; }
+  const tsv = xhTsv();
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(tsv).then(()=>toast(`✓ Đã copy ${n} ô`), ()=>toast('⚠ Trình duyệt chặn copy — dùng Ctrl+C'));
+  }else toast('⚠ Trình duyệt chặn copy — dùng Ctrl+C');
+}
+// Ctrl+C: 1 ô thì để trình duyệt copy chữ như thường, nhiều ô thì copy cả vùng
+document.addEventListener('copy', (e)=>{
+  if(activeTab !== 'xuathang' || xhSoO() < 2) return;
+  if(xhDatClipboard(e)) toast(`✓ Đã copy ${xhSoO()} ô`);
+});
+// Dán từ Excel: điền từ ô đang chọn, tự thêm dòng nếu thiếu
+document.addEventListener('paste', async (e)=>{
+  if(activeTab !== 'xuathang' || !XH_A) return;
+  const txt = ((e.clipboardData || window.clipboardData).getData('text/plain') || '');
+  if(!txt.includes('\t') && !txt.includes('\n')) return;   // dán 1 ô lẻ thì để trình duyệt tự làm
+  e.preventDefault();
+  const bang = txt.replace(/\r/g, '').replace(/\n+$/, '').split('\n').map(l=>l.split('\t'));
+  const rows = xhRows();
+  const r0 = XH_A.r, c0 = XH_A.c;
+  bang.forEach((line, i)=>{
+    while(rows.length <= r0 + i) rows.push(xhEmptyRow());
+    line.forEach((val, j)=>{
+      const key = xhColKey(c0 + j);
+      if(key) rows[r0 + i][key] = String(val).trim();
+    });
+  });
+  if(!xhRowEmpty(rows[rows.length - 1])) rows.push(xhEmptyRow());
+  XH_A = { r: r0, c: c0 };
+  XH_B = { r: r0 + bang.length - 1, c: Math.min(XH_COLS.length - 1, c0 + bang[0].length - 1) };
+  await saveKho();
+  renderXuatHang();
+  XH_COLS.forEach(c=>{ rows.forEach(r=>{ if(r[c.key]) xhNoiCotNeuCan(c.key, r[c.key]); }); });
+  toast(`✓ Đã dán ${bang.length} dòng × ${bang[0].length} cột`);
+});
+document.addEventListener('keydown', (e)=>{
+  if(activeTab !== 'xuathang') return;
+  if((e.ctrlKey || e.metaKey) && (e.key === 'b' || e.key === 'B')){ e.preventDefault(); xhToggleFmt('b'); return; }
+  if(e.key === 'Delete' && xhSoO() > 1){
+    e.preventDefault();
+    xhODangChon().forEach(o=>{ o.r[o.key] = ''; });
+    saveKho(); xhVeLai();
+    toast('✓ Đã xoá nội dung vùng chọn');
+  }
+});
+
+// ---- Chuyển ngày / dọn dòng ----
 async function xhGoDay(key){
   flushXuatHang();
   XH_DATE = (key === todayKey()) ? null : key;
+  XH_A = XH_B = null;
   renderXuatHang();
 }
-// Xoá hết dòng trống thừa (giữ tối thiểu 10 dòng)
 async function xhClean(){
   const st = xhStore(), k = xhKey();
   st[k] = xhRows().filter(r=>!xhRowEmpty(r));
+  XH_A = XH_B = null;
   await saveKho(); renderXuatHang(); toast('✓ Đã dọn dòng trống');
 }
-// Xuất bảng của ngày đang xem ra Excel
+// ---- Xuất Excel (giữ in đậm / tô vàng / căn giữa) ----
 function xhExportXlsx(){
   if(typeof XLSX === 'undefined'){ toast('⚠ Chưa tải được thư viện Excel — kiểm tra mạng rồi tải lại trang'); return; }
   const key = xhKey(), rows = xhRows().filter(r=>!xhRowEmpty(r));
@@ -3927,8 +4314,20 @@ function xhExportXlsx(){
     ...rows.map((r, i)=>[i + 1, ...XH_COLS.map(c=>r[c.key] || '')]),
   ];
   const ws = XLSX.utils.aoa_to_sheet(data);
-  ws['!cols'] = [{wch:5}, ...XH_COLS.map(c=>({wch: Math.round(c.w / 8)}))];
-  ws['!merges'] = [{s:{r:0,c:0}, e:{r:0,c:XH_COLS.length}}];
+  rows.forEach((r, i)=>{
+    XH_COLS.forEach((c, j)=>{
+      const f = xhFmt(r, c.key); if(!f) return;
+      const cell = ws[XLSX.utils.encode_cell({ r: i + 2, c: j + 1 })];
+      if(!cell) return;
+      cell.s = {
+        font: { bold: !!f.b },
+        alignment: { horizontal: f.c ? 'center' : 'left' },
+        fill: f.h ? { patternType: 'solid', fgColor: { rgb: 'FFF3A8' } } : undefined,
+      };
+    });
+  });
+  ws['!cols'] = [{ wch: 5 }, ...XH_COLS.map(c=>({ wch: Math.round(xhColW(c) / 8) }))];
+  ws['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: XH_COLS.length } }];
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Xuat hang');
   XLSX.writeFile(wb, `xuat-hang-${key}.xlsx`);
@@ -4818,6 +5217,11 @@ $('xhDate').addEventListener('change', e=>{ if(e.target.value) xhGoDay(e.target.
 $('xhAddRow').onclick = async ()=>{ xhRows().push(xhEmptyRow()); await saveKho(); renderXuatHang(); };
 $('xhClean').onclick  = ()=>xhClean();
 $('xhXlsx').onclick   = ()=>xhExportXlsx();
+$('xhBold').onclick   = ()=>xhToggleFmt('b');
+$('xhHl').onclick     = ()=>xhToggleFmt('h');
+$('xhCenter').onclick = ()=>xhToggleFmt('c');
+$('xhClr').onclick    = ()=>xhXoaDinhDang();
+$('xhCopy').onclick   = ()=>xhCopy();
 
 // Nút "!" bật/tắt các dòng hướng dẫn — nhớ lựa chọn cho lần sau
 function hintKey(id){ return 'appwh-hint-' + id; }
