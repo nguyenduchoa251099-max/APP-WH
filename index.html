@@ -244,6 +244,26 @@
     .xh-wrap{overflow-x:auto;}
     .xh-tbl .xh-title{top:0;} .xh-tbl thead tr:nth-child(2) th{top:42px;}
   }
+  /* Nút "!" bật/tắt dòng hướng dẫn cho khỏi rối mắt */
+  .hintbar{display:flex; justify-content:flex-end; margin-top:8px;}
+  .hint-btn{width:26px; height:26px; min-height:0; padding:0; border-radius:50%;
+    border:1.5px solid var(--blue); background:var(--blue-bg); color:var(--blue);
+    font-size:14px; font-weight:900; line-height:1; cursor:pointer;}
+  .hint-btn:hover{background:var(--blue); color:#fff;}
+  .hint-btn.on{background:var(--blue); color:#fff;}
+  .hint-box{margin-top:6px;}
+  body:not(.phone) #otHint, body:not(.phone) #otHintBar{display:none !important;}  /* hướng dẫn vuốt chỉ dành cho điện thoại */
+  body.phone #otHintBar{margin:0 0 6px;}
+  body.phone #otHint{margin-bottom:8px;}
+  /* Số liệu trong tháng của người được chọn (tab Đăng ký) */
+  .qk-stat{border:1px solid var(--line-soft); border-radius:10px; background:var(--paper); padding:10px 12px; margin-top:10px;}
+  .qk-stat .hd{font-size:11.5px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-soft); margin-bottom:7px;}
+  .qk-stat .rows{display:grid; grid-template-columns:1fr 1fr; gap:8px 12px;}
+  .qk-stat .it{display:flex; flex-direction:column; gap:1px;}
+  .qk-stat .it .k{font-size:11.5px; color:var(--ink-soft); font-weight:700;}
+  .qk-stat .it .v{font-size:17px; font-weight:800; color:var(--ink);}
+  .qk-stat .it .v.hot{color:#c8102e;}
+  .qk-stat .it .v.ok{color:var(--blue);}
   .toast.bad{background:#FF2020; font-weight:800;}
   .save-alert{position:sticky; top:0; z-index:60; display:flex; align-items:center; gap:12px; flex-wrap:wrap;
     background:#FF2020; color:#fff; padding:11px 16px; border-radius:10px; margin:10px 0 2px;
@@ -293,10 +313,13 @@
   .subnav button.active{background:var(--blue-dark); color:#fff; border-color:var(--blue-dark);}
   .subpage{display:none;} .subpage.active{display:block;}
 
-  .ot-head, .ot-row{display:flex; align-items:center; gap:10px; padding:9px 12px;}
+  .ot-head, .ot-slide{display:flex; align-items:center; gap:10px; padding:9px 12px;}
+  .ot-row{position:relative; overflow:hidden;}
+  .ot-slide{background:#fff; position:relative; z-index:1;}
+  .ot-swipe{display:none;}
   .ot-head{background:var(--blue-bg); border:1px solid #cfe0e8; border-radius:8px; margin-bottom:6px; font-size:11.5px; font-weight:800; color:var(--blue); text-transform:uppercase; letter-spacing:.03em;}
-  .ot-row{background:#fff; border-bottom:1px solid var(--line-soft);}
-  .ot-row:hover{background:#faf9f6;}
+  .ot-row{border-bottom:1px solid var(--line-soft);}
+  .ot-row:hover .ot-slide{background:#faf9f6;}
   .ot-name{flex:1; min-width:0;}
   .ot-name .nm{font-size:15px; font-weight:600; cursor:pointer; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
   .ot-name .nm:hover{color:var(--blue); text-decoration:underline;}
@@ -461,18 +484,19 @@
 
   body.phone #sidebar, body.phone #sbBackdrop, body.phone #btnBurger{display:none !important;}
   body.narrow #btnFullMode{display:inline-flex;}   /* màn hình hẹp luôn thấy nút, kể cả khi đang xem bản đầy đủ */
-  body.phone .brand-logo{height:20px;}
-  body.phone #btnFullMode{padding:6px 9px; font-size:11.5px;}
+  body.phone .brand-logo{display:none;}          /* nhường chỗ cho tiêu đề trên màn hình hẹp */
+  body.phone header.top .row{gap:8px;}
+  body.phone header.top .lefthead{min-width:0; flex:1 1 auto;}
+  body.phone .headright{gap:6px;}
+  body.phone #btnFullMode{padding:6px 8px; font-size:11px;}
   body.phone header.top .subline{white-space:nowrap;}
   body.phone #inner{padding:0 10px 90px;}
   body.phone header.top{margin:0 -10px; padding:11px 13px; border-radius:0 0 12px 12px;}
   body.phone header.top .eyebrow{display:none;}
-  body.phone header.top h1{font-size:17px;}
+  body.phone header.top h1{font-size:16px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
   body.phone header.top .subline{font-size:11.5px; margin-top:4px; flex-wrap:wrap; gap:6px;}
-  body.phone nav.tabnav{padding:8px 0 2px; margin-bottom:0; gap:6px;}
-  body.phone nav.tabnav button[data-tab]{display:none !important;}
-  body.phone nav.tabnav .spacer{flex:1;}
-  body.phone nav.tabnav .icon-btn{width:38px; height:38px;}
+  body.phone nav.tabnav{display:none !important;}
+  body.phone .headright .icon-btn{width:34px; height:34px; font-size:15px; border-radius:9px;}
   /* điện thoại không cần mấy nút quản trị này — cần thì bấm "Bản đầy đủ" */
   body.phone #btnManageEmp, body.phone #btnDedupe{display:none !important;}
   body.phone .panel{padding:12px 12px; border-radius:12px; margin-bottom:12px;}
@@ -483,25 +507,60 @@
   body.phone .subnav{display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; padding:10px 0 4px;}
   body.phone .subnav button{padding:11px 4px; font-size:12.5px; font-weight:800; border-radius:10px; white-space:normal; line-height:1.25;}
 
-  /* danh sách giờ OT: xếp dọc thành từng thẻ, ngón tay bấm được */
-  body.phone .ot-head{display:none;}
-  body.phone .ot-row{display:block; padding:11px 4px; border-bottom:1px solid var(--line);}
-  body.phone .ot-name{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:8px;}
-  body.phone .ot-name .nm{font-size:16px; font-weight:800; white-space:normal;}
-  body.phone .ot-shift{margin-top:0; font-size:11.5px; padding:3px 10px;}
-  body.phone .ot-bars{display:grid; grid-template-columns:1fr 1fr; gap:8px 12px; width:100%;}
-  body.phone .otb-top{font-size:12px;}
-  body.phone .otb-track{height:12px;}
-  body.phone .ot-add-m{display:none !important;}
-  body.phone .ot-acts{display:flex !important; gap:8px; margin-top:10px;}
-  body.phone .ot-acts button{flex:1; padding:11px 6px; font-size:14px; font-weight:800; border-radius:10px;}
+  /* ---- Danh sách nhân viên trên điện thoại: 1 dòng gọn, vuốt trái để chọn ---- */
+  body.phone .ot-head{display:flex; position:sticky; top:0; z-index:12; margin:0 0 2px;
+    padding:9px 10px; border-radius:10px; font-size:11px;}
+  body.phone .ot-head .ot-bars > div span{display:none;}     /* chỉ để D W M Y cho gọn */
+  body.phone .ot-head .ot-name{font-size:11px;}
+  body.phone .ot-head .ot-acts{display:none !important;}
+  body.phone .ot-row{border-bottom:1px solid var(--line-soft); background:#fff;}
+  body.phone .ot-slide{padding:8px 10px; gap:8px; transform:translateX(0); transition:transform .18s ease;
+    touch-action:pan-y; will-change:transform;}
+  body.phone .ot-row.swiped .ot-slide{transform:translateX(-196px);}
+  body.phone .ot-name{flex:1 1 auto; min-width:96px;}
+  body.phone .ot-name .nm{font-size:15.5px; font-weight:800; line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  body.phone .ot-shift{margin-top:3px; font-size:10.5px; padding:2px 8px; min-height:0; line-height:1.5;
+    max-width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:inline-block;}
+  body.phone .ot-bars{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:7px; flex:1 1 60%; min-width:0;}
+  body.phone .otb-top{font-size:11.5px; font-weight:800;}
+  body.phone .otb-track{height:6px;}
+  body.phone .ot-acts, body.phone .ot-add-m{display:none !important;}
+
+  /* 2 nút nấp phía sau, hiện ra khi vuốt từ phải sang trái */
+  body.phone .ot-swipe{display:flex; position:absolute; top:0; bottom:0; right:0; width:196px; z-index:0;}
+  body.phone .ot-swipe button{flex:1; border:0; border-radius:0; color:#fff; font-size:14.5px; font-weight:800;
+    display:flex; align-items:center; justify-content:center; padding:0; min-height:0;}
+  body.phone .ot-swipe .sw-ot{background:var(--blue);}
+  body.phone .ot-swipe .sw-lv{background:#E02040;}
+  body.phone #sub-ds > .panel > h2{display:none;}          /* tiêu đề dài, header đã ghi tên kho rồi */
+  body.phone .ot-legend{display:none;}                     /* bỏ chú giải màu cho gọn */
+  body.phone #btnOtLimit{display:none !important;}
+  body.phone #sub-ds > .panel{padding-top:12px;}
+  body.phone #otHint{position:relative; padding-right:74px; min-height:46px; display:flex; align-items:center;}
+  body.phone #otHint #btnBulkOT{position:absolute; top:50%; transform:translateY(-50%); right:8px;
+    font-size:12.5px; font-weight:800; padding:8px 12px; min-height:0; border-radius:9px;}
+  body.phone .ot-hint{font-size:12px; color:var(--ink-soft); background:var(--paper); border-radius:8px;
+    padding:8px 10px; margin-bottom:8px; line-height:1.5;}
+
+  /* ---- Thanh điều hướng dưới đáy màn hình ---- */
+  .mobnav{display:none;}
+  body.phone .mobnav{display:grid; grid-template-columns:repeat(3,1fr); position:fixed; left:0; right:0; bottom:0;
+    z-index:120; background:rgba(255,255,255,.97); border-top:1px solid var(--line);
+    padding:6px 4px calc(6px + env(safe-area-inset-bottom)); box-shadow:0 -3px 14px rgba(0,0,0,.08);}
+  body.phone .mobnav button{background:none; border:0; color:var(--ink-soft); font-size:11.5px; font-weight:700;
+    display:flex; flex-direction:column; align-items:center; gap:3px; padding:5px 2px; min-height:0;}
+  body.phone .mobnav button svg{width:23px; height:23px;}
+  body.phone .mobnav button.on{color:var(--blue); font-weight:800;}
+  body.phone .subnav{display:none !important;}
 
   /* ô nhập / nút bấm to hơn cho vừa ngón tay */
   body.phone input, body.phone select, body.phone textarea{font-size:16px; padding:11px 12px;}
   body.phone button{min-height:40px;}
   body.phone .btnrow{display:flex; flex-wrap:wrap; gap:8px;}
   body.phone .btnrow button{flex:1 1 46%;}
-  body.phone .row2, body.phone .row3{grid-template-columns:1fr; gap:8px;}
+  body.phone .row2{grid-template-columns:1fr 1fr; gap:8px;}
+  body.phone .row3{grid-template-columns:1fr 1fr 1fr; gap:6px;}
+  body.phone .row3 button{font-size:12.5px; padding:10px 2px;}
   body.phone .modal{width:100%; max-width:none; border-radius:14px 14px 0 0; max-height:92vh;}
   body.phone .modal-back{align-items:flex-end; padding:0;}
   body.phone .note{font-size:13px;}
@@ -971,9 +1030,15 @@
           <span><i style="background:#F5B400"></i>Sắp chạm hạn mức</span>
           <span><i style="background:#D7263D"></i>Đã chạm / vượt hạn mức</span>
         </div>
+        <div class="hintbar" id="otHintBar" style="display:none;">
+          <button class="hint-btn" data-hint="otHint" title="Xem hướng dẫn">!</button>
+        </div>
+        <div class="ot-hint hint-box" id="otHint" hidden>
+          👉 <b>Vuốt trái</b> để chọn Tăng ca / Nghỉ phép · bấm <b>tên</b> để sửa giờ · bấm <b>ca làm</b> để đổi ca
+        </div>
         <div class="ot-head">
           <div class="ot-name">Họ tên</div>
-          <div class="ot-bars"><div>D · Ngày</div><div>W · Tuần</div><div>M · Tháng</div><div>Y · Năm</div></div>
+          <div class="ot-bars"><div><b>D</b><span> · Ngày</span></div><div><b>W</b><span> · Tuần</span></div><div><b>M</b><span> · Tháng</span></div><div><b>Y</b><span> · Năm</span></div></div>
           <div class="ot-acts" style="width:150px"></div>
         </div>
         <div id="otList"></div>
@@ -1011,11 +1076,11 @@
             <select id="qkReason"></select>
           </div>
           <div id="qkWarn"></div>
-          <label class="field-label">Ghi chú (không bắt buộc)</label>
-          <textarea id="qkNote" rows="2" placeholder="VD: tăng ca cắt gấp đơn XYZ"></textarea>
+          <div id="qkStat"></div>
           <div class="btnrow" style="margin-top:14px;"><button id="qkSubmit">Gửi</button></div>
           <div id="qkResult" style="font-size:13px; margin-top:8px;"></div>
-          <p class="note" style="margin-top:10px;">Gửi lại cùng tên, cùng ngày, cùng loại sẽ tự cập nhật — không tạo bản ghi trùng.</p>
+          <div class="hintbar"><button class="hint-btn" data-hint="qkHint" title="Xem lưu ý">!</button></div>
+          <p class="note hint-box" id="qkHint" hidden>Gửi lại cùng tên, cùng ngày, cùng loại sẽ tự cập nhật — không tạo bản ghi trùng.</p>
         </div>
         <div class="panel">
           <h2><span class="n">🔔</span>Đã ghi nhận (hôm nay &amp; sắp tới)</h2>
@@ -1037,7 +1102,8 @@
           <button class="secondary" id="btnAddEvent">+ Lịch họp / sự kiện</button>
           <button class="secondary" id="btnAddGiaCong">+ Gia công</button>
         </div>
-        <div class="note" style="margin-top:10px;">Ô có dữ liệu bấm vào để xem chi tiết và xoá. Ký hiệu: <b>N</b> nghỉ · <b>S</b> về sớm · <b>M</b> đi muộn · <b>OT</b> tăng ca · <b>OS…</b> chuyến gia công.</div>
+        <div class="hintbar"><button class="hint-btn" data-hint="calHint" title="Xem ký hiệu">!</button></div>
+        <div class="note hint-box" id="calHint" hidden>Ô có dữ liệu bấm vào để xem chi tiết và xoá. Ký hiệu: <b>N</b> nghỉ · <b>S</b> về sớm · <b>M</b> đi muộn · <b>OT</b> tăng ca · <b>OS…</b> chuyến gia công.</div>
       </div>
     </div>
   </main>
@@ -1077,6 +1143,11 @@
   </div>
   </div>
 </div>
+<nav class="mobnav" id="mobNav">
+  <button data-msub="ds"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M16 19v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 4 17.5V19"/><circle cx="10" cy="8" r="3.2"/><path d="M20 19v-1.4a3.4 3.4 0 0 0-2.6-3.3"/><path d="M15.5 5.2a3.2 3.2 0 0 1 0 6"/></svg><span>Nhân viên</span></button>
+  <button data-msub="lich"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 9.5h17M8 3.5v3M16 3.5v3"/></svg><span>Lịch</span></button>
+  <button data-msub="dk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20.5l1-4.2L16.2 5.1a2 2 0 0 1 2.8 0l.9.9a2 2 0 0 1 0 2.8L8.7 19.9z"/><path d="M14.5 6.8l2.7 2.7"/></svg><span>Đăng ký</span></button>
+</nav>
 <div class="toast" id="toast"></div>
 <div id="modalHost"></div>
 <script>
@@ -1783,6 +1854,18 @@ function applyPhoneMode(){
   document.body.classList.toggle('narrow', manHinhHep());
   const btn = $('btnFullMode');
   if(btn) btn.textContent = FULL_MODE ? '📱 Điện thoại' : '💻 Đầy đủ';
+  // điện thoại: dời nút 🔄 và 🩺 lên thanh tiêu đề cho đỡ tốn 1 hàng
+  const hr = document.querySelector('.headright'), nav = $('tabNav');
+  if(hr && nav){
+    if(on && $('btnSyncNow').parentElement !== hr){ hr.prepend($('btnDiag')); hr.prepend($('btnSyncNow')); }
+    if(!on && $('btnSyncNow').parentElement === hr){ nav.appendChild($('btnSyncNow')); nav.appendChild($('btnDiag')); }
+  }
+  // nút "OT hàng loạt" nằm trong tiêu đề panel (bị ẩn trên điện thoại) -> đưa ra dòng hướng dẫn
+  const bulk = $('btnBulkOT'), hint = $('otHint');
+  if(bulk && hint){
+    if(on && bulk.parentElement !== hint){ hint.appendChild(bulk); bulk.textContent = '⏱ OT+'; }
+    if(!on && bulk.parentElement === hint){ $('btnManageEmp').before(bulk); bulk.textContent = 'OT hàng loạt'; }
+  }
   if(on){
     // Điện thoại: chốt về kho thành phẩm, tab Tăng ca/Nghỉ phép
     VIEW = 'kho'; CUR_KHO = 'thanhpham'; activeTab = 'tangca';
@@ -1825,6 +1908,8 @@ function switchSub(name){
   document.querySelectorAll('#tab-tangca .subpage').forEach(el=>el.classList.remove('active'));
   $('sub-' + name).classList.add('active');
   document.querySelectorAll('#otSubnav button').forEach(b=>b.classList.toggle('active', b.dataset.sub===name));
+  document.querySelectorAll('#mobNav button').forEach(b=>b.classList.toggle('on', b.dataset.msub===name));
+  window.scrollTo(0, 0);
   render();
 }
 function buildSidebar(){
@@ -1839,9 +1924,12 @@ function applyTabVisibility(){
   if(applyPhoneMode()){          // điện thoại: 1 kho, 1 tab, không cần thanh tab
     document.querySelectorAll('.tabpage').forEach(el=>el.classList.remove('active'));
     $('tab-tangca').classList.add('active');
-    $('tabNav').style.display = 'flex';   // chỉ ẩn các nút tab, vẫn giữ nút đồng bộ 🔄 và 🩺
+    $('tabNav').style.display = 'none';
+    const hb = $('otHintBar'); if(hb) hb.style.display = 'flex';
+    document.querySelectorAll('#mobNav button').forEach(b=>b.classList.toggle('on', b.dataset.msub === activeSub));
     return;
   }
+  const hb0 = $('otHintBar'); if(hb0) hb0.style.display = 'none';
   const isTp = CUR_KHO === 'thanhpham';
   $('tabNav').style.display = (VIEW === 'tong3kho') ? 'none' : 'flex';
   const btnDoica = document.querySelector('#tabNav button[data-tab="doica"]');
@@ -3851,7 +3939,14 @@ function xhExportXlsx(){
 // =====================================================================
 // 13. TĂNG CA / NGHỈ PHÉP — DANH SÁCH
 // =====================================================================
-function displayName(full){ return full; }
+// Điện thoại: chỉ hiện 2 chữ cuối cho vừa dòng (Nguyễn Đức Hoà -> Đức Hoà)
+function displayName(full){
+  if(document.body.classList.contains('phone')){
+    const p = String(full || '').trim().split(/\s+/);
+    if(p.length > 2) return p.slice(-2).join(' ');
+  }
+  return full;
+}
 // 4 thanh tiến trình: giá trị/giới hạn + tô đầy theo tỉ lệ
 function barsHtml(t){
   const item = (val, lim, field, tip)=>{
@@ -3877,23 +3972,31 @@ function renderOtList(){
   box.innerHTML = emps.length ? emps.map(e=>{
     const t = otTotals(e.id, ref);
     const ca12 = (e.shift==='Ca 1' || e.shift==='Ca 2');
-    return `<div class="ot-row">
-      <div class="ot-name">
-        <div class="nm" data-othist="${e.id}" title="Bấm để xem/sửa lịch sử tăng ca">${esc(displayName(e.name))}</div>
-        ${showShift ? `<button class="ot-shift ${ca12?'ca12':''}" data-shift="${e.id}">${esc(e.shift||'Chưa xếp ca')}${e.position?' - '+esc(e.position):''}</button>` : ''}
+    // .ot-slide trượt sang trái khi vuốt để lộ 2 nút phía sau (chỉ trên điện thoại)
+    return `<div class="ot-row" data-row="${e.id}">
+      <div class="ot-swipe">
+        <button class="sw-ot" data-addot="${e.id}">Tăng ca</button>
+        <button class="sw-lv" data-addleave="${e.id}">Nghỉ phép</button>
       </div>
-      <div class="ot-bars">${barsHtml(t)}</div>
-      <div class="ot-acts">
-        <button class="secondary sm" data-addot="${e.id}">Tăng ca</button>
-        <button class="danger sm" data-addleave="${e.id}">Nghỉ</button>
-      </div>
-      <button class="secondary sm ot-add-m" data-addany="${e.id}">＋</button></div>`;
+      <div class="ot-slide">
+        <div class="ot-name">
+          <div class="nm" data-othist="${e.id}" title="Bấm để xem/sửa lịch sử tăng ca">${esc(displayName(e.name))}</div>
+          ${showShift ? `<button class="ot-shift ${ca12?'ca12':''}" data-shift="${e.id}">${esc(e.shift||'Chưa xếp ca')}${e.position?' - '+esc(e.position):''}</button>` : ''}
+        </div>
+        <div class="ot-bars">${barsHtml(t)}</div>
+        <div class="ot-acts">
+          <button class="secondary sm" data-addot="${e.id}">Tăng ca</button>
+          <button class="danger sm" data-addleave="${e.id}">Nghỉ</button>
+        </div>
+        <button class="secondary sm ot-add-m" data-addany="${e.id}">＋</button>
+      </div></div>`;
   }).join('') : '<p class="empty-msg">Kho này chưa có nhân sự nào.</p>';
+  if(typeof otSwipeBind === 'function') otSwipeBind();
 
   box.querySelectorAll('[data-othist]').forEach(el=>el.onclick=()=>otHistoryModal(el.dataset.othist));
   box.querySelectorAll('[data-shift]').forEach(el=>el.onclick=()=>shiftModal(el.dataset.shift));
-  box.querySelectorAll('[data-addot]').forEach(el=>el.onclick=()=>otModal(el.dataset.addot, null));
-  box.querySelectorAll('[data-addleave]').forEach(el=>el.onclick=()=>leaveModal(el.dataset.addleave));
+  box.querySelectorAll('[data-addot]').forEach(el=>el.onclick=()=>{ otCloseSwipe(null); otModal(el.dataset.addot, null); });
+  box.querySelectorAll('[data-addleave]').forEach(el=>el.onclick=()=>{ otCloseSwipe(null); leaveModal(el.dataset.addleave); });
   box.querySelectorAll('[data-addany]').forEach(el=>el.onclick=()=>{
     const id = el.dataset.addany;
     const m = openModal(empName(id), `<div class="row2"><button id="mPickOt">⏱ Tăng ca</button><button class="danger" id="mPickLv">🏠 Nghỉ phép</button></div>`);
@@ -4360,9 +4463,43 @@ function renderQuickEntry(){
   renderQkToday();
 }
 function qkRecalc(){
+  renderQkStat();
   if(qkType!=='tangca' || !$('qkHour').value){ $('qkWarn').innerHTML=''; return; }
   const h = Number($('qkHour').value) + Number($('qkMin').value)/60;
   $('qkWarn').innerHTML = warnHtml(checkOTLimits($('qkEmp').value, $('qkDate').value, h, null));
+}
+// Thống kê trong tháng của người được chọn (thay cho ô ghi chú cũ)
+function renderQkStat(){
+  const box = $('qkStat'); if(!box) return;
+  const empId = $('qkEmp') ? $('qkEmp').value : '';
+  const e = empId ? empById(empId) : null;
+  if(!e){ box.innerHTML = ''; return; }
+  const ref = fromKey($('qkDate').value || todayKey());
+  const thang = `${pad(ref.getMonth()+1)}/${ref.getFullYear()}`;
+  const cungThang = d => inCurrentMonth(d, ref);
+
+  const otH = HR.ot.filter(r=>r.employeeId===empId && cungThang(r.date)).reduce((a,r)=>a + (Number(r.hours)||0), 0);
+  const otNgay = new Set(HR.ot.filter(r=>r.employeeId===empId && cungThang(r.date)).map(r=>r.date)).size;
+  const lv = HR.leave.filter(l=>l.employeeId===empId && cungThang(l.date));
+  const soNgayNghi = new Set(lv.filter(l=>l.type==='nghi').map(l=>l.date)).size;
+  const lanMuon = lv.filter(l=>l.type==='muon');
+  const lanSom  = lv.filter(l=>l.type==='som');
+  const gioMuon = lanMuon.reduce((a,l)=>a + (Number(l.hours)||0), 0);
+  const gioSom  = lanSom.reduce((a,l)=>a + (Number(l.hours)||0), 0);
+
+  const it = (k, v, cls)=>`<div class="it"><span class="k">${k}</span><span class="v ${cls||''}">${v}</span></div>`;
+  const rows = (qkType === 'tangca')
+    ? it('Đã tăng ca trong tháng', fmtHours(otH) + ` / ${LIMITS.month}h`, otH >= LIMITS.month ? 'hot' : (otH >= TH.month.y ? 'hot' : 'ok'))
+      + it('Số ngày có tăng ca', otNgay + ' ngày')
+      + it('Nghỉ cả ngày', soNgayNghi + ' ngày')
+      + it('Đi muộn / về sớm', `${lanMuon.length} / ${lanSom.length} lần`)
+    : it('Nghỉ cả ngày trong tháng', soNgayNghi + ' ngày', soNgayNghi ? 'hot' : '')
+      + it('Đi muộn', `${lanMuon.length} lần${gioMuon ? ' · ' + fmtHours(gioMuon) : ''}`)
+      + it('Về sớm', `${lanSom.length} lần${gioSom ? ' · ' + fmtHours(gioSom) : ''}`)
+      + it('Đã tăng ca trong tháng', fmtHours(otH), 'ok');
+  box.innerHTML = `<div class="qk-stat">
+    <div class="hd">${esc(e.name)} — tháng ${thang}</div>
+    <div class="rows">${rows}</div></div>`;
 }
 function renderQkToday(){
   const ids = new Set(khoEmployees(CUR_KHO).map(e=>e.id));
@@ -4383,7 +4520,7 @@ function renderQkToday(){
     : `<p class="empty-msg">Từ hôm nay trở đi chưa có ghi nhận nào.</p>`;
 }
 async function qkSubmit(){
-  const empId = $('qkEmp').value, date = $('qkDate').value, note = $('qkNote').value.trim();
+  const empId = $('qkEmp').value, date = $('qkDate').value, note = '';
   if(!empId || !date){ toast('⚠ Chọn nhân viên và ngày'); return; }
   if(qkType==='tangca'){
     if(!$('qkHour').value){ toast('⚠ Chọn số giờ tăng ca'); return; }
@@ -4404,7 +4541,7 @@ async function qkSubmit(){
     if(ex){ ex.hours = h; ex.note = note; } else HR.leave.push({id:'lv'+Date.now(), employeeId:empId, date, type:qkSub, hours:h, note});
   }
   await saveHr();
-  $('qkNote').value = '';
+  renderQkStat();
   const now = new Date();
   $('qkResult').innerHTML = `<span style="color:var(--teal); font-weight:700;">✓ Đã lưu lúc ${pad(now.getHours())}:${pad(now.getMinutes())} — ${esc(empName(empId))}, ${fmtVN(fromKey(date))}</span>`;
   render();
@@ -4682,7 +4819,74 @@ $('xhAddRow').onclick = async ()=>{ xhRows().push(xhEmptyRow()); await saveKho()
 $('xhClean').onclick  = ()=>xhClean();
 $('xhXlsx').onclick   = ()=>xhExportXlsx();
 
+// Nút "!" bật/tắt các dòng hướng dẫn — nhớ lựa chọn cho lần sau
+function hintKey(id){ return 'appwh-hint-' + id; }
+document.querySelectorAll('.hint-btn').forEach(b=>{
+  const id = b.dataset.hint, box = $(id);
+  let mo = false;
+  try{ mo = localStorage.getItem(hintKey(id)) === '1'; }catch(e){}
+  const ve = ()=>{ if(box) box.hidden = !mo; b.classList.toggle('on', mo); };
+  ve();
+  b.onclick = ()=>{
+    mo = !mo;
+    try{ localStorage.setItem(hintKey(id), mo ? '1' : '0'); }catch(e){}
+    ve();
+  };
+});
+
 $('btnFullMode').onclick = ()=>toggleFullMode();
+document.querySelectorAll('#mobNav button').forEach(b=>b.onclick=()=>switchSub(b.dataset.msub));
+
+// ---- Vuốt trái trên 1 dòng nhân viên để lộ nút Tăng ca / Nghỉ phép (chỉ điện thoại) ----
+const SWIPE_W = 196;
+let swRow = null, swX0 = 0, swY0 = 0, swDx = 0, swLock = null;
+function otCloseSwipe(except){
+  document.querySelectorAll('#otList .ot-row.swiped').forEach(r=>{
+    if(r !== except){ r.classList.remove('swiped'); r.querySelector('.ot-slide').style.transform = ''; }
+  });
+}
+function otSwipeBind(){
+  const box = $('otList');
+  if(!box || box.dataset.swbound) return;
+  box.dataset.swbound = '1';
+  box.addEventListener('touchstart', (e)=>{
+    if(!document.body.classList.contains('phone')) return;
+    const row = e.target.closest('.ot-row');
+    if(!row || e.target.closest('.ot-swipe')) return;
+    swRow = row; swX0 = e.touches[0].clientX; swY0 = e.touches[0].clientY; swDx = 0; swLock = null;
+  }, {passive:true});
+  box.addEventListener('touchmove', (e)=>{
+    if(!swRow) return;
+    const dx = e.touches[0].clientX - swX0, dy = e.touches[0].clientY - swY0;
+    if(swLock === null){
+      if(Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+      swLock = Math.abs(dx) > Math.abs(dy) * 1.3 ? 'x' : 'y';   // quyết định vuốt ngang hay cuộn dọc
+      if(swLock === 'x') otCloseSwipe(swRow);
+    }
+    if(swLock !== 'x') return;
+    e.preventDefault();                                          // vuốt ngang thì không cuộn trang
+    const base = swRow.classList.contains('swiped') ? -SWIPE_W : 0;
+    swDx = Math.max(-SWIPE_W, Math.min(0, base + dx));
+    swRow.querySelector('.ot-slide').style.transform = `translateX(${swDx}px)`;
+  }, {passive:false});
+  const ketThuc = ()=>{
+    if(!swRow) return;
+    const sl = swRow.querySelector('.ot-slide');
+    if(swLock === 'x'){
+      const mo = swDx < -SWIPE_W / 2.2;
+      swRow.classList.toggle('swiped', mo);
+      sl.style.transform = '';
+    }
+    swRow = null; swLock = null;
+  };
+  box.addEventListener('touchend', ketThuc);
+  box.addEventListener('touchcancel', ketThuc);
+  // bấm ra ngoài thì đóng lại
+  document.addEventListener('touchstart', (e)=>{
+    if(!document.body.classList.contains('phone')) return;
+    if(!e.target.closest('.ot-row')) otCloseSwipe(null);
+  }, {passive:true});
+}
 let phoneWasOn = null;
 window.addEventListener('resize', ()=>{
   const on = isPhoneMode();
