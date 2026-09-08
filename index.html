@@ -217,6 +217,10 @@
 
   footer.actions{display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-start; margin-top:6px;}
   /* ======== BẢNG XUẤT HÀNG (kho thành phẩm) ======== */
+  .xh-bar{display:flex; align-items:center; gap:9px; flex-wrap:wrap; position:sticky; top:64px; z-index:14;
+    background:#fff; padding:9px 0 9px; margin:-4px 0 0; border-bottom:1px solid var(--line-soft);
+    box-shadow:0 8px 0 -1px #fff;}                       /* bịt khe hở để dòng bên dưới không lọt lên */
+  .xh-bar.khac-ngay{background:var(--amber-bg); box-shadow:0 8px 0 -1px var(--amber-bg), 0 0 0 10px var(--amber-bg);}
   .xh-nav{display:flex; align-items:center; gap:6px; text-transform:none; letter-spacing:0;}
   .xh-nav input[type=date]{padding:5px 8px; font-size:13px; margin:0; width:auto; border-radius:8px;}
   /* overflow phải để visible thì dòng tiêu đề mới dính theo trang; màn hình hẹp mới bật cuộn ngang */
@@ -225,7 +229,13 @@
   .xh-tbl th{position:relative;}
   .xh-grip{position:absolute; top:0; right:-3px; width:7px; height:100%; cursor:col-resize; z-index:3;}
   .xh-grip:hover{background:var(--blue); opacity:.55;}
-  .xh-tbl .xh-stt{cursor:pointer; user-select:none;}
+  .xh-tbl .xh-stt{cursor:pointer; user-select:none; white-space:nowrap;}
+  .xh-move{display:inline-block; cursor:grab; color:#9aa6b4; font-size:13px; margin-right:3px; line-height:1;}
+  .xh-move:active{cursor:grabbing;}
+  .xh-tbl tr:hover .xh-move{color:var(--blue);}
+  .xh-tbl tr.dragging td{opacity:.4;}
+  .xh-tbl tr.drop-tren td{box-shadow:inset 0 3px 0 var(--blue);}
+  .xh-tbl tr.drop-duoi td{box-shadow:inset 0 -3px 0 var(--blue);}
   .xh-tbl thead th[data-xcol]{cursor:pointer; user-select:none;}
   .xh-tbl thead th[data-xcol]:hover{background:#C9D8F0;}
   .xh-tbl #xhAll{cursor:pointer; color:var(--blue);}
@@ -244,10 +254,10 @@
 
   .xh-tbl th, .xh-tbl td{border-right:1px solid #c7d3e4; border-bottom:1px solid #c7d3e4; padding:0;}
   .xh-tbl th:last-child, .xh-tbl td:last-child{border-right:0;}
-  .xh-tbl .xh-title{position:sticky; top:64px; z-index:11; height:42px;
+  .xh-tbl .xh-title{position:sticky; top:118px; z-index:11; height:42px;
     background:#1F4E79; color:#fff; font-size:17px; font-weight:800; letter-spacing:.02em; text-align:center;
     text-transform:none; border-bottom:1px solid #1F4E79;}
-  .xh-tbl thead tr:nth-child(2) th{position:sticky; top:106px; z-index:10; height:34px;
+  .xh-tbl thead tr:nth-child(2) th{position:sticky; top:160px; z-index:10; height:34px;
     background:#D9E2F3; color:#1F4E79; font-size:13px; font-weight:800; text-align:center;
     text-transform:none; letter-spacing:0;}
   .xh-tbl td{background:#fff;}
@@ -262,6 +272,7 @@
   .xh-tbl tr.xh-filled td{background:#fffdf4;}
   @media (max-width:1300px){
     .xh-wrap{overflow-x:auto;}
+    .xh-bar{position:static;}
     .xh-tbl .xh-title{top:0;} .xh-tbl thead tr:nth-child(2) th{top:42px;}
   }
   /* Nút "!" bật/tắt dòng hướng dẫn cho khỏi rối mắt */
@@ -434,7 +445,7 @@
   .emp-scroll thead th{position:sticky; top:0; background:#fff; z-index:2;}
   /* Kho thành phẩm: bỏ khung cuộn riêng để tiêu đề cột dính theo trang khi cuộn xuống */
   .emp-scroll.emp-sticky{overflow:visible;}
-  .emp-scroll.emp-sticky thead th{position:sticky; top:64px; background:#fff; z-index:8;
+  .emp-scroll.emp-sticky thead th{position:sticky; top:68px; background:#fff; z-index:8;
     box-shadow:0 2px 0 var(--line), 0 6px 10px -8px rgba(0,0,0,.25);}
   @media (max-width:900px){
     .emp-scroll.emp-sticky{overflow-x:auto;}
@@ -918,8 +929,11 @@
       <div>
         <div class="panel">
           <h2><span class="n">03</span><span id="empPanelTitle">Danh sách nhân viên &amp; năng lực</span></h2>
-          <div id="empWarnBox"></div>
-          <div class="emp-hidden-note" id="empHiddenNote"></div>
+          <div class="hintbar" id="empHintBar" style="display:none;"><button class="hint-btn" data-hint="empHint" title="Xem cảnh báo &amp; ghi chú">!</button></div>
+          <div class="hint-box" id="empHint" hidden>
+            <div id="empWarnBox"></div>
+            <div class="emp-hidden-note" id="empHiddenNote"></div>
+          </div>
           <div class="emp-scroll">
             <table id="empTable">
               <thead><tr id="empHeadRow"></tr></thead>
@@ -979,7 +993,8 @@
         <button class="secondary sm" id="tpPdf">⬇ PDF</button>
         <span class="b5-zoom"><label for="tpZoom">Thu phóng</label><input type="range" id="tpZoom" min="50" max="130" value="100"><span id="tpZoomVal">100%</span></span>
       </h2>
-      <div id="tpAlert"></div>
+      <div class="hintbar" id="tpAlertBar" style="display:none;"><button class="hint-btn" data-hint="tpAlert" title="Xem cảnh báo phân công 5S">!</button></div>
+      <div id="tpAlert" class="hint-box" hidden></div>
       <div class="tp-wrap"><div class="tp-plan" id="tpPlan"></div></div>
     </div>
 
@@ -1015,7 +1030,7 @@
   <!-- ============ TAB: XUẤT HÀNG (kho thành phẩm) ============ -->
   <main class="tabpage" id="tab-xuathang">
     <div class="panel">
-      <h2><span class="n">🚚</span>Kế hoạch xuất hàng<span class="h2spacer"></span>
+      <div class="xh-bar" id="xhBar">
         <span class="xh-nav">
           <button class="ghost sm" id="xhPrev" title="Ngày trước">◀</button>
           <input type="date" id="xhDate">
@@ -1029,13 +1044,11 @@
           <button class="ghost sm" id="xhClr" title="Xoá định dạng của vùng đang chọn">Bỏ ĐD</button>
           <button class="ghost sm" id="xhCopy" title="Copy vùng đang chọn (Ctrl+C)">📋 Copy</button>
         </span>
-        <span class="xh-selinfo" id="xhSelInfo"></span>
         <button class="ghost sm" id="xhAddRow">+ Thêm dòng</button>
-        <button class="ghost sm" id="xhClean">🧹 Dọn dòng trống</button>
-        <button class="secondary sm" id="xhXlsx">⬇ Xuất Excel</button>
-      </h2>
-      <div id="xhWarn"></div>
-      <div class="hintbar"><button class="hint-btn" data-hint="xhHint" title="Xem hướng dẫn">!</button></div>
+        <span class="xh-selinfo" id="xhSelInfo"></span>
+        <span class="h2spacer" style="flex:1"></span>
+        <button class="hint-btn" data-hint="xhHint" title="Xem hướng dẫn">!</button>
+      </div>
       <div class="note hint-box" id="xhHint" hidden>
         <b>Chọn ô:</b> bấm 1 ô · bấm giữ rồi <b>kéo</b> để chọn cả vùng · <b>Shift+bấm</b> để nới vùng ·
         bấm <b>số thứ tự</b> chọn cả dòng · bấm <b>tên cột</b> chọn cả cột · bấm ô <b>◤</b> góc trên chọn hết bảng.<br>
@@ -1043,7 +1056,8 @@
         <b>Copy / dán:</b> chọn vùng rồi <b>Ctrl+C</b> (hoặc nút 📋) để dán sang Excel · copy từ Excel rồi <b>Ctrl+V</b> để dán vào bảng ·
         <b>Delete</b> xoá nội dung vùng chọn.<br>
         <b>Cột:</b> chữ dài hơn cột thì cột <b>tự nới</b> · kéo <b>vạch chia</b> ở tên cột để chỉnh tay · <b>bấm đúp</b> vạch chia cho vừa chữ dài nhất.<br>
-        <b>Di chuyển:</b> Enter xuống dòng dưới · Tab sang ô phải · mũi tên ↑ ↓ đổi dòng.
+        <b>Di chuyển:</b> Enter xuống dòng dưới · Tab sang ô phải · mũi tên ↑ ↓ đổi dòng.<br>
+        <b>Đổi thứ tự dòng:</b> bấm giữ vào ⠿ bên trái số thứ tự rồi kéo cả dòng lên hoặc xuống chỗ mong muốn.
       </div>
       <div class="xh-wrap">
         <table class="xh-tbl" id="xhTable">
@@ -1054,6 +1068,10 @@
           </thead>
           <tbody id="xhBody"></tbody>
         </table>
+      </div>
+      <div class="btnrow" style="margin-top:12px;">
+        <button class="ghost sm" id="xhClean">🧹 Dọn dòng trống</button>
+        <button class="secondary sm" id="xhXlsx">⬇ Xuất Excel</button>
       </div>
     </div>
   </main>
@@ -1240,7 +1258,13 @@ function canEditJobs(khoId){ return JOB_EDIT_KHO.includes(khoId); }
 //   theoCa = false -> nhóm theo Vị trí, không phân ca (kho phụ liệu)
 //   target = số người dự kiến của nhóm, dùng để so với thực tế
 const OV_BOARD = {
-  vai: null,                                   // chưa thiết lập
+  // Kho vải: gom theo BẢNG PHÂN CÔNG hiện tại (tab Tổng quan của kho vải), không theo ca/vị trí nhân sự
+  //   target để trống -> tự cộng số người của các vị trí trong nhóm (theo cấu hình thật của kho vải)
+  vai: { nguon:'phancong', rows:[
+    {name:'XUẤT', pos:['lam_ke_hoach','lay_stock_vai','cat_vai','lay_stock_mex','lay_stock_le']},
+    {name:'NHẬP', pos:['load_cont','xe_nang_nhap','nhap_hang']},
+    {name:'CA 2', ca2:true},
+  ]},
   phulieu: { theoCa:false, rows:[
     {pos:'Xuất',   target:12},
     {pos:'Nhập',   target:5},
@@ -2133,6 +2157,27 @@ function ovBoardRows(khoId){
   const cfg = OV_BOARD[khoId];
   if(!cfg) return null;
   const tKey = todayKey();
+  // ---- Kho vải: lấy người từ bảng phân công hiện tại ----
+  if(cfg.nguon === 'phancong'){
+    const K = KHO[khoId], cur = K && K.current;
+    return cfg.rows.map(r=>{
+      const ids = [];
+      if(r.ca2){ if(cur && cur.ca2) ids.push(cur.ca2); }
+      else (r.pos || []).forEach(pid=>((cur && cur.assignments && cur.assignments[pid]) || []).forEach(id=>{ if(id) ids.push(id); }));
+      const people = [...new Set(ids)].map(id=>empById(id)).filter(Boolean)
+        .map(e=>({ emp:e, ...todayStatus(e.id, tKey) }));
+      // số dự kiến = tổng số người của các vị trí trong nhóm
+      let target = r.target;
+      if(target == null){
+        target = r.ca2 ? ((K && K.ca2 && K.ca2.enabled) ? 1 : 0)
+          : (r.pos || []).reduce((a, pid)=>{
+              const p = (K && K.positions || []).find(x=>x.id === pid);
+              return a + (p ? (Number(p.count) || 0) : 0);
+            }, 0);
+      }
+      return { label:r.name, target, people };
+    });
+  }
   const emps = khoEmployees(khoId).filter(e=>e.position !== 'Giám sát');
   const daXep = new Set(), rows = [];
   cfg.rows.forEach(r=>{
@@ -2795,6 +2840,8 @@ function renderEmpTable(){
   const noSkill = emps.filter(e=>e.position!=='Giám sát' && !eligiblePositionsFor(e).length);
   if(K.positions.length && noSkill.length) notes.push(`Chưa tick năng lực nên không xếp được: ${noSkill.map(e=>e.name).join(', ')}`);
   $('empWarnBox').innerHTML = notes.length ? `<div class="understaffed-note">⚠ ${esc(notes.join(' — '))}</div>` : '';
+  const hbar = $('empHintBar');
+  if(hbar) hbar.style.display = (notes.length || hidden.length) ? 'flex' : 'none';
 }
 
 // =====================================================================
@@ -3665,6 +3712,7 @@ function renderBoardTP(){
   if(multi.length) al += `<div class="note warn"><b>⚠ Một vị trí đang có nhiều người</b><br>${multi.map(k=>`<b>${esc(tp5sLabel(k))}</b>: ${splitNames(A[k]).map(esc).join(' + ')}`).join('<br>')}</div>`;
   else if(!empty.length) al = `<div class="note" style="border-left-color:var(--teal); background:var(--teal-bg); color:#1f6b5c;"><b>✓ Phân công hợp lệ</b> — mỗi vị trí đúng 1 người.</div>`;
   $('tpAlert').innerHTML = al;
+  const tab = $('tpAlertBar'); if(tab) tab.style.display = al ? 'flex' : 'none';
 
   $('tpPlan').classList.toggle('tp-edit', TP_EDIT);
   $('tpEditBtn').textContent = TP_EDIT ? '✔ Xong — thoát chỉnh kích thước' : '📐 Chỉnh kích thước';
@@ -3920,7 +3968,7 @@ function xhSetFmt(r, key, prop, on){
 }
 
 // ---- Vùng đang chọn: 2 góc A và B (theo chỉ số dòng/cột) ----
-let XH_A = null, XH_B = null, XH_DRAG = false;
+let XH_A = null, XH_B = null, XH_DRAG = false, XH_MOVE = null;
 function xhVung(){
   if(!XH_A || !XH_B) return null;
   return {
@@ -3969,7 +4017,7 @@ function xhVaoO(r, c, boiDen){
 function xhRowHtml(r, i){
   const filled = !xhRowEmpty(r);
   return `<tr data-xr="${i}" class="${filled ? 'xh-filled' : ''}">
-    <td class="xh-stt" data-xrow="${i}" title="Bấm để chọn cả dòng">${i + 1}</td>
+    <td class="xh-stt" data-xrow="${i}" title="Bấm để chọn cả dòng"><span class="xh-move" draggable="true" data-xmove="${i}" title="Kéo để đổi thứ tự dòng">⠿</span><span class="n">${i + 1}</span></td>
     ${XH_COLS.map((c, ci)=>{
       const f = xhFmt(r, c.key) || {};
       const cls = ['xh-cell', f.h ? 'hl' : '', f.c ? 'ct' : ''].filter(Boolean).join(' ');
@@ -3995,11 +4043,9 @@ function renderXuatHang(){
   $('xhBody').innerHTML = rows.map(xhRowHtml).join('');
   xhVeVung();
 
-  const soDong = rows.filter(r=>!xhRowEmpty(r)).length;
-  const homNay = key === todayKey();
-  $('xhWarn').innerHTML = `<div class="note"${homNay ? '' : ' style="border-left-color:var(--amber); background:var(--amber-bg); color:#7a5310;"'}>
-    ${homNay ? '📅 Đang nhập cho <b>hôm nay</b>' : '📅 Đang xem ngày <b>' + esc(fmtVN(fromKey(key))) + '</b> (không phải hôm nay)'}
-    · đã nhập <b>${soDong}</b> dòng.</div>`;
+  // chỉ nhắc khi đang xem ngày khác hôm nay
+  const bar = $('xhBar');
+  if(bar) bar.classList.toggle('khac-ngay', key !== todayKey());
 }
 
 // ---- Lưu (gõ xong 0,6 giây là lưu; đổi tab / đóng trang cũng lưu nốt) ----
@@ -4102,6 +4148,51 @@ function xhBind(){
     rows.splice(i, 1);
     XH_A = XH_B = null;
     await saveKho(); renderXuatHang(); toast('✓ Đã xoá dòng');
+  });
+
+  // ---- Kéo tay nắm ⠿ để đổi thứ tự dòng ----
+  body.addEventListener('dragstart', (e)=>{
+    const h = e.target.closest('[data-xmove]');
+    if(!h){ e.preventDefault(); return; }
+    XH_MOVE = Number(h.dataset.xmove);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', 'row:' + XH_MOVE);
+    const tr = h.closest('tr');
+    if(tr){ tr.classList.add('dragging'); if(e.dataTransfer.setDragImage) e.dataTransfer.setDragImage(tr, 20, 12); }
+  });
+  body.addEventListener('dragover', (e)=>{
+    if(XH_MOVE == null) return;
+    const tr = e.target.closest('tr[data-xr]');
+    if(!tr) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    const r = tr.getBoundingClientRect();
+    const duoi = (e.clientY - r.top) > r.height / 2;
+    body.querySelectorAll('tr').forEach(x=>x.classList.remove('drop-tren','drop-duoi'));
+    tr.classList.add(duoi ? 'drop-duoi' : 'drop-tren');
+  });
+  body.addEventListener('drop', async (e)=>{
+    if(XH_MOVE == null) return;
+    const tr = e.target.closest('tr[data-xr]');
+    body.querySelectorAll('tr').forEach(x=>x.classList.remove('drop-tren','drop-duoi','dragging'));
+    if(!tr){ XH_MOVE = null; return; }
+    e.preventDefault();
+    const r = tr.getBoundingClientRect();
+    const duoi = (e.clientY - r.top) > r.height / 2;
+    let dich = Number(tr.dataset.xr) + (duoi ? 1 : 0);
+    const nguon = XH_MOVE; XH_MOVE = null;
+    if(dich === nguon || dich === nguon + 1) return;
+    const rows = xhRows();
+    const [item] = rows.splice(nguon, 1);
+    if(dich > nguon) dich--;
+    rows.splice(dich, 0, item);
+    XH_A = { r: dich, c: 0 }; XH_B = { r: dich, c: XH_COLS.length - 1 };
+    await saveKho(); renderXuatHang();
+    toast(`✓ Đã chuyển dòng ${nguon + 1} → vị trí ${dich + 1}`);
+  });
+  body.addEventListener('dragend', ()=>{
+    XH_MOVE = null;
+    body.querySelectorAll('tr').forEach(x=>x.classList.remove('drop-tren','drop-duoi','dragging'));
   });
 
   // phím tắt di chuyển như Excel
