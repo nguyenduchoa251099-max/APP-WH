@@ -229,24 +229,29 @@
   .xh-tbl th{position:relative;}
   .xh-grip{position:absolute; top:0; right:-3px; width:7px; height:100%; cursor:col-resize; z-index:3;}
   .xh-grip:hover{background:var(--blue); opacity:.55;}
-  .xh-tbl .xh-stt{cursor:pointer; user-select:none; white-space:nowrap;}
+  .xh-tbl .xh-stt{cursor:pointer; user-select:none; white-space:nowrap; position:relative;}
   .xh-move{display:inline-block; cursor:grab; color:#9aa6b4; font-size:13px; margin-right:3px; line-height:1;}
   .xh-move:active{cursor:grabbing;}
   .xh-tbl tr:hover .xh-move{color:var(--blue);}
+  .xh-rgrip{position:absolute; left:0; right:0; bottom:-3px; height:7px; cursor:row-resize; z-index:4;}
+  .xh-rgrip:hover{background:var(--blue); opacity:.5;}
   .xh-tbl tr.dragging td{opacity:.4;}
   .xh-tbl tr.drop-tren td{box-shadow:inset 0 3px 0 var(--blue);}
   .xh-tbl tr.drop-duoi td{box-shadow:inset 0 -3px 0 var(--blue);}
   .xh-tbl thead th[data-xcol]{cursor:pointer; user-select:none;}
   .xh-tbl thead th[data-xcol]:hover{background:#C9D8F0;}
+  .xh-tbl thead th.hsel{background:#AFC6E9 !important; color:#123;}
   .xh-tbl #xhAll{cursor:pointer; color:var(--blue);}
-  .xh-tbl tbody tr.rsel .xh-stt{background:var(--blue); color:#fff; font-weight:800;}
-  .xh-tbl td.cs{background:#DCEAFB;}                       /* ô trong vùng chọn */
-  .xh-tbl td.cs input.xh-in{background:transparent;}
-  .xh-tbl td.ca{box-shadow:inset 0 0 0 2px var(--blue);}   /* ô đang đứng */
-  .xh-tbl td.hl{background:#FFF3A8 !important;}            /* tô vàng luôn thắng mọi nền khác */
-  .xh-tbl td.cs.hl{background:#FBE79A !important;}
-  .xh-tbl td.ct input.xh-in{text-align:center;}
-  .xh-tbl input.xh-in.b{font-weight:800; color:#12213a;}
+  /* --- ô trong bảng --- */
+  .xh-tbl td.xh-cell{padding:0; vertical-align:middle; outline:none; cursor:cell; position:relative;}
+  .xh-tbl td.xh-cell .v{padding:6px 9px; font-size:13.5px; line-height:20px; min-height:20px;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .xh-tbl tr.wrap td.xh-cell .v{white-space:pre-wrap; word-break:break-word; overflow:visible; text-overflow:clip;}
+  .xh-tbl td.xh-cell .v.b{font-weight:800; color:#12213a;}
+  .xh-tbl td.ct .v{text-align:center;}
+  .xh-tbl textarea.xh-edit{position:absolute; inset:0; width:100%; height:100%; min-height:100%;
+    border:2px solid #217346; border-radius:0; margin:0; padding:5px 8px; font-size:13.5px; line-height:20px;
+    font-family:inherit; resize:none; background:#fff; z-index:6; box-shadow:0 2px 10px rgba(0,0,0,.18);}
   .xh-tools{display:inline-flex; gap:4px; align-items:center; border:1px solid var(--line);
     border-radius:9px; padding:3px; background:var(--paper);}
   .xh-tools button{min-width:34px; padding:5px 8px; font-size:13px; border-radius:6px;}
@@ -270,6 +275,17 @@
     font-family:inherit; color:var(--ink); border-radius:0; margin:0;}
   .xh-tbl input.xh-in:focus{outline:2px solid var(--blue); outline-offset:-2px; background:#fff;}
   .xh-tbl tr.xh-filled td{background:#fffdf4;}
+  /* ==== Vùng chọn kiểu Excel: nền xám, ô đang đứng để trắng, viền xanh lá bao ngoài ==== */
+  .xh-tbl tbody tr.rsel .xh-stt{background:#AFC6E9; color:#123; font-weight:800;}
+  .xh-tbl td.cs{background:#D6DAE0 !important;}
+  .xh-tbl td.ca{background:#fff !important;}
+  .xh-tbl td.hl{background:#FFF3A8 !important;}
+  .xh-tbl td.cs.hl{background:#EDE39A !important;}
+  .xh-tbl td.ca.hl{background:#FFF3A8 !important;}
+  .xh-wrap{position:relative;}
+  .xh-selbox{position:absolute; display:none; border:2px solid #217346; pointer-events:none; z-index:5;}
+  .xh-selbox::after{content:''; position:absolute; right:-4px; bottom:-4px; width:7px; height:7px;
+    background:#217346; border:1px solid #fff;}
   @media (max-width:1300px){
     .xh-wrap{overflow-x:auto;}
     .xh-bar{position:static;}
@@ -1056,9 +1072,12 @@
           <button class="ghost sm" id="xhBold" title="In đậm (Ctrl+B)"><b>B</b></button>
           <button class="ghost sm" id="xhHl" title="Tô nền vàng">🟡</button>
           <button class="ghost sm" id="xhCenter" title="Căn giữa ô">Giữa</button>
+          <button class="ghost sm" id="xhWrapBtn" title="Cho chữ xuống dòng trong ô (nới cao dòng)">↵ Xuống dòng</button>
           <button class="ghost sm" id="xhClr" title="Xoá định dạng của vùng đang chọn">Bỏ ĐD</button>
           <button class="ghost sm" id="xhCopy" title="Copy vùng đang chọn (Ctrl+C)">📋 Copy</button>
         </span>
+        <button class="secondary sm" id="xhImport" title="Đọc trang SHIPMENT REQUEST DETAILS (.html / .mhtml) và điền vào bảng">⬆ Import</button>
+        <input type="file" id="xhFile" accept=".html,.htm,.mhtml,.mht,text/html" multiple style="display:none">
         <button class="ghost sm" id="xhAddRow">+ Thêm dòng</button>
         <span class="xh-selinfo" id="xhSelInfo"></span>
         <span class="h2spacer" style="flex:1"></span>
@@ -1072,9 +1091,16 @@
         <b>Delete</b> xoá nội dung vùng chọn.<br>
         <b>Cột:</b> chữ dài hơn cột thì cột <b>tự nới</b> · kéo <b>vạch chia</b> ở tên cột để chỉnh tay · <b>bấm đúp</b> vạch chia cho vừa chữ dài nhất.<br>
         <b>Di chuyển:</b> Enter xuống dòng dưới · Tab sang ô phải · mũi tên ↑ ↓ đổi dòng.<br>
-        <b>Đổi thứ tự dòng:</b> bấm giữ vào ⠿ bên trái số thứ tự rồi kéo cả dòng lên hoặc xuống chỗ mong muốn.
+        <b>Bấm 1 lần</b> = chọn ô · <b>bấm 2 lần</b> (hoặc F2 / Enter) = vào gõ · đang chọn ô mà <b>gõ thẳng</b> thì ghi đè nội dung cũ ·
+        <b>Esc</b> huỷ, <b>Delete</b> xoá nội dung ô đang chọn.<br>
+        <b>Đổi thứ tự dòng:</b> bấm giữ ⠿ bên trái số thứ tự rồi kéo cả dòng lên/xuống.<br>
+        <b>Xuống dòng:</b> kéo <b>mép dưới</b> ô số thứ tự để nới cao dòng (bấm đúp cho vừa nội dung), hoặc chọn dòng rồi bấm nút <b>↵ Xuống dòng</b>.<br>
+        <b>Import:</b> lưu trang <b>SHIPMENT REQUEST DETAILS</b> thành file (.html hoặc .mhtml) rồi bấm <b>⬆ Import</b> — chọn được nhiều file một lúc.
+        App tự lấy <b>BUYER → customer</b>, <b>4 số cuối REQUEST_ID → id</b>, <b>TYPE → type</b>, <b>CTNS → CTN (… THÙNG)</b>;
+        trùng customer + id thì cập nhật đè lên dòng cũ, chưa có thì điền vào dòng trống đầu tiên. Điền xong vẫn sửa tay tự do.
       </div>
-      <div class="xh-wrap">
+      <div class="xh-wrap" id="xhWrapBox">
+        <div class="xh-selbox" id="xhSelBox"></div>
         <table class="xh-tbl" id="xhTable">
           <colgroup id="xhCg"></colgroup>
           <thead>
@@ -1879,6 +1905,21 @@ async function loadAll(){
   }
   if(!KHO.vai.board.assign) KHO.vai.board.assign = {...B5_DEFAULT_ASSIGN};
   if(!KHO.thanhpham.rotation) KHO.thanhpham.rotation = defaultRotation();
+  // Nhóm "Xuất hàng": mỗi ca gắn 1 vị trí riêng (VD Ca HC = Xe nâng, Ca 2 = Xuất)
+  // -> khi tới kỳ đổi ca thì người ở 2 dòng đó trong Tổng quan tự đổi chỗ cho nhau.
+  // Chỉ chạy 1 lần, lấy đúng vị trí ĐANG có của từng đội nên không làm sai dữ liệu cũ.
+  try{
+    (KHO.thanhpham.rotation.groups || []).forEach(g=>{
+      if(g.type !== 'swap' || g.doiViTri !== undefined) return;
+      const laXuat = /xu[aâ]t/i.test(normName(g.name || '')) || g.id === 'rg_xuat';
+      if(!laXuat){ g.doiViTri = false; g.jobs = []; return; }   // Nhập hàng: chỉ đổi ca
+      // Vị trí gắn với CA (lấy theo người đang thực đi ca đó), không gắn với đội
+      const jobs = (g.shifts || []).map(sh=>rotJobTheoCa(g, sh) || g.job || '');
+      // Chỉ bật khi 2 ca thực sự đang làm 2 vị trí khác nhau
+      g.doiViTri = new Set(jobs.filter(Boolean).map(j=>normName(j))).size > 1;
+      g.jobs = g.doiViTri ? jobs : [];
+    });
+  }catch(e){}
   if(!KHO.thanhpham.tpBoard) KHO.thanhpham.tpBoard = defaultTpBoard();
   if(!KHO.thanhpham.xuathang || typeof KHO.thanhpham.xuathang !== 'object') KHO.thanhpham.xuathang = {};
   if(!KHO.thanhpham.tpBoard.assign) KHO.thanhpham.tpBoard.assign = {};
@@ -2209,11 +2250,24 @@ function ovBoardRows(khoId){
       people: list.map(e=>({ emp:e, ...todayStatus(e.id, tKey) })),
     });
   });
+  // Người chưa khớp nhóm cấu hình -> tự gom thành dòng riêng theo "Ca — Vị trí".
+  // Nhờ vậy vị trí mới (VD: Ca HC — Xe nâng) tự hiện ra, và mỗi khi tab "Đổi ca"
+  // tới kỳ hoán ca thì người trong các dòng này tự đổi chỗ cho nhau.
   const con = emps.filter(e=>!daXep.has(e.id));
-  if(con.length) rows.push({
-    label: 'Khác / chưa xếp nhóm', target: null,
-    people: con.map(e=>({ emp:e, ...todayStatus(e.id, tKey) })),
-  });
+  if(con.length){
+    const nhom = new Map();
+    con.forEach(e=>{
+      const vt = (e.position || '').trim() || 'Chưa có vị trí';
+      const ca = (e.shift || '').trim() || 'Chưa có ca';
+      const lb = cfg.theoCa ? `${ca} — ${vt}` : vt;
+      if(!nhom.has(lb)) nhom.set(lb, []);
+      nhom.get(lb).push(e);
+    });
+    [...nhom.keys()].sort().forEach(lb=>rows.push({
+      label: lb, target: null, tuDong: true,
+      people: nhom.get(lb).map(e=>({ emp:e, ...todayStatus(e.id, tKey) })),
+    }));
+  }
   return rows;
 }
 const ST_LABEL_OV = { go:'Đi làm', off:'Nghỉ cả ngày', som:'Về sớm', muon:'Đi muộn' };
@@ -3314,14 +3368,54 @@ function swapTp5s(K, idA, idB){
   });
   return n;
 }
+// ---------------------------------------------------------------------
+// LIÊN KẾT ĐỔI CA -> TĂNG CA/NGHỈ PHÉP + TỔNG QUAN 3 KHO
+//   Mỗi nhóm "đổi ca giữa các đội" có 2 cách chạy:
+//     · g.doiViTri = false (mặc định) -> CHỈ đổi Ca làm việc, giữ nguyên
+//       Vị trí công việc của từng người.  (dùng cho nhóm Nhập hàng)
+//     · g.doiViTri = true  -> mỗi ca gắn 1 vị trí riêng (g.jobs[i] theo
+//       g.shifts[i]); ai xoay sang ca nào thì nhận vị trí của ca đó.
+//       (dùng cho nhóm Xuất hàng: Ca HC = Xe nâng, Ca 2 = Xuất)
+//   Vì mục "Tăng ca/Nghỉ phép" và bảng "Nhân sự theo ca & vị trí" ở Tổng
+//   quan đều đọc thẳng e.shift / e.position nên cả 2 nơi tự cập nhật theo.
+// ---------------------------------------------------------------------
+function rotJobCot(g, i){
+  if(!g || g.type !== 'swap' || !g.doiViTri) return null;   // null = giữ nguyên vị trí cũ
+  const j = (g.jobs || [])[i];
+  return (j && String(j).trim()) || g.job || null;
+}
+// Vị trí công việc đang phổ biến nhất của 1 đội (để gợi ý khi bật "đổi cả vị trí")
+function rotJobCuaDoi(ids){
+  const dem = {};
+  (ids || []).forEach(id=>{
+    const e = empById(id), p = e && (e.position || '').trim();
+    if(p) dem[p] = (dem[p] || 0) + 1;
+  });
+  return Object.keys(dem).sort((a, b)=>dem[b] - dem[a])[0] || '';
+}
+// Vị trí công việc mà CA "sh" đang đảm nhiệm trên thực tế:
+// lấy theo những người trong nhóm HIỆN đang đi ca đó (không theo đội).
+function rotJobTheoCa(g, sh){
+  const ids = [];
+  (g.teams || []).forEach(t=>(t || []).forEach(id=>{
+    const e = empById(id);
+    if(e && (e.shift || '') === sh) ids.push(id);
+  }));
+  return rotJobCuaDoi(ids);
+}
 // Áp lịch đổi ca vào danh sách nhân sự; trả về số người được cập nhật
 function applyRotation(khoId){
   const K = KHO[khoId];
   if(!K || !K.rotation) return 0;
   let changed = 0;
+  // job = null  ->  chỉ đổi ca, không đụng tới vị trí công việc
   const setEmp = (id, shift, job)=>{
     const e = empById(id);
-    if(e && (e.shift !== shift || e.position !== job)){ e.shift = shift; e.position = job; changed++; }
+    if(!e) return;
+    let d = false;
+    if(shift && e.shift !== shift){ e.shift = shift; d = true; }
+    if(job && e.position !== job){ e.position = job; d = true; }
+    if(d) changed++;
   };
   // ghi lại ca CŨ của các cặp liên kết 5S trước khi áp lịch mới
   const pairs = tp5sPairs(K, khoId);
@@ -3334,7 +3428,7 @@ function applyRotation(khoId){
   rotationPlan(K).forEach(p=>{
     const g = p.g;
     if(g.type === 'swap'){
-      p.cols.forEach(c=>(g.teams[c.teamIdx] || []).forEach(id=>setEmp(id, c.shift, g.job)));
+      p.cols.forEach((c, i)=>(g.teams[c.teamIdx] || []).forEach(id=>setEmp(id, c.shift, rotJobCot(g, i))));
     }else{
       (g.fixedIds || []).forEach(id=>setEmp(id, g.shift, g.job));
       if(p.turnId) setEmp(p.turnId, g.shift, g.job);
@@ -3377,17 +3471,23 @@ function renderRotation(){
     if(g.type === 'swap'){
       body = `<div class="rot-cols">` + p.cols.map((c, i)=>{
         const team = g.teams[c.teamIdx] || [];
+        const vt = rotJobCot(g, i);
         return `<div class="rot-col now" data-rotteam="${g.id}:${c.teamIdx}">
-          <h4><span>${esc(c.shift)}</span><span class="tag">Đội ${String.fromCharCode(65 + c.teamIdx)} · ${team.length} người</span></h4>
+          <h4><span>${esc(c.shift)}${vt ? ` <span class="chip info" style="font-size:10.5px">${esc(vt)}</span>` : ''}</span><span class="tag">Đội ${String.fromCharCode(65 + c.teamIdx)} · ${team.length} người</span></h4>
           <div class="rot-people">${team.map(id=>rotEmpChip(id)).join('')}
             <button class="rot-add" data-rotadd="${g.id}:${c.teamIdx}">+ Thêm người</button></div>
         </div>`;
       }).join('') + `</div>`;
       const np = plansNext[gi];
       const same = np.cols.every((c, i)=>c.teamIdx === p.cols[i].teamIdx);
+      const tenDoi = ti=>((g.teams[ti] || []).map(id=>empName(id)).join(', ') || '—');
       next = same
         ? `Tuần sau giữ nguyên (đổi mỗi ${g.everyWeeks} tuần).`
-        : `Tuần sau đổi: ` + np.cols.map(c=>`${c.shift} ← Đội ${String.fromCharCode(65 + c.teamIdx)}`).join(' · ');
+        : `Tuần sau đổi: ` + np.cols.map((c, i)=>{
+            const vt = rotJobCot(g, i);
+            return `<b>${esc(c.shift)}</b>${vt ? ` (${esc(vt)})` : ''} ← ${esc(tenDoi(c.teamIdx))}`;
+          }).join(' · ')
+          + ` — Tăng ca/Nghỉ phép và Tổng quan 3 kho tự cập nhật theo.`;
     }else{
       const np = plansNext[gi];
       body = `<div class="rot-cols">
@@ -3406,9 +3506,12 @@ function renderRotation(){
         : 'Chưa có ai trong danh sách luân phiên.';
     }
     const last = p.weekInCycle >= p.every;
+    const chipVt = (g.type === 'swap' && g.doiViTri)
+      ? `<span class="chip warn" title="Ai sang ca nào thì nhận vị trí của ca đó">Đổi cả vị trí theo ca</span>`
+      : `<span class="chip info">Vị trí: ${esc(g.job)}${g.type === 'swap' ? ' · chỉ đổi ca' : ''}</span>`;
     return `<div class="rot-group">
       <div class="rot-title"><b>${esc(g.name)}</b>
-        <span class="chip info">Vị trí: ${esc(g.job)}</span>
+        ${chipVt}
         <span class="chip forklift">Đổi mỗi ${g.everyWeeks} tuần</span>
         <span class="chip ${last ? 'warn' : 'ok'}">Tuần ${p.weekInCycle}/${p.every}${last ? ' · tuần sau đổi ca' : ''}</span>
         <button class="ghost sm" data-rotweek="${g.id}">🕐 Sửa tuần</button>
@@ -3572,27 +3675,68 @@ function rotGroupModal(group){
     <div id="rgSwapBox">
       <label class="field-label">Các ca trong nhóm (đội sẽ xoay vòng giữa các ca này)</label>
       <div class="row2" id="rgShifts">${SHIFTS.map(sh=>`<button class="pick ${(g.shifts||[]).includes(sh)?'on':''}" data-sh="${sh}">${sh}</button>`).join('')}</div>
+      <label class="field-label">Khi đổi ca thì làm gì với vị trí công việc?</label>
+      <div class="row2" id="rgVt">
+        <button class="pick ${g.doiViTri?'':'on'}" data-vt="0">Giữ nguyên vị trí<br><span style="font-size:11px;opacity:.75">chỉ đổi ca</span></button>
+        <button class="pick ${g.doiViTri?'on':''}" data-vt="1">Đổi cả vị trí<br><span style="font-size:11px;opacity:.75">mỗi ca 1 vị trí riêng</span></button>
+      </div>
+      <div id="rgJobsBox" style="display:none">
+        <label class="field-label">Vị trí công việc của từng ca</label>
+        <div id="rgJobs"></div>
+        <div class="note" style="margin-top:8px">Ai xoay sang ca nào sẽ nhận vị trí của ca đó. Mục
+          <b>Tăng ca/Nghỉ phép</b> và bảng <b>Nhân sự theo ca &amp; vị trí</b> ở Tổng quan 3 kho tự đổi người theo.</div>
+      </div>
     </div>
     <div id="rgTurnBox" style="display:none;">
       <label class="field-label">Ca làm việc của nhóm</label>
       <div class="row2" id="rgShift1">${SHIFTS.map(sh=>`<button class="pick ${g.shift===sh?'on':''}" data-s1="${sh}">${sh}</button>`).join('')}</div>
     </div>
     <div class="btnrow" style="margin-top:16px;"><button id="rgSave">${isNew?'Thêm nhóm':'Lưu'}</button></div>`);
+  // --- vị trí công việc theo từng ca ---
+  let doiViTri = !!g.doiViTri;
+  const jobsMap = {};                                   // { 'Ca HC': 'Xe nâng', ... }
+  (g.shifts || []).forEach((sh, i)=>{ if((g.jobs || [])[i]) jobsMap[sh] = g.jobs[i]; });
+  // Gợi ý vị trí của 1 ca = vị trí phổ biến nhất của đội đang đi ca đó
+  const goiY = (sh)=>jobsMap[sh] || rotJobTheoCa(g, sh) || g.job;
+  const veJobs = ()=>{
+    // gộp thêm vị trí đang dùng thật của từng đội (phòng khi chưa có trong danh sách)
+    const ds = [...new Set(khoJobs(CUR_KHO).concat(shifts.map(goiY)).filter(Boolean))];
+    $('rgJobs').innerHTML = shifts.map(sh=>{
+      const cur = goiY(sh);
+      return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <span style="min-width:74px;font-weight:600">${esc(sh)}</span>
+        <select data-jsh="${esc(sh)}" style="flex:1">${
+          ds.map(j=>`<option ${normName(j)===normName(cur||'')?'selected':''}>${esc(j)}</option>`).join('')
+        }</select></div>`;
+    }).join('') || '<p class="empty-msg">Chọn ca ở trên trước.</p>';
+    $('rgJobs').querySelectorAll('[data-jsh]').forEach(s=>{
+      jobsMap[s.dataset.jsh] = s.value;
+      s.onchange = ()=>{ jobsMap[s.dataset.jsh] = s.value; };
+    });
+  };
   const sync = ()=>{
     $('rgSwapBox').style.display = type==='swap' ? 'block' : 'none';
     $('rgTurnBox').style.display = type==='turn' ? 'block' : 'none';
+    $('rgJobsBox').style.display = (type==='swap' && doiViTri) ? 'block' : 'none';
+    if(type==='swap' && doiViTri) veJobs();
   };
-  sync();
   $('rgType').querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{
     type = b.dataset.t;
     $('rgType').querySelectorAll('[data-t]').forEach(x=>x.className='pick'+(x.dataset.t===type?' on':''));
     sync();
   });
   let shifts = (g.shifts || []).slice(), shift1 = g.shift || 'Ca HC';
+  sync();
+  $('rgVt').querySelectorAll('[data-vt]').forEach(b=>b.onclick=()=>{
+    doiViTri = b.dataset.vt === '1';
+    $('rgVt').querySelectorAll('[data-vt]').forEach(x=>x.className='pick'+((x.dataset.vt==='1')===doiViTri?' on':''));
+    sync();
+  });
   $('rgShifts').querySelectorAll('[data-sh]').forEach(b=>b.onclick=()=>{
     const sh = b.dataset.sh;
     shifts = shifts.includes(sh) ? shifts.filter(x=>x!==sh) : [...shifts, sh];
     b.className = 'pick' + (shifts.includes(sh) ? ' on' : '');
+    if(type==='swap' && doiViTri) veJobs();
   });
   $('rgShift1').querySelectorAll('[data-s1]').forEach(b=>b.onclick=()=>{
     shift1 = b.dataset.s1;
@@ -3609,6 +3753,8 @@ function rotGroupModal(group){
       g.teams = g.teams || [];
       while(g.teams.length < shifts.length) g.teams.push([]);
       g.teams.length = shifts.length;
+      g.doiViTri = doiViTri;
+      g.jobs = doiViTri ? shifts.map(sh=>jobsMap[sh] || goiY(sh) || g.job) : [];
     }else{
       g.shift = shift1; g.fixedIds = g.fixedIds || []; g.pool = g.pool || [];
     }
@@ -3929,15 +4075,14 @@ function exportTP(kind){
 </script>
 <script>
 // =====================================================================
-// 11e. BẢNG XUẤT HÀNG (chỉ kho thành phẩm) — bảng tính kiểu Excel
-//   · Mỗi ngày một bảng riêng, lưu theo khoá ngày YYYY-MM-DD
-//   · Chọn ô: bấm 1 ô, kéo để chọn vùng, bấm số thứ tự chọn cả dòng,
-//     bấm tên cột chọn cả cột, Shift+bấm để nới vùng chọn
-//   · Định dạng: in đậm · tô nền vàng · căn giữa (áp cho vùng đang chọn)
-//   · Copy vùng chọn ra Excel, dán từ Excel vào bảng
-//   · Ô giữ 1 dòng; cột tự nới rộng khi chữ dài hơn cột
+// 11e. BẢNG XUẤT HÀNG (chỉ kho thành phẩm) — thao tác như Excel
+//   · 1 lần bấm  = chọn ô (chưa sửa) · 2 lần bấm / F2 / Enter = nhập liệu
+//     · gõ thẳng khi đang chọn ô = ghi đè nội dung cũ (giống Excel)
+//   · Kéo chọn vùng, viền xanh lá quanh vùng, ô đang đứng để trắng
+//   · Kéo ⠿ đổi thứ tự dòng · kéo mép dưới số thứ tự để nới cao dòng (chữ tự xuống dòng)
+//   · Copy / dán qua lại với Excel · in đậm · tô vàng · căn giữa
 // =====================================================================
-let XH_DATE = null;                       // null = đang xem hôm nay
+let XH_DATE = null;
 function xhKey(){ return XH_DATE || todayKey(); }
 function xhStore(){ const K = curKho(); if(!K.xuathang || typeof K.xuathang !== 'object') K.xuathang = {}; return K.xuathang; }
 function xhRows(){
@@ -3949,22 +4094,21 @@ function xhEmptyRow(){ const o = {}; XH_COLS.forEach(c=>o[c.key] = ''); return o
 function xhRowEmpty(r){ return XH_COLS.every(c=>!String(r[c.key] || '').trim()); }
 function xhColKey(ci){ return XH_COLS[ci] ? XH_COLS[ci].key : null; }
 
-// ---- Bề rộng cột (kéo tay hoặc tự nới, dùng chung cho mọi ngày) ----
+// ---- Bề rộng cột ----
 function xhCols(){ const K = curKho(); if(!K.xhCols || typeof K.xhCols !== 'object') K.xhCols = {}; return K.xhCols; }
 function xhColW(c){ const w = Number(xhCols()[c.key]); return (w && w >= 46) ? w : c.w; }
 function xhSetColW(key, w){
-  w = Math.max(46, Math.min(560, Math.round(w)));
+  w = Math.max(46, Math.min(620, Math.round(w)));
   xhCols()[key] = w;
   const col = document.querySelector(`#xhCg col[data-gc="${key}"]`);
   if(col) col.style.width = w + 'px';
   return w;
 }
-// Đo bề rộng chữ bằng đúng phông của bảng
 function xhTextW(t){
   const cv = xhTextW._cv || (xhTextW._cv = document.createElement('canvas'));
   const ctx = cv.getContext('2d');
   if(!xhTextW._font){
-    const mau = document.querySelector('#xhBody input.xh-in');
+    const mau = document.querySelector('#xhBody .v');
     const cs = mau ? getComputedStyle(mau) : null;
     xhTextW._font = cs ? `700 ${cs.fontSize} ${cs.fontFamily}` : '700 13.5px sans-serif';
   }
@@ -3972,7 +4116,7 @@ function xhTextW(t){
   return ctx.measureText(String(t || '')).width;
 }
 
-// ---- Định dạng từng ô: b = in đậm, h = tô vàng, c = căn giữa ----
+// ---- Định dạng ô: b = in đậm, h = tô vàng, c = căn giữa ----
 function xhFmt(r, key){ return (r && r.fmt && r.fmt[key]) || null; }
 function xhSetFmt(r, key, prop, on){
   if(!r.fmt) r.fmt = {};
@@ -3982,61 +4126,77 @@ function xhSetFmt(r, key, prop, on){
   if(r.fmt && !Object.keys(r.fmt).length) delete r.fmt;
 }
 
-// ---- Vùng đang chọn: 2 góc A và B (theo chỉ số dòng/cột) ----
-let XH_A = null, XH_B = null, XH_DRAG = false, XH_MOVE = null;
+// ---- Vùng chọn ----
+let XH_A = null, XH_B = null, XH_DRAG = false, XH_MOVE = null, XH_EDIT = null, XH_RGRIP = null;
 function xhVung(){
   if(!XH_A || !XH_B) return null;
-  return {
-    r1: Math.min(XH_A.r, XH_B.r), r2: Math.max(XH_A.r, XH_B.r),
-    c1: Math.min(XH_A.c, XH_B.c), c2: Math.max(XH_A.c, XH_B.c),
-  };
+  return { r1:Math.min(XH_A.r,XH_B.r), r2:Math.max(XH_A.r,XH_B.r),
+           c1:Math.min(XH_A.c,XH_B.c), c2:Math.max(XH_A.c,XH_B.c) };
 }
-function xhSoO(){ const v = xhVung(); return v ? (v.r2 - v.r1 + 1) * (v.c2 - v.c1 + 1) : 0; }
-function xhChonO(r, c, noiRong){
-  const cell = { r, c };
-  if(noiRong && XH_A) XH_B = cell; else { XH_A = cell; XH_B = cell; }
-  xhVeVung();
-}
-// Tô lại vùng chọn mà không dựng lại cả bảng (giữ con trỏ đang gõ)
+function xhSoO(){ const v = xhVung(); return v ? (v.r2-v.r1+1)*(v.c2-v.c1+1) : 0; }
+function xhTd(r, c){ return document.querySelector(`#xhBody td[data-r="${r}"][data-c="${c}"]`); }
+
+// Vẽ lại vùng chọn: nền xám + viền xanh lá bao quanh, ô đang đứng để trắng (giống Excel)
 function xhVeVung(){
   const body = $('xhBody'); if(!body) return;
   const v = xhVung();
   body.querySelectorAll('td[data-c]').forEach(td=>{
     const r = Number(td.dataset.r), c = Number(td.dataset.c);
-    td.classList.toggle('cs', !!v && r >= v.r1 && r <= v.r2 && c >= v.c1 && c <= v.c2);
-    td.classList.toggle('ca', !!XH_A && XH_A.r === r && XH_A.c === c);
+    const trong = !!v && r>=v.r1 && r<=v.r2 && c>=v.c1 && c<=v.c2;
+    td.classList.toggle('cs', trong);
+    td.classList.toggle('ca', !!XH_A && XH_A.r===r && XH_A.c===c);
   });
   body.querySelectorAll('tr').forEach(tr=>{
     const r = Number(tr.dataset.xr);
-    tr.classList.toggle('rsel', !!v && r >= v.r1 && r <= v.r2);
+    tr.classList.toggle('rsel', !!v && r>=v.r1 && r<=v.r2);
   });
+  document.querySelectorAll('#xhHead th[data-xcol]').forEach(th=>{
+    const c = Number(th.dataset.xcol);
+    th.classList.toggle('hsel', !!v && c>=v.c1 && c<=v.c2);
+  });
+  xhVeKhung();
   const el = $('xhSelInfo');
-  if(el){
-    const n = xhSoO();
-    el.textContent = (!v || n <= 1) ? '' : `Đang chọn ${v.r2 - v.r1 + 1} dòng × ${v.c2 - v.c1 + 1} cột`;
-  }
+  if(el) el.textContent = (!v || xhSoO() <= 1) ? '' : `Đang chọn ${v.r2-v.r1+1} dòng × ${v.c2-v.c1+1} cột`;
 }
-function xhOInput(r, c){ return document.querySelector(`#xhBody input[data-xr="${r}"][data-xc="${xhColKey(c)}"]`); }
-function xhVaoO(r, c, boiDen){
+// Khung viền xanh lá bao quanh cả vùng
+function xhVeKhung(){
+  const box = $('xhSelBox'), wrap = $('xhWrapBox'), v = xhVung();
+  if(!box || !wrap) return;
+  const a = v && xhTd(v.r1, v.c1), b = v && xhTd(v.r2, v.c2);
+  if(!a || !b){ box.style.display = 'none'; return; }
+  const w = wrap.getBoundingClientRect(), ra = a.getBoundingClientRect(), rb = b.getBoundingClientRect();
+  box.style.display = 'block';
+  box.style.left   = (ra.left - w.left + wrap.scrollLeft) + 'px';
+  box.style.top    = (ra.top  - w.top  + wrap.scrollTop) + 'px';
+  box.style.width  = (rb.right - ra.left) + 'px';
+  box.style.height = (rb.bottom - ra.top) + 'px';
+}
+function xhChonO(r, c, noiRong){
+  if(noiRong && XH_A) XH_B = { r, c }; else { XH_A = { r, c }; XH_B = { r, c }; }
+  xhVeVung();
+}
+function xhToiO(r, c, noiRong){
   const rows = xhRows();
   r = Math.max(0, Math.min(rows.length - 1, r));
   c = Math.max(0, Math.min(XH_COLS.length - 1, c));
-  const inp = xhOInput(r, c);
-  if(!inp) return;
-  xhChonO(r, c, false);
-  inp.focus();
-  if(boiDen) inp.select();
+  xhChonO(r, c, noiRong);
+  const td = xhTd(r, c);
+  if(td){ td.focus({ preventScroll:false }); td.scrollIntoView({ block:'nearest', inline:'nearest' }); }
 }
 
 // ---- Dựng bảng ----
 function xhRowHtml(r, i){
-  const filled = !xhRowEmpty(r);
-  return `<tr data-xr="${i}" class="${filled ? 'xh-filled' : ''}">
-    <td class="xh-stt" data-xrow="${i}" title="Bấm để chọn cả dòng"><span class="xh-move" draggable="true" data-xmove="${i}" title="Kéo để đổi thứ tự dòng">⠿</span><span class="n">${i + 1}</span></td>
+  const cao = Number(r.h) || 0;
+  const cls = [ xhRowEmpty(r) ? '' : 'xh-filled', cao ? 'wrap' : '' ].filter(Boolean).join(' ');
+  return `<tr data-xr="${i}" class="${cls}"${cao ? ` style="height:${cao}px"` : ''}>
+    <td class="xh-stt" data-xrow="${i}" title="Bấm để chọn cả dòng">
+      <span class="xh-move" draggable="true" data-xmove="${i}" title="Kéo để đổi thứ tự dòng">⠿</span><span class="n">${i + 1}</span>
+      <span class="xh-rgrip" data-rgrip="${i}" title="Kéo xuống để nới cao dòng · bấm đúp cho vừa nội dung"></span>
+    </td>
     ${XH_COLS.map((c, ci)=>{
       const f = xhFmt(r, c.key) || {};
-      const cls = ['xh-cell', f.h ? 'hl' : '', f.c ? 'ct' : ''].filter(Boolean).join(' ');
-      return `<td class="${cls}" data-r="${i}" data-c="${ci}"><input class="xh-in${f.b ? ' b' : ''}" data-xr="${i}" data-xc="${c.key}" value="${esc(r[c.key] || '')}" spellcheck="false"></td>`;
+      const k = ['xh-cell', f.h ? 'hl' : '', f.c ? 'ct' : ''].filter(Boolean).join(' ');
+      return `<td class="${k}" data-r="${i}" data-c="${ci}" tabindex="-1"><div class="v${f.b ? ' b' : ''}">${esc(r[c.key] || '')}</div></td>`;
     }).join('')}
     <td class="xh-del"><button class="danger sm" data-xdel="${i}" title="Xoá dòng này">✕</button></td>
   </tr>`;
@@ -4052,18 +4212,16 @@ function renderXuatHang(){
   $('xhHead').innerHTML = `<th class="xh-stt" id="xhAll" title="Chọn toàn bộ bảng">◤</th>`
     + XH_COLS.map((c, ci)=>`<th data-xcol="${ci}" title="Bấm để chọn cả cột">${esc(c.label)}<span class="xh-grip" data-gcol="${c.key}" title="Kéo để giãn cột · bấm đúp cho vừa chữ"></span></th>`).join('')
     + `<th class="xh-del"></th>`;
-  $('xhCg').innerHTML = `<col style="width:52px">`
+  $('xhCg').innerHTML = `<col style="width:56px">`
     + XH_COLS.map(c=>`<col data-gc="${c.key}" style="width:${xhColW(c)}px">`).join('')
     + `<col style="width:40px">`;
   $('xhBody').innerHTML = rows.map(xhRowHtml).join('');
   xhVeVung();
-
-  // chỉ nhắc khi đang xem ngày khác hôm nay
   const bar = $('xhBar');
   if(bar) bar.classList.toggle('khac-ngay', key !== todayKey());
 }
 
-// ---- Lưu (gõ xong 0,6 giây là lưu; đổi tab / đóng trang cũng lưu nốt) ----
+// ---- Lưu ----
 let xhTimer = null, xhDirty = false;
 function xhLuuSau(){
   xhDirty = true;
@@ -4071,70 +4229,163 @@ function xhLuuSau(){
   xhTimer = setTimeout(()=>{ xhDirty = false; saveKho(); }, 600);
 }
 function flushXuatHang(){
+  if(XH_EDIT) xhKetThucSua(true);
   if(!xhDirty) return;
   clearTimeout(xhTimer); xhDirty = false;
   saveKho();
 }
 
-// ---- Cột tự nới khi chữ dài hơn ô (vẫn giữ 1 dòng) ----
+// ---- Nhập liệu: ô biến thành khung gõ ----
+function xhBatDauSua(r, c, chuDau){
+  if(XH_EDIT) xhKetThucSua(true);
+  const td = xhTd(r, c), rows = xhRows();
+  if(!td || !rows[r]) return;
+  const key = xhColKey(c);
+  const ta = document.createElement('textarea');
+  ta.className = 'xh-edit';
+  ta.value = (chuDau != null) ? chuDau : (rows[r][key] || '');
+  ta.spellcheck = false;
+  td.classList.add('editing');
+  td.appendChild(ta);
+  XH_EDIT = { r, c, key };
+  ta.focus();
+  if(chuDau != null) ta.setSelectionRange(ta.value.length, ta.value.length); else ta.select();
+}
+function xhKetThucSua(luu){
+  if(!XH_EDIT) return;
+  const { r, c, key } = XH_EDIT;
+  const td = xhTd(r, c), ta = td && td.querySelector('.xh-edit');
+  XH_EDIT = null;
+  if(!td){ return; }
+  if(ta && luu){
+    const rows = xhRows();
+    if(rows[r]){
+      rows[r][key] = ta.value;
+      const div = td.querySelector('.v');
+      if(div) div.textContent = ta.value;
+      const tr = td.closest('tr');
+      if(tr){
+        tr.classList.toggle('xh-filled', !xhRowEmpty(rows[r]));
+        if(!Number(rows[r].h)) xhNoiCotNeuCan(key, ta.value);      // dòng chưa nới cao thì nới cột
+      }
+      // gõ ở dòng cuối -> thêm dòng trống mới
+      if(r === rows.length - 1 && !xhRowEmpty(rows[r])){
+        rows.push(xhEmptyRow());
+        $('xhBody').insertAdjacentHTML('beforeend', xhRowHtml(rows[rows.length - 1], rows.length - 1));
+      }
+      xhLuuSau();
+    }
+  }
+  if(ta) ta.remove();
+  td.classList.remove('editing');
+  xhVeKhung();
+}
+
+// ---- Cột tự nới / chiều cao dòng ----
+const XH_TU_NOI_TOI_DA = 300;   // tự nới cột tối đa 300px; dài hơn thì dùng "↵ Xuống dòng"
 function xhNoiCotNeuCan(key, text){
   const col = document.querySelector(`#xhCg col[data-gc="${key}"]`);
   if(!col) return;
   const hienTai = col.offsetWidth || parseInt(col.style.width, 10) || 100;
-  const can = Math.ceil(xhTextW(text)) + 26;
-  if(can > hienTai && hienTai < 560){ xhSetColW(key, Math.min(560, can)); xhLuuSau(); }
+  if(hienTai >= XH_TU_NOI_TOI_DA) return;
+  const can = Math.ceil(xhTextW(String(text || '').split('\n')[0])) + 26;
+  if(can > hienTai){ xhSetColW(key, Math.min(XH_TU_NOI_TOI_DA, can)); xhLuuSau(); }
 }
 function xhAutoFit(key){
   const cot = XH_COLS.find(c=>c.key === key);
   let w = xhTextW(cot ? cot.label : '') + 30;
-  xhRows().forEach(r=>{ const t = r[key]; if(t) w = Math.max(w, xhTextW(t) + 26); });
+  xhRows().forEach(r=>{ const t = r[key]; if(t) w = Math.max(w, xhTextW(String(t).split('\n')[0]) + 26); });
   xhSetColW(key, w);
   saveKho();
   toast(`✓ Cột "${cot ? cot.label : key}" vừa với nội dung`);
 }
+async function xhDatCaoDong(i, h){
+  const rows = xhRows();
+  if(!rows[i]) return;
+  if(h && h > 30) rows[i].h = Math.round(h); else delete rows[i].h;
+  await saveKho();
+  const a = XH_A, b = XH_B; renderXuatHang(); XH_A = a; XH_B = b; xhVeVung();
+}
+// Nới cao vừa đủ cho nội dung dài nhất của dòng (chữ tự xuống dòng)
+function xhVuaCaoDong(i){
+  const rows = xhRows(), r = rows[i];
+  if(!r) return;
+  let cao = 30;
+  XH_COLS.forEach(c=>{
+    const w = xhColW(c) - 22;
+    const t = String(r[c.key] || '');
+    if(!t) return;
+    const soDong = Math.max(1, Math.ceil(xhTextW(t) / Math.max(40, w))) + (t.split('\n').length - 1);
+    cao = Math.max(cao, soDong * 20 + 12);
+  });
+  xhDatCaoDong(i, cao);
+}
+// Nút "Xuống dòng": bật/tắt cho các dòng đang chọn
+async function xhToggleWrap(){
+  const v = xhVung();
+  if(!v){ toast('⚠ Chọn dòng cần xuống dòng trước'); return; }
+  const rows = xhRows();
+  const dangBat = [];
+  for(let i = v.r1; i <= v.r2; i++) if(rows[i]) dangBat.push(!!Number(rows[i].h));
+  const tat = dangBat.every(Boolean);
+  for(let i = v.r1; i <= v.r2; i++){
+    if(!rows[i]) continue;
+    if(tat) delete rows[i].h; else rows[i].h = 0;      // 0 = tạm, tính lại ngay bên dưới
+  }
+  if(!tat) for(let i = v.r1; i <= v.r2; i++){
+    if(!rows[i]) continue;
+    let cao = 30;
+    XH_COLS.forEach(c=>{
+      const w = xhColW(c) - 22, t = String(rows[i][c.key] || '');
+      if(!t) return;
+      const sd = Math.max(1, Math.ceil(xhTextW(t) / Math.max(40, w))) + (t.split('\n').length - 1);
+      cao = Math.max(cao, sd * 20 + 12);
+    });
+    rows[i].h = Math.round(cao);
+  }
+  await saveKho();
+  const a = XH_A, b = XH_B; renderXuatHang(); XH_A = a; XH_B = b; xhVeVung();
+  toast(tat ? '✓ Đã bỏ xuống dòng' : '✓ Đã cho chữ xuống dòng trong ô');
+}
 
-// ---- Gắn sự kiện cho bảng ----
+// ---- Sự kiện bảng ----
 function xhBind(){
   const body = $('xhBody');
   if(!body || body.dataset.bound) return;
   body.dataset.bound = '1';
 
-  body.addEventListener('input', (e)=>{
-    const inp = e.target;
-    if(!inp.classList.contains('xh-in')) return;
-    const rows = xhRows(), i = Number(inp.dataset.xr), key = inp.dataset.xc;
-    if(!rows[i]) return;
-    rows[i][key] = inp.value;
-    const tr = inp.closest('tr');
-    if(tr) tr.classList.toggle('xh-filled', !xhRowEmpty(rows[i]));
-    xhNoiCotNeuCan(key, inp.value);
-    if(i === rows.length - 1 && !xhRowEmpty(rows[i])){
-      rows.push(xhEmptyRow());
-      body.insertAdjacentHTML('beforeend', xhRowHtml(rows[rows.length - 1], rows.length - 1));
-    }
-    xhLuuSau();
-  });
-  body.addEventListener('change', (e)=>{ if(e.target.classList.contains('xh-in')) flushXuatHang(); });
-
-  // bấm / kéo chọn vùng ô
+  // --- bấm / kéo chọn ---
   body.addEventListener('mousedown', (e)=>{
     if(e.target.closest('[data-xdel]')) return;
+    if(e.target.closest('.xh-move')) return;              // để tay nắm ⠿ kéo thả được
+    const rg = e.target.closest('[data-rgrip]');
+    if(rg){                                              // kéo mép dưới = nới cao dòng
+      e.preventDefault();
+      const tr = rg.closest('tr');
+      XH_RGRIP = { i: Number(rg.dataset.rgrip), y0: e.clientY, h0: tr.offsetHeight, tr };
+      document.body.style.cursor = 'row-resize';
+      return;
+    }
     const rowHead = e.target.closest('[data-xrow]');
     if(rowHead){
       const r = Number(rowHead.dataset.xrow);
-      if(e.shiftKey && XH_A){ XH_B = { r, c: XH_COLS.length - 1 }; }
+      if(XH_EDIT) xhKetThucSua(true);
+      if(e.shiftKey && XH_A) XH_B = { r, c: XH_COLS.length - 1 };
       else { XH_A = { r, c: 0 }; XH_B = { r, c: XH_COLS.length - 1 }; }
       xhVeVung();
-      if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
       e.preventDefault();
       return;
     }
     const td = e.target.closest('td[data-c]');
     if(!td) return;
     const r = Number(td.dataset.r), c = Number(td.dataset.c);
-    if(e.shiftKey){ XH_B = { r, c }; xhVeVung(); e.preventDefault(); return; }
+    if(XH_EDIT && (XH_EDIT.r !== r || XH_EDIT.c !== c)) xhKetThucSua(true);
+    if(XH_EDIT) return;                                   // đang gõ trong chính ô này thì để yên
+    e.preventDefault();                                   // 1 lần bấm = CHỌN ô, chưa vào chế độ gõ
+    if(e.shiftKey){ XH_B = { r, c }; xhVeVung(); td.focus(); return; }
     XH_A = { r, c }; XH_B = { r, c }; XH_DRAG = true;
     xhVeVung();
+    td.focus();
   });
   body.addEventListener('mouseover', (e)=>{
     if(!XH_DRAG) return;
@@ -4143,17 +4394,15 @@ function xhBind(){
     const r = Number(td.dataset.r), c = Number(td.dataset.c);
     if(XH_B && XH_B.r === r && XH_B.c === c) return;
     XH_B = { r, c };
-    if(xhSoO() > 1 && document.activeElement && document.activeElement.blur) document.activeElement.blur();
     xhVeVung();
   });
-  body.addEventListener('focusin', (e)=>{
-    if(!e.target.classList.contains('xh-in')) return;
+  // 2 lần bấm = vào chế độ gõ
+  body.addEventListener('dblclick', (e)=>{
     const td = e.target.closest('td[data-c]');
     if(!td) return;
-    const r = Number(td.dataset.r), c = Number(td.dataset.c);
-    if(!XH_A || XH_A.r !== r || XH_A.c !== c || xhSoO() > 1) xhChonO(r, c, false);
+    xhBatDauSua(Number(td.dataset.r), Number(td.dataset.c), null);
   });
-
+  // xoá dòng
   body.addEventListener('click', async (e)=>{
     const b = e.target.closest('[data-xdel]');
     if(!b) return;
@@ -4164,8 +4413,49 @@ function xhBind(){
     XH_A = XH_B = null;
     await saveKho(); renderXuatHang(); toast('✓ Đã xoá dòng');
   });
+  body.addEventListener('dblclick', (e)=>{
+    const rg = e.target.closest('[data-rgrip]');
+    if(rg) xhVuaCaoDong(Number(rg.dataset.rgrip));
+  });
 
-  // ---- Kéo tay nắm ⠿ để đổi thứ tự dòng ----
+  // --- bàn phím kiểu Excel ---
+  body.addEventListener('keydown', (e)=>{
+    // đang gõ trong ô
+    if(XH_EDIT){
+      if(e.key === 'Escape'){ e.preventDefault(); xhKetThucSua(false); const t = xhTd(XH_A.r, XH_A.c); if(t) t.focus(); }
+      else if(e.key === 'Enter' && !e.shiftKey && !e.altKey){
+        e.preventDefault();
+        const { r, c } = XH_EDIT; xhKetThucSua(true); xhToiO(r + 1, c, false);
+      }
+      else if(e.key === 'Tab'){
+        e.preventDefault();
+        const { r, c } = XH_EDIT; xhKetThucSua(true); xhToiO(r, c + (e.shiftKey ? -1 : 1), false);
+      }
+      return;
+    }
+    const td = e.target.closest('td[data-c]');
+    if(!td || !XH_A) return;
+    const r = XH_A.r, c = XH_A.c;
+    const k = e.key;
+    if(k === 'ArrowDown'){ e.preventDefault(); xhToiO(r + 1, c, e.shiftKey); }
+    else if(k === 'ArrowUp'){ e.preventDefault(); xhToiO(r - 1, c, e.shiftKey); }
+    else if(k === 'ArrowRight'){ e.preventDefault(); xhToiO(r, c + 1, e.shiftKey); }
+    else if(k === 'ArrowLeft'){ e.preventDefault(); xhToiO(r, c - 1, e.shiftKey); }
+    else if(k === 'Tab'){ e.preventDefault(); xhToiO(r, c + (e.shiftKey ? -1 : 1), false); }
+    else if(k === 'Enter' || k === 'F2'){ e.preventDefault(); xhBatDauSua(r, c, k === 'Enter' ? null : null); }
+    else if(k === 'Delete' || k === 'Backspace'){
+      e.preventDefault();
+      xhODangChon().forEach(o=>{ o.r[o.key] = ''; });
+      saveKho(); xhVeLai();
+      toast('✓ Đã xoá nội dung ô đang chọn');
+    }
+    else if(!e.ctrlKey && !e.metaKey && !e.altKey && k.length === 1){
+      e.preventDefault();
+      xhBatDauSua(r, c, k);                                // gõ thẳng = ghi đè, giống Excel
+    }
+  });
+
+  // --- kéo ⠿ đổi thứ tự dòng ---
   body.addEventListener('dragstart', (e)=>{
     const h = e.target.closest('[data-xmove]');
     if(!h){ e.preventDefault(); return; }
@@ -4173,7 +4463,7 @@ function xhBind(){
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('text/plain', 'row:' + XH_MOVE);
     const tr = h.closest('tr');
-    if(tr){ tr.classList.add('dragging'); if(e.dataTransfer.setDragImage) e.dataTransfer.setDragImage(tr, 20, 12); }
+    if(tr) tr.classList.add('dragging');
   });
   body.addEventListener('dragover', (e)=>{
     if(XH_MOVE == null) return;
@@ -4192,8 +4482,8 @@ function xhBind(){
     body.querySelectorAll('tr').forEach(x=>x.classList.remove('drop-tren','drop-duoi','dragging'));
     if(!tr){ XH_MOVE = null; return; }
     e.preventDefault();
-    const r = tr.getBoundingClientRect();
-    const duoi = (e.clientY - r.top) > r.height / 2;
+    const rect = tr.getBoundingClientRect();
+    const duoi = (e.clientY - rect.top) > rect.height / 2;
     let dich = Number(tr.dataset.xr) + (duoi ? 1 : 0);
     const nguon = XH_MOVE; XH_MOVE = null;
     if(dich === nguon || dich === nguon + 1) return;
@@ -4209,30 +4499,15 @@ function xhBind(){
     XH_MOVE = null;
     body.querySelectorAll('tr').forEach(x=>x.classList.remove('drop-tren','drop-duoi','dragging'));
   });
-
-  // phím tắt di chuyển như Excel
-  body.addEventListener('keydown', (e)=>{
-    if(!e.target.classList.contains('xh-in')) return;
-    const r = Number(e.target.dataset.xr);
-    const c = XH_COLS.findIndex(x=>x.key === e.target.dataset.xc);
-    if(e.key === 'Enter'){ e.preventDefault(); xhVaoO(r + (e.shiftKey ? -1 : 1), c, true); }
-    else if(e.key === 'Tab'){ e.preventDefault(); xhVaoO(r, c + (e.shiftKey ? -1 : 1), true); }
-    else if(e.key === 'ArrowDown'){ e.preventDefault(); xhVaoO(r + 1, c, true); }
-    else if(e.key === 'ArrowUp'){ e.preventDefault(); xhVaoO(r - 1, c, true); }
-  });
 }
 function xhGripBind(){
   const head = $('xhHead');
   if(!head || head.dataset.gbound) return;
   head.dataset.gbound = '1';
   head.addEventListener('mousedown', (e)=>{
-    // ô ◤ góc trên bên trái = chọn toàn bộ bảng (gắn kiểu uỷ quyền vì tiêu đề bị dựng lại mỗi lần vẽ)
     if(e.target.closest('#xhAll')){
-      XH_A = { r: 0, c: 0 }; XH_B = { r: xhRows().length - 1, c: XH_COLS.length - 1 };
-      xhVeVung();
-      if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
-      e.preventDefault();
-      return;
+      XH_A = { r:0, c:0 }; XH_B = { r: xhRows().length - 1, c: XH_COLS.length - 1 };
+      xhVeVung(); e.preventDefault(); return;
     }
     const g = e.target.closest('.xh-grip');
     if(g){
@@ -4243,12 +4518,10 @@ function xhGripBind(){
       return;
     }
     const th = e.target.closest('[data-xcol]');
-    if(th){                                     // bấm tên cột = chọn cả cột
-      const c = Number(th.dataset.xcol), n = xhRows().length - 1;
-      XH_A = { r: 0, c }; XH_B = { r: n, c };
-      xhVeVung();
-      if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
-      e.preventDefault();
+    if(th){
+      const c = Number(th.dataset.xcol);
+      XH_A = { r:0, c }; XH_B = { r: xhRows().length - 1, c };
+      xhVeVung(); e.preventDefault();
     }
   });
   head.addEventListener('dblclick', (e)=>{
@@ -4256,22 +4529,31 @@ function xhGripBind(){
     if(g) xhAutoFit(g.dataset.gcol);
   });
 }
-// kéo giãn cột
+// kéo giãn cột / nới cao dòng
 let xhDrag = null;
 document.addEventListener('mousemove', (e)=>{
-  if(!xhDrag) return;
-  xhDrag.col.style.width = Math.max(46, xhDrag.w0 + (e.clientX - xhDrag.x0)) + 'px';
+  if(xhDrag){ xhDrag.col.style.width = Math.max(46, xhDrag.w0 + (e.clientX - xhDrag.x0)) + 'px'; xhVeKhung(); return; }
+  if(XH_RGRIP){ XH_RGRIP.tr.style.height = Math.max(30, XH_RGRIP.h0 + (e.clientY - XH_RGRIP.y0)) + 'px'; XH_RGRIP.tr.classList.add('wrap'); xhVeKhung(); }
 });
 document.addEventListener('mouseup', async ()=>{
   XH_DRAG = false;
-  if(!xhDrag) return;
-  const { key, col } = xhDrag; xhDrag = null;
-  document.body.style.cursor = '';
-  xhSetColW(key, parseInt(col.style.width, 10) || col.offsetWidth);
-  await saveKho();
+  if(xhDrag){
+    const { key, col } = xhDrag; xhDrag = null;
+    document.body.style.cursor = '';
+    xhSetColW(key, parseInt(col.style.width, 10) || col.offsetWidth);
+    await saveKho(); xhVeKhung();
+    return;
+  }
+  if(XH_RGRIP){
+    const { i, tr } = XH_RGRIP; XH_RGRIP = null;
+    document.body.style.cursor = '';
+    await xhDatCaoDong(i, tr.offsetHeight);
+  }
 });
+window.addEventListener('resize', ()=>{ if(activeTab === 'xuathang') xhVeKhung(); });
+window.addEventListener('scroll', ()=>{ if(activeTab === 'xuathang') xhVeKhung(); }, true);
 
-// ---- Định dạng vùng đang chọn ----
+// ---- Định dạng ----
 function xhODangChon(){
   const v = xhVung(), rows = xhRows(), out = [];
   if(!v) return out;
@@ -4291,9 +4573,8 @@ async function xhToggleFmt(prop){
   if(!os.length){ toast('⚠ Bấm vào ô (hoặc kéo chọn vùng) rồi bấm nút định dạng'); return; }
   const dangBat = os.every(o=>xhFmt(o.r, o.key) && xhFmt(o.r, o.key)[prop]);
   os.forEach(o=>xhSetFmt(o.r, o.key, prop, !dangBat));
-  await saveKho();
-  xhVeLai();
-  const ten = { b: 'in đậm', h: 'tô vàng', c: 'căn giữa' }[prop];
+  await saveKho(); xhVeLai();
+  const ten = { b:'in đậm', h:'tô vàng', c:'căn giữa' }[prop];
   toast(`✓ ${dangBat ? 'Đã bỏ' : 'Đã'} ${ten} ${os.length} ô`);
 }
 async function xhXoaDinhDang(){
@@ -4304,7 +4585,7 @@ async function xhXoaDinhDang(){
   toast('✓ Đã xoá định dạng');
 }
 
-// ---- Copy vùng chọn (dán thẳng vào Excel) ----
+// ---- Copy / dán ----
 function xhTsv(){
   const v = xhVung(), rows = xhRows();
   if(!v) return '';
@@ -4345,27 +4626,22 @@ function xhCopy(){
   let ok = false;
   const h = (ev)=>{ ok = xhDatClipboard(ev); };
   document.addEventListener('copy', h, true);
-  try{
-    if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
-    document.execCommand('copy');
-  }catch(e){}
+  try{ document.execCommand('copy'); }catch(e){}
   document.removeEventListener('copy', h, true);
   if(ok){ toast(`✓ Đã copy ${n} ô — dán thẳng vào Excel được`); return; }
   const tsv = xhTsv();
-  if(navigator.clipboard && navigator.clipboard.writeText){
+  if(navigator.clipboard && navigator.clipboard.writeText)
     navigator.clipboard.writeText(tsv).then(()=>toast(`✓ Đã copy ${n} ô`), ()=>toast('⚠ Trình duyệt chặn copy — dùng Ctrl+C'));
-  }else toast('⚠ Trình duyệt chặn copy — dùng Ctrl+C');
+  else toast('⚠ Trình duyệt chặn copy — dùng Ctrl+C');
 }
-// Ctrl+C: 1 ô thì để trình duyệt copy chữ như thường, nhiều ô thì copy cả vùng
 document.addEventListener('copy', (e)=>{
-  if(activeTab !== 'xuathang' || xhSoO() < 2) return;
+  if(activeTab !== 'xuathang' || XH_EDIT || !xhVung()) return;
   if(xhDatClipboard(e)) toast(`✓ Đã copy ${xhSoO()} ô`);
 });
-// Dán từ Excel: điền từ ô đang chọn, tự thêm dòng nếu thiếu
 document.addEventListener('paste', async (e)=>{
-  if(activeTab !== 'xuathang' || !XH_A) return;
+  if(activeTab !== 'xuathang' || XH_EDIT || !XH_A) return;
   const txt = ((e.clipboardData || window.clipboardData).getData('text/plain') || '');
-  if(!txt.includes('\t') && !txt.includes('\n')) return;   // dán 1 ô lẻ thì để trình duyệt tự làm
+  if(!txt) return;
   e.preventDefault();
   const bang = txt.replace(/\r/g, '').replace(/\n+$/, '').split('\n').map(l=>l.split('\t'));
   const rows = xhRows();
@@ -4380,23 +4656,177 @@ document.addEventListener('paste', async (e)=>{
   if(!xhRowEmpty(rows[rows.length - 1])) rows.push(xhEmptyRow());
   XH_A = { r: r0, c: c0 };
   XH_B = { r: r0 + bang.length - 1, c: Math.min(XH_COLS.length - 1, c0 + bang[0].length - 1) };
-  await saveKho();
-  renderXuatHang();
-  XH_COLS.forEach(c=>{ rows.forEach(r=>{ if(r[c.key]) xhNoiCotNeuCan(c.key, r[c.key]); }); });
+  await saveKho(); renderXuatHang();
+  rows.forEach(r=>{ if(!Number(r.h)) XH_COLS.forEach(c=>{ if(r[c.key]) xhNoiCotNeuCan(c.key, r[c.key]); }); });
   toast(`✓ Đã dán ${bang.length} dòng × ${bang[0].length} cột`);
 });
 document.addEventListener('keydown', (e)=>{
-  if(activeTab !== 'xuathang') return;
-  if((e.ctrlKey || e.metaKey) && (e.key === 'b' || e.key === 'B')){ e.preventDefault(); xhToggleFmt('b'); return; }
-  if(e.key === 'Delete' && xhSoO() > 1){
-    e.preventDefault();
-    xhODangChon().forEach(o=>{ o.r[o.key] = ''; });
-    saveKho(); xhVeLai();
-    toast('✓ Đã xoá nội dung vùng chọn');
-  }
+  if(activeTab !== 'xuathang' || XH_EDIT) return;
+  if((e.ctrlKey || e.metaKey) && (e.key === 'b' || e.key === 'B')){ e.preventDefault(); xhToggleFmt('b'); }
 });
 
-// ---- Chuyển ngày / dọn dòng ----
+// =====================================================================
+// IMPORT: đọc trang HTML "SHIPMENT REQUEST DETAILS" -> điền vào bảng
+//   Customer <- BUYER · id <- 4 số cuối REQUEST_ID · type <- TYPE
+//   CTN      <- CTNS (bảng PO/JO SUMMARY, thiếu thì lấy từ QTY/UNIT_ID)
+//   Trùng Customer + id  -> cập nhật đúng dòng cũ (thường chỉ đổi số lượng)
+//   Chưa có           -> điền vào DÒNG TRỐNG đầu tiên
+// =====================================================================
+function xhChuan(s){ return String(s == null ? '' : s).replace(/\s+/g, ' ').trim(); }
+function xhKhoaTrung(cus, id){ return normName(cus) + '|' + normName(id); }
+
+// Trang lưu dạng .mhtml của Chrome -> lấy phần HTML và giải mã quoted-printable
+function xhBocMhtml(txt){
+  if(!/content-type:\s*multipart\/related/i.test(txt) && !/^From:/m.test(txt)) return txt;
+  const phan = txt.split(/\r?\n--/);
+  let tot = txt;
+  for(const p of phan){
+    if(!/content-type:\s*text\/html/i.test(p)) continue;
+    const i = p.search(/\r?\n\r?\n/);
+    if(i < 0) continue;
+    let body = p.slice(i).replace(/^\s+/, '');
+    if(/quoted-printable/i.test(p.slice(0, i))){
+      body = body.replace(/=\r?\n/g, '');
+      const bytes = [];
+      for(let k = 0; k < body.length; k++){
+        if(body[k] === '=' && /^[0-9A-Fa-f]{2}$/.test(body.substr(k + 1, 2))){ bytes.push(parseInt(body.substr(k + 1, 2), 16)); k += 2; }
+        else bytes.push(body.charCodeAt(k) & 0xff);
+      }
+      try{ body = new TextDecoder('utf-8').decode(new Uint8Array(bytes)); }catch(e){}
+    }
+    tot = body; break;
+  }
+  return tot;
+}
+// Đọc các bảng trong trang -> [{headers, rows}]
+function xhBangTrongTrang(doc){
+  return [...doc.querySelectorAll('table')].map(t=>{
+    const trs = [...t.rows];
+    if(trs.length < 2) return null;
+    const headers = [...trs[0].cells].map(c=>xhChuan(c.textContent).toUpperCase());
+    const rows = trs.slice(1).map(tr=>[...tr.cells].map(c=>xhChuan(c.textContent)));
+    return { headers, rows };
+  }).filter(Boolean);
+}
+function xhCot(headers, ten){ return headers.findIndex(h=>h === ten || h.startsWith(ten)); }
+
+// Bóc dữ liệu cần dùng từ 1 trang
+function xhBocTrang(html, tenFile){
+  const doc = new DOMParser().parseFromString(xhBocMhtml(html), 'text/html');
+  const bangs = xhBangTrongTrang(doc);
+
+  // 1) bảng thông tin yêu cầu
+  const bReq = bangs.find(b=>xhCot(b.headers,'REQUEST_ID') >= 0 && xhCot(b.headers,'BUYER') >= 0);
+  if(!bReq) return { loi: `${tenFile}: không tìm thấy bảng SHIPMENT REQUEST DETAILS` };
+  const iId = xhCot(bReq.headers,'REQUEST_ID'), iBuyer = xhCot(bReq.headers,'BUYER'), iType = xhCot(bReq.headers,'TYPE');
+
+  // 2) số thùng: ưu tiên cột CTNS ở bảng PO/JO SUMMARY
+  let ctns = '';
+  const bSum = bangs.find(b=>xhCot(b.headers,'CTNS') >= 0 && /UNIT_SUMMARY|ĐƠN VỊ TÍNH/i.test(b.headers[0] || ''));
+  if(bSum){
+    const j = xhCot(bSum.headers,'CTNS');
+    for(const r of bSum.rows){ const v = xhChuan(r[j]); if(v && /\d/.test(v)){ ctns = v; break; } }
+  }
+  if(!ctns){                                   // dự phòng: cộng QTY có đơn vị CTNS ở bảng job order
+    const bJo = bangs.find(b=>xhCot(b.headers,'UNIT_ID') >= 0 && xhCot(b.headers,'QTY') >= 0);
+    if(bJo){
+      let tong = 0;
+      const cap = [['QTY','UNIT_ID'], ['QTY2','UNIT_ID2']];
+      bJo.rows.forEach(r=>cap.forEach(([q, u])=>{
+        const iq = xhCot(bJo.headers, q), iu = xhCot(bJo.headers, u);
+        if(iq >= 0 && iu >= 0 && /^CTNS?$/i.test(xhChuan(r[iu]))) tong += Number(String(r[iq]).replace(/[^\d.]/g, '')) || 0;
+      }));
+      if(tong) ctns = String(tong);
+    }
+  }
+
+  const ra = [];
+  bReq.rows.forEach(r=>{
+    const idFull = xhChuan(r[iId]);
+    if(!idFull) return;
+    const buyer = iBuyer >= 0 ? xhChuan(r[iBuyer]) : '';
+    const type  = iType  >= 0 ? xhChuan(r[iType])  : '';
+    const idNgan = idFull.includes('-') ? idFull.split('-').pop() : idFull.slice(-4);
+    const so = String(ctns).replace(/[^\d.]/g, '');
+    ra.push({
+      customer: buyer,
+      id: idNgan,
+      type: type,
+      ctn: so ? `${so} THÙNG` : '',
+      idFull, tenFile,
+    });
+  });
+  return ra.length ? { items: ra } : { loi: `${tenFile}: không đọc được dòng dữ liệu nào` };
+}
+
+// Chọn file -> xem trước -> áp dụng
+async function xhImportFiles(files){
+  const items = [], loi = [];
+  for(const f of files){
+    let txt = '';
+    try{ txt = await f.text(); }catch(e){ loi.push(`${f.name}: không đọc được file`); continue; }
+    const kq = xhBocTrang(txt, f.name);
+    if(kq.loi) loi.push(kq.loi); else items.push(...kq.items);
+  }
+  if(!items.length){
+    openModal('Import không thành công', `<div class="note warn">${loi.map(esc).join('<br>') || 'Không có dữ liệu nào đọc được.'}</div>
+      <div class="note" style="margin-top:8px">Cần đúng trang <b>SHIPMENT REQUEST DETAILS</b> lưu ở dạng <b>.html</b> hoặc <b>.mhtml</b>.</div>`);
+    return;
+  }
+  // đối chiếu với bảng của ngày đang xem
+  const rows = xhRows();
+  const viTri = new Map();
+  rows.forEach((r, i)=>{
+    if(!xhChuan(r.customer) && !xhChuan(r.id)) return;
+    viTri.set(xhKhoaTrung(r.customer, r.id), i);
+  });
+  let iTrong = 0;
+  const dungTrong = new Set();
+  const timDongTrong = ()=>{
+    while(iTrong < rows.length && (!xhRowEmpty(rows[iTrong]) || dungTrong.has(iTrong))) iTrong++;
+    dungTrong.add(iTrong);
+    return iTrong;
+  };
+  items.forEach(it=>{
+    const k = xhKhoaTrung(it.customer, it.id);
+    if(viTri.has(k)){ it.dong = viTri.get(k); it.moi = false; }
+    else { it.dong = timDongTrong(); it.moi = true; viTri.set(k, it.dong); }
+  });
+
+  const m = openModal('Import từ trang SHIPMENT REQUEST', `
+    ${loi.length ? `<div class="note warn">${loi.map(esc).join('<br>')}</div>` : ''}
+    <div class="note">Đọc được <b>${items.length}</b> yêu cầu. Xem trước rồi bấm <b>Áp dụng</b>.</div>
+    <div class="tblwrap" style="max-height:340px; overflow:auto;">
+      <table class="hist-table" style="width:100%">
+        <thead><tr><th>Customer</th><th>id</th><th>type</th><th>CTN</th><th>Sẽ ghi vào</th></tr></thead>
+        <tbody>${items.map(it=>`<tr>
+          <td><b>${esc(it.customer)}</b></td><td>${esc(it.id)}</td><td>${esc(it.type)}</td><td>${esc(it.ctn)}</td>
+          <td>${it.moi ? `<span class="chip ok">Dòng ${it.dong + 1} (mới)</span>` : `<span class="chip warn">Cập nhật dòng ${it.dong + 1}</span>`}</td>
+        </tr>`).join('')}</tbody>
+      </table>
+    </div>
+    <div class="btnrow" style="margin-top:14px;"><button id="imApply">✓ Áp dụng vào bảng</button></div>`);
+  $('imApply').onclick = async ()=>{
+    items.forEach(it=>{
+      while(rows.length <= it.dong) rows.push(xhEmptyRow());
+      const r = rows[it.dong];
+      r.customer = it.customer;
+      r.id = it.id;
+      r.type = it.type;
+      r.ctn = it.ctn;
+    });
+    if(!xhRowEmpty(rows[rows.length - 1])) rows.push(xhEmptyRow());
+    await saveKho();
+    XH_A = XH_B = null;
+    renderXuatHang();
+    rows.forEach(r=>{ if(!Number(r.h)) XH_COLS.forEach(c=>{ if(r[c.key]) xhNoiCotNeuCan(c.key, r[c.key]); }); });
+    m.close();
+    const moi = items.filter(x=>x.moi).length;
+    toast(`✓ Đã thêm ${moi} dòng · cập nhật ${items.length - moi} dòng`);
+  };
+}
+
+// ---- Ngày / dọn dòng ----
 async function xhGoDay(key){
   flushXuatHang();
   XH_DATE = (key === todayKey()) ? null : key;
@@ -4409,7 +4839,7 @@ async function xhClean(){
   XH_A = XH_B = null;
   await saveKho(); renderXuatHang(); toast('✓ Đã dọn dòng trống');
 }
-// ---- Xuất Excel (giữ in đậm / tô vàng / căn giữa) ----
+// ---- Xuất Excel ----
 function xhExportXlsx(){
   if(typeof XLSX === 'undefined'){ toast('⚠ Chưa tải được thư viện Excel — kiểm tra mạng rồi tải lại trang'); return; }
   const key = xhKey(), rows = xhRows().filter(r=>!xhRowEmpty(r));
@@ -4427,13 +4857,13 @@ function xhExportXlsx(){
       if(!cell) return;
       cell.s = {
         font: { bold: !!f.b },
-        alignment: { horizontal: f.c ? 'center' : 'left' },
-        fill: f.h ? { patternType: 'solid', fgColor: { rgb: 'FFF3A8' } } : undefined,
+        alignment: { horizontal: f.c ? 'center' : 'left', wrapText: !!Number(r.h) },
+        fill: f.h ? { patternType:'solid', fgColor:{ rgb:'FFF3A8' } } : undefined,
       };
     });
   });
-  ws['!cols'] = [{ wch: 5 }, ...XH_COLS.map(c=>({ wch: Math.round(xhColW(c) / 8) }))];
-  ws['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: XH_COLS.length } }];
+  ws['!cols'] = [{ wch:5 }, ...XH_COLS.map(c=>({ wch: Math.round(xhColW(c) / 8) }))];
+  ws['!merges'] = [{ s:{ r:0, c:0 }, e:{ r:0, c: XH_COLS.length } }];
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Xuat hang');
   XLSX.writeFile(wb, `xuat-hang-${key}.xlsx`);
@@ -5331,6 +5761,12 @@ $('xhXlsx').onclick   = ()=>xhExportXlsx();
 $('xhBold').onclick   = ()=>xhToggleFmt('b');
 $('xhHl').onclick     = ()=>xhToggleFmt('h');
 $('xhCenter').onclick = ()=>xhToggleFmt('c');
+$('xhImport').onclick  = ()=>{ $('xhFile').value = ''; $('xhFile').click(); };
+$('xhFile').addEventListener('change', async (e)=>{
+  const fs = [...(e.target.files || [])];
+  if(fs.length) await xhImportFiles(fs);
+});
+$('xhWrapBtn').onclick= ()=>xhToggleWrap();
 $('xhClr').onclick    = ()=>xhXoaDinhDang();
 $('xhCopy').onclick   = ()=>xhCopy();
 
@@ -5721,6 +6157,15 @@ $('btnExportPdf').onclick = ()=>exportImage('pdf');
   try{ const n = applyRotation('thanhpham'); if(n){ await saveHr(); await saveKho(); } }catch(e){}
   render();
   setInterval(()=>syncNow(true), 15000);
+  // Nếu để app mở qua đêm Chủ nhật -> sáng thứ Hai tự áp lịch đổi ca mới
+  // (applyRotation an toàn khi gọi lại nhiều lần: chỉ đổi khi thực sự khác).
+  setInterval(async ()=>{
+    try{
+      if(unsavedAny && unsavedAny()) return;
+      const n = applyRotation('thanhpham');
+      if(n){ await saveHr(); await saveKho(); render(); toast('✓ Đã áp lịch đổi ca của tuần mới'); }
+    }catch(e){}
+  }, 10 * 60 * 1000);
   document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) syncNow(true); });
 })();
 </script>
