@@ -10,6 +10,7 @@
 <meta name="theme-color" content="#173b57">
 <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAAFwUlEQVR42u2dTUwjZRyHZ96Wj1IQFllZNpXw1S60ZLdw2Gw0foREje5l1USPJLqJ8SMaowcTY5SDejEmq4e9bbJn757MXtY1RpcisO2WUj4CGxQXsIDIx7bUw0CZTkshBum8b5/nNPNmCDN9H37//7xDW73x8Vc1gHwIXgJADkAOQA5ADkAOQA5ADkAOQA5ADgDkAOQA5ADkAOQA5ADkAOQA5ADkAEAOQA5ADkAOQA5ADkAOQA5ADkAOAOQA5ADkAOQA5ADkAOSQgOHvr/MiIMe+ZuBHBp3PId1PiHMv9JMcmHGdEkNy/MfpL9kIEZhBl0pyHMFkl1qECMzgRhc5jmZ2S8qPUikrRz6ppVBiBGYQISWaHMcwhQpHiMAMIqS0kqMoE6ZehAjMIEJKRY7izpBifqhTVmw1MWqUGIEZRIiyyWHzaZA6QgRmECGqJYd0L7qMESIwg3NWRw55g1q6M5eprCiziiBLiRGYwbVInBwKP9myeYQIzODq5EuOkvqHPHtGiMAMrlcmOUrzfSI2vGp7lRXegWirEiMwgwixdXKghT0jRGAGEWLH5EALm0eIwAwixF5yYIYUr9hxlxW0kKjECMwgQoqcHGghY4QIzCBCipMcaCF1hPyPchzejL53rzLHudz45s3i+mGL5fOHOy6gQi6L8Z+LewJ8SC0gByAHIAcgByAHIAcgByAHIAcgBwByAHIAcgByAHIAcgByAHIAcgByACAHHIxT3lM//Ns6io6kb8whOQA5ADkAOQA5ADkAOQA5QBWkXQRLp89fury59SAz8PHb/a9c7LMcdfOX4Xc++9o8MvD+5UvPPGE57Idbtz/4/Nu9vxghfvzuqttVqWna7ZHo6x99aT740/dee+m5p3LP6Nbg6FuffGUe+eLDNy72PUZyHDu63u1rMw+EwmO5R4UiMcvI0J08hw2Fsw4709ZsmEFZkZWegC/LgzuxA2dd07RQOM9hoWxjegJezJBbjt7uM+bd+YWl3/9cMI88SCYj41OWn5qZm19KrJhH/lnfGJuazZLD78MMueUIdnUIXS8QHuHYlLkp2S9OhqPxVCqVpV0AOSSXw13l8rY+WqDDMFeQpkca9uTIPmwoPG7e9Zw62VBfhxnS38r2Fmw7zAnR//Lz+7UdOQ0HsaGGHNltx9TsXGLl791b3fTw3Z1IKHM6X3z2yRp3lbEbnZjZ2NwytpPJ1OjYBHKonxzpdPq3yI4QkzNzy6trxnbA21pZUR7079yDpFKpkWjc2L47MZ0RBTksOKU++4b6Os+pk/f+uG9e7Xj6Qo+lphjz3Rvw3fx1OFNxzp/z51aiuoeqWz1NhX/pwJVrA1eukRzyrXZknDA3p8a6hbkGZZpQy51L0O/Vs++AKCvqtB2R+PTm1pZ51nVdD/p9mqYFfK0V5WXG4Eg0vr29rWnaUGScFQ515chOjmQyNRqdvL+YmJvfWRBraz5dW+M22tLMivva+sbY5Mzk7FxiZZWGQ82eQ9O0Fk/Tidqav5ZXzW3HYmI573z3BHyDuzeuQ+Hx8t0gMagoL/N7Ww78jYd/8EZy2K7tCIVj5k6i11QpstqOSMzScHT72sqcTgJDneQwKsuNnwYzuyN34wtLCZMQe3IEuzqEEEa3EQrHysuc1BTFk6M3kNWTrq1vjE/fM7YbG+rNC+fuKpdvd8V9YWmvL0EOZeXobG92VVYcpuIUMEDoerCLJ/XKyeFwOM52th/mXkbb/4lrR4un2u1CCNXkKJAHueOWdRFqivpyWNoOg2q3q6PFYxlsOFHbfLoxjxwsf6kqx9nOdofDYRkMdnlFvrXwvJWF5MhF4m+HVP4jGPh2SKCsAHIAcgByAHIAIAcgByAHIAcgB9gPWzxbAZIDkAOQA5ADkAMAOQA5ADkAOQA5ADkAOQA5ADkAOQCQA5ADkAOQA5ADkAOQA5ADkAOQAwA5ADkAOQA5ADkAOQA5QDb+Bd6e9l34x6nIAAAAAElFTkSuQmCC">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
@@ -781,6 +782,80 @@
   .tp-edit-note{font-size:12.5px; color:#7a5310; background:var(--amber-bg); border-left:3px solid var(--amber);
                 padding:8px 11px; border-radius:2px; margin-bottom:10px;}
   .tp-nv .bar:hover{background:#fff3f5; border-color:#c8102e;}
+
+  /* ================= TAB CHECK CT (chi kho thanh pham) ================= */
+    #tab-checkct .load-stat{font-size:13px; color:var(--ink-soft); font-weight:700;}
+  /* ===== 2 khung nap file (khong con dung, giu lai cho drag-drop) ===== */
+    #tab-checkct .cc-drops{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+    #tab-checkct .cc-drop{border:2px dashed var(--line); border-radius:8px; padding:14px; background:#fcfcfa; transition:.15s;}
+    #tab-checkct .cc-drop.over{border-color:var(--blue); background:var(--blue-bg);}
+    #tab-checkct .cc-drop.done{border-style:solid; border-color:var(--teal); background:var(--teal-bg);}
+    #tab-checkct .cc-drop .t{font-weight:800; font-size:14px; display:flex; align-items:center; gap:6px;}
+    #tab-checkct .cc-drop .s{font-size:12.5px; color:var(--ink-soft); margin:4px 0 10px;}
+    #tab-checkct .cc-drop .f{font-size:12.5px; margin-top:8px;}
+    #tab-checkct .cc-drop .f b{color:var(--teal);}
+
+  /* ===== the so ===== */
+    #tab-checkct .cc-stats{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:14px;}
+    #tab-checkct .cc-stat{border-radius:10px; padding:12px 14px; color:#fff;}
+    #tab-checkct .cc-stat .k{font-size:12px; text-transform:uppercase; letter-spacing:.08em; opacity:.9; font-weight:700;}
+    #tab-checkct .cc-stat .v{font-size:26px; font-weight:800; line-height:1.15;}
+    #tab-checkct .cc-stat .sub{font-size:11.5px; opacity:.9;}
+    #tab-checkct .cc-stat.posur{background:#3B82C4;}
+    #tab-checkct .cc-stat.thieu{background:#c98a1c;}
+    #tab-checkct .cc-stat.thua{background:#3B82C4;}
+    #tab-checkct .cc-stat.du{background:var(--teal);}
+    #tab-checkct .cc-stat.clickable{cursor:pointer;}
+    #tab-checkct .cc-stat.clickable.off{opacity:.42;}
+
+  /* ===== bang ket qua ===== */
+    #tab-checkct .tblwrap{overflow-x:auto; border:1px solid var(--line-soft); border-radius:4px;}
+    #tab-checkct table.cc-tbl{border-collapse:collapse; width:100%; font-size:12.5px;}
+    #tab-checkct table.cc-tbl th, #tab-checkct table.cc-tbl td{border:1px solid var(--line-soft); padding:6px 8px; white-space:nowrap;}
+    #tab-checkct table.cc-tbl th{background:var(--paper); position:sticky; top:0; z-index:2; font-size:11.5px; text-transform:uppercase; letter-spacing:.03em;}
+    #tab-checkct table.cc-tbl td.num{text-align:right; font-variant-numeric:tabular-nums;}
+    #tab-checkct table.cc-tbl td.ctr{text-align:center;}
+    #tab-checkct table.cc-tbl tr.grp td{background:#eceae3; font-weight:800; font-size:12px; letter-spacing:.05em; text-transform:uppercase;}
+    #tab-checkct table.cc-tbl tr.r-thieu td{background:var(--hl-thieu);}
+    #tab-checkct table.cc-tbl tr.r-thieu td:first-child{border-left:3px solid var(--hl-thieu-line);}
+    #tab-checkct table.cc-tbl tr.r-thua td{background:var(--hl-thua);}
+    #tab-checkct table.cc-tbl tr.r-thua td:first-child{border-left:3px solid var(--hl-thua-line);}
+    #tab-checkct table.cc-tbl tr.r-row{cursor:pointer;}
+    #tab-checkct table.cc-tbl tr.r-row:hover td{filter:brightness(.97);}
+    #tab-checkct table.cc-tbl td.bad{color:#8a1c1c; font-weight:800;}
+    #tab-checkct table.cc-tbl td.pos{color:#14507d; font-weight:800;}
+    #tab-checkct table.cc-tbl td.key{font-weight:700;}
+    #tab-checkct .chip{display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:999px; font-size:11.5px; font-weight:700; white-space:nowrap;}
+    #tab-checkct .chip.ok{background:var(--teal-bg); color:#1f6b5c; border:1px solid #a9cdbb;}
+    #tab-checkct .chip.thieu{background:#fff; color:#8a5a00; border:1px solid var(--hl-thieu-line);}
+    #tab-checkct .chip.thua{background:#fff; color:#14507d; border:1px solid var(--hl-thua-line);}
+    #tab-checkct .chip.none{background:var(--red-bg); color:var(--red); border:1px solid #d99b8b;}
+    #tab-checkct tr.sub-row td{background:#fbfaf6 !important; white-space:normal;}
+    #tab-checkct .sub-sum{font-family:var(--mono,monospace); font-size:11.5px; color:#333; margin-top:4px; user-select:all; cursor:text;}
+    #tab-checkct table.cc-tbl td, #tab-checkct table.cc-sub td{user-select:text;}   /* van boi den / nhay dup chon o binh thuong */
+    #tab-checkct table.cc-sub{border-collapse:collapse; width:100%; font-size:11.5px; margin:2px 0;}
+    #tab-checkct table.cc-sub th, #tab-checkct table.cc-sub td{border:1px solid #e3e0d7; padding:3px 7px;}
+    #tab-checkct table.cc-sub th{background:#f1efe8; font-weight:700;}
+
+    #tab-checkct .cc-filter{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:10px;}
+    #tab-checkct .cc-filter label{font-size:12.5px; color:var(--ink-soft); font-weight:700;}
+    #tab-checkct .subtabs{display:flex; gap:6px; margin-bottom:12px; flex-wrap:wrap;}
+    #tab-checkct .subtabs button{background:#fff; color:var(--ink-soft); border:1px solid var(--line);}
+    #tab-checkct .subtabs button.on{background:var(--blue); color:#fff; border-color:var(--blue);}
+    #tab-checkct .subtabs button.copy-btn{background:var(--amber-bg); color:#7a5310; border-color:var(--amber-line); font-weight:800;}
+    #tab-checkct .subtabs button.copy-btn:hover{background:#f8e2a8;}
+    #tab-checkct .empty{padding:22px; text-align:center; color:var(--ink-soft); font-size:13.5px;}
+  /* Nut "!" — bam de doc phan giai thich, mac dinh an cho gon */
+    #tab-checkct .hint-btn{width:30px; height:30px; padding:0; border-radius:50%; font-size:15px; font-weight:900;
+    background:#fff; color:var(--blue); border:1.5px solid var(--blue); line-height:1; flex:0 0 auto;}
+    #tab-checkct .hint-btn.on{background:var(--blue); color:#fff;}
+    #tab-checkct .hint-box{font-size:13px; color:var(--ink-soft); background:var(--blue-bg);
+    border-left:3px solid var(--blue); padding:9px 11px; border-radius:2px; margin:8px 0;}
+    #tab-checkct .legend{display:flex; gap:14px; flex-wrap:wrap; font-size:12px; color:var(--ink-soft); margin-top:8px;}
+    #tab-checkct .legend span i{display:inline-block; width:13px; height:13px; border-radius:3px; vertical-align:-2px; margin-right:4px; border:1px solid rgba(0,0,0,.15);}
+
+
+  @media (max-width:900px){ #tab-checkct .cc-stats{grid-template-columns:1fr 1fr;} }
 </style>
 </head>
 <body>
@@ -827,6 +902,7 @@
     <button data-tab="so5s">🗺 Phụ trách 5S</button>
     <button data-tab="doica">🔁 Đổi ca</button>
     <button data-tab="xuathang">🚚 Xuất hàng</button>
+    <button data-tab="checkct">🔎 CHECK CT</button>
     <button data-tab="tangca">⏱ Tăng ca/Nghỉ phép</button>
     <button data-tab="ghichu">📝 Ghi chú</button>
     <span class="spacer"></span>
@@ -1117,7 +1193,62 @@
     </div>
   </main>
 
-  <main class="tabpage" id="tab-tangca">
+  <main class="tabpage" id="tab-checkct">
+  <!-- ============ 1. NAP DU LIEU (gon: chi 2 nut) ============ -->
+  <div class="panel" id="pnLoad">
+    <div class="btnrow">
+      <button id="btnImpDetail">⬆ Import tồn</button>
+      <button id="btnImpPkl">⬆ Import PKL</button>
+      <input type="file" id="fDetail" accept=".xlsx,.xls,.csv" hidden>
+      <input type="file" id="fPkl" accept=".xlsx,.xls,.csv" hidden>
+      <span id="loadStat" class="load-stat"></span>
+      <span class="h2spacer"></span>
+      <button class="ghost sm" id="btnClear">🗑 Xoá hết</button>
+    </div>
+    <div class="note" id="loadNote" hidden></div>
+  </div>
+
+  <!-- ============ 2. KET QUA ============ -->
+  <div class="panel" id="pnKq" hidden>
+    <h2><span class="n">🔍</span>Kết quả đối chiếu
+      <span class="h2spacer"></span>
+      <button class="secondary sm" id="btnXlsx">⬇ Xuất Excel</button>
+    </h2>
+
+    <div class="cc-stats" id="ccStats"></div>
+
+    <div class="subtabs" id="ccSubtabs">
+      <button data-v="sc" class="on">Theo S/C + PO</button>
+      <button data-v="po">Theo PO</button>
+      <button data-v="orphan">Tồn kho ngoài đơn</button>
+      <span style="width:10px"></span>
+      <button id="btnCopyThieu" class="copy-btn" title="Copy dòng tóm tắt của các đơn THIẾU thùng hoặc THIẾU áo">📋 COPY</button>
+    </div>
+
+    <div class="cc-filter">
+      <label>Cont</label>
+      <select id="fltCont"><option value="">— Tất cả —</option></select>
+      <input type="text" id="fltQ" placeholder="🔍 Tìm S/C hoặc PO…" style="min-width:200px">
+      <label style="display:flex;align-items:center;gap:5px;font-weight:600">
+        <input type="checkbox" id="fltBad"> Chỉ hiện đơn có vấn đề
+      </label>
+    </div>
+
+    <div class="tblwrap" style="max-height:62vh; overflow:auto;">
+      <div id="ccBody"></div>
+    </div>
+
+    <div class="legend">
+      <span><i style="background:var(--hl-thieu);border-color:var(--hl-thieu-line)"></i>Thiếu hàng (số âm)</span>
+      <span><i style="background:var(--hl-thua);border-color:var(--hl-thua-line)"></i>Thừa hàng (số dương)</span>
+      <span><i style="background:#fff"></i>Đủ hàng</span>
+      <span>👉 Bấm vào 1 dòng để xem hàng đang nằm ở vị trí nào trong kho</span>
+    </div>
+  </div>
+
+</main>
+
+<main class="tabpage" id="tab-tangca">
     <div class="subnav" id="otSubnav">
       <button data-sub="ds" class="active">👥 Danh sách &amp; giờ OT</button>
       <button data-sub="dk">✍ Đăng ký nhanh</button>
@@ -2072,6 +2203,10 @@ function applyTabVisibility(){
   // Kho thành phẩm: có tab Xuất hàng, bỏ tab Lịch sử và Ghi chú
   const btnXuathang = document.querySelector('#tabNav button[data-tab="xuathang"]');
   if(btnXuathang) btnXuathang.style.display = isTp ? '' : 'none';
+  // Tab CHECK CT: chi co o kho thanh pham
+  const btnCheckct = document.querySelector('#tabNav button[data-tab="checkct"]');
+  if(btnCheckct) btnCheckct.style.display = isTp ? '' : 'none';
+  if(!isTp && activeTab === 'checkct') activeTab = 'dashboard';
   ['lichsu','ghichu'].forEach(t=>{
     const b = document.querySelector(`#tabNav button[data-tab="${t}"]`);
     if(b) b.style.display = isTp ? 'none' : '';
@@ -2114,6 +2249,7 @@ function render(){
   if(activeTab === 'lichsu'){ renderHistoryFilterOptions(); renderHistory(); }
   if(activeTab === 'so5s') renderZones();
   if(activeTab === 'xuathang'){ renderXuatHang(); xhBind(); xhGripBind(); }
+  if(activeTab === 'checkct') ccRender();
   if(activeTab === 'doica') renderRotation();
   if(activeTab === 'tangca'){
     $('otKhoName').textContent = w.name.toLowerCase();
@@ -6167,6 +6303,848 @@ $('btnExportPdf').onclick = ()=>exportImage('pdf');
     }catch(e){}
   }, 10 * 60 * 1000);
   document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) syncNow(true); });
+})();
+
+// =====================================================================
+// 12. TAB CHECK CT — doi chieu ton kho (detail) voi don xuat (pkl)
+//     Boc trong IIFE de moi bien/ham ben trong khong dung ten voi app
+//     (app cung co bien VIEW va ham render()). Chi mo ra 1 ham: ccRender()
+// =====================================================================
+(function(){
+'use strict';
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const num = v => { const n = Number(String(v==null?'':v).replace(/[^\d.\-]/g,'')); return isNaN(n)?0:n; };
+const norm = s => String(s==null?'':s).trim().toUpperCase();
+
+// ===== trang thai =====
+let DETAIL = [];   // {store,loc,pallet,tang,po,sc,grade,ctn,pcs}
+let PKL = [];      // {sc,po,pcs,ctn,cont}
+let VIEW = 'sc';
+let OPEN = new Set();
+let HIDE = new Set();   // nhom dang an (bam vao the so)
+let PO_THUA_ONLY = false;  // tab Theo PO: chi hien PO thua
+let HINT = new Set();      // cac o giai thich dang mo (bam nut "!")
+
+// Tao nut "!" + khung giai thich an ben duoi. Bam nut moi hien chu.
+function nutHint(id, noiDung){
+  const mo = HINT.has(id);
+  return {
+    nut: `<button class="hint-btn${mo?' on':''}" data-hint="${id}" title="Xem giải thích">!</button>`,
+    khung: `<div class="hint-box" id="hint-${id}"${mo?'':' hidden'}>${noiDung}</div>`
+  };
+}
+function batHint(){
+  document.querySelectorAll('[data-hint]').forEach(b=> b.onclick = ()=>{
+    const id = b.dataset.hint, box = $('hint-' + id);
+    if(!box) return;
+    const dangAn = box.hasAttribute('hidden');
+    if(dangAn){ box.removeAttribute('hidden'); HINT.add(id); b.classList.add('on'); }
+    else { box.setAttribute('hidden',''); HINT.delete(id); b.classList.remove('on'); }
+  });
+}
+
+// =====================================================================
+// A. DOC FILE  — tu nhan dien ten cot theo header
+// =====================================================================
+// Bang tu dien ten cot: tim theo tu khoa, khong phan biet hoa/thuong, bo dau cach
+const MAP_DETAIL = {
+  sc:     ['REFNO','REF_NO','SCNO','S/CNO','S/C_NO','JONO','JO_NO'],
+  po:     ['BUYERPO','PONO','PO_NO','PO'],
+  ctn:    ['CARTONS','CARTON','CTN','CTNS','THUNG'],
+  pcs:    ['QTY','QUANTITY','PCS','SOLUONG'],
+  store:  ['STORE','KHO'],
+  loc:    ['LOCATION','VITRI','LOC'],
+  pallet: ['PALLET'],
+  tang:   ['TANG','TẦNG','FLOOR','LEVEL'],
+  grade:  ['GRADE']
+};
+const MAP_PKL = {
+  sc:   ['S/C_NO','SCNO','S/CNO','SC_NO','REFNO','JONO'],
+  po:   ['PO_NO','PONO','BUYERPO','PO'],
+  pcs:  ['QTY','QUANTITY','PCS'],
+  ctn:  ['QTY_II','QTYII','CTNS','CTN','CARTONS','THUNG'],
+  cont: ['REMARK','CONT','CONTAINER','CONTNO']
+};
+function keyOf(h){ return String(h==null?'':h).trim().toUpperCase().replace(/[\s\.\-]/g,''); }
+function findCols(header, mapping){
+  const keys = header.map(keyOf);
+  const out = {};
+  for(const field in mapping){
+    // uu tien khop tuyet doi truoc, sau do moi khop chua
+    let i = -1;
+    for(const cand of mapping[field]){
+      i = keys.indexOf(keyOf(cand));
+      if(i >= 0) break;
+    }
+    if(i < 0){
+      for(const cand of mapping[field]){
+        i = keys.findIndex(k => k && k.includes(keyOf(cand)));
+        if(i >= 0) break;
+      }
+    }
+    out[field] = i;
+  }
+  return out;
+}
+async function readSheet(file){
+  const buf = await file.arrayBuffer();
+  const wb = XLSX.read(buf, {type:'array'});
+  const ws = wb.Sheets[wb.SheetNames[0]];
+  return XLSX.utils.sheet_to_json(ws, {header:1, raw:true, defval:null});
+}
+async function loadDetail(file){
+  const aoa = await readSheet(file);
+  if(!aoa.length) throw new Error('File rỗng');
+  const c = findCols(aoa[0], MAP_DETAIL);
+  if(c.sc < 0 || c.po < 0 || c.ctn < 0 || c.pcs < 0)
+    throw new Error('Không tìm thấy đủ cột Ref No / Buyer PO / CARTONS / QTY');
+  const out = [];
+  for(let r = 1; r < aoa.length; r++){
+    const row = aoa[r]; if(!row) continue;
+    const sc = norm(row[c.sc]), po = norm(row[c.po]);
+    if(!sc && !po) continue;
+    out.push({
+      sc, po, ctn:num(row[c.ctn]), pcs:num(row[c.pcs]),
+      store: c.store>=0?String(row[c.store]??''):'',
+      loc:   c.loc>=0?String(row[c.loc]??''):'',
+      pallet:c.pallet>=0?String(row[c.pallet]??''):'',
+      tang:  c.tang>=0?String(row[c.tang]??''):'',
+      grade: c.grade>=0?String(row[c.grade]??''):''
+    });
+  }
+  return out;
+}
+async function loadPkl(file){
+  const aoa = await readSheet(file);
+  if(!aoa.length) throw new Error('File rỗng');
+  const c = findCols(aoa[0], MAP_PKL);
+  if(c.sc < 0 || c.po < 0) throw new Error('Không tìm thấy cột S/C_NO / PO_NO');
+  const out = [];
+  for(let r = 1; r < aoa.length; r++){
+    const row = aoa[r]; if(!row) continue;
+    const sc = norm(row[c.sc]), po = norm(row[c.po]);
+    if(!sc && !po) continue;
+    out.push({ sc, po, pcs:num(row[c.pcs]), ctn:num(row[c.ctn]),
+      cont: c.cont>=0?String(row[c.cont]??'').trim():'' });
+  }
+  return out;
+}
+
+// =====================================================================
+// B. LOGIC DOI CHIEU  (dung y nguyen cong thuc sheet "data")
+// =====================================================================
+function tinhKetQua(){
+  // gom TON KHO theo khoa = RefNo + BuyerPO
+  const kho = new Map();
+  DETAIL.forEach(d=>{
+    const k = d.sc + d.po;
+    const o = kho.get(k) || {ctn:0, pcs:0, lines:[]};
+    o.ctn += d.ctn; o.pcs += d.pcs; o.lines.push(d);
+    kho.set(k, o);
+  });
+  // gom DON XUAT theo cung khoa
+  const don = new Map();
+  PKL.forEach(p=>{
+    const k = p.sc + p.po;
+    const o = don.get(k) || {sc:p.sc, po:p.po, cont:p.cont, ctn:0, pcs:0, n:0};
+    o.ctn += p.ctn; o.pcs += p.pcs; o.n++;
+    if(!o.cont && p.cont) o.cont = p.cont;
+    don.set(k, o);
+  });
+
+  const rows = [];
+  don.forEach((o, k)=>{
+    const s = kho.get(k) || {ctn:0, pcs:0, lines:[]};
+    const dCtn = s.ctn - o.ctn;      // = E-C trong Excel
+    const dPcs = s.pcs - o.pcs;      // = F-D trong Excel
+    let tt;                          // trang thai
+    if(s.lines.length === 0)         tt = 'chuave';   // khoa khong co trong ton kho
+    else if(dCtn === 0 && dPcs === 0) tt = 'du';
+    else if(dCtn < 0 || dPcs < 0)     tt = 'thieu';
+    else                              tt = 'thua';
+    // canh bao dac biet: du thung nhung thieu ao -> de bo sot nhat
+    const canhBao = (dCtn === 0 && dPcs !== 0);
+    rows.push({key:k, ...o, ctnKho:s.ctn, pcsKho:s.pcs, dCtn, dPcs, tt, canhBao, lines:s.lines});
+  });
+
+  // sap xep: THIEU len tren -> THUA -> DU xuong duoi
+  const uu = {chuave:0, thieu:1, thua:2, du:3};
+  rows.sort((a,b)=>{
+    if(uu[a.tt] !== uu[b.tt]) return uu[a.tt] - uu[b.tt];
+    if(a.canhBao !== b.canhBao) return a.canhBao ? -1 : 1;   // du thung/thieu ao len dau nhom
+    const ca = String(a.cont), cb = String(b.cont);
+    return ca.localeCompare(cb, 'vi', {numeric:true}) || a.sc.localeCompare(b.sc);
+  });
+
+  // ===== khoi phu: gom theo PO (khoi L:M:N:O cua sheet data) =====
+  // 1 PO co the trai tren nhieu Ref No / S/C. Neu trong kho co 3 ref ma PKL chi xuat 2 ref
+  // thi PO do CHAC CHAN duong so luong -> phai canh bao rieng.
+  const poMap = new Map();
+  const layPO = po=>{
+    let o = poMap.get(po);
+    if(!o){ o = {po, ctnKho:0, pcsKho:0, ctnPkl:0, pcsPkl:0, refKho:new Map(), refPkl:new Map()}; poMap.set(po, o); }
+    return o;
+  };
+  DETAIL.forEach(d=>{
+    const o = layPO(d.po);
+    o.ctnKho += d.ctn; o.pcsKho += d.pcs;
+    const k = o.refKho.get(d.sc) || {ctn:0, pcs:0};
+    k.ctn += d.ctn; k.pcs += d.pcs; o.refKho.set(d.sc, k);
+  });
+  PKL.forEach(p=>{
+    const o = layPO(p.po);
+    o.ctnPkl += p.ctn; o.pcsPkl += p.pcs;
+    const k = o.refPkl.get(p.sc) || {ctn:0, pcs:0, cont:p.cont};
+    k.ctn += p.ctn; k.pcs += p.pcs; o.refPkl.set(p.sc, k);
+  });
+  const poRows = [];
+  poMap.forEach(o=>{
+    if(o.refPkl.size === 0) return;                 // PO khong nam trong don xuat -> bo qua
+    const d = o.ctnKho - o.ctnPkl;
+    const dPcs = o.pcsKho - o.pcsPkl;
+    // Ref co hang trong kho nhung KHONG nam trong don xuat -> nguyen nhan lam PO duong
+    const refChuaXuat = [...o.refKho.keys()].filter(k=>!o.refPkl.has(k)).sort();
+    const refChuaVe   = [...o.refPkl.keys()].filter(k=>!o.refKho.has(k)).sort();
+    const ctnChuaXuat = refChuaXuat.reduce((t,k)=> t + o.refKho.get(k).ctn, 0);
+    const pcsChuaXuat = refChuaXuat.reduce((t,k)=> t + o.refKho.get(k).pcs, 0);
+    poRows.push({po:o.po, ctnKho:o.ctnKho, ctnPkl:o.ctnPkl, pcsKho:o.pcsKho, pcsPkl:o.pcsPkl,
+      d, dPcs, refKho:o.refKho, refPkl:o.refPkl, refChuaXuat, refChuaVe, ctnChuaXuat, pcsChuaXuat,
+      tt: d > 0 ? 'thua' : (d < 0 ? 'thieu' : 'du')});
+  });
+  // PO thua len dau (day la nhom can canh bao), roi den thieu, cuoi cung la du
+  const uuPo = {thua:0, thieu:1, du:2};
+  poRows.sort((x,y)=> uuPo[x.tt]-uuPo[y.tt] || y.d - x.d || x.po.localeCompare(y.po));
+
+  // ===== ton kho khong nam trong don xuat nao =====
+  const orphan = [];
+  kho.forEach((v, k)=>{
+    if(don.has(k)) return;
+    const f = v.lines[0];
+    orphan.push({sc:f.sc, po:f.po, ctn:v.ctn, pcs:v.pcs, lines:v.lines});
+  });
+  orphan.sort((a,b)=> b.ctn - a.ctn);
+
+  return {rows, poRows, orphan};
+}
+
+// Dong tom tat — giong y cot K sheet "data":
+// =TRIM("Cont"&B&" "&LEFT(A,12)&" "&RIGHT(A,10)&" "&I&"THÙNG"&" "&J&"PCS")
+// I, J la o lech: bang 0 thi ghi "ĐỦ", khac 0 thi ghi thang so
+function dongTomTat(r){
+  const a = r.dCtn === 0 ? 'ĐỦ' : String(r.dCtn);
+  const b = r.dPcs === 0 ? 'ĐỦ' : String(r.dPcs);
+  return `Cont${r.cont} ${r.sc} ${r.po} ${a}THÙNG ${b}PCS`;
+}
+// Chi lay don THIEU thung hoac THIEU ao (so am) — dung cho nut COPY
+function dongThieu(){
+  return KQ.rows.filter(r => r.dCtn < 0 || r.dPcs < 0).map(dongTomTat);
+}
+
+// =====================================================================
+// C. VE GIAO DIEN
+// =====================================================================
+let KQ = null;
+function render(){
+  const co = DETAIL.length && PKL.length;
+  $('pnKq').hidden = !co;
+  if(!co) return;
+  KQ = tinhKetQua();
+  renderStats();
+  renderContFilter();
+  if(VIEW === 'sc') renderBangSC();
+  if(VIEW === 'po') renderBangPO();
+  if(VIEW === 'orphan') renderBangOrphan();
+}
+
+function renderStats(){
+  const R = KQ.rows;
+  const n = t => R.filter(r=>r.tt===t).length;
+  const thieu = n('thieu') + n('chuave');
+  const poThua = KQ.poRows.filter(r=>r.tt==='thua');
+  const poThuaDoRef = poThua.filter(r=>r.refChuaXuat.length).length;
+  const cards = [
+    // The 1: bam vao se nhay sang tab "Theo PO" va chi hien PO thua
+    ['posur','PO thừa số lượng', poThua.length,
+      poThuaDoRef ? `${poThuaDoRef} PO do còn Ref No chưa xuất` : 'bấm để xem chi tiết', null, 'go'],
+    ['thieu','Thiếu hàng', thieu,
+      `trong đó ${R.filter(r=>r.canhBao&&r.dPcs<0).length} đơn đủ thùng nhưng thiếu áo`, 'thieu', null],
+    ['thua','Thừa hàng', n('thua'), 'kho nhiều hơn đơn xuất', 'thua', null],
+    ['du','Đủ hàng', n('du'), 'khớp cả thùng và áo', 'du', null]
+  ];
+  $('ccStats').innerHTML = cards.map(([cls,k,v,sub,grp,go])=>
+    `<div class="cc-stat ${cls}${(grp||go)?' clickable':''}${grp&&HIDE.has(grp)?' off':''}"
+       ${grp?`data-grp="${grp}"`:''}${go?`data-go="1"`:''}>
+       <div class="k">${k}</div><div class="v">${v}</div><div class="sub">${esc(sub)}</div></div>`).join('');
+  document.querySelectorAll('#ccStats .cc-stat.clickable').forEach(el=>{
+    el.onclick = ()=>{
+      if(el.dataset.go){ VIEW = 'po'; PO_THUA_ONLY = true; capNhatSubtab(); render(); return; }
+      const g = el.dataset.grp; HIDE.has(g)?HIDE.delete(g):HIDE.add(g); render();
+    };
+  });
+}
+function capNhatSubtab(){
+  document.querySelectorAll('#ccSubtabs button[data-v]').forEach(x=>x.classList.toggle('on', x.dataset.v===VIEW));
+}
+
+function renderContFilter(){
+  const sel = $('fltCont'), cur = sel.value;
+  const conts = [...new Set(KQ.rows.map(r=>String(r.cont||'(trống)')))]
+    .sort((a,b)=>a.localeCompare(b,'vi',{numeric:true}));
+  sel.innerHTML = '<option value="">— Tất cả —</option>' +
+    conts.map(c=>`<option value="${esc(c)}">Cont ${esc(c)}</option>`).join('');
+  sel.value = cur;
+}
+
+function locRows(){
+  const c = $('fltCont').value, q = norm($('fltQ').value), onlyBad = $('fltBad').checked;
+  return KQ.rows.filter(r=>{
+    if(c && String(r.cont||'(trống)') !== c) return false;
+    if(q && !(r.sc.includes(q) || r.po.includes(q))) return false;
+    if(onlyBad && r.tt === 'du') return false;
+    const g = (r.tt==='chuave' ? 'thieu' : r.tt);
+    if(HIDE.has(g)) return false;
+    return true;
+  });
+}
+
+const TT_LABEL = {
+  chuave: '<span class="chip none">CHƯA VỀ KHO</span>',
+  thieu:  '<span class="chip thieu">THIẾU</span>',
+  thua:   '<span class="chip thua">THỪA</span>',
+  du:     '<span class="chip ok">ĐỦ</span>'
+};
+const GRP_LABEL = {
+  chuave:'🔴 Chưa có hàng trong kho', thieu:'🟡 Thiếu hàng — xử lý trước',
+  thua:'🔵 Thừa hàng — kiểm tra lại đơn', du:'✅ Đủ hàng'
+};
+function cellD(v){
+  if(v === 0) return '<td class="num">ĐỦ</td>';
+  if(v < 0)   return `<td class="num bad">${v}</td>`;
+  return `<td class="num pos">+${v}</td>`;
+}
+function renderBangSC(){
+  const rows = locRows();
+  if(!rows.length){ $('ccBody').innerHTML = '<div class="empty">Không có dòng nào khớp bộ lọc.</div>'; return; }
+  let html = `<table class="cc-tbl"><thead><tr>
+    <th>#</th><th>Cont</th><th>S/C_NO</th><th>PO_NO</th>
+    <th>CTN_PKL</th><th>CTN_KHO</th><th>Lệch<br>thùng</th>
+    <th>PCS_PKL</th><th>PCS_KHO</th><th>Lệch<br>áo</th><th>Kết luận</th></tr></thead><tbody>`;
+  let lastTt = null, i = 0;
+  rows.forEach(r=>{
+    if(r.tt !== lastTt){ html += `<tr class="grp"><td colspan="11">${GRP_LABEL[r.tt]}</td></tr>`; lastTt = r.tt; }
+    i++;
+    const cls = (r.tt==='du') ? '' : (r.tt==='thua' ? 'r-thua' : 'r-thieu');
+    const canh = r.canhBao && r.dPcs !== 0
+      ? ` <span class="chip thieu" title="Số thùng khớp nhưng số áo lệch — khả năng đóng thiếu/thừa trong thùng">⚠ lệch áo trong thùng</span>` : '';
+    html += `<tr class="r-row ${cls}" data-k="${esc(r.key)}">
+      <td class="ctr">${i}</td>
+      <td class="ctr key">${esc(r.cont||'—')}</td>
+      <td class="key">${esc(r.sc)}</td>
+      <td class="key">${esc(r.po)}</td>
+      <td class="num">${r.ctn.toLocaleString('vi-VN')}</td>
+      <td class="num">${r.ctnKho.toLocaleString('vi-VN')}</td>
+      ${cellD(r.dCtn)}
+      <td class="num">${r.pcs.toLocaleString('vi-VN')}</td>
+      <td class="num">${r.pcsKho.toLocaleString('vi-VN')}</td>
+      ${cellD(r.dPcs)}
+      <td>${TT_LABEL[r.tt]}${canh}</td></tr>`;
+    // Dong chi tiet luon duoc ve san, chi an/hien bang thuoc tinh hidden.
+    // Nho vay bam mo/dong KHONG ve lai ca bang -> vung dang boi den khong bi mat.
+    html += subRow(r, !OPEN.has(r.key));
+  });
+  html += '</tbody></table>';
+  $('ccBody').innerHTML = html;
+  document.querySelectorAll('#ccBody tr.r-row').forEach(tr=>{
+    tr.onclick = ()=>{
+      // Neu nguoi dung dang boi den chu (nhay dup de chon o) thi bo qua, khong mo/dong
+      const sel = window.getSelection();
+      if(sel && String(sel).trim().length) return;
+      const k = tr.dataset.k;
+      const sub = tr.nextElementSibling;
+      if(!sub || !sub.classList.contains('sub-row')) return;
+      const dangAn = sub.hasAttribute('hidden');
+      if(dangAn){ sub.removeAttribute('hidden'); OPEN.add(k); }
+      else      { sub.setAttribute('hidden',''); OPEN.delete(k); }
+    };
+  });
+}
+function subRow(r, an){
+  const h = an ? ' hidden' : '';
+  if(!r.lines.length) return `<tr class="sub-row"${h}><td colspan="11">
+    <div class="note warn" style="margin:2px 0">Khoá <b>${esc(r.sc)} + ${esc(r.po)}</b> không tìm thấy dòng nào trong tồn kho.
+    Cần kiểm tra: hàng chưa nhập kho, hay Buyer PO trên hệ thống kho khác PO_NO trên packing list?</div></td></tr>`;
+  const ls = [...r.lines].sort((a,b)=> (a.store+a.loc).localeCompare(b.store+b.loc));
+  return `<tr class="sub-row"${h}><td colspan="11">
+    <table class="cc-sub"><thead><tr><th>Store</th><th>Location</th><th>Pallet</th><th>Tầng</th><th>Grade</th><th style="text-align:right">CTN_KHO</th><th style="text-align:right">PCS_KHO</th></tr></thead>
+    <tbody>${ls.map(l=>`<tr><td>${esc(l.store)}</td><td>${esc(l.loc)}</td><td>${esc(l.pallet)}</td><td>${esc(l.tang)}</td><td>${esc(l.grade)}</td>
+      <td style="text-align:right">${l.ctn}</td><td style="text-align:right">${l.pcs.toLocaleString('vi-VN')}</td></tr>`).join('')}</tbody></table>
+    <div class="sub-sum">${esc(dongTomTat(r))}</div>
+  </td></tr>`;
+}
+
+function renderBangPO(){
+  let rows = KQ.poRows;
+  const thua = KQ.poRows.filter(r=>r.tt==='thua');
+  if(PO_THUA_ONLY) rows = thua;
+  const q = norm($('fltQ').value);
+  if(q) rows = rows.filter(r=>r.po.includes(q));
+
+  const canhBao = thua.filter(r=>r.refChuaXuat.length);
+  const h = nutHint('po', `Khối kiểm tra theo <b>PO</b> (bỏ qua S/C) — giống cột L:M:N:O sheet <b>data</b>.
+    Một PO có thể trải trên nhiều Ref No. Nếu kho có 3 Ref mà PKL chỉ xuất 2 Ref thì PO đó chắc chắn dương số lượng.`);
+  let head = `<div class="btnrow" style="margin:0 0 8px">
+    ${h.nut}
+    <button class="${PO_THUA_ONLY?'':'ghost '}sm" id="poFltThua">${PO_THUA_ONLY?'✓ ':''}Chỉ hiện PO thừa (${thua.length})</button>
+    <button class="ghost sm" id="poCopy">📋 Copy danh sách PO thừa</button></div>${h.khung}`;
+  if(canhBao.length) head += `<div class="note warn"><b>⚠ ${canhBao.length} PO dương số lượng do còn Ref No chưa nằm trong đơn xuất.</b>
+    Bấm vào dòng để xem Ref nào chưa xuất.</div>`;
+
+  if(!rows.length){ $('ccBody').innerHTML = head + '<div class="empty">Không có PO nào khớp điều kiện.</div>'; batPO(); batHint(); return; }
+
+  let html = head + `<table class="cc-tbl"><thead><tr>
+    <th>#</th><th>PO_NO</th><th>CTN_PKL</th><th>CTN_KHO</th><th>Lệch<br>thùng</th>
+    <th>Ref trong<br>kho</th><th>Ref có<br>xuất</th><th>Ref chưa<br>xuất</th><th>Kết luận</th></tr></thead><tbody>`;
+  let lastTt = null;
+  rows.forEach((r,i)=>{
+    if(r.tt !== lastTt){
+      html += `<tr class="grp"><td colspan="9">${
+        r.tt==='thua' ? '🔵 PO thừa số lượng — kiểm tra trước'
+        : r.tt==='thieu' ? '🟡 PO thiếu số lượng' : '✅ PO khớp'}</td></tr>`;
+      lastTt = r.tt;
+    }
+    const cls = r.tt==='du' ? '' : (r.tt==='thua' ? 'r-thua' : 'r-thieu');
+    const ref = r.refChuaXuat.length
+      ? `<span class="chip thua">${r.refChuaXuat.length} ref · ${r.ctnChuaXuat} thùng</span>` : '—';
+    html += `<tr class="r-row ${cls}" data-po="${esc(r.po)}">
+      <td class="ctr">${i+1}</td>
+      <td class="key">${esc(r.po)}</td>
+      <td class="num">${r.ctnPkl.toLocaleString('vi-VN')}</td>
+      <td class="num">${r.ctnKho.toLocaleString('vi-VN')}</td>
+      ${cellD(r.d)}
+      <td class="ctr">${r.refKho.size}</td>
+      <td class="ctr">${r.refPkl.size}</td>
+      <td class="ctr">${ref}</td>
+      <td>${r.tt==='du'?TT_LABEL.du:(r.tt==='thieu'?TT_LABEL.thieu:TT_LABEL.thua)}</td></tr>`;
+    html += subRowPO(r, !OPEN.has('PO|'+r.po));
+  });
+  html += '</tbody></table>';
+  $('ccBody').innerHTML = html;
+
+  document.querySelectorAll('#ccBody tr.r-row').forEach(tr=>{
+    tr.onclick = ()=>{
+      const sel = window.getSelection(); if(sel && String(sel).trim().length) return;
+      const k = 'PO|' + tr.dataset.po, sub = tr.nextElementSibling;
+      if(!sub || !sub.classList.contains('sub-row')) return;
+      if(sub.hasAttribute('hidden')){ sub.removeAttribute('hidden'); OPEN.add(k); }
+      else { sub.setAttribute('hidden',''); OPEN.delete(k); }
+    };
+  });
+  batPO(); batHint();
+}
+// Dong chi tiet cua 1 PO: liet ke tung Ref No, danh dau ref nao chua nam trong don xuat
+function subRowPO(r, an){
+  const refs = [...new Set([...r.refKho.keys(), ...r.refPkl.keys()])].sort();
+  const body = refs.map(sc=>{
+    const k = r.refKho.get(sc), p = r.refPkl.get(sc);
+    const chuaXuat = k && !p;
+    const chuaVe   = p && !k;
+    return `<tr${chuaXuat?' style="background:var(--hl-thua)"':(chuaVe?' style="background:var(--hl-thieu)"':'')}>
+      <td>${esc(sc)}</td>
+      <td style="text-align:right">${p ? p.ctn.toLocaleString('vi-VN') : 0}</td>
+      <td style="text-align:right">${k ? k.ctn.toLocaleString('vi-VN') : 0}</td>
+      <td style="text-align:right">${p ? p.pcs.toLocaleString('vi-VN') : 0}</td>
+      <td style="text-align:right">${k ? k.pcs.toLocaleString('vi-VN') : 0}</td>
+      <td>${chuaXuat ? '⚠ có hàng trong kho nhưng KHÔNG nằm trong đơn xuất' : (chuaVe ? '⚠ có trong đơn xuất nhưng chưa về kho' : 'khớp')}</td></tr>`;
+  }).join('');
+  return `<tr class="sub-row"${an?' hidden':''}><td colspan="9">
+    <table class="cc-sub"><thead><tr><th>Ref No / S/C</th><th style="text-align:right">CTN_PKL</th><th style="text-align:right">CTN_KHO</th>
+      <th style="text-align:right">PCS_PKL</th><th style="text-align:right">PCS_KHO</th><th>Ghi chú</th></tr></thead>
+    <tbody>${body}</tbody></table>
+    <div class="sub-sum">${esc(r.po)} — kho ${r.ctnKho} thùng / đơn xuất ${r.ctnPkl} thùng / lệch ${r.d>0?'+':''}${r.d} thùng</div>
+  </td></tr>`;
+}
+function batPO(){
+  const a = $('poFltThua'); if(a) a.onclick = ()=>{ PO_THUA_ONLY = !PO_THUA_ONLY; render(); };
+  const b = $('poCopy'); if(b) b.onclick = ()=>{
+    const ds = KQ.poRows.filter(r=>r.tt==='thua').map(r=>
+      `${r.po} thừa +${r.d} thùng` + (r.refChuaXuat.length ? ` — chưa xuất: ${r.refChuaXuat.join(', ')}` : ''));
+    if(!ds.length){ b.textContent='✓ Không có PO thừa'; setTimeout(()=>b.textContent='📋 Copy danh sách PO thừa',1800); return; }
+    const xong = ()=>{ b.textContent=`✓ Đã copy ${ds.length} PO`; setTimeout(()=>b.textContent='📋 Copy danh sách PO thừa',1800); };
+    if(navigator.clipboard) navigator.clipboard.writeText(ds.join('\n')).then(xong).catch(()=>copyDuPhong(ds.join('\n'),xong));
+    else copyDuPhong(ds.join('\n'), xong);
+  };
+}
+
+function renderBangOrphan(){
+  const rows = KQ.orphan;
+  const h = nutHint('orphan', `Đây là hàng <b>có trong kho nhưng không nằm trong đơn xuất nào</b>. Excel hiện tại không kiểm tra phần này. Thường do gán sai Buyer PO, hoặc hàng của lô sau.`);
+  const head = `<div class="btnrow" style="margin:0 0 8px">${h.nut}
+    <span style="font-size:13px;color:var(--ink-soft);font-weight:700">Tồn kho ngoài đơn xuất: ${rows.length} khoá</span></div>${h.khung}`;
+  if(!rows.length){ $('ccBody').innerHTML = head + '<div class="empty">✅ Không có tồn kho nào nằm ngoài danh sách đơn xuất.</div>'; batHint(); return; }
+  $('ccBody').innerHTML = head + `<table class="cc-tbl"><thead><tr><th>#</th><th>S/C_NO</th><th>PO_NO</th><th>CTN_KHO</th><th>PCS_KHO</th><th>Số vị trí</th></tr></thead><tbody>
+    ${rows.map((r,i)=>`<tr><td class="ctr">${i+1}</td><td class="key">${esc(r.sc)}</td><td class="key">${esc(r.po)}</td>
+      <td class="num">${r.ctn.toLocaleString('vi-VN')}</td><td class="num">${r.pcs.toLocaleString('vi-VN')}</td>
+      <td class="ctr">${r.lines.length}</td></tr>`).join('')}
+    </tbody></table>`;
+  batHint();
+}
+
+// =====================================================================
+// D. XUAT EXCEL — 4 sheet: "IN HÀNG A" / "IN HÀNG" / "SỐ TỔNG" / "KHÔNG XUẤT"
+// =====================================================================
+
+// ---- D1. Du lieu 1 sheet IN HÀNG, loc theo tang ---------------------
+// Lay tung dong ton kho, doi chieu RefNo+BuyerPO sang PKL de lay REMARK (so chia cont).
+// REMARK do dat vao cot A "PALLET". Cot D "TẦNG" = ky tu cuoi cua LOCATION (giong =RIGHT(B2,1)).
+// giuTang: ham quyet dinh tang nao duoc vao sheet nay.
+function duLieuInHang(giuTang){
+  const contTheoKhoa = new Map();
+  PKL.forEach(p=>{ if(!contTheoKhoa.has(p.sc + p.po)) contTheoKhoa.set(p.sc + p.po, String(p.cont || '')); });
+
+  const nhom = new Map();       // pallet -> buyerPO -> "location|tang" -> so thung
+  DETAIL.forEach(d=>{
+    const pallet = contTheoKhoa.get(d.sc + d.po);
+    if(pallet === undefined) return;                    // ton ngoai don xuat -> sang sheet KHÔNG XUẤT
+    const tang = String(d.loc || '').slice(-1).toUpperCase();
+    if(!giuTang(tang)) return;
+    if(!nhom.has(pallet)) nhom.set(pallet, new Map());
+    const m1 = nhom.get(pallet);
+    if(!m1.has(d.po)) m1.set(d.po, new Map());
+    const m2 = m1.get(d.po);
+    const k = d.loc + '|' + tang;
+    m2.set(k, (m2.get(k) || 0) + d.ctn);
+  });
+
+  // Dan phang thanh bang kieu PivotTable "show in tabular form"
+  // Dong thoi ghi lai pham vi can gop o (merge) cho cot PALLET va cot BUYER PO
+  const rows = [], mgPallet = [], mgPo = [];
+  let tong = 0;
+  [...nhom.keys()].sort((a,b)=>a.localeCompare(b,'vi',{numeric:true})).forEach(pallet=>{
+    const m1 = nhom.get(pallet);
+    const dauPallet = rows.length;                      // dong dau khoi pallet
+    let tongPallet = 0, ghiPallet = true;
+    [...m1.keys()].sort().forEach(po=>{
+      const m2 = m1.get(po);
+      const dauPo = rows.length;                        // dong dau khoi Buyer PO
+      let tongPo = 0, ghiPo = true;
+      [...m2.keys()].sort().forEach(k=>{
+        const [loc, tang] = k.split('|');
+        const ctn = m2.get(k);
+        rows.push({ v:[ghiPallet ? pallet : '', ghiPo ? po : '', loc, tang, ctn], total:false });
+        tongPo += ctn; tongPallet += ctn; tong += ctn; ghiPallet = false; ghiPo = false;
+      });
+      // gop cot Buyer PO: tu dong dau khoi den dong ngay TRUOC dong Total cua no
+      if(rows.length - 1 > dauPo) mgPo.push([dauPo, rows.length - 1]);
+      rows.push({ v:['', po + ' Total', '', '', tongPo], total:true, cap:'po' });
+    });
+    // gop cot Pallet: tu dong dau khoi den dong ngay TRUOC dong Total cua pallet
+    if(rows.length - 1 > dauPallet) mgPallet.push([dauPallet, rows.length - 1]);
+    rows.push({ v:[pallet + ' Total', '', '', '', tongPallet], total:true, cap:'pallet' });
+  });
+  if(rows.length) rows.push({ v:['Grand Total', '', '', '', tong], total:true, cap:'grand' });
+  return { header:['PALLET','BUYER PO','LOCATION','TẦNG','CARTONS'], rows, tong,
+           merges:[{col:1, ds:mgPallet}, {col:2, ds:mgPo}] };
+}
+
+// ---- D2. Sheet "SỐ TỔNG": pivot tu PKL, Rows = REMARK > PO_NO, Values = QTY_II ----
+function duLieuSoTong(){
+  const nhom = new Map();
+  PKL.forEach(p=>{
+    const rm = String(p.cont || '');
+    if(!nhom.has(rm)) nhom.set(rm, new Map());
+    const m = nhom.get(rm);
+    m.set(p.po, (m.get(p.po) || 0) + p.ctn);
+  });
+  const rows = [], mgRemark = [];
+  let tong = 0;
+  [...nhom.keys()].sort((a,b)=>a.localeCompare(b,'vi',{numeric:true})).forEach(rm=>{
+    const m = nhom.get(rm);
+    const dau = rows.length;
+    let tongRm = 0, ghi = true;
+    [...m.keys()].sort().forEach(po=>{
+      const ctn = m.get(po);
+      rows.push({ v:[ghi ? rm : '', po, ctn], total:false });
+      tongRm += ctn; tong += ctn; ghi = false;
+    });
+    if(rows.length - 1 > dau) mgRemark.push([dau, rows.length - 1]);
+    rows.push({ v:[rm + ' Total', '', tongRm], total:true, cap:'remark' });
+  });
+  if(rows.length) rows.push({ v:['Grand Total', '', tong], total:true, cap:'grand' });
+  return { header:['REMARK','PO_NO','CTN (QTY_II)'], rows, tong, merges:[{col:1, ds:mgRemark}] };
+}
+
+// ---- D3. Sheet "KHÔNG XUẤT" ----------------------------------------
+function duLieuKhongXuat(){
+  const khoaPkl = new Set(PKL.map(p=>p.sc + p.po));
+  const poDangXuat = new Set(PKL.map(p=>p.po));
+  const nhom = new Map();
+  DETAIL.forEach(d=>{
+    if(khoaPkl.has(d.sc + d.po)) return;
+    if(!nhom.has(d.po)) nhom.set(d.po, new Map());
+    const m1 = nhom.get(d.po);
+    if(!m1.has(d.sc)) m1.set(d.sc, new Map());
+    const m2 = m1.get(d.sc);
+    const k = d.loc + '|' + String(d.loc || '').slice(-1).toUpperCase();
+    const o = m2.get(k) || {ctn:0, pcs:0};
+    o.ctn += d.ctn; o.pcs += d.pcs; m2.set(k, o);
+  });
+  const dsPo = [...nhom.keys()].sort((a,b)=> (poDangXuat.has(b) - poDangXuat.has(a)) || a.localeCompare(b));
+  const rows = [];
+  let tongC = 0, tongP = 0, nCungPo = 0;
+  dsPo.forEach(po=>{
+    const cungPo = poDangXuat.has(po);
+    if(cungPo) nCungPo++;
+    const m1 = nhom.get(po);
+    let tcPo = 0, tpPo = 0, dauPo = true;
+    [...m1.keys()].sort().forEach(ref=>{
+      const m2 = m1.get(ref);
+      let dauRef = true;
+      [...m2.keys()].sort().forEach(k=>{
+        const [loc, tang] = k.split('|');
+        const o = m2.get(k);
+        rows.push({ v:[dauPo ? po : '', dauRef ? ref : '', loc, tang, o.ctn, o.pcs, cungPo ? 'CÓ' : 'KHÔNG'],
+                    total:false, canhBao:cungPo });
+        tcPo += o.ctn; tpPo += o.pcs; tongC += o.ctn; tongP += o.pcs;
+        dauPo = false; dauRef = false;
+      });
+    });
+    rows.push({ v:[po + ' Total', '', '', '', tcPo, tpPo, ''], total:true, cap:'po' });
+  });
+  if(rows.length) rows.push({ v:['Grand Total', '', '', '', tongC, tongP, ''], total:true, cap:'grand' });
+  return { header:['BUYER PO','REF NO','LOCATION','TẦNG','CARTONS','PCS','PO ĐANG XUẤT?'],
+           rows, tongC, tongP, nCungPo, soPo:dsPo.length };
+}
+
+// ---- D4. Ghi file bang ExcelJS (co vien, co mau, co gop o) ----------
+const VIEN_MONG = { top:{style:'thin'}, left:{style:'thin'}, bottom:{style:'thin'}, right:{style:'thin'} };
+const GIUA = { vertical:'middle', horizontal:'center', wrapText:false };
+
+// Ve 1 sheet dang pivot: tieu de o dong 3, du lieu tu dong 4
+function veSheetPivot(ws, D, tieuDe, soCot, mau){
+  ws.mergeCells(1, 1, 1, soCot);
+  ws.getCell('A1').value = tieuDe;
+  ws.getCell('A1').font = { bold:true, size:13 };
+  ws.getCell('A1').alignment = { vertical:'middle', horizontal:'left' };
+
+  ws.getRow(3).values = D.header;
+  ws.getRow(3).eachCell(c=>{ c.font={bold:true}; c.fill=mau.tieude; c.border=VIEN_MONG; c.alignment=GIUA; });
+
+  D.rows.forEach((r, k)=>{
+    const row = ws.getRow(4 + k);
+    row.values = r.v;
+    for(let c = 1; c <= soCot; c++){
+      const cell = row.getCell(c);
+      cell.alignment = GIUA;                                     // Middle align + Center cho tat ca
+      if(r.total){
+        cell.font = { bold:true };
+        cell.fill = (r.cap === 'po' || r.cap === 'remark') ? mau.total2 : mau.total;
+      } else {
+        cell.border = VIEN_MONG;                                 // chi ke vien dong co du lieu
+      }
+      if(c === soCot) cell.numFmt = '#,##0';
+    }
+  });
+
+  // Gop o theo chieu doc cho cac cot da tinh san (PALLET / BUYER PO / REMARK)
+  (D.merges || []).forEach(m=>{
+    m.ds.forEach(([a, b])=>{
+      ws.mergeCells(4 + a, m.col, 4 + b, m.col);
+      const o = ws.getCell(4 + a, m.col);
+      o.alignment = GIUA; o.border = VIEN_MONG;
+    });
+  });
+  ws.views = [{ state:'frozen', ySplit:3 }];
+}
+
+async function xuatBangExcelJS(A1, A2, B, C){
+  const wb = new ExcelJS.Workbook();
+  const mau = {
+    tieude: { type:'pattern', pattern:'solid', fgColor:{argb:'FFD9E7F0'} },
+    total:  { type:'pattern', pattern:'solid', fgColor:{argb:'FFE8E5DC'} },
+    total2: { type:'pattern', pattern:'solid', fgColor:{argb:'FFF5F3ED'} },
+    canhbao:{ type:'pattern', pattern:'solid', fgColor:{argb:'FFCFE9F7'} }
+  };
+  const COT_INHANG = [{width:14},{width:18},{width:13},{width:9},{width:12}];
+
+  // --- Sheet "IN HÀNG A" (chi tang A) ---
+  if(A1.rows.length){
+    const ws = wb.addWorksheet('IN HÀNG A');
+    veSheetPivot(ws, A1, 'IN HÀNG — TẦNG A', 5, mau);
+    ws.columns = COT_INHANG;
+  }
+  // --- Sheet "IN HÀNG" (tang B, C, D, E...) ---
+  if(A2.rows.length){
+    const ws = wb.addWorksheet('IN HÀNG');
+    veSheetPivot(ws, A2, 'IN HÀNG — TẦNG B / C / D / E', 5, mau);
+    ws.columns = COT_INHANG;
+  }
+  // --- Sheet "SỐ TỔNG" ---
+  const s2 = wb.addWorksheet('SỐ TỔNG');
+  veSheetPivot(s2, B, 'SỐ TỔNG THÙNG THEO CONT', 3, mau);
+  B.rows.forEach((r, k)=>{
+    if(r.total) return;
+    const n = 4 + k;
+    s2.mergeCells(`D${n}:N${n}`);              // gop D..N thanh 1 o de ghi chu tay
+    const o = s2.getCell(`D${n}`);
+    o.border = VIEN_MONG; o.alignment = GIUA;
+  });
+  s2.getColumn(1).width = 14; s2.getColumn(2).width = 18; s2.getColumn(3).width = 14;
+  for(let c = 4; c <= 14; c++) s2.getColumn(c).width = 9;
+
+  // --- Sheet "KHÔNG XUẤT" ---
+  if(C.rows.length){
+    const s3 = wb.addWorksheet('KHÔNG XUẤT');
+    s3.mergeCells('A1:G1');
+    s3.getCell('A1').value = 'REF NO CÓ HÀNG TRONG KHO NHƯNG KHÔNG NẰM TRONG ĐƠN XUẤT';
+    s3.getCell('A1').font = { bold:true, size:13 };
+    s3.mergeCells('A2:G2');
+    s3.getCell('A2').value = `Dòng tô xanh = cùng Buyer PO với đơn đang xuất → nguyên nhân làm PO dương số lượng (${C.nCungPo} PO).`;
+    s3.getCell('A2').font = { italic:true, size:10, color:{argb:'FF14507D'} };
+    s3.getRow(4).values = C.header;
+    s3.getRow(4).eachCell(c=>{ c.font={bold:true}; c.fill=mau.tieude; c.border=VIEN_MONG; c.alignment=GIUA; });
+    C.rows.forEach((r, k)=>{
+      const row = s3.getRow(5 + k);
+      row.values = r.v;
+      for(let c = 1; c <= 7; c++){
+        const cell = row.getCell(c);
+        cell.alignment = GIUA;
+        if(r.total){ cell.font = {bold:true}; cell.fill = mau.total; }
+        else { cell.border = VIEN_MONG; if(r.canhBao) cell.fill = mau.canhbao; }
+        if(c === 5 || c === 6) cell.numFmt = '#,##0';
+      }
+    });
+    s3.columns = [{width:16},{width:16},{width:13},{width:9},{width:12},{width:12},{width:16}];
+    s3.views = [{ state:'frozen', ySplit:4 }];
+  }
+
+  const buf = await wb.xlsx.writeBuffer();
+  taiVe(new Blob([buf], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
+}
+
+// ---- D5. Du phong: SheetJS (gop o duoc, nhung KHONG ke duoc vien) ---
+function xuatBangSheetJS(A1, A2, B, C){
+  const wb = XLSX.utils.book_new();
+  const themPivot = (D, ten, tieuDe, soCot)=>{
+    if(!D.rows.length) return;
+    const aoa = [[tieuDe], [], D.header, ...D.rows.map(r=>r.v)];
+    const ws = XLSX.utils.aoa_to_sheet(aoa);
+    ws['!merges'] = [{s:{r:0,c:0}, e:{r:0,c:soCot-1}}];
+    (D.merges || []).forEach(m=> m.ds.forEach(([a,b])=>
+      ws['!merges'].push({s:{r:3+a, c:m.col-1}, e:{r:3+b, c:m.col-1}})));
+    if(ten === 'SỐ TỔNG') D.rows.forEach((r,k)=>{ if(!r.total) ws['!merges'].push({s:{r:3+k,c:3}, e:{r:3+k,c:13}}); });
+    ws['!cols'] = Array.from({length: Math.max(soCot, 14)}, (_,i)=>({wch: i<3 ? 16 : 11}));
+    XLSX.utils.book_append_sheet(wb, ws, ten);
+  };
+  themPivot(A1, 'IN HÀNG A', 'IN HÀNG — TẦNG A', 5);
+  themPivot(A2, 'IN HÀNG',   'IN HÀNG — TẦNG B / C / D / E', 5);
+  themPivot(B,  'SỐ TỔNG',   'SỐ TỔNG THÙNG THEO CONT', 3);
+  if(C.rows.length){
+    const a3 = [['REF NO CÓ HÀNG TRONG KHO NHƯNG KHÔNG NẰM TRONG ĐƠN XUẤT'], [], [], C.header, ...C.rows.map(r=>r.v)];
+    const w3 = XLSX.utils.aoa_to_sheet(a3);
+    w3['!cols'] = [{wch:16},{wch:16},{wch:13},{wch:9},{wch:12},{wch:12},{wch:16}];
+    XLSX.utils.book_append_sheet(wb, w3, 'KHÔNG XUẤT');
+  }
+  XLSX.writeFile(wb, tenFile());
+}
+function tenFile(){ return `check-ct-${new Date().toISOString().slice(0,10)}.xlsx`; }
+function taiVe(blob){
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = tenFile();
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+}
+
+async function xuatExcel(){
+  const b = $('btnXlsx'), cu = b.textContent;
+  b.disabled = true; b.textContent = '⏳ Đang tạo file…';
+  try{
+    const A1 = duLieuInHang(t => t === 'A');        // sheet "IN HÀNG A"
+    const A2 = duLieuInHang(t => t !== 'A');        // sheet "IN HÀNG" (B, C, D, E...)
+    const B  = duLieuSoTong();
+    const C  = duLieuKhongXuat();
+    if(window.ExcelJS) await xuatBangExcelJS(A1, A2, B, C);
+    else { xuatBangSheetJS(A1, A2, B, C); toastCanhBao(); }
+    const n = (A1.rows.length?1:0) + (A2.rows.length?1:0) + 1 + (C.rows.length?1:0);
+    b.textContent = `✓ Đã xuất ${n} sheet`;
+  }catch(e){
+    b.textContent = '⚠ Lỗi: ' + e.message;
+  }
+  setTimeout(()=>{ b.textContent = cu; b.disabled = false; }, 2600);
+}
+function toastCanhBao(){
+  const n = $('loadNote');
+  n.hidden = false; n.className = 'note warn';
+  n.textContent = '⚠ Không tải được thư viện ExcelJS nên file xuất ra KHÔNG có đường kẻ viền. Kiểm tra kết nối mạng rồi tải lại trang.';
+}
+
+// =====================================================================
+// E. GAN SU KIEN
+// =====================================================================
+function thongBaoNap(){
+  const a = DETAIL.length, b = PKL.length;
+  $('loadStat').textContent =
+    (a || b) ? `Tồn: ${a ? a.toLocaleString('vi-VN') + ' dòng' : '—'}  ·  PKL: ${b ? b.toLocaleString('vi-VN') + ' dòng' : '—'}`
+             : 'Chưa nạp dữ liệu';
+  $('btnImpDetail').className = a ? 'secondary' : '';
+  $('btnImpPkl').className    = b ? 'secondary' : '';
+  const n = $('loadNote');
+  n.className = 'note';
+  if(a && !b){ n.hidden=false; n.textContent='Đã có tồn kho — nạp thêm file PKL để đối chiếu.'; }
+  else if(!a && b){ n.hidden=false; n.textContent='Đã có PKL — nạp thêm file tồn kho để đối chiếu.'; }
+  else n.hidden = true;
+}
+// Nap 1 file: doc -> gan vao bien -> ve lai
+function batFile(inputId, btnId, loader, gan){
+  const inp = $(inputId);
+  $(btnId).onclick = ()=>{ inp.value = ''; inp.click(); };
+  inp.onchange = async ()=>{
+    if(!inp.files || !inp.files.length) return;
+    try{ gan(await loader(inp.files[0])); OPEN.clear(); thongBaoNap(); render(); }
+    catch(e){ const n=$('loadNote'); n.hidden=false; n.className='note warn'; n.textContent='⚠ '+e.message; }
+  };
+}
+batFile('fDetail','btnImpDetail', loadDetail, v=>DETAIL=v);
+batFile('fPkl','btnImpPkl', loadPkl, v=>PKL=v);
+
+$('btnClear').onclick = ()=>{ DETAIL=[]; PKL=[]; OPEN.clear(); HIDE.clear(); thongBaoNap(); render(); };
+$('fltCont').onchange = render;
+$('fltQ').oninput = render;
+$('fltBad').onchange = render;
+$('btnXlsx').onclick = ()=>{ xuatExcel(); };
+
+// ===== Nut COPY: chi lay don THIEU thung hoac THIEU ao (giong cot K sheet data) =====
+$('btnCopyThieu').onclick = ()=>{
+  const b = $('btnCopyThieu');
+  const ds = dongThieu();
+  if(!ds.length){ b.textContent = '✓ Không có đơn thiếu'; setTimeout(()=>b.textContent='📋 COPY', 1800); return; }
+  const txt = ds.join('\n');
+  const xong = ()=>{ b.textContent = `✓ Đã copy ${ds.length} đơn thiếu`; setTimeout(()=>b.textContent='📋 COPY', 1800); };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(xong).catch(()=>copyDuPhong(txt, xong));
+  } else copyDuPhong(txt, xong);
+};
+// Cach copy du phong cho trinh duyet khong cho dung clipboard
+function copyDuPhong(txt, xong){
+  const ta = document.createElement('textarea');
+  ta.value = txt; ta.style.position='fixed'; ta.style.left='-9999px';
+  document.body.appendChild(ta); ta.select();
+  try{ document.execCommand('copy'); xong(); }catch(e){ alert(txt); }
+  document.body.removeChild(ta);
+}
+
+// Chi cac nut co data-v moi la tab con — nut COPY khong tinh
+document.querySelectorAll('#ccSubtabs button[data-v]').forEach(b=> b.onclick = ()=>{
+  if(VIEW !== b.dataset.v) PO_THUA_ONLY = false;
+  VIEW = b.dataset.v;
+  document.querySelectorAll('#ccSubtabs button[data-v]').forEach(x=>x.classList.toggle('on', x===b));
+  render();
+});
+
+
+thongBaoNap();
+window.ccRender = function(){ render(); };
 })();
 </script>
 </body>
