@@ -692,7 +692,10 @@
   .b5-zoom input[type=range]{width:120px; padding:0; border:0; background:transparent;}
 
   /* ======== SƠ ĐỒ 5S KHO THÀNH PHẨM ======== */
-  .tp-wrap{overflow-x:auto; padding-bottom:10px;}
+  /* Khung xem sơ đồ: cao tối đa bằng 1 màn hình (trừ chỗ cho thanh tiêu đề + nút).
+     Sơ đồ vẫn giữ nguyên chiều cao thật; nếu phóng to quá thì cuộn BÊN TRONG khung này,
+     không đẩy cả trang dài ra. */
+  .tp-wrap{overflow:auto; padding-bottom:10px; max-height:calc(100vh - 200px);}
   .tp-plan{width:max-content; min-width:0; position:relative; padding:22px; background:#fff;}
   .tp-wall{position:absolute; background:#3a4a63; border-radius:2px;}
   .tp-wall.t{left:0; right:0; top:0; height:12px;}
@@ -4114,8 +4117,12 @@ function tpFitPlan(){
   const plan = $('tpPlan');
   if(!plan || !plan.querySelector('[data-mv]')) return;
   const PAD = 22;                       // chừa lề bằng padding của sơ đồ
-  plan.style.width = ''; plan.style.height = '';
+  // KHÔNG xoá width/height trước khi đo (trước đây có, và đó là nguyên nhân
+  // trang tự nhảy lên đầu mỗi khi kéo đổi kích thước kệ).
   const ratio = tpZoomRatio();
+  const wrap0 = plan.parentElement;
+  const cuonDoc = wrap0 ? wrap0.scrollTop : 0, cuonNgang = wrap0 ? wrap0.scrollLeft : 0;
+  const cuonTrang = window.scrollY;
   const pr = plan.getBoundingClientRect();
   let right = 0, bottom = 0;
   // CHI do nhung khoi thuc su co ve ra man hinh (co vien/nen), bo qua cac the chua
@@ -4131,16 +4138,14 @@ function tpFitPlan(){
   // CHIEU CAO: co vua khit phan da sap xep (giu nguyen nhu truoc)
   if(bottom > 0) plan.style.height = Math.ceil(bottom + PAD) + 'px';
 
-  // CHIEU RONG: keo het be ngang man hinh.
-  // .tp-wrap la khung cuon bao ngoai -> clientWidth chinh la be ngang con dung duoc.
-  // Vi so do dang bi thu phong (zoom), phai chia lai cho ty le thi moi ra dung so px bo cuc.
-  let w = Math.ceil(right + PAD);                   // be rong toi thieu = vua khit gia ke
-  const wrap = plan.parentElement;
-  if(wrap && wrap.clientWidth){
-    const beNgangManHinh = Math.floor(wrap.clientWidth / ratio) - 2;   // tru 2px cho vien
-    if(beNgangManHinh > w) w = beNgangManHinh;      // du cho thi keo rong ra het man hinh
-  }
+  // CHIEU RONG: cung tu co gian theo gia ke, giong chieu cao.
+  // Keo 1 ke ra xa hon me tuong -> kho tu noi rong. Keo thu vao -> kho tu co lai.
+  const w = Math.ceil(right + PAD);
   if(w > 0) plan.style.width = w + 'px';
+
+  // Giữ nguyên chỗ đang xem — không để trang tự nhảy đi đâu
+  if(wrap0){ wrap0.scrollTop = cuonDoc; wrap0.scrollLeft = cuonNgang; }
+  if(window.scrollY !== cuonTrang) window.scrollTo(0, cuonTrang);
 }
 // Man hinh doi kich thuoc (xoay may, keo cua so) thi keo lai be ngang kho cho vua
 window.addEventListener('resize', ()=>{
@@ -4175,6 +4180,12 @@ function tpZoomRatio(){
 function tpNumStyle(el, prop){ const v = parseFloat(el.style[prop]); return isNaN(v) ? 0 : v; }
 
 let TP_DRAG = null;   // trạng thái đang kéo
+let TP_FIT_RAF = 0;   // hẹn tính lại kích thước kho (gộp nhiều lần thành 1 để không giật)
+// Gọi trong lúc kéo: tường kho nới ra / co vào bám theo khối đang kéo
+function tpFitSoon(){
+  if(TP_FIT_RAF) return;
+  TP_FIT_RAF = requestAnimationFrame(()=>{ TP_FIT_RAF = 0; tpFitPlan(); });
+}
 document.addEventListener('mousedown', e=>{
   if(!TP_EDIT || CUR_KHO !== 'thanhpham') return;
   const plan = $('tpPlan'); if(!plan || !plan.contains(e.target)) return;
@@ -4201,8 +4212,10 @@ document.addEventListener('mousemove', e=>{
   const dx = (e.clientX - D.x0) / r, dy = (e.clientY - D.y0) / r;
   if(Math.abs(dx) > 1 || Math.abs(dy) > 1) D.moved = true;
   if(D.mode === 'move'){
-    D.mvEl.style.left = Math.round(D.l0 + dx) + 'px';
-    D.mvEl.style.top  = Math.round(D.t0 + dy) + 'px';
+    // Math.max(0, ...): không cho khối chui ra ngoài mép trái / mép trên của kho
+    D.mvEl.style.left = Math.max(0, Math.round(D.l0 + dx)) + 'px';
+    D.mvEl.style.top  = Math.max(0, Math.round(D.t0 + dy)) + 'px';
+    tpFitSoon();          // kho tự nới rộng / co lại theo khối đang kéo
     return;
   }
   const d = D.dir, S = D.sizeEl;
@@ -4217,8 +4230,9 @@ document.addEventListener('mousemove', e=>{
   if(h < MIN){ if(d.includes('n')) t -= (MIN - h); h = MIN; }
   S.style.width  = Math.round(w) + 'px';
   S.style.height = Math.round(h) + 'px';
-  D.mvEl.style.left = Math.round(l) + 'px';
-  D.mvEl.style.top  = Math.round(t) + 'px';
+  D.mvEl.style.left = Math.max(0, Math.round(l)) + 'px';
+  D.mvEl.style.top  = Math.max(0, Math.round(t)) + 'px';
+  tpFitSoon();            // kéo dài kệ quá mép thì kho tự nới ra ngay lúc đang kéo
 });
 document.addEventListener('mouseup', async ()=>{
   const D = TP_DRAG; if(!D) return;
