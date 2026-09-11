@@ -5332,20 +5332,22 @@ function otModal(empId, record){
     <label class="field-label">Ngày</label>
     <input type="date" id="mOtDate" value="${record?record.date:todayKey()}">
     <label class="field-label">Số giờ tăng ca (tối đa 4h/ngày)</label>
-    ${pickerHtml('mOt', [1,2,3,4], record?record.hours:null)}
+    ${pickerHtml('mOt', [0,1,2,3,4], record?record.hours:null)}
     <div id="mOtWarn"></div>
     <div class="btnrow" style="margin-top:16px;"><button id="mOtSave">${isEdit?'Lưu thay đổi':'Lưu'}</button>
     ${isEdit?'<button class="danger" id="mOtDel">Xoá bản ghi</button>':''}</div>`);
 
   const recalc = ()=>{
     const h = pickerValue('mOt');
-    $('mOtWarn').innerHTML = h ? warnHtml(checkOTLimits($('mOtEmp').value, $('mOtDate').value, h, record?record.id:null)) : '';
+    $('mOtWarn').innerHTML = (h !== null && h > 0)
+      ? warnHtml(checkOTLimits($('mOtEmp').value, $('mOtDate').value, h, record?record.id:null)) : '';
   };
   ['mOtEmp','mOtDate','mOtH','mOtM'].forEach(id=>$(id).addEventListener('change', recalc));
   recalc();
   $('mOtSave').onclick = async ()=>{
     const h = pickerValue('mOt');
-    if(!h){ toast('⚠ Chọn số giờ tăng ca'); return; }
+    if(h === null){ toast('⚠ Chọn số giờ tăng ca'); return; }
+    if(h <= 0){ toast('⚠ 0 giờ 00 phút là không tăng ca — chọn thêm số phút'); return; }
     if(isEdit){
       const r = HR.ot.find(x=>x.id===record.id);
       r.date = $('mOtDate').value; r.hours = h;
@@ -5382,7 +5384,7 @@ function bulkOtModal(){
     <button class="ghost sm" id="mBulkAll" style="margin-bottom:8px;">Chọn tất cả</button>
     <div class="checklist">${emps.map(e=>`<label><input type="checkbox" data-bulk="${e.id}"><span style="flex:1">${esc(e.name)}</span><span style="font-size:11px;color:#999">${esc(e.shift||'')}</span></label>`).join('')}</div>
     <label class="field-label">Ngày (áp dụng cho tất cả)</label><input type="date" id="mBulkDate" value="${todayKey()}">
-    <label class="field-label">Số giờ tăng ca (áp dụng chung)</label>${pickerHtml('mBulk',[1,2,3,4],null)}
+    <label class="field-label">Số giờ tăng ca (áp dụng chung — chọn 0 giờ nếu dưới 1 tiếng)</label>${pickerHtml('mBulk',[0,1,2,3,4],null)}
     <div id="mBulkWarn"></div>
     <div class="btnrow" style="margin-top:16px;"><button id="mBulkSave">Lưu</button></div>`);
 
@@ -5404,7 +5406,8 @@ function bulkOtModal(){
   };
   $('mBulkSave').onclick = async ()=>{
     const ids = sel(), h = pickerValue('mBulk'), date = $('mBulkDate').value;
-    if(!ids.length || !h){ toast('⚠ Chọn người và số giờ'); return; }
+    if(!ids.length || h === null){ toast('⚠ Chọn người và số giờ'); return; }
+    if(h <= 0){ toast('⚠ 0 giờ 00 phút là không tăng ca — chọn thêm số phút'); return; }
     ids.forEach((id,i)=>HR.ot.push({id:`ot${Date.now()}_${i}`, employeeId:id, date, hours:h}));
     await saveHr(); m.close(); render(); toast(`✓ Đã lưu tăng ca cho ${ids.length} người`);
   };
@@ -5670,9 +5673,11 @@ function renderQuickEntry(){
   const showHours = isOT || qkSub!=='nghi';
   $('qkHourBox').style.display = showHours ? 'block' : 'none';
   $('qkReasonBox').style.display = (!isOT && qkSub==='nghi') ? 'block' : 'none';
-  $('qkHourLabel').textContent = isOT ? 'Số giờ tăng ca (tối đa 4h/ngày)' : (qkSub==='muon' ? 'Thời gian đi muộn' : 'Thời gian về sớm');
+  $('qkHourLabel').textContent = isOT ? 'Số giờ tăng ca (chọn 0 giờ nếu dưới 1 tiếng — tối đa 4h/ngày)'
+                                      : (qkSub==='muon' ? 'Thời gian đi muộn' : 'Thời gian về sớm');
 
-  const hours = isOT ? [1,2,3,4] : [0,1,2,3,4,5,6,7];
+  // Co ca 0 gio: dung khi tang ca duoi 1 tieng (0 gio + 30 phut, 0 gio + 45 phut...)
+  const hours = isOT ? [0,1,2,3,4] : [0,1,2,3,4,5,6,7];
   const curH = $('qkHour').value;
   $('qkHour').innerHTML = `<option value="">-- Giờ --</option>` + hourOptions(hours, curH);
   if(curH && hours.includes(Number(curH))) $('qkHour').value = curH;
@@ -5742,8 +5747,9 @@ async function qkSubmit(){
   const empId = $('qkEmp').value, date = $('qkDate').value, note = '';
   if(!empId || !date){ toast('⚠ Chọn nhân viên và ngày'); return; }
   if(qkType==='tangca'){
-    if(!$('qkHour').value){ toast('⚠ Chọn số giờ tăng ca'); return; }
+    if($('qkHour').value === ''){ toast('⚠ Chọn số giờ tăng ca'); return; }
     const h = Number($('qkHour').value) + Number($('qkMin').value)/60;
+    if(h <= 0){ toast('⚠ 0 giờ 00 phút là không tăng ca — chọn thêm số phút'); return; }
     const ex = HR.ot.find(r=>r.employeeId===empId && r.date===date);
     if(ex){ ex.hours = h; ex.note = note; } else HR.ot.push({id:'ot'+Date.now(), employeeId:empId, date, hours:h, note});
   }else if(qkSub!=='nghi' && HR.leave.some(l=>l.employeeId===empId && l.date===date && l.type==='nghi')){
@@ -5754,8 +5760,9 @@ async function qkSubmit(){
     const reason = $('qkReason').value;
     if(ex){ ex.reason = reason; ex.note = note; } else HR.leave.push({id:'lv'+Date.now(), employeeId:empId, date, type:'nghi', reason, note});
   }else{
-    if(!$('qkHour').value){ toast('⚠ Chọn số giờ'); return; }
+    if($('qkHour').value === ''){ toast('⚠ Chọn số giờ'); return; }
     const h = Number($('qkHour').value) + Number($('qkMin').value)/60;
+    if(h <= 0){ toast('⚠ 0 giờ 00 phút là không hợp lệ — chọn thêm số phút'); return; }
     const ex = HR.leave.find(l=>l.employeeId===empId && l.date===date && l.type===qkSub);
     if(ex){ ex.hours = h; ex.note = note; } else HR.leave.push({id:'lv'+Date.now(), employeeId:empId, date, type:qkSub, hours:h, note});
   }
