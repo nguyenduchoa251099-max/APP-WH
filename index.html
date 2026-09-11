@@ -3915,7 +3915,8 @@ function tpPos(){ const K = curKho(); if(!K.tpBoard.pos) K.tpBoard.pos = {}; ret
 function tpStyle(key, extraStyle, size, pos){
   let st = extraStyle || '';
   if(size){ const v = tpSizes()[key]; if(v) st += `width:${v.w}px;height:${v.h}px;flex:0 0 auto;`; }
-  if(pos){ const p = tpPos()[key];  if(p) st += `left:${p.dx}px;top:${p.dy}px;`; }
+  // Vi tri KHONG con ap o day nua: sau khi dung xong, tpFreeze() se dat toa do
+  // tuyet doi cho tung khoi (xem muc 11d-ter).
   return st ? ` style="${st}"` : '';
 }
 function szA(key, extraStyle){ return `data-size="${key}"` + tpStyle(key, extraStyle, true, false); }
@@ -3970,7 +3971,7 @@ function renderBoardTP(){
 
     <div class="tp-inner">
       <div>
-        <div class="tp-mainzone">
+        <div class="tp-mainzone" ${szmvA('z_mainzone')}>
           ${tpHRack(TP5S_MS)}
           <div class="tp-vrow">${mainCols}</div>
         </div>
@@ -4000,6 +4001,9 @@ function renderBoardTP(){
         </div>
       </div>
     </div>`;
+
+  // Chuyển sơ đồ sang toạ độ tuyệt đối: từ đây mỗi ô đứng độc lập với nhau
+  const daThemToaDo = tpFreeze();
 
   // ---- cảnh báo ----
   const keys = tp5sKeys();
@@ -4031,33 +4035,118 @@ function renderBoardTP(){
 
   tpFitPlan();   // co khung tường vừa khít phần đã sắp xếp
 
-  // Lần đầu mở: mặc định thu phóng 70% (vẫn kéo thanh trượt đổi được)
+  // Lần đầu mở: mặc định thu phóng 50% để thấy trọn bố cục trong 1 màn hình
+  // (vẫn kéo thanh trượt lên tối đa 130% khi cần nhìn kỹ từng kệ)
   if(!renderBoardTP._fitted){
-    const z = 70;
+    const z = 50;
     $('tpPlan').style.zoom = z + '%';
     $('tpZoom').value = z; $('tpZoomVal').textContent = z + '%';
     renderBoardTP._fitted = true;
+    tpFitPlan();     // tính lại bề ngang theo tỉ lệ mới, nếu không kho chỉ rộng một nửa màn hình
   }
+
+  // Ghi lại toạ độ vừa sinh ra, để lần mở sau các ô đứng đúng chỗ cũ
+  // (chỉ chạy lần đầu, hoặc sau khi bấm "Về mặc định")
+  if(daThemToaDo) saveKho();
+}
+// =====================================================================
+// 11d-ter. "ĐÓNG BĂNG" SƠ ĐỒ — mỗi ô một toạ độ riêng
+// ---------------------------------------------------------------------
+// Vì sao cần: trước đây các ô xếp nối đuôi nhau như chữ trong văn bản
+// (dòng chảy). Kéo to ô "MD AREA" thì mọi ô phía dưới bị đẩy xuống theo.
+// Cách làm: dựng sơ đồ theo dòng chảy 1 lần để lấy chỗ đứng mặc định,
+// rồi chuyển TOÀN BỘ các ô sang toạ độ tuyệt đối và ghi lại toạ độ đó.
+// Từ đó mỗi ô đứng độc lập — kéo to / thu nhỏ / dời đi đều không đụng ô khác.
+// =====================================================================
+function tpFreeze(){
+  const plan = $('tpPlan');
+  const inner = plan && plan.querySelector('.tp-inner');
+  if(!inner) return false;
+  const ratio = tpZoomRatio();
+  const P = tpPos();
+
+  // Lấy mọi ô đứng độc lập được. Khung kệ chính xếp trước để nằm DƯỚI các kệ.
+  const DS = [...plan.querySelectorAll('[data-mv]')];
+  DS.sort((a, b)=> (a.classList.contains('tp-mainzone') ? 0 : 1)
+                 - (b.classList.contains('tp-mainzone') ? 0 : 1));
+  if(!DS.length) return false;
+
+  // B1: đo chỗ đứng mặc định mà dòng chảy vừa xếp ra (toạ độ so với mép sơ đồ)
+  const pr = plan.getBoundingClientRect();
+  const G = new Map();
+  DS.forEach(el=>{
+    const r = el.getBoundingClientRect();
+    G.set(el, { x:(r.left - pr.left)/ratio, y:(r.top - pr.top)/ratio,
+                w:r.width/ratio, h:r.height/ratio });
+  });
+
+  // B2: chuyển sang toạ độ tuyệt đối, đưa hết ra làm con trực tiếp của sơ đồ
+  let themMoi = false;
+  DS.forEach(el=>{
+    const g = G.get(el), key = el.dataset.mv;
+    let toaDo = P[key];
+    if(toaDo && toaDo.dx !== undefined){
+      // Dữ liệu cũ lưu dạng "độ lệch" -> quy đổi sang toạ độ tuyệt đối, giữ nguyên chỗ đang thấy
+      toaDo = { x: Math.round(g.x + (toaDo.dx || 0)), y: Math.round(g.y + (toaDo.dy || 0)) };
+      P[key] = toaDo; themMoi = true;
+    }
+    if(!toaDo){
+      // Chưa có toạ độ -> lấy đúng chỗ dòng chảy vừa xếp, rồi ghi lại để lần sau không đổi nữa
+      toaDo = { x: Math.round(g.x), y: Math.round(g.y) };
+      P[key] = toaDo; themMoi = true;
+    }
+    el.style.position = 'absolute';
+    el.style.margin = '0';
+    el.style.left = toaDo.x + 'px';
+    el.style.top  = toaDo.y + 'px';
+    // Ghim đúng kích thước vừa đo. Bắt buộc phải làm: thanh kệ dùng flex co giãn
+    // theo bề ngang cột chứa nó; tách ra đứng riêng mà không ghim thì nó sẽ co lại
+    // bằng bề ngang của chữ. Khung kệ chính bị lấy hết ruột ra cũng sẽ xẹp.
+    el.style.width  = Math.round(g.w) + 'px';
+    el.style.height = Math.round(g.h) + 'px';
+    plan.appendChild(el);
+  });
+  inner.remove();          // khung xếp dòng chảy đã xong việc
+  return themMoi;
 }
 // Co khung tường vừa khít với các khối đang có (kể cả khối đã kéo đi chỗ khác)
 function tpFitPlan(){
   const plan = $('tpPlan');
-  if(!plan || !plan.querySelector('.tp-inner')) return;
+  if(!plan || !plan.querySelector('[data-mv]')) return;
   const PAD = 22;                       // chừa lề bằng padding của sơ đồ
   plan.style.width = ''; plan.style.height = '';
   const ratio = tpZoomRatio();
   const pr = plan.getBoundingClientRect();
   let right = 0, bottom = 0;
-  plan.querySelectorAll('.tp-inner, .tp-inner *').forEach(el=>{
+  // CHI do nhung khoi thuc su co ve ra man hinh (co vien/nen), bo qua cac the chua
+  // chi dung de sap xep — vi chung thuong rong hon phan noi dung ben trong.
+  const KHOI_CO_VE = '.tp-mainzone, .tp-zone, .tp-dock, .bar, .code';
+  plan.querySelectorAll(KHOI_CO_VE).forEach(el=>{
     if(el.classList.contains('tp-h') || el.classList.contains('tp-moved-dot')) return;
     const r = el.getBoundingClientRect();
     if(!r.width && !r.height) return;
     right  = Math.max(right,  (r.right  - pr.left) / ratio);
     bottom = Math.max(bottom, (r.bottom - pr.top)  / ratio);
   });
-  if(right > 0)  plan.style.width  = Math.ceil(right  + PAD) + 'px';
+  // CHIEU CAO: co vua khit phan da sap xep (giu nguyen nhu truoc)
   if(bottom > 0) plan.style.height = Math.ceil(bottom + PAD) + 'px';
+
+  // CHIEU RONG: keo het be ngang man hinh.
+  // .tp-wrap la khung cuon bao ngoai -> clientWidth chinh la be ngang con dung duoc.
+  // Vi so do dang bi thu phong (zoom), phai chia lai cho ty le thi moi ra dung so px bo cuc.
+  let w = Math.ceil(right + PAD);                   // be rong toi thieu = vua khit gia ke
+  const wrap = plan.parentElement;
+  if(wrap && wrap.clientWidth){
+    const beNgangManHinh = Math.floor(wrap.clientWidth / ratio) - 2;   // tru 2px cho vien
+    if(beNgangManHinh > w) w = beNgangManHinh;      // du cho thi keo rong ra het man hinh
+  }
+  if(w > 0) plan.style.width = w + 'px';
 }
+// Man hinh doi kich thuoc (xoay may, keo cua so) thi keo lai be ngang kho cho vua
+window.addEventListener('resize', ()=>{
+  const w = $('so5sTpWrap');
+  if(w && w.style.display !== 'none') tpFitPlan();
+});
 // =====================================================================
 // 11d-bis. CHỈNH SƠ ĐỒ: kéo giãn 8 hướng + kéo thả khối đi bất kỳ đâu
 // =====================================================================
@@ -4141,8 +4230,9 @@ document.addEventListener('mouseup', async ()=>{
     S[D.sizeEl.dataset.size] = { w: Math.round(D.sizeEl.offsetWidth), h: Math.round(D.sizeEl.offsetHeight) };
   }
   if(D.mvEl && D.mvEl.dataset.mv){
-    const dx = Math.round(tpNumStyle(D.mvEl,'left')), dy = Math.round(tpNumStyle(D.mvEl,'top'));
-    if(dx || dy) P[D.mvEl.dataset.mv] = {dx, dy}; else delete P[D.mvEl.dataset.mv];
+    // Sơ đồ đã đóng băng nên left/top chính là toạ độ thật trong kho -> lưu thẳng
+    P[D.mvEl.dataset.mv] = { x: Math.round(tpNumStyle(D.mvEl,'left')),
+                             y: Math.round(tpNumStyle(D.mvEl,'top')) };
   }
   await saveKho();
   tpFitPlan();
@@ -4180,6 +4270,45 @@ function tpPickModal(code){
   draw('');
 }
 // Xuất sơ đồ kho thành phẩm ra ảnh / PDF
+// html2canvas khong ve dung chu dat doc kieu writing-mode: no xep chu theo chieu doc
+// nhung van ve tung ky tu nam ngang, roi ap them rotate(180deg) -> chu bi lat nguoc.
+// Cach xu ly: ngay truoc khi chup, doi sang chu NAM NGANG BINH THUONG rui xoay -90 do.
+// Ket qua nhin giong het tren web, va html2canvas ve dung vi day la phep xoay thuan tuy.
+// bat = true: doi de chup | bat = false: tra lai nguyen trang cho man hinh.
+function tpSuaTenDoc(board, bat){
+  board.querySelectorAll('.tp-vnm').forEach(el=>{
+    const bar = el.parentElement;
+    if(!bar) return;
+    if(bat){
+      el.dataset.stOld  = el.getAttribute('style') || '';
+      bar.dataset.posOld = bar.style.position || '';
+      const bw = bar.clientWidth, bh = bar.clientHeight;   // ngang x doc cua thanh ke
+      bar.style.position = 'relative';
+      // Doi cho: rong = chieu cao thanh, cao = chieu rong thanh, roi xoay -90 do
+      el.style.cssText += ';position:absolute;writing-mode:horizontal-tb;white-space:nowrap;'
+        + `width:${bh}px;height:${bw}px;left:${(bw-bh)/2}px;top:${(bh-bw)/2}px;`
+        + 'display:flex;align-items:center;justify-content:center;'
+        + 'transform-origin:center center;transform:rotate(-90deg);';
+    }else{
+      if(el.dataset.stOld) el.setAttribute('style', el.dataset.stOld); else el.removeAttribute('style');
+      delete el.dataset.stOld;
+      if(bar.dataset.posOld) bar.style.position = bar.dataset.posOld; else bar.style.position = '';
+      delete bar.dataset.posOld;
+    }
+  });
+  // Nhan cua thoat hiem dat doc cung bi loi tuong tu
+  board.querySelectorAll('.tp-door.v span').forEach(el=>{
+    if(bat){
+      el.dataset.stOld = el.getAttribute('style') || '';
+      el.style.cssText += ';writing-mode:horizontal-tb;transform-origin:center center;'
+        + 'transform:translateY(-50%) rotate(90deg);';
+    }else{
+      if(el.dataset.stOld) el.setAttribute('style', el.dataset.stOld); else el.removeAttribute('style');
+      delete el.dataset.stOld;
+    }
+  });
+}
+
 function exportTP(kind){
   const board = $('tpPlan');
   if(!board || !board.innerHTML.trim()){ toast('Chưa có sơ đồ để xuất'); return; }
@@ -4187,9 +4316,13 @@ function exportTP(kind){
   if(kind === 'pdf' && !(window.jspdf && window.jspdf.jsPDF)){ toast('⚠ Chưa tải được thư viện PDF'); return; }
   const oldZoom = board.style.zoom;
   board.style.zoom = '100%';
+  // KHONG goi tpFitPlan o day: giu nguyen hinh dang kho dang thay tren man hinh,
+  // neu tinh lai o muc thu phong 100% thi be ngang se khac voi luc dang xem.
+  tpSuaTenDoc(board, true); // doi cach dat chu doc de html2canvas ve dung chieu
+  const traLai = ()=>{ tpSuaTenDoc(board, false); board.style.zoom = oldZoom; };
   const stamp = new Date().toLocaleDateString('vi-VN').replace(/\//g,'-');
   html2canvas(board, {backgroundColor:'#ffffff', scale:2}).then(canvas=>{
-    board.style.zoom = oldZoom;
+    traLai();
     if(kind === 'png'){
       const a = document.createElement('a');
       a.download = `so-do-5s-kho-thanh-pham-${stamp}.png`;
@@ -4206,7 +4339,7 @@ function exportTP(kind){
       pdf.save(`so-do-5s-kho-thanh-pham-${stamp}.pdf`);
       toast('✓ Đã xuất PDF');
     }
-  }).catch(()=>{ board.style.zoom = oldZoom; toast('⚠ Không xuất được — thử tải lại trang'); });
+  }).catch(()=>{ traLai(); toast('⚠ Không xuất được — thử tải lại trang'); });
 }
 </script>
 <script>
@@ -5835,7 +5968,7 @@ function export5S(kind){
       pdf.save(`so-do-5s-kho-vai-${stamp}.pdf`);
       toast('✓ Đã xuất PDF');
     }
-  }).catch(()=>{ board.style.zoom = oldZoom; toast('⚠ Không xuất được — thử tải lại trang'); });
+  }).catch(()=>{ traLai(); toast('⚠ Không xuất được — thử tải lại trang'); });
 }
 
 // =====================================================================
@@ -6241,6 +6374,7 @@ $('tpZoom').addEventListener('input', (e)=>{
   const v = e.target.value;
   $('tpPlan').style.zoom = v + '%';
   $('tpZoomVal').textContent = v + '%';
+  tpFitPlan();     // doi ty le thi be ngang kho phai tinh lai moi phu het man hinh
 });
 
 $('b5Png').onclick = ()=>export5S('png');
