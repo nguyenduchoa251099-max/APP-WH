@@ -1206,6 +1206,7 @@
       <input type="file" id="fPkl" accept=".xlsx,.xls,.csv" hidden>
       <span id="loadStat" class="load-stat"></span>
       <span class="h2spacer"></span>
+      <button class="ghost sm" id="btnCcSync">🔄 Tải lại từ máy chủ</button>
       <button class="ghost sm" id="btnClear">🗑 Xoá hết</button>
     </div>
     <div class="note" id="loadNote" hidden></div>
@@ -7230,10 +7231,69 @@ function toastCanhBao(){
 // =====================================================================
 // E. GAN SU KIEN
 // =====================================================================
+// =====================================================================
+// LƯU TRỮ CHO TAB CHECK CT
+// Dùng chung máy chủ Supabase với các tab khác, nhưng để Ở KHOÁ RIÊNG.
+// Lý do không gộp vào khoá chung: dữ liệu tồn kho nặng ~160KB, mà khoá chung
+// bị ghi lại mỗi lần kéo 1 ô trong sơ đồ 5S — gộp vào sẽ tải lên 160KB mỗi lần kéo.
+// =====================================================================
+const KEY_CC = 'appwh-checkct-v1';
+let CC_AT = '';           // thời điểm nạp gần nhất
+let CC_DA_TAI = false;    // đã tải từ máy chủ lần nào chưa
+
+// Đóng gói: bỏ tên trường, chỉ giữ mảng giá trị -> nhẹ đi khoảng một nửa
+function ccDongGoi(){
+  return JSON.stringify({
+    v : 1,
+    at: CC_AT || new Date().toISOString(),
+    d : DETAIL.map(x=>[x.store, x.loc, x.pallet, x.tang, x.po, x.sc, x.grade, x.ctn, x.pcs]),
+    p : PKL.map(x=>[x.sc, x.po, x.pcs, x.ctn, x.cont])
+  });
+}
+function ccMoGoi(raw){
+  const o = JSON.parse(raw);
+  DETAIL = (o.d || []).map(a=>({store:a[0], loc:a[1], pallet:a[2], tang:a[3],
+                                po:a[4], sc:a[5], grade:a[6], ctn:a[7], pcs:a[8]}));
+  PKL    = (o.p || []).map(a=>({sc:a[0], po:a[1], pcs:a[2], ctn:a[3], cont:a[4]}));
+  CC_AT  = o.at || '';
+}
+// Lưu: ghi vào máy này trước (chắc chắn được), rồi đẩy lên máy chủ
+async function ccLuu(){
+  CC_AT = new Date().toISOString();
+  const raw = ccDongGoi();
+  lsSet(KEY_CC, raw);
+  const n = $('loadNote');
+  n.hidden = false; n.className = 'note';
+  n.textContent = `⏳ Đang lưu ${(raw.length/1024).toFixed(0)} KB lên máy chủ…`;
+  try{
+    await sbSetVerified(KEY_CC, raw);
+    n.hidden = true;
+    thongBaoNap();
+  }catch(e){
+    n.className = 'note warn';
+    n.textContent = '⚠ Chưa đẩy được lên máy chủ: ' + (e.message || e)
+      + ' — dữ liệu vẫn còn trên máy này, bấm "Tải lại từ máy chủ" sau khi có mạng để thử lại.';
+  }
+}
+// Tải: ưu tiên máy chủ (để mọi người dùng chung một bộ số liệu), hỏng thì lấy bản trên máy
+async function ccTai(baoKetQua){
+  CC_DA_TAI = true;
+  let raw = null, tuMayChu = false;
+  try{ raw = await sbGet(KEY_CC); tuMayChu = !!raw; }catch(e){}
+  if(!raw) raw = lsGet(KEY_CC);
+  if(!raw){ if(baoKetQua) toast('Máy chủ chưa có dữ liệu CHECK CT nào'); return; }
+  try{
+    ccMoGoi(raw); OPEN.clear(); thongBaoNap(); render();
+    if(baoKetQua) toast(tuMayChu ? '✓ Đã tải dữ liệu mới nhất từ máy chủ' : '✓ Đã lấy bản lưu trên máy này');
+  }catch(e){ if(baoKetQua) toast('⚠ Dữ liệu lưu bị lỗi định dạng'); }
+}
+
 function thongBaoNap(){
   const a = DETAIL.length, b = PKL.length;
+  const luc = CC_AT ? ('  ·  nạp lúc ' + new Date(CC_AT).toLocaleString('vi-VN',
+                {hour:'2-digit', minute:'2-digit', day:'2-digit', month:'2-digit'})) : '';
   $('loadStat').textContent =
-    (a || b) ? `Tồn: ${a ? a.toLocaleString('vi-VN') + ' dòng' : '—'}  ·  PKL: ${b ? b.toLocaleString('vi-VN') + ' dòng' : '—'}`
+    (a || b) ? `Tồn: ${a ? a.toLocaleString('vi-VN') + ' dòng' : '—'}  ·  PKL: ${b ? b.toLocaleString('vi-VN') + ' dòng' : '—'}${luc}`
              : 'Chưa nạp dữ liệu';
   $('btnImpDetail').className = a ? 'secondary' : '';
   $('btnImpPkl').className    = b ? 'secondary' : '';
@@ -7249,14 +7309,23 @@ function batFile(inputId, btnId, loader, gan){
   $(btnId).onclick = ()=>{ inp.value = ''; inp.click(); };
   inp.onchange = async ()=>{
     if(!inp.files || !inp.files.length) return;
-    try{ gan(await loader(inp.files[0])); OPEN.clear(); thongBaoNap(); render(); }
+    try{
+      gan(await loader(inp.files[0]));
+      OPEN.clear(); thongBaoNap(); render();
+      await ccLuu();          // nạp xong là lưu ngay, thoát ra vào lại vẫn còn
+    }
     catch(e){ const n=$('loadNote'); n.hidden=false; n.className='note warn'; n.textContent='⚠ '+e.message; }
   };
 }
 batFile('fDetail','btnImpDetail', loadDetail, v=>DETAIL=v);
 batFile('fPkl','btnImpPkl', loadPkl, v=>PKL=v);
 
-$('btnClear').onclick = ()=>{ DETAIL=[]; PKL=[]; OPEN.clear(); HIDE.clear(); thongBaoNap(); render(); };
+$('btnClear').onclick = async ()=>{
+  if(!await confirmBox('Xoá dữ liệu tồn kho và PKL đang có? Mọi người cùng dùng app sẽ mất bộ số liệu này.')) return;
+  DETAIL=[]; PKL=[]; CC_AT=''; OPEN.clear(); HIDE.clear(); thongBaoNap(); render();
+  await ccLuu();
+};
+$('btnCcSync').onclick = ()=>{ ccTai(true); };
 $('fltCont').onchange = render;
 $('fltQ').oninput = render;
 $('fltBad').onchange = render;
@@ -7292,7 +7361,10 @@ document.querySelectorAll('#ccSubtabs button[data-v]').forEach(b=> b.onclick = (
 
 
 thongBaoNap();
-window.ccRender = function(){ render(); };
+window.ccRender = function(){
+  if(!CC_DA_TAI) ccTai(false);   // lần đầu mở tab: lấy dữ liệu đang có trên máy chủ
+  render();
+};
 })();
 </script>
 </body>
