@@ -1916,6 +1916,18 @@ function lsSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
 // NHẬT KÝ BẢN CŨ — giữ lại 10 bản gần nhất TRƯỚC KHI bị ghi đè.
 // Nhờ đó nếu dữ liệu bị xoá nhầm hoặc bị ghi đè bằng bản rỗng thì vẫn lấy lại được.
 // ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
+// CHỐT AN TOÀN chống mất dữ liệu
+// Tình huống gây mất: mở app lúc mạng chập chờn -> đọc máy chủ thất bại, trên máy
+// cũng chưa có bản lưu -> app chạy bằng dữ liệu MẶC ĐỊNH (rỗng). Sau đó chỉ cần
+// mở một tab bất kỳ là app tự ghi bản rỗng đó ĐÈ LÊN dữ liệu thật trên máy chủ.
+// Cách chặn: chỉ cho phép ghi khi đã thực sự đọc được dữ liệu từ đâu đó.
+// ---------------------------------------------------------------------
+let DA_TAI_KHO = false, DA_TAI_HR = false;
+function chanGhi(loai){
+  toast(`⛔ Chưa tải được dữ liệu ${loai} — tạm KHÔNG ghi để khỏi xoá mất dữ liệu trên máy chủ. Bấm 🔄 để tải lại.`);
+  return false;
+}
 const SO_BAN_GIU = 10;
 function luuBanCu(key){
   const cu = lsGet(key);
@@ -2114,6 +2126,7 @@ function setSyncTime(){
 }
 
 async function saveHr(){
+  if(!DA_TAI_HR) return chanGhi('nhân sự');
   ensureSkills();
   const raw = JSON.stringify(HR);
   luuBanCu(KEY_HR);                   // giữ bản cũ lại trước khi ghi đè
@@ -2125,6 +2138,7 @@ async function saveHr(){
   return ok;
 }
 async function saveKho(){
+  if(!DA_TAI_KHO) return chanGhi('3 kho');
   const raw = JSON.stringify(KHO);
   luuBanCu(KEY_KHO);                  // giữ bản cũ lại trước khi ghi đè
   lsSet(KEY_KHO, raw); lsSet(KEY_KHO + ':at', new Date().toISOString());
@@ -2173,8 +2187,8 @@ async function loadAll(){
   if(!hrRaw && netOk){ const l = lsGet(KEY_HR); if(l){ hrRaw = l; dungBanMayHr = true; } }
   if(!khoRaw && netOk){ const l = lsGet(KEY_KHO); if(l){ khoRaw = l; dungBanMayKho = true; } }
 
-  if(hrRaw){ try{ HR = Object.assign(defaultHr(), JSON.parse(hrRaw)); lastRawHr = dungBanMayHr ? null : hrRaw; }catch(e){} }
-  else if(netOk){ HR = defaultHr(); }
+  if(hrRaw){ try{ HR = Object.assign(defaultHr(), JSON.parse(hrRaw)); lastRawHr = dungBanMayHr ? null : hrRaw; DA_TAI_HR = true; }catch(e){} }
+  else if(netOk){ HR = defaultHr(); DA_TAI_HR = true; }   // máy chủ và máy này đều trống thật -> lần chạy đầu tiên
 
   if(khoRaw){
     try{
@@ -2182,9 +2196,11 @@ async function loadAll(){
       WAREHOUSES.forEach(w=>{ KHO[w.id] = Object.assign(defaultKhoConfig(w.id), parsed[w.id] || {}); });
       KHO.settings = Object.assign({...DEFAULT_SETTINGS}, parsed.settings || {});
       lastRawKho = dungBanMayKho ? null : khoRaw;
+      DA_TAI_KHO = true;
     }catch(e){}
   }else{
     migrateLegacyVai();
+    if(netOk) DA_TAI_KHO = true;      // máy chủ và máy này đều trống thật -> lần chạy đầu tiên
   }
   // Kho vải: chuyển sang sơ đồ mặt bằng mới, xoá sạch dữ liệu 5S kiểu danh sách cũ
   const vz = KHO.vai.zones || {};
@@ -2240,8 +2256,10 @@ async function syncNow(silent){
   let changed = false;
   try{
     const hrRaw = await sbGet(KEY_HR);
+    if(hrRaw){ DA_TAI_HR = true; }
     if(hrRaw && hrRaw !== lastRawHr){ HR = Object.assign(defaultHr(), JSON.parse(hrRaw)); lastRawHr = hrRaw; lsSet(KEY_HR, hrRaw); ensureSkills(); changed = true; }
     const khoRaw = await sbGet(KEY_KHO);
+    if(khoRaw){ DA_TAI_KHO = true; }         // đọc được rồi thì mở chốt, cho ghi trở lại
     if(khoRaw && khoRaw !== lastRawKho){
       const parsed = JSON.parse(khoRaw);
       WAREHOUSES.forEach(w=>{ KHO[w.id] = Object.assign(defaultKhoConfig(w.id), parsed[w.id] || {}); });
