@@ -210,6 +210,22 @@
   .wi-act button:disabled{opacity:.35; cursor:default;}
   .wi-act button.x:hover{color:var(--red); border-color:var(--red);}
 
+/* ===== Sửa mục & file không phải ảnh trong tab WI / Training ===== */
+  .wi-cardact{position:absolute; top:6px; right:6px; display:flex; gap:4px;}
+  .wi-cardact button{width:26px; height:26px; padding:0; border-radius:7px; font-size:12px; cursor:pointer;
+    background:#fff; border:1px solid var(--line); color:var(--ink-soft);}
+  .wi-cardact button:hover{color:var(--blue); border-color:var(--blue);}
+  .wi-cardact button.x:hover{color:var(--red); border-color:var(--red);}
+  .wi-card{position:relative;}
+  .wi-file{height:158px; background:#f7f6f2; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:4px;}
+  .wi-file .ic{font-size:42px; line-height:1;}
+  .wi-file .ex{font-size:12px; font-weight:800; color:var(--ink-soft); letter-spacing:.06em;}
+  .bst-icons{display:grid; grid-template-columns:repeat(8,1fr); gap:6px;}
+  .bst-icons button{font-size:20px; padding:7px 0; border-radius:8px; cursor:pointer;
+    background:#fff; border:1px solid var(--line);}
+  .bst-icons button.on{background:var(--blue-bg); border-color:var(--blue);}
+
 /* ===== Thành phần dùng chung: nút, ô nhập, bảng, thẻ, modal ===== */
 
   /* Bảng nhân viên & năng lực: kẻ ô đầy đủ, chữ và nút ✕ thẳng hàng */
@@ -1002,6 +1018,7 @@
     <button data-tab="checkct">🔎 CHECK CT</button>
     <button data-tab="tangca">⏱ Tăng ca/Nghỉ phép</button>
     <button data-tab="wi">📄 WI</button>
+    <button data-tab="training">🎓 Training</button>
     <button data-tab="ghichu">📝 Ghi chú</button>
     <span class="spacer"></span>
     <button class="icon-btn" id="btnSyncNow" title="Đồng bộ ngay">🔄</button>
@@ -1354,6 +1371,16 @@
         <span id="wiTools"></span>
       </h2>
       <div id="wiBody"></div>
+    </div>
+  </main>
+
+<main class="tabpage" id="tab-training">
+    <div class="panel">
+      <h2><span class="n">🎓</span><span id="trTitle">Training — Tài liệu đào tạo</span>
+        <span class="h2spacer"></span>
+        <span id="trTools"></span>
+      </h2>
+      <div id="trBody"></div>
     </div>
   </main>
 
@@ -2429,6 +2456,10 @@ function applyTabVisibility(){
   const btnWi = document.querySelector('#tabNav button[data-tab="wi"]');
   if(btnWi) btnWi.style.display = isTp ? '' : 'none';
   if(!isTp && activeTab === 'wi') activeTab = 'dashboard';
+  // Tab Training: chỉ có ở kho vải và kho phụ liệu
+  const btnTr = document.querySelector('#tabNav button[data-tab="training"]');
+  if(btnTr) btnTr.style.display = isTp ? 'none' : '';
+  if(isTp && activeTab === 'training') activeTab = 'dashboard';
   ['lichsu','ghichu'].forEach(t=>{
     const b = document.querySelector(`#tabNav button[data-tab="${t}"]`);
     if(b) b.style.display = isTp ? 'none' : '';
@@ -2475,6 +2506,7 @@ function render(){
   if(activeTab === 'xuathang'){ renderXuatHang(); xhBind(); xhGripBind(); }
   if(activeTab === 'checkct') ccRender();
   if(activeTab === 'wi') renderWI();
+  if(activeTab === 'training') renderTraining();
   if(activeTab === 'doica') renderRotation();
   if(activeTab === 'tangca'){
     $('otKhoName').textContent = w.name.toLowerCase();
@@ -7860,265 +7892,365 @@ window.ccRender = function(){
 })();
 
 
-// ===== Tab WI — kho ảnh hướng dẫn công việc, xuất ra PDF =====
+// ===== Kho tài liệu dùng chung: tab WI (kho thành phẩm) và tab Training (kho vải / phụ liệu) =====
 // =====================================================================
-// 19. TAB WI (Work Instruction) — chỉ kho thành phẩm
+// 19. KHO TÀI LIỆU (ảnh + file PDF), xuất ra PDF
 // ---------------------------------------------------------------------
-// Cách lưu: mỗi nhóm một khoá riêng trên máy chủ (appwh-wi-<mã nhóm>),
-// cộng thêm một khoá mục lục nhẹ (appwh-wi-index) chỉ chứa số ảnh và dung lượng.
-// Nhờ vậy mở tab WI chỉ tải mục lục vài trăm byte, vào nhóm nào mới tải ảnh nhóm đó.
-// Ảnh được thu nhỏ còn tối đa 1600px và nén JPEG trước khi lưu.
+// Một bộ khung dùng cho nhiều tab. Mỗi tab tự khai báo:
+//   prefix()   : tiền tố khoá lưu trên máy chủ, ví dụ 'appwh-wi' hoặc 'appwh-training-vai'
+//   nhomMacDinh: các mục có sẵn khi chưa ai tạo mục nào
+// Cách lưu: mỗi mục một khoá riêng (<prefix>-<mã mục>), cộng một khoá mục lục nhẹ
+// (<prefix>-index) chỉ chứa danh sách mục và số file. Vào mục nào mới tải mục đó.
 // =====================================================================
 (function(){
 'use strict';
 
-// Thứ tự các ô hiện trên màn hình, từ trái sang phải
-const WI_NHOM = [
-  { id:'stock',       ten:'Stock',          icon:'🗃' },
-  { id:'kiemcont',    ten:'Kiểm cont',      icon:'📦' },
-  { id:'nhaphang',    ten:'Nhập hàng',      icon:'📥' },
-  { id:'congnhanmoi', ten:'Công nhân mới',  icon:'🧑‍🏭' },
-  { id:'sodokho',     ten:'Sơ đồ kho',      icon:'🗺' },
-  { id:'xuathang',      ten:'Xuất hàng',      icon:'🚚' },
-  { id:'tuyencongnhan', ten:'Tuyển công nhân', icon:'📢' },
-  { id:'chedo',         ten:'Chế độ',         icon:'📋' },
-];
-const KEY_WI_IDX = 'appwh-wi-index';
-const keyNhom = id => 'appwh-wi-' + id;
-
-const RONG_TOI_DA = 1600;     // px — thu nhỏ ảnh trước khi lưu
-const CHAT_LUONG  = 0.72;     // nén JPEG
-const NGUONG_CANH_BAO = 4 * 1024 * 1024;   // 4 MB / nhóm thì nhắc
-
-let MUC_LUC = null;        // { <mã nhóm>: {n, byte, at} }
-let NHOM_DANG_MO = null;   // mã nhóm đang xem, null = đang ở màn hình 6 ô
-let ANH = [];              // ảnh của nhóm đang mở
-let DANG_TAI = false;
+const RONG_TOI_DA = 1600;              // px — thu nhỏ ảnh trước khi lưu
+const CHAT_LUONG  = 0.72;              // nén JPEG
+const NGUONG_NHAC = 4 * 1024 * 1024;   // 4 MB / mục thì nhắc
+const TEP_TOI_DA  = 8 * 1024 * 1024;   // file đơn lẻ quá 8 MB thì từ chối
+const BIEU_TUONG  = ['📄','🗃','📦','📥','🚚','🗺','📋','🧑‍🏭','📢','🔧','⚠️','✅','📊','🎓','🧯','🚛'];
 
 const kb = b => b < 1024*1024 ? (b/1024).toFixed(0) + ' KB' : (b/1024/1024).toFixed(1) + ' MB';
-const tenNhom = id => (WI_NHOM.find(x=>x.id===id) || {}).ten || id;
+const maMoi = () => 'm' + Date.now().toString(36) + Math.random().toString(36).slice(2,5);
 
 // ---------------------------------------------------------------------
 // Đọc / ghi
 // ---------------------------------------------------------------------
-async function taiMucLuc(){
-  if(MUC_LUC) return MUC_LUC;
+const BO_NHO = {};                        // tiền tố -> mục lục đã tải
+
+function khoaIdx(p){ return p + '-index'; }
+function khoaMuc(p, id){ return p + '-' + id; }
+
+async function docRaw(khoa){
   let raw = null;
-  try{ raw = await sbGet(KEY_WI_IDX); }catch(e){}
-  if(!raw) raw = lsGet(KEY_WI_IDX);
-  try{ MUC_LUC = raw ? JSON.parse(raw) : {}; }catch(e){ MUC_LUC = {}; }
-  await napAnhMau();
-  return MUC_LUC;
+  try{ raw = await sbGet(khoa); }catch(e){}
+  if(!raw) raw = lsGet(khoa);
+  return raw;
 }
-// Nạp các bản hướng dẫn có sẵn lên máy chủ.
-// CHỈ chạy với nhóm CHƯA từng có gì — nhóm đã có ảnh hoặc đã bị xoá hết thì không đụng tới,
-// nên không bao giờ ghi đè lên ảnh của mọi người.
-async function napAnhMau(){
-  const mau = window.WI_ANH_MAU;
-  if(!mau) return;
-  const canNap = Object.keys(mau).filter(id => MUC_LUC[id] === undefined);
-  if(!canNap.length) return;
-  for(const id of canNap){
-    try{ await luuNhom(id, mau[id].map(a=>({ ...a }))); }catch(e){}
-  }
-  toast(`✓ Đã nạp ${canNap.length} bản hướng dẫn có sẵn`);
+// Mục lục dạng { v:2, nhom:[{id,ten,icon}], muc:{ id:{n,byte,at} } }
+// Bản cũ chỉ có { id:{n,byte,at} } -> tự chuyển sang dạng mới, không mất dữ liệu
+async function taiIdx(p, nhomMacDinh){
+  if(BO_NHO[p]) return BO_NHO[p];
+  const raw = await docRaw(khoaIdx(p));
+  let o = null;
+  try{ o = raw ? JSON.parse(raw) : null; }catch(e){}
+  BO_NHO[p] = (o && Array.isArray(o.nhom))
+    ? { v:2, nhom:o.nhom, muc:o.muc || {} }
+    : { v:2, nhom: nhomMacDinh.map(x=>({...x})), muc: o || {} };
+  return BO_NHO[p];
 }
-async function taiNhom(id){
-  let raw = null;
-  try{ raw = await sbGet(keyNhom(id)); }catch(e){}
-  if(!raw) raw = lsGet(keyNhom(id));
-  try{ const o = raw ? JSON.parse(raw) : null; return (o && o.imgs) ? o.imgs : []; }
-  catch(e){ return []; }
+async function luuIdx(p){
+  const raw = JSON.stringify(BO_NHO[p]);
+  lsSet(khoaIdx(p), raw);
+  try{ await sbSetVerified(khoaIdx(p), raw); }catch(e){ toast('⚠ Chưa lưu được mục lục lên máy chủ'); }
 }
-async function luuNhom(id, imgs){
-  const raw = JSON.stringify({ v:1, at:new Date().toISOString(), imgs });
-  lsSet(keyNhom(id), raw);
-  MUC_LUC = MUC_LUC || {};
-  MUC_LUC[id] = { n: imgs.length, byte: raw.length, at: new Date().toISOString() };
-  const rawIdx = JSON.stringify(MUC_LUC);
-  lsSet(KEY_WI_IDX, rawIdx);
-  let ok = true;
-  try{ await sbSetVerified(keyNhom(id), raw); }catch(e){ ok = false; toast('⚠ Chưa đẩy ảnh lên máy chủ: ' + (e.message||e)); }
-  try{ await sbSetVerified(KEY_WI_IDX, rawIdx); }catch(e){ ok = false; }
-  return ok;
+async function taiTep(p, id){
+  const raw = await docRaw(khoaMuc(p, id));
+  try{
+    const o = raw ? JSON.parse(raw) : null;
+    if(!o) return [];
+    return o.tep || o.imgs || [];        // o.imgs = dạng lưu của bản trước
+  }catch(e){ return []; }
+}
+async function luuTep(p, id, tep){
+  const raw = JSON.stringify({ v:2, at:new Date().toISOString(), tep });
+  lsSet(khoaMuc(p, id), raw);
+  BO_NHO[p].muc[id] = { n: tep.length, byte: raw.length, at: new Date().toISOString() };
+  try{ await sbSetVerified(khoaMuc(p, id), raw); }
+  catch(e){ toast('⚠ Chưa đẩy được lên máy chủ: ' + (e.message || e)); }
+  await luuIdx(p);
 }
 
 // ---------------------------------------------------------------------
-// Thu nhỏ ảnh: ảnh chụp điện thoại 4-5 MB xuống còn vài trăm KB
+// Đọc file người dùng chọn. Ảnh thì thu nhỏ, PDF thì giữ nguyên.
 // ---------------------------------------------------------------------
-function thuNhoAnh(file){
+function docFile(file){
   return new Promise((res, rej)=>{
+    if(file.size > TEP_TOI_DA) return rej(new Error(`"${file.name}" nặng ${kb(file.size)} — vượt giới hạn 8 MB`));
+    const laAnh = /^image\//.test(file.type);
     const fr = new FileReader();
-    fr.onerror = ()=>rej(new Error('Không đọc được file'));
+    fr.onerror = ()=>rej(new Error('Không đọc được ' + file.name));
     fr.onload = ()=>{
+      if(!laAnh){
+        // PDF hoặc file khác: giữ nguyên, chỉ để mở / tải về
+        return res({ id:maMoi(), ten:file.name, loai:'file',
+                     mime:file.type || 'application/octet-stream', data:fr.result, w:0, h:0 });
+      }
       const im = new Image();
-      im.onerror = ()=>rej(new Error('File không phải ảnh'));
+      im.onerror = ()=>rej(new Error(file.name + ' không phải ảnh hợp lệ'));
       im.onload = ()=>{
         let w = im.naturalWidth, h = im.naturalHeight;
         const r = Math.min(1, RONG_TOI_DA / Math.max(w, h));
         w = Math.round(w * r); h = Math.round(h * r);
         const cv = document.createElement('canvas');
         cv.width = w; cv.height = h;
-        const ctx = cv.getContext('2d');
-        ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, w, h);   // ảnh PNG trong suốt -> nền trắng
-        ctx.drawImage(im, 0, 0, w, h);
-        res({ id:'wi'+Date.now()+Math.random().toString(36).slice(2,6),
-              ten:file.name.replace(/\.[^.]+$/, ''),
-              data: cv.toDataURL('image/jpeg', CHAT_LUONG), w, h });
+        const c = cv.getContext('2d');
+        c.fillStyle = '#fff'; c.fillRect(0, 0, w, h);      // ảnh PNG trong suốt -> nền trắng
+        c.drawImage(im, 0, 0, w, h);
+        res({ id:maMoi(), ten:file.name.replace(/\.[^.]+$/, ''), loai:'anh', mime:'image/jpeg',
+              data:cv.toDataURL('image/jpeg', CHAT_LUONG), w, h });
       };
       im.src = fr.result;
     };
     fr.readAsDataURL(file);
   });
 }
+// Đổi chuỗi base64 thành file thật để mở / tải về
+function base64Blob(dataUri, mime){
+  const b64 = String(dataUri).split(',')[1] || '';
+  const bin = atob(b64), arr = new Uint8Array(bin.length);
+  for(let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+  return new Blob([arr], { type: mime || 'application/octet-stream' });
+}
 
 // ---------------------------------------------------------------------
-// Màn hình 1: lưới 6 ô
+// Tạo một tab kho tài liệu
 // ---------------------------------------------------------------------
-function veLuoiNhom(){
-  $('wiTitle').textContent = 'WI — Hướng dẫn công việc';
-  $('wiTools').innerHTML = '';
-  const idx = MUC_LUC || {};
-  $('wiBody').innerHTML = `
-    <div class="note">Mỗi ô là một nhóm hướng dẫn. Bấm vào ô để tải ảnh lên hoặc xuất ra file PDF.</div>
-    <div class="wi-grid">
-      ${WI_NHOM.map(n=>{
-        const m = idx[n.id] || { n:0, byte:0 };
-        return `<button class="wi-card" data-nhom="${n.id}">
-          <div class="ic">${n.icon}</div>
+function taoBoSuuTap(cf){
+  let MUC_DANG_MO = null, TEP = [], SUA_MUC = false, DANG_TAI = false;
+  const $t = ()=>$(cf.idTitle), $c = ()=>$(cf.idTools), $b = ()=>$(cf.idBody);
+  const tenMuc = (idx, id)=> (idx.nhom.find(x=>x.id === id) || {}).ten || id;
+
+  // ---------- Màn hình 1: lưới các mục ----------
+  function veLuoi(idx){
+    $t().textContent = cf.tieuDe;
+    $c().innerHTML = `<button class="secondary sm" data-them>＋ Thêm mục</button>
+      <button class="${SUA_MUC ? '' : 'ghost '}sm" data-sua>${SUA_MUC ? '✓ Xong' : '✎ Sửa mục'}</button>`;
+    $b().innerHTML = `
+      <div class="note">${esc(cf.moTa)}</div>
+      ${idx.nhom.length ? `<div class="wi-grid">${idx.nhom.map(n=>{
+        const m = idx.muc[n.id] || { n:0, byte:0 };
+        return `<div class="wi-card" data-mo="${n.id}">
+          ${SUA_MUC ? `<div class="wi-cardact">
+              <button data-doi="${n.id}" title="Đổi tên">✎</button>
+              <button data-xoa="${n.id}" class="x" title="Xoá mục">✕</button></div>` : ''}
+          <div class="ic">${n.icon || '📄'}</div>
           <div class="tn">${esc(n.ten)}</div>
-          <div class="sl">${m.n ? `${m.n} ảnh · ${kb(m.byte)}` : 'Chưa có ảnh'}</div>
-        </button>`;
-      }).join('')}
-    </div>`;
-  document.querySelectorAll('#wiBody .wi-card').forEach(b=>{
-    b.onclick = ()=>moNhom(b.dataset.nhom);
-  });
-}
+          <div class="sl">${m.n ? `${m.n} file · ${kb(m.byte)}` : 'Chưa có file'}</div>
+        </div>`;
+      }).join('')}</div>`
+      : '<p class="empty-msg">Chưa có mục nào. Bấm <b>＋ Thêm mục</b> để tạo mục đầu tiên.</p>'}`;
 
-// ---------------------------------------------------------------------
-// Màn hình 2: bên trong một nhóm
-// ---------------------------------------------------------------------
-async function moNhom(id){
-  NHOM_DANG_MO = id;
-  $('wiTitle').textContent = 'WI — ' + tenNhom(id);
-  $('wiBody').innerHTML = '<p class="empty-msg">Đang tải ảnh…</p>';
-  $('wiTools').innerHTML = '';
-  ANH = await taiNhom(id);
-  veNhom();
-}
-function veNhom(){
-  const id = NHOM_DANG_MO;
-  const tong = ANH.reduce((t,a)=>t + (a.data ? a.data.length : 0), 0);
-  $('wiTools').innerHTML = `
-    <button class="ghost sm" id="wiBack">‹ Tất cả nhóm</button>
-    <button class="secondary sm" id="wiAdd">＋ Thêm ảnh</button>
-    <button class="sm" id="wiPdf">⬇ Xuất PDF</button>`;
-  $('wiBody').innerHTML = `
-    <input type="file" id="wiFile" accept="image/*" multiple hidden>
-    <div class="note">${ANH.length} ảnh · ${kb(tong)}. Ảnh xếp theo thứ tự dưới đây và sẽ ra PDF đúng thứ tự đó.
-      ${tong > NGUONG_CANH_BAO ? '<br><b>⚠ Nhóm này đã nặng hơn 4 MB — nên tách bớt sang nhóm khác cho nhẹ.</b>' : ''}</div>
-    ${ANH.length ? `<div class="wi-imgs">${ANH.map((a,i)=>`
-      <figure class="wi-img" data-i="${i}">
-        <img src="${a.data}" alt="${esc(a.ten)}" loading="lazy">
-        <figcaption>${i+1}. ${esc(a.ten)}</figcaption>
-        <div class="wi-act">
-          <button data-lui="${i}" title="Lùi lên trước"${i===0?' disabled':''}>◀</button>
-          <button data-tien="${i}" title="Đẩy xuống sau"${i===ANH.length-1?' disabled':''}>▶</button>
-          <button data-xem="${i}" title="Xem to">🔍</button>
-          <button data-xoa="${i}" class="x" title="Xoá ảnh">✕</button>
-        </div>
-      </figure>`).join('')}</div>`
-      : '<p class="empty-msg">Chưa có ảnh nào. Bấm <b>＋ Thêm ảnh</b> để tải lên.</p>'}`;
-
-  $('wiBack').onclick = ()=>{ NHOM_DANG_MO = null; veLuoiNhom(); };
-  $('wiAdd').onclick  = ()=>{ $('wiFile').value = ''; $('wiFile').click(); };
-  $('wiPdf').onclick  = ()=>xuatPdf(id);
-  $('wiFile').onchange = async e => themAnh([...e.target.files]);
-
-  const lam = async (fn)=>{ fn(); await luuNhom(id, ANH); veNhom(); };
-  document.querySelectorAll('#wiBody [data-lui]').forEach(b=>b.onclick = ()=>{
-    const i = +b.dataset.lui; lam(()=>{ [ANH[i-1], ANH[i]] = [ANH[i], ANH[i-1]]; });
-  });
-  document.querySelectorAll('#wiBody [data-tien]').forEach(b=>b.onclick = ()=>{
-    const i = +b.dataset.tien; lam(()=>{ [ANH[i+1], ANH[i]] = [ANH[i], ANH[i+1]]; });
-  });
-  document.querySelectorAll('#wiBody [data-xem]').forEach(b=>b.onclick = ()=>{
-    const a = ANH[+b.dataset.xem];
-    openModal(a.ten, `<img src="${a.data}" style="width:100%; border-radius:8px;">`);
-  });
-  document.querySelectorAll('#wiBody [data-xoa]').forEach(b=>b.onclick = async ()=>{
-    const i = +b.dataset.xoa;
-    if(!await confirmBox(`Xoá ảnh "${ANH[i].ten}"? Mọi người dùng app đều mất ảnh này.`)) return;
-    ANH.splice(i, 1); await luuNhom(id, ANH); veNhom();
-  });
-}
-async function themAnh(files){
-  if(!files.length || DANG_TAI) return;
-  DANG_TAI = true;
-  const id = NHOM_DANG_MO;
-  $('wiBody').insertAdjacentHTML('afterbegin', `<div class="note" id="wiLoad">⏳ Đang xử lý 0/${files.length} ảnh…</div>`);
-  let loi = 0;
-  for(let i = 0; i < files.length; i++){
-    const el = $('wiLoad'); if(el) el.textContent = `⏳ Đang xử lý ${i+1}/${files.length} ảnh…`;
-    try{ ANH.push(await thuNhoAnh(files[i])); }catch(e){ loi++; }
+    $c().querySelector('[data-them]').onclick = ()=>hopMuc(idx, null);
+    $c().querySelector('[data-sua]').onclick  = ()=>{ SUA_MUC = !SUA_MUC; veLuoi(idx); };
+    $b().querySelectorAll('[data-mo]').forEach(el=>{
+      el.onclick = (e)=>{ if(e.target.closest('.wi-cardact')) return; moMuc(idx, el.dataset.mo); };
+    });
+    $b().querySelectorAll('[data-doi]').forEach(b=>b.onclick = ()=>hopMuc(idx, b.dataset.doi));
+    $b().querySelectorAll('[data-xoa]').forEach(b=>b.onclick = ()=>xoaMuc(idx, b.dataset.xoa));
   }
-  await luuNhom(id, ANH);
-  DANG_TAI = false;
-  veNhom();
-  toast(loi ? `✓ Đã thêm ${files.length - loi} ảnh, ${loi} file lỗi` : `✓ Đã thêm ${files.length} ảnh`);
+
+  // ---------- Thêm mục / đổi tên mục ----------
+  function hopMuc(idx, id){
+    const cu = id ? idx.nhom.find(x=>x.id === id) : null;
+    let icon = cu ? (cu.icon || '📄') : '📄';
+    const m = openModal(cu ? 'Đổi tên mục' : 'Thêm mục mới', `
+      <label class="field-label">Tên mục</label>
+      <input type="text" id="bstTen" value="${cu ? esc(cu.ten) : ''}" placeholder="VD: An toàn lao động">
+      <label class="field-label" style="margin-top:12px">Biểu tượng</label>
+      <div class="bst-icons" id="bstIcon">${BIEU_TUONG.map(x=>`<button class="${x === icon ? 'on' : ''}" data-i="${x}">${x}</button>`).join('')}</div>
+      <div class="btnrow" style="margin-top:16px"><button id="bstLuu">${cu ? 'Lưu' : 'Tạo mục'}</button></div>`);
+    $('bstIcon').querySelectorAll('[data-i]').forEach(b=>b.onclick = ()=>{
+      icon = b.dataset.i;
+      $('bstIcon').querySelectorAll('[data-i]').forEach(x=>x.className = x.dataset.i === icon ? 'on' : '');
+    });
+    $('bstLuu').onclick = async ()=>{
+      const ten = $('bstTen').value.trim();
+      if(!ten){ toast('⚠ Nhập tên mục'); return; }
+      if(cu){ cu.ten = ten; cu.icon = icon; }
+      else idx.nhom.push({ id: maMoi(), ten, icon });
+      await luuIdx(cf.prefix());
+      m.close(); veLuoi(idx); toast(cu ? '✓ Đã đổi tên mục' : '✓ Đã tạo mục');
+    };
+  }
+  async function xoaMuc(idx, id){
+    const m = idx.muc[id];
+    if(!await confirmBox(`Xoá mục "${tenMuc(idx, id)}"${m && m.n ? ` cùng ${m.n} file bên trong` : ''}? Mọi người dùng app đều mất.`)) return;
+    idx.nhom = idx.nhom.filter(x=>x.id !== id);
+    delete idx.muc[id];
+    try{ await sbSetVerified(khoaMuc(cf.prefix(), id), JSON.stringify({ v:2, at:new Date().toISOString(), tep:[] })); }catch(e){}
+    await luuIdx(cf.prefix());
+    veLuoi(idx); toast('✓ Đã xoá mục');
+  }
+
+  // ---------- Màn hình 2: bên trong một mục ----------
+  async function moMuc(idx, id){
+    MUC_DANG_MO = id;
+    $t().textContent = cf.tieuDe.split('—')[0].trim() + ' — ' + tenMuc(idx, id);
+    $b().innerHTML = '<p class="empty-msg">Đang tải…</p>';
+    $c().innerHTML = '';
+    TEP = await taiTep(cf.prefix(), id);
+    veMuc(idx);
+  }
+  function veMuc(idx){
+    const id = MUC_DANG_MO;
+    const tong = TEP.reduce((t, a)=>t + (a.data ? a.data.length : 0), 0);
+    const soAnh = TEP.filter(x=>x.loai !== 'file').length;
+    $c().innerHTML = `
+      <button class="ghost sm" data-ve>‹ Tất cả mục</button>
+      <button class="secondary sm" data-them>＋ Thêm file</button>
+      <button class="sm" data-pdf>⬇ Xuất PDF</button>`;
+    $b().innerHTML = `
+      <input type="file" data-inp accept="image/*,application/pdf" multiple hidden>
+      <div class="note">${TEP.length} file (${soAnh} ảnh) · ${kb(tong)}. Thứ tự dưới đây cũng là thứ tự trang trong file PDF.
+        ${tong > NGUONG_NHAC ? '<br><b>⚠ Mục này đã nặng hơn 4 MB — nên tách bớt sang mục khác.</b>' : ''}</div>
+      ${TEP.length ? `<div class="wi-imgs">${TEP.map((a, i)=>`
+        <figure class="wi-img" data-i="${i}">
+          ${a.loai === 'file'
+            ? `<div class="wi-file"><div class="ic">📄</div><div class="ex">${esc((String(a.ten).split('.').pop() || 'FILE').toUpperCase())}</div></div>`
+            : `<img src="${a.data}" alt="${esc(a.ten)}" loading="lazy">`}
+          <figcaption>${i+1}. ${esc(a.ten)}</figcaption>
+          <div class="wi-act">
+            <button data-lui="${i}" title="Lùi lên trước"${i === 0 ? ' disabled' : ''}>◀</button>
+            <button data-tien="${i}" title="Đẩy xuống sau"${i === TEP.length-1 ? ' disabled' : ''}>▶</button>
+            <button data-xem="${i}" title="${a.loai === 'file' ? 'Mở file' : 'Xem to'}">${a.loai === 'file' ? '↗' : '🔍'}</button>
+            <button data-tai="${i}" title="Tải về">⬇</button>
+            <button data-xoa="${i}" class="x" title="Xoá">✕</button>
+          </div>
+        </figure>`).join('')}</div>`
+        : '<p class="empty-msg">Chưa có file nào. Bấm <b>＋ Thêm file</b> để tải ảnh hoặc PDF lên.</p>'}`;
+
+    const inp = $b().querySelector('[data-inp]');
+    $c().querySelector('[data-ve]').onclick   = ()=>{ MUC_DANG_MO = null; SUA_MUC = false; veLuoi(idx); };
+    $c().querySelector('[data-them]').onclick = ()=>{ inp.value = ''; inp.click(); };
+    $c().querySelector('[data-pdf]').onclick  = ()=>xuatPdf(idx, id);
+    inp.onchange = e => themFile(idx, [...e.target.files]);
+
+    const lam = async fn =>{ fn(); await luuTep(cf.prefix(), id, TEP); veMuc(idx); };
+    $b().querySelectorAll('[data-lui]').forEach(b=>b.onclick = ()=>{ const i = +b.dataset.lui; lam(()=>{ [TEP[i-1], TEP[i]] = [TEP[i], TEP[i-1]]; }); });
+    $b().querySelectorAll('[data-tien]').forEach(b=>b.onclick = ()=>{ const i = +b.dataset.tien; lam(()=>{ [TEP[i+1], TEP[i]] = [TEP[i], TEP[i+1]]; }); });
+    $b().querySelectorAll('[data-xem]').forEach(b=>b.onclick = ()=>{
+      const a = TEP[+b.dataset.xem];
+      if(a.loai === 'file'){
+        const u = URL.createObjectURL(base64Blob(a.data, a.mime));
+        window.open(u, '_blank'); setTimeout(()=>URL.revokeObjectURL(u), 60000);
+      } else openModal(a.ten, `<img src="${a.data}" style="width:100%; border-radius:8px;">`);
+    });
+    $b().querySelectorAll('[data-tai]').forEach(b=>b.onclick = ()=>{
+      const a = TEP[+b.dataset.tai];
+      const el = document.createElement('a');
+      el.href = URL.createObjectURL(base64Blob(a.data, a.mime));
+      el.download = a.loai === 'file' ? a.ten : (a.ten + '.jpg');
+      document.body.appendChild(el); el.click();
+      setTimeout(()=>{ URL.revokeObjectURL(el.href); el.remove(); }, 1500);
+    });
+    $b().querySelectorAll('[data-xoa]').forEach(b=>b.onclick = async ()=>{
+      const i = +b.dataset.xoa;
+      if(!await confirmBox(`Xoá "${TEP[i].ten}"? Mọi người dùng app đều mất file này.`)) return;
+      TEP.splice(i, 1); await luuTep(cf.prefix(), id, TEP); veMuc(idx);
+    });
+  }
+  async function themFile(idx, files){
+    if(!files.length || DANG_TAI) return;
+    DANG_TAI = true;
+    const id = MUC_DANG_MO;
+    $b().insertAdjacentHTML('afterbegin', `<div class="note" data-load>⏳ Đang xử lý 0/${files.length}…</div>`);
+    const loi = [];
+    for(let i = 0; i < files.length; i++){
+      const el = $b().querySelector('[data-load]');
+      if(el) el.textContent = `⏳ Đang xử lý ${i+1}/${files.length}…`;
+      try{ TEP.push(await docFile(files[i])); }catch(e){ loi.push(e.message); }
+    }
+    await luuTep(cf.prefix(), id, TEP);
+    DANG_TAI = false;
+    veMuc(idx);
+    if(loi.length){
+      const n = $b().querySelector('.note');
+      if(n){ n.className = 'note warn'; n.innerHTML = '⚠ ' + loi.map(esc).join('<br>⚠ '); }
+    } else toast(`✓ Đã thêm ${files.length} file`);
+  }
+
+  // ---------- Xuất PDF: mỗi ảnh 1 trang A4 ----------
+  // jsPDF không có font tiếng Việt nên tiêu đề được VẼ RA ẢNH rồi ghép vào, dấu mới đúng.
+  function anhTieuDe(chu, rong){
+    const cv = document.createElement('canvas');
+    cv.width = rong; cv.height = 70;
+    const c = cv.getContext('2d');
+    c.fillStyle = '#fff'; c.fillRect(0, 0, cv.width, cv.height);
+    c.fillStyle = '#1c2024'; c.font = 'bold 34px Verdana, Arial, sans-serif'; c.textBaseline = 'middle';
+    c.fillText(chu, 6, 38);
+    c.strokeStyle = '#d9d6cc'; c.lineWidth = 2;
+    c.beginPath(); c.moveTo(0, 66); c.lineTo(cv.width, 66); c.stroke();
+    return cv.toDataURL('image/jpeg', 0.85);
+  }
+  function xuatPdf(idx, id){
+    const anh = TEP.filter(x=>x.loai !== 'file' && x.w && x.h);
+    if(!anh.length){ toast('Mục này chưa có ảnh nào để xuất PDF — file PDF thì bấm ↗ để mở'); return; }
+    if(!(window.jspdf && window.jspdf.jsPDF)){ toast('⚠ Chưa tải được thư viện PDF — kiểm tra mạng rồi tải lại trang'); return; }
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit:'mm', format:'a4', orientation:'p' });
+    const LE = 10, W = 210, H = 297, rongDung = W - LE*2;
+    anh.forEach((a, i)=>{
+      if(i) doc.addPage();
+      const td = anhTieuDe(`${tenMuc(idx, id)} — trang ${i+1}/${anh.length}${a.ten ? '  ·  ' + a.ten : ''}`, 1500);
+      doc.addImage(td, 'JPEG', LE, LE, rongDung, rongDung * 70/1500);
+      const tren = LE + rongDung * 70/1500 + 4, cao = H - tren - LE;
+      const r = Math.min(rongDung / a.w, cao / a.h);
+      doc.addImage(a.data, 'JPEG', (W - a.w*r)/2, tren, a.w*r, a.h*r);
+    });
+    const ten = tenMuc(idx, id).replace(/[^\p{L}\d]+/gu, '-');
+    doc.save(`${cf.tenFile}-${ten}-${new Date().toISOString().slice(0,10)}.pdf`);
+    toast(`✓ Đã xuất PDF ${anh.length} trang`);
+  }
+
+  // ---------- Điểm vào cho app gọi ----------
+  return async function render(){
+    const p = cf.prefix();
+    const idx = await taiIdx(p, cf.nhomMacDinh || []);
+    if(cf.sauKhiTai) await cf.sauKhiTai(p, idx);
+    if(MUC_DANG_MO && idx.nhom.some(n=>n.id === MUC_DANG_MO)) return;   // đang xem trong 1 mục thì giữ nguyên
+    MUC_DANG_MO = null;
+    veLuoi(idx);
+  };
 }
 
-// ---------------------------------------------------------------------
-// Xuất PDF — mỗi ảnh 1 trang A4 dọc, có tiêu đề tiếng Việt
-// jsPDF không có sẵn font tiếng Việt, nên tiêu đề được VẼ RA ẢNH rồi ghép vào,
-// như vậy dấu tiếng Việt hiện đúng.
-// ---------------------------------------------------------------------
-function anhTieuDe(chu, rong){
-  const cv = document.createElement('canvas');
-  cv.width = rong; cv.height = 70;
-  const c = cv.getContext('2d');
-  c.fillStyle = '#fff'; c.fillRect(0, 0, cv.width, cv.height);
-  c.fillStyle = '#1c2024';
-  c.font = 'bold 34px Verdana, Arial, sans-serif';
-  c.textBaseline = 'middle';
-  c.fillText(chu, 6, 38);
-  c.strokeStyle = '#d9d6cc'; c.lineWidth = 2;
-  c.beginPath(); c.moveTo(0, 66); c.lineTo(cv.width, 66); c.stroke();
-  return cv.toDataURL('image/jpeg', 0.85);
+// =====================================================================
+// Tab WI — kho thành phẩm
+// =====================================================================
+const WI_NHOM = [
+  { id:'stock',         ten:'Stock',            icon:'🗃' },
+  { id:'kiemcont',      ten:'Kiểm cont',        icon:'📦' },
+  { id:'nhaphang',      ten:'Nhập hàng',        icon:'📥' },
+  { id:'congnhanmoi',   ten:'Công nhân mới',    icon:'🧑‍🏭' },
+  { id:'sodokho',       ten:'Sơ đồ kho',        icon:'🗺' },
+  { id:'xuathang',      ten:'Xuất hàng',        icon:'🚚' },
+  { id:'tuyencongnhan', ten:'Tuyển công nhân',  icon:'📢' },
+  { id:'chedo',         ten:'Chế độ',           icon:'📋' },
+];
+// Nạp các bản hướng dẫn có sẵn (nếu bản app này có kèm ảnh).
+// CHỈ nạp cho mục chưa từng có gì, nên không bao giờ ghi đè ảnh của mọi người.
+async function napAnhMau(p, idx){
+  const mau = window.WI_ANH_MAU;
+  if(!mau) return;
+  const can = Object.keys(mau).filter(id => idx.muc[id] === undefined && idx.nhom.some(n=>n.id === id));
+  if(!can.length) return;
+  for(const id of can){
+    try{ await luuTep(p, id, mau[id].map(a=>({ ...a, loai:'anh', mime:'image/jpeg' }))); }catch(e){}
+  }
+  toast(`✓ Đã nạp ${can.length} bản hướng dẫn có sẵn`);
 }
-function xuatPdf(id){
-  if(!ANH.length){ toast('Nhóm này chưa có ảnh'); return; }
-  if(!(window.jspdf && window.jspdf.jsPDF)){ toast('⚠ Chưa tải được thư viện PDF — kiểm tra mạng rồi tải lại trang'); return; }
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ unit:'mm', format:'a4', orientation:'p' });
-  const LE = 10, W = 210, H = 297;
-  const rongDung = W - LE*2;            // 190 mm
-  ANH.forEach((a, i)=>{
-    if(i) doc.addPage();
-    // dải tiêu đề
-    const td = anhTieuDe(`${tenNhom(id)} — trang ${i+1}/${ANH.length}${a.ten ? '  ·  ' + a.ten : ''}`, 1500);
-    doc.addImage(td, 'JPEG', LE, LE, rongDung, rongDung * 70/1500);
-    // ảnh chính, giữ đúng tỉ lệ, canh giữa
-    const trenAnh = LE + rongDung * 70/1500 + 4;
-    const caoDung = H - trenAnh - LE;
-    const r = Math.min(rongDung / a.w, caoDung / a.h);
-    const w = a.w * r, h = a.h * r;
-    doc.addImage(a.data, 'JPEG', (W - w)/2, trenAnh, w, h);
-  });
-  const stamp = new Date().toISOString().slice(0,10);
-  doc.save(`WI-${id}-${stamp}.pdf`);
-  toast(`✓ Đã xuất PDF ${ANH.length} trang`);
-}
+window.renderWI = taoBoSuuTap({
+  prefix: ()=>'appwh-wi',
+  tieuDe: 'WI — Hướng dẫn công việc',
+  moTa: 'Mỗi ô là một mục hướng dẫn. Bấm vào ô để tải ảnh / file PDF lên, hoặc xuất ra file PDF.',
+  tenFile: 'WI',
+  idTitle:'wiTitle', idTools:'wiTools', idBody:'wiBody',
+  nhomMacDinh: WI_NHOM,
+  sauKhiTai: napAnhMau,
+});
 
-// ---------------------------------------------------------------------
-// Điểm vào cho app gọi
-// ---------------------------------------------------------------------
-window.renderWI = async function(){
-  await taiMucLuc();
-  if(NHOM_DANG_MO) return;          // đang xem trong 1 nhóm thì giữ nguyên
-  veLuoiNhom();
-};
+// =====================================================================
+// Tab Training — kho vải và kho phụ liệu (mỗi kho một bộ riêng)
+// =====================================================================
+window.renderTraining = taoBoSuuTap({
+  prefix: ()=>'appwh-training-' + CUR_KHO,
+  tieuDe: 'Training — Tài liệu đào tạo',
+  moTa: 'Tạo mục theo nội dung đào tạo, rồi tải ảnh hoặc file PDF vào từng mục. Mỗi kho có bộ tài liệu riêng.',
+  tenFile: 'Training',
+  idTitle:'trTitle', idTools:'trTools', idBody:'trBody',
+  nhomMacDinh: [],
+});
 })();
 
 // ===== Tải dữ liệu rồi vẽ lần đầu — PHẢI nạp cuối cùng =====
