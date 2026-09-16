@@ -34,51 +34,57 @@
 
   /* ======== KHUNG TỔNG: SIDEBAR + NỘI DUNG ======== */
   #shell{display:flex; min-height:100vh; align-items:stretch;}
+  /* ======== SIDEBAR NỀN TRẮNG, CHỮ ĐEN (kiểu sidebar Claude) ======== */
   #sidebar{
-    width:var(--sbw); flex:0 0 var(--sbw); background:var(--blue); color:#ffffff;
-    padding:14px 12px 30px; transition:margin-left .22s ease; overflow-y:auto;
+    width:var(--sbw); flex:0 0 var(--sbw); background:#ffffff; color:var(--ink);
+    border-right:1px solid var(--line);
+    padding:14px 10px 30px; transition:margin-left .22s ease; overflow-y:auto;
   }
   #shell.sb-collapsed #sidebar{margin-left:calc(-1 * var(--sbw));}
-  #sidebar .sb-brand{font-size:12px; letter-spacing:.16em; text-transform:uppercase; opacity:.7; font-weight:800; padding:4px 10px 14px;}
+  #sidebar .sb-brand{font-size:11.5px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--ink-soft); font-weight:800; padding:4px 10px 12px;}
+
+  /* Mục chính: không viền, không biểu tượng. Chọn rồi thì nền đậm hơn. */
   #sidebar .sb-item{
-    display:flex; align-items:center; gap:10px; width:100%; text-align:left;
-    background:transparent; border:1px solid rgba(255,255,255,.28); color:#ffffff;
-    padding:12px 12px; border-radius:9px; font-size:14.5px; font-weight:700; cursor:pointer; margin-bottom:7px;
+    display:flex; align-items:center; gap:9px; width:100%; text-align:left;
+    background:transparent; border:0; color:var(--ink);
+    padding:10px 11px; border-radius:9px; font-size:14px; font-weight:600;
+    cursor:pointer; margin-bottom:2px; line-height:1.3;
   }
-  #sidebar .sb-item svg{width:20px; height:20px; flex:0 0 auto;}
-  #sidebar .sb-item:hover{background:rgba(255,255,255,.09);}
-  #sidebar .sb-item.active{background:#fff; color:var(--blue); border-color:#fff;}
-  #sidebar .sb-item .sb-ic{font-size:16px; flex:0 0 auto;}
-  #sidebar .sb-item .sb-sub{display:block; font-size:11px; font-weight:600; opacity:.72; margin-top:1px;}
-  #sidebar .sb-item.active .sb-sub{opacity:.65;}
-  #sidebar .sb-sep{height:1px; background:rgba(255,255,255,.16); margin:10px 6px 12px;}
-  /* Mũi tên sổ xuống trên nút kho có menu con */
-  #sidebar .sb-item .sb-caret{margin-left:auto; font-size:11px; opacity:.75; transition:.15s;}
+  #sidebar .sb-item:hover{background:rgba(0,0,0,.055);}
+  #sidebar .sb-item.active{background:rgba(0,0,0,.085); color:var(--ink); font-weight:800;}
+  #sidebar .sb-item .sb-ic{font-size:15px; flex:0 0 auto;}
+  #sidebar .sb-item .sb-sub{display:block; font-size:11px; font-weight:600; color:var(--ink-soft); margin-top:1px;}
+  #sidebar .sb-sep{height:1px; background:var(--line-soft); margin:10px 8px 12px;}
+  /* Mũi tên sổ xuống */
+  #sidebar .sb-item .sb-caret{margin-left:auto; font-size:10px; color:var(--ink-soft); transition:transform .15s;}
   #sidebar .sb-item.mo .sb-caret{transform:rotate(180deg);}
 
-  /* ===== MENU TAB NẰM TRONG SIDEBAR (kho thành phẩm) =====
-     Thụt vào 1 bậc so với tên kho, chữ nhỏ hơn, có vạch dọc dẫn hướng. */
-  #sidebar .sb-menu{display:none; margin:-2px 0 10px 12px; padding-left:11px;
-    border-left:2px solid rgba(255,255,255,.28);}
+  /* ===== MENU TAB TRONG SIDEBAR — thụt vào 1 bậc, chữ nhỏ hơn ===== */
+  #sidebar .sb-menu{display:none; margin:0 0 8px 14px; padding-left:10px;
+    border-left:1.5px solid var(--line);}
   #sidebar .sb-menu.on{display:block;}
   #sidebar .sb-menu button{
     display:flex; align-items:center; gap:7px; width:100%; text-align:left;
-    background:transparent; border:0; color:rgba(255,255,255,.88);
+    background:transparent; border:0; color:var(--ink-soft);
     font-family:inherit; font-size:13px; font-weight:600; line-height:1.25;
-    padding:8px 9px; border-radius:8px; cursor:pointer; margin-bottom:2px;
+    padding:7px 9px; border-radius:8px; cursor:pointer; margin-bottom:1px;
     white-space:normal;
   }
-  #sidebar .sb-menu button:hover{background:rgba(255,255,255,.13); color:#fff;}
-  #sidebar .sb-menu button.on{background:#fff; color:var(--blue); font-weight:800;}
+  #sidebar .sb-menu button:hover{background:rgba(0,0,0,.055); color:var(--ink);}
+  #sidebar .sb-menu button.on{background:rgba(0,0,0,.085); color:var(--ink); font-weight:800;}
   /* 2 nút tiện ích 🔄 🩺 xếp cuối menu */
   #sidebar .sb-menu .sb-tools{display:flex; gap:6px; margin:8px 0 2px 9px;}
   #sidebar .sb-menu .sb-tools button{
     width:32px; height:32px; padding:0; justify-content:center; flex:0 0 auto;
-    border:1px solid rgba(255,255,255,.3); border-radius:8px; font-size:14px;
+    border:1px solid var(--line); border-radius:8px; font-size:14px; color:var(--ink-soft);
   }
+  #sidebar .sb-menu .sb-tools button:hover{background:rgba(0,0,0,.055); color:var(--blue);}
   #sbBackdrop{display:none;}
 
-  #main{flex:1; min-width:0;}
+  #main{flex:1; min-width:0; background:var(--paper);}
+  /* Bỏ hàng tab ngang rồi thì nội dung dính sát tiêu đề -> chừa một khoảng trắng */
+  #tabLayout{padding-top:28px;}
   #inner{max-width:1240px; margin:0 auto; padding:0 20px 60px;}
 
   header.top{
@@ -2358,6 +2364,7 @@ function toggleFullMode(){
 function setView(view, khoId){
   VIEW = view;
   if(khoId) CUR_KHO = khoId;
+  if(view === 'kho' && khoId) SB_MO = khoId;     // vào kho nào thì sổ menu kho đó
   const sb = $('shell');
   if(window.innerWidth < 900) sb.classList.remove('sb-open');
   $('tabNav').style.display = (view === 'tong3kho') ? 'none' : 'flex';
@@ -2387,47 +2394,70 @@ function switchSub(name){
   window.scrollTo(0, 0);
   render();
 }
+let SB_MO = null;          // mã kho đang sổ menu con; null = đang thu hết
+
 function buildSidebar(){
-  // Kho thành phẩm có nhiều tab -> gắn luôn một menu con ngay dưới tên kho,
-  // thụt vào 1 bậc, thay cho hàng tab nằm ngang phía trên nội dung.
+  // Cả 3 kho đều có menu con ngay dưới tên kho, thụt vào 1 bậc,
+  // thay cho hàng tab nằm ngang phía trên nội dung.
   $('sbItems').innerHTML =
-    `<button class="sb-item" data-view="tong3kho">${ICON_ALL}<span>TỔNG QUAN 3 KHO</span></button>
+    `<button class="sb-item" data-view="tong3kho"><span>TỔNG QUAN 3 KHO</span></button>
      <div class="sb-sep"></div>` +
-    WAREHOUSES.map(w=>{
-      const nut = `<button class="sb-item" data-view="kho" data-kho="${w.id}">${w.icon}<span>${w.name.toUpperCase()}</span>` +
-                  (w.id === 'thanhpham' ? `<span class="sb-caret">▼</span>` : '') + `</button>`;
-      return nut + (w.id === 'thanhpham' ? `<div class="sb-menu" id="sbMenu"></div>` : '');
-    }).join('');
-  document.querySelectorAll('#sidebar .sb-item').forEach(b=>b.onclick=()=>setView(b.dataset.view, b.dataset.kho));
+    WAREHOUSES.map(w=>
+      `<button class="sb-item" data-view="kho" data-kho="${w.id}">
+         <span>${w.name.toUpperCase()}</span><span class="sb-caret">▾</span></button>
+       <div class="sb-menu" id="sbMenu-${w.id}"></div>`).join('');
+
+  document.querySelectorAll('#sidebar .sb-item').forEach(b=>{
+    b.onclick = ()=>{
+      if(b.dataset.view !== 'kho'){ SB_MO = null; setView(b.dataset.view); return; }
+      const kho = b.dataset.kho;
+      // Đang đứng ở chính kho này: bấm lần nữa để thu menu lại / mở ra lại
+      if(VIEW === 'kho' && CUR_KHO === kho){
+        SB_MO = (SB_MO === kho) ? null : kho;
+        applyTabVisibility();
+        return;
+      }
+      SB_MO = kho;                      // đổi sang kho khác thì mở menu kho đó
+      setView('kho', kho);
+    };
+  });
 }
+
 // Đổ danh sách tab vào menu con của sidebar.
 // Lấy đúng những tab đang được phép hiện, nên không phải khai báo lại ở 2 nơi.
-function veMenuSidebar(isTp){
-  const box = $('sbMenu'); if(!box) return;
+function veMenuSidebar(){
+  const nav = $('tabNav');
   // Cứu 2 nút 🔄 🩺 ra khỏi menu TRƯỚC khi xoá nội dung menu.
   // Nếu không, lệnh xoá sẽ cuốn luôn 2 nút đó và app hỏng ở lần vẽ sau.
-  const nav0 = $('tabNav');
   ['btnSyncNow','btnDiag'].forEach(id=>{
     const el = document.getElementById(id);
-    if(el && box.contains(el)) nav0.appendChild(el);
+    if(el && el.closest('.sb-menu')) nav.appendChild(el);
   });
-  const nutKho = document.querySelector('#sidebar .sb-item[data-kho="thanhpham"]');
-  const hien = isTp && VIEW === 'kho' && !isPhoneMode();
-  box.classList.toggle('on', hien);
-  if(nutKho) nutKho.classList.toggle('mo', hien);
-  if(!hien){ box.innerHTML = ''; return; }
 
-  $('tabNav').style.display = 'none';         // đã có menu bên sidebar thì bỏ hàng tab ngang
-  box.innerHTML = [...document.querySelectorAll('#tabNav button[data-tab]')]
-    .filter(b => b.style.display !== 'none')
-    .map(b => `<button data-tab="${b.dataset.tab}"${b.dataset.tab === activeTab ? ' class="on"' : ''}>${b.innerHTML}</button>`)
-    .join('') + `<div class="sb-tools" id="sbTools"></div>`;
-  box.querySelectorAll('button[data-tab]').forEach(b=>{
-    b.onclick = e =>{ e.stopPropagation(); switchTab(b.dataset.tab); };
+  const dungMenu = VIEW === 'kho' && SB_MO === CUR_KHO && !isPhoneMode();
+  WAREHOUSES.forEach(w=>{
+    const box = $('sbMenu-' + w.id);
+    const nut = document.querySelector(`#sidebar .sb-item[data-kho="${w.id}"]`);
+    const hien = dungMenu && w.id === CUR_KHO;
+    if(nut) nut.classList.toggle('mo', hien);
+    if(!box) return;
+    box.classList.toggle('on', hien);
+    if(!hien){ box.innerHTML = ''; return; }
+
+    box.innerHTML = [...document.querySelectorAll('#tabNav button[data-tab]')]
+      .filter(b => b.style.display !== 'none')
+      .map(b => `<button data-tab="${b.dataset.tab}"${b.dataset.tab === activeTab ? ' class="on"' : ''}>${b.innerHTML}</button>`)
+      .join('') + `<div class="sb-tools" id="sbTools"></div>`;
+    box.querySelectorAll('button[data-tab]').forEach(b=>{
+      b.onclick = e =>{ e.stopPropagation(); switchTab(b.dataset.tab); };
+    });
+    const tools = $('sbTools');
+    if(tools){ tools.appendChild($('btnSyncNow')); tools.appendChild($('btnDiag')); }
   });
-  // dời 2 nút 🔄 🩺 xuống cuối menu cho gọn
-  const tools = $('sbTools');
-  if(tools){ tools.appendChild($('btnSyncNow')); tools.appendChild($('btnDiag')); }
+
+  // Menu đang sổ thì bỏ hàng tab ngang. Thu menu lại thì trả hàng tab ngang về,
+  // để lúc nào cũng còn đường chuyển tab.
+  nav.style.display = dungMenu ? 'none' : (VIEW === 'tong3kho' ? 'none' : 'flex');
 }
 // Kho thành phẩm có tab "Đổi ca"; tab "Vị trí & Năng lực" đổi tên thành "Năng lực" và bỏ bảng phân công
 function applyTabVisibility(){
