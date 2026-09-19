@@ -17,8 +17,16 @@
 /* ===== Nền tảng: biến màu, chữ, khung tổng, sidebar ===== */
 
   :root{
-    --ink:#1c2024; --ink-soft:#5b6470; --paper:#f3f2ee; --panel:#ffffff;
-    --line:#d9d6cc; --line-soft:#e8e6df;
+    --ink:#1c2024; --ink-soft:#5b6470;
+    /* Ba tầng nền: sidebar xám xanh -> vùng nội dung gần trắng -> thẻ trắng tinh */
+    --paper:#f8fafc; --panel:#ffffff;
+    --sb-bg:#eef1f6;                 /* nền sidebar */
+    --sb-line:#dde3ec;               /* đường ngăn sidebar với nội dung */
+    --sb-hover:#e3e9f2;              /* di chuột qua mục sidebar */
+    --sb-on-bg:#ffffff;              /* mục đang chọn: nổi trắng lên nền xám */
+    --sb-on-ink:#00789A;
+    --line:#d8dde5; --line-soft:#e7ebf1;
+    --bong:0 1px 2px rgba(16,24,40,.05), 0 1px 3px rgba(16,24,40,.04);
     --amber:#c98a1c; --amber-bg:#fbeecb; --amber-line:#e3b356;
     --blue:#0096BE; --blue-bg:#E6F6FA; --blue-dark:#00789A;
     --hot-yellow:#FFD400; --hot-yellow-ink:#5c4600; --hot-red:#FF2020;
@@ -36,8 +44,9 @@
   #shell{display:flex; min-height:100vh; align-items:stretch;}
   /* ======== SIDEBAR NỀN TRẮNG, CHỮ ĐEN (kiểu sidebar Claude) ======== */
   #sidebar{
-    width:var(--sbw); flex:0 0 var(--sbw); background:#ffffff; color:var(--ink);
-    border-right:1px solid var(--line);
+    width:var(--sbw); flex:0 0 var(--sbw); background:var(--sb-bg); color:var(--ink);
+    border-right:1px solid var(--sb-line);
+    box-shadow:1px 0 3px rgba(16,24,40,.04);
     padding:14px 10px 30px; transition:margin-left .22s ease; overflow-y:auto;
   }
   #shell.sb-collapsed #sidebar{margin-left:calc(-1 * var(--sbw));}
@@ -51,18 +60,20 @@
     padding:10px 11px; border-radius:9px; font-size:14px; font-weight:600;
     cursor:pointer; margin-bottom:2px; line-height:1.3;
   }
-  #sidebar .sb-item:hover{background:rgba(0,0,0,.055);}
-  #sidebar .sb-item.active{background:rgba(0,0,0,.085); color:var(--ink); font-weight:800;}
+  #sidebar .sb-item:hover{background:var(--sb-hover);}
+  #sidebar .sb-item.active{background:var(--sb-on-bg); color:var(--sb-on-ink); font-weight:800;
+    box-shadow:0 1px 2px rgba(16,24,40,.07);}
+  #sidebar .sb-item.active .sb-sub{color:var(--sb-on-ink); opacity:.8;}
   #sidebar .sb-item .sb-ic{font-size:15px; flex:0 0 auto;}
   #sidebar .sb-item .sb-sub{display:block; font-size:11px; font-weight:600; color:var(--ink-soft); margin-top:1px;}
-  #sidebar .sb-sep{height:1px; background:var(--line-soft); margin:10px 8px 12px;}
+  #sidebar .sb-sep{height:1px; background:var(--sb-line); margin:10px 8px 12px;}
   /* Mũi tên sổ xuống */
   #sidebar .sb-item .sb-caret{margin-left:auto; font-size:10px; color:var(--ink-soft); transition:transform .15s;}
   #sidebar .sb-item.mo .sb-caret{transform:rotate(180deg);}
 
   /* ===== MENU TAB TRONG SIDEBAR — thụt vào 1 bậc, chữ nhỏ hơn ===== */
   #sidebar .sb-menu{display:none; margin:0 0 8px 14px; padding-left:10px;
-    border-left:1.5px solid var(--line);}
+    border-left:1.5px solid var(--sb-line);}
   #sidebar .sb-menu.on{display:block;}
   #sidebar .sb-menu button{
     display:flex; align-items:center; gap:7px; width:100%; text-align:left;
@@ -71,15 +82,17 @@
     padding:7px 9px; border-radius:8px; cursor:pointer; margin-bottom:1px;
     white-space:normal;
   }
-  #sidebar .sb-menu button:hover{background:rgba(0,0,0,.055); color:var(--ink);}
-  #sidebar .sb-menu button.on{background:rgba(0,0,0,.085); color:var(--ink); font-weight:800;}
+  #sidebar .sb-menu button:hover{background:var(--sb-hover); color:var(--ink);}
+  #sidebar .sb-menu button.on{background:var(--sb-on-bg); color:var(--sb-on-ink); font-weight:800;
+    box-shadow:0 1px 2px rgba(16,24,40,.07);}
   /* 2 nút tiện ích 🔄 🩺 xếp cuối menu */
   #sidebar .sb-menu .sb-tools{display:flex; gap:6px; margin:8px 0 2px 9px;}
   #sidebar .sb-menu .sb-tools button{
     width:32px; height:32px; padding:0; justify-content:center; flex:0 0 auto;
     border:1px solid var(--line); border-radius:8px; font-size:14px; color:var(--ink-soft);
+    background:#fff;
   }
-  #sidebar .sb-menu .sb-tools button:hover{background:rgba(0,0,0,.055); color:var(--blue);}
+  #sidebar .sb-menu .sb-tools button:hover{background:var(--sb-hover); color:var(--blue);}
   #sbBackdrop{display:none;}
 
   #main{flex:1; min-width:0; background:var(--paper);}
@@ -128,7 +141,8 @@
   .grid4{display:grid; grid-template-columns:repeat(4,1fr); gap:12px;}
   @media(max-width:860px){.grid2{grid-template-columns:1fr;} .grid4{grid-template-columns:1fr 1fr;} .grid3{grid-template-columns:1fr;}}
 
-  .panel{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:16px 18px; margin-bottom:16px;}
+  .panel{background:var(--panel); border:1px solid var(--line); border-radius:10px;
+    box-shadow:var(--bong); padding:16px 18px; margin-bottom:16px;}
   .panel h2{font-size:15px; text-transform:uppercase; letter-spacing:.07em; margin:0 0 12px; color:var(--ink-soft); font-weight:700; display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
   .panel h2 .n{background:var(--blue); color:#ffffff; font-family:var(--mono); font-size:10px; padding:2px 6px; border-radius:2px;}
   .panel h2 .h2spacer{flex:1;}
@@ -987,7 +1001,8 @@
   #tab-hotrokk .hk-sp{flex:1;}
 
   /* --- Dashboard hỗ trợ --- */
-  #tab-hotrokk .hk-db{background:#fff; border:1px solid var(--line); border-radius:10px; margin-bottom:16px; overflow:hidden;}
+  #tab-hotrokk .hk-db{background:#fff; border:1px solid var(--line); border-radius:10px;
+    box-shadow:var(--bong); margin-bottom:16px; overflow:hidden;}
   #tab-hotrokk .hk-dbhead{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; padding:13px 18px 0;}
   #tab-hotrokk .hk-dbhead .t{font-size:15px; font-weight:800;}
   #tab-hotrokk .hk-dbhead .s{font-size:12.5px; color:var(--ink-soft); font-weight:600;}
@@ -1061,7 +1076,8 @@
   #tab-hotrokk .hk-nk .act button{width:28px; height:28px; padding:0; font-size:12px; border-radius:7px;}
 
   /* --- Ô người tiếp theo (kiểm kê) --- */
-  #tab-hotrokk .hk-tt{background:#fff; border:1px solid var(--line); border-radius:10px; margin-bottom:16px; overflow:hidden;}
+  #tab-hotrokk .hk-tt{background:#fff; border:1px solid var(--line); border-radius:10px;
+    box-shadow:var(--bong); margin-bottom:16px; overflow:hidden;}
   #tab-hotrokk .hk-tthead{display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:12px 18px; border-bottom:1px solid var(--line-soft);}
   #tab-hotrokk .hk-tthead .t{font-size:15px; font-weight:800;}
   #tab-hotrokk .hk-tthead .s{font-size:12.5px; color:var(--ink-soft); font-weight:600;}
@@ -1138,6 +1154,50 @@
   .hkgn-goi{font-size:10.5px; font-weight:800; color:#1f6b5c; background:var(--teal-bg); border:1px solid #a9cdbb;
     border-radius:999px; padding:1px 8px; white-space:nowrap;}
   .hkgn-dem{font-size:13px; font-weight:700; color:var(--blue-dark); margin-top:10px;}
+
+  /* --- Bảng: một việc đi bao nhiêu buổi, huy động bao nhiêu người --- */
+  #tab-hotrokk .hk-sn{border:1px solid var(--line-soft); border-radius:8px; overflow:hidden;}
+  #tab-hotrokk .hk-snr{display:grid; grid-template-columns:1fr 50px 58px 54px; align-items:center;
+    gap:8px; padding:7px 11px; font-size:13px; border-bottom:1px solid #f0f2f5;}
+  #tab-hotrokk .hk-snr:last-child{border-bottom:0;}
+  #tab-hotrokk .hk-snr .nm{font-weight:700; min-width:0; word-break:break-word; line-height:1.3;}
+  #tab-hotrokk .hk-snr .v{text-align:right; font-weight:800; font-variant-numeric:tabular-nums;}
+  #tab-hotrokk .hk-snr .v.ng{color:var(--blue-dark);}
+  #tab-hotrokk .hk-snr .v.tb{color:var(--ink-soft); font-weight:700;}
+  #tab-hotrokk .hk-snr.hd{background:#eef1f6; border-bottom:1px solid var(--line-soft);}
+  #tab-hotrokk .hk-snr.hd span{font-size:11px; font-weight:800; color:var(--ink-soft);
+    text-transform:uppercase; letter-spacing:.04em; text-align:right;}
+  #tab-hotrokk .hk-snr.hd span:first-child{text-align:left;}
+  #tab-hotrokk .hk-snr.tong{background:#f7f9fc; border-top:1px solid var(--line-soft); font-size:13.5px;}
+  #tab-hotrokk .hk-snr.tong .nm{font-weight:800;}
+
+  /* --- Chọn tháng cho nhật ký --- */
+  #tab-hotrokk .hk-nkloc{display:flex; flex-wrap:wrap; gap:5px; margin-bottom:4px;}
+  #tab-hotrokk .hk-nkloc button{border:1px solid var(--line); background:#fff; color:var(--ink-soft);
+    border-radius:999px; padding:4px 13px; font-size:12.5px; font-weight:700;}
+  #tab-hotrokk .hk-nkloc button.on{background:var(--blue); border-color:var(--blue); color:#fff;}
+  #tab-hotrokk .hk-nkloc button small{font-weight:700; opacity:.7; margin-left:4px;}
+
+  /* --- Thanh Lưu cố định trên đầu hộp thoại --- */
+  .hk-luubar{position:sticky; z-index:1; top:0; display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+    background:#fff; margin:-16px -16px 14px; padding:12px 16px; border-bottom:1px solid var(--line-soft);}
+  .hk-luubar button{flex:0 0 auto;}
+  .hk-luubar .hkgn-dem{margin:0; flex:1; min-width:0;}
+
+  /* --- Ô tìm theo tên --- */
+  .hkgn-tim{position:relative; margin-bottom:8px;}
+  .hkgn-tim input{padding-left:32px;}
+  .hkgn-tim::before{content:'🔍'; position:absolute; left:10px; top:50%; transform:translateY(-50%);
+    font-size:13px; opacity:.6; pointer-events:none;}
+  .hkgn-trong{padding:14px; text-align:center; font-size:13px; color:var(--ink-soft);}
+
+  /* --- Nhãn ca và trạng thái đổi người --- */
+  #tab-hotrokk .hk-ttr .tag.doi{background:var(--paper); color:var(--ink-soft); border:1px solid var(--line);}
+  #tab-hotrokk .hk-ttr .tag.ca{background:#eef1f6; color:#1F4E79; border:1px solid #c3d0e8;}
+  #tab-hotrokk .hk-ttdsn .c.doi{background:var(--paper); color:var(--ink-soft); border-color:var(--line);}
+  /* ô mà tuần đó người này đang ca khác */
+  #tab-hotrokk .hk-kk .o.khac{background:repeating-linear-gradient(135deg,#f4f4f1 0 5px,#ececea 5px 10px);}
+  #tab-hotrokk .hk-kk .o.khac.on{background:#7fc3d8 !important;}
 
 </style>
 </head>
@@ -2272,7 +2332,7 @@ function defaultKhoConfig(id){
     tpBoard: isTp ? defaultTpBoard() : null,
     xuathang: isTp ? {} : null,        // { 'YYYY-MM-DD': [ {customer,id,ctn,...}, ... ] }
     // Hỗ trợ / Kiểm kê kho vải — chỉ kho thành phẩm, xem mục 20
-    hotroKK: isTp ? { hotro:{}, kiemke:{}, nghi:{}, viec:['Kiểm cont','Load cont','Nhập hàng','Xuất hàng','Dọn kho / 5S','Đóng gói lại'] } : null,
+    hotroKK: isTp ? { hotro:{}, kiemke:{}, boqua:{}, viec:['Kiểm cont','Load cont','Nhập hàng','Xuất hàng','Dọn kho / 5S','Đóng gói lại'] } : null,
     current: null, history: [], ca2Log: [], notes: [],
   };
 }
@@ -8487,9 +8547,9 @@ window.renderTraining = taoBoSuuTap({
 //
 // Dữ liệu nằm trong KHO.thanhpham.hotroKK, rất nhẹ (cả năm vài KB) nên
 // đi chung KEY_KHO, không cần khoá Supabase riêng:
-//   { hotro:  { 'YYYY-MM-DD': { viec, gc, ids:[] } },
+//   { hotro:  { 'YYYY-MM-DD': [ {viec, gc, ids:[]}, … ] },   // NHIỀU buổi một ngày
 //     kiemke: { 'YYYY-MM-DD': [ id, … ] },      // luôn là thứ Bảy
-//     nghi:   { 'YYYY-MM-DD': [ id, … ] },      // báo nghỉ đột xuất ghi tại chỗ
+//     boqua:  { 'YYYY-MM-DD': [ id, … ] },      // đã bấm "đổi người khác" cho buổi đó
 //     viec:   [ 'Kiểm cont', … ] }
 //
 // Danh sách người KHÔNG lưu ở đây: đọc thẳng khoEmployees('thanhpham')
@@ -8507,6 +8567,7 @@ window.renderTraining = taoBoSuuTap({
   let MUC = 'hotro';                 // 'hotro' | 'kiemke'
   let CUR = new Date();              // mục hỗ trợ xem theo năm, kiểm kê xem theo quý
   let LOC_VIEC = null;               // đang lọc nhật ký theo loại việc nào
+  let NK_THANG = null;               // nhật ký đang xem tháng nào; null = cả năm
   let KK_NGAY = null;                // thứ Bảy đang thao tác ở mục kiểm kê
   let KK_CHI_HC = true;              // lưới kiểm kê chỉ hiện người ca hành chính
 
@@ -8518,8 +8579,17 @@ window.renderTraining = taoBoSuuTap({
     const d = K.hotroKK;
     if(!d.hotro  || typeof d.hotro  !== 'object') d.hotro  = {};
     if(!d.kiemke || typeof d.kiemke !== 'object') d.kiemke = {};
-    if(!d.nghi   || typeof d.nghi   !== 'object') d.nghi   = {};
+    // bản đầu đặt tên là `nghi`; nay đổi thành `boqua` cho đúng nghĩa
+    if(!d.boqua || typeof d.boqua !== 'object') d.boqua = (d.nghi && typeof d.nghi === 'object') ? d.nghi : {};
+    delete d.nghi;
     if(!Array.isArray(d.viec)) d.viec = VIEC_MAC_DINH.slice();
+    // Một ngày có thể đi hỗ trợ nhiều việc khác nhau nên mỗi ngày giữ MỘT MẢNG
+    // buổi. Bản đầu chỉ giữ được một buổi; gặp bản cũ thì bọc lại thành mảng.
+    Object.keys(d.hotro).forEach(k=>{
+      const v = d.hotro[k];
+      if(!Array.isArray(v)) d.hotro[k] = (v && v.ids) ? [v] : [];
+      if(!d.hotro[k].length) delete d.hotro[k];
+    });
     return d;
   }
   async function luu(){ await saveKho(); }
@@ -8527,18 +8597,39 @@ window.renderTraining = taoBoSuuTap({
   // ---------- Người ----------
   // Bỏ Giám sát. Nguồn duy nhất là HR.employees nên luôn khớp tab Tăng ca.
   function dsNguoi(){ return khoEmployees('thanhpham').filter(e => e.position !== 'Giám sát'); }
-  // Ứng viên đi kiểm kê: chỉ ca hành chính, bỏ ca 1, ca 2 và vị trí Stock
-  function dsUngVien(){ return dsNguoi().filter(e => e.shift === 'Ca HC' && e.position !== 'Stock'); }
+  // Ứng viên đi kiểm kê vào NGÀY key: ca hành chính đúng tuần đó theo lịch
+  // tab Đổi ca, bỏ ca 1, ca 2 và vị trí Stock. Không truyền key thì xét theo
+  // ca đang ghi hiện tại.
+  function dsUngVien(key){
+    return dsNguoi().filter(e=>{
+      const c = key ? caNgay(e, key) : { shift:e.shift, position:e.position };
+      return c.shift === 'Ca HC' && c.position !== 'Stock';
+    });
+  }
+  // Những người bị loại chỉ vì tuần đó đang ca khác (để dễ kiểm chứng)
+  function dsCaKhac(key){
+    return dsNguoi().map(e=>({ e, c: caNgay(e, key) }))
+      .filter(o => o.c.position !== 'Stock' && o.c.shift !== 'Ca HC');
+  }
   function tenCua(id){ const e = empById(id); return e ? e.name : '(đã xoá)'; }
   function tenNgan(id){ const e = empById(id); return e ? getEmployeeShortName(e) : '?'; }
 
   // ---------- Đếm ----------
-  function htNgay(y, loc){
-    const h = D().hotro;
-    return Object.keys(h).filter(k => k.startsWith(y + '-'))
-                         .filter(k => !loc || h[k].viec === loc).sort();
+  // Trả về danh sách buổi đã phẳng: [{key, i, b}] — key là ngày, i là vị trí
+  // của buổi trong ngày đó, b là bản thân buổi.
+  function buoiList(y, loc, thang){
+    const h = D().hotro, out = [];
+    Object.keys(h).filter(k => k.startsWith(y + '-')).sort().forEach(k=>{
+      if(thang != null && Number(k.slice(5,7)) - 1 !== thang) return;
+      h[k].forEach((b,i)=>{ if(!loc || (b.viec || '') === loc) out.push({ key:k, i, b }); });
+    });
+    return out;
   }
-  function htDem(id, y, loc){ return htNgay(y, loc).filter(k => D().hotro[k].ids.includes(id)).length; }
+  function soLuot(list){ return list.reduce((s,o)=> s + o.b.ids.length, 0); }
+  function htDem(id, y, loc){ return buoiList(y, loc).filter(o => o.b.ids.includes(id)).length; }
+  function lanThu(key, i, viec, y){
+    return buoiList(y, viec).findIndex(o => o.key === key && o.i === i) + 1;
+  }
   function kkDem(id, y, tuThang, soThang){
     const kk = D().kiemke;
     return Object.keys(kk).filter(k=>{
@@ -8558,17 +8649,48 @@ window.renderTraining = taoBoSuuTap({
     }
     return out;
   }
-  // Ai nghỉ hôm đó: lấy đơn nghỉ cả ngày ở tab Tăng ca / Nghỉ phép,
-  // cộng thêm ai được bấm "Hôm nay nghỉ" ngay tại tab này.
-  function aiNghi(key){
-    const donNghi = (HR.leave || []).filter(l => l.date === key && l.type === 'nghi').map(l => l.employeeId);
-    return { don: new Set(donNghi), tay: new Set(D().nghi[key] || []) };
+  // Ai không xét cho buổi đó: đơn nghỉ cả ngày bên tab Tăng ca / Nghỉ phép,
+  // và ai đã bị bấm "Đổi người khác" ngay tại tab này.
+  function aiBo(key){
+    const don = (HR.leave || []).filter(l => l.date === key && l.type === 'nghi').map(l => l.employeeId);
+    return { don: new Set(don), qua: new Set(D().boqua[key] || []) };
   }
-  function datNghiTay(key, id, nghi){
-    const d = D(), a = d.nghi[key] || [], i = a.indexOf(id);
-    if(nghi && i < 0) a.push(id);
-    if(!nghi && i >= 0) a.splice(i, 1);
-    if(a.length) d.nghi[key] = a; else delete d.nghi[key];
+  function datBoQua(key, id, bo){
+    const d = D(), a = d.boqua[key] || [], i = a.indexOf(id);
+    if(bo && i < 0) a.push(id);
+    if(!bo && i >= 0) a.splice(i, 1);
+    if(a.length) d.boqua[key] = a; else delete d.boqua[key];
+  }
+
+  // ---------- Ca làm việc vào một ngày cụ thể ----------
+  // Lấy từ chính lịch của tab Đổi ca: rotationPlan(K, extraWeeks) cho biết
+  // tuần đó đội nào cầm ca nào. Ai không nằm trong nhóm đổi ca nào thì giữ
+  // nguyên ca đang ghi ở tab Tăng ca / Nghỉ phép.
+  function caNgay(emp, key){
+    const K = KHO.thanhpham;
+    if(!K || !K.rotation || typeof rotationPlan !== 'function') return { shift: emp.shift, position: emp.position };
+    try{
+      const moc = getMonday(fromKey(K.rotation.anchor));
+      const tuan = getMonday(fromKey(key));
+      const tuanCuaNgay = Math.round((tuan - moc) / (7 * 86400000));
+      const extra = tuanCuaNgay - rotWeekIndex(K.rotation.anchor);
+      for(const p of rotationPlan(K, extra)){
+        const g = p.g;
+        if(g.type === 'swap'){
+          for(let i = 0; i < p.cols.length; i++){
+            const c = p.cols[i];
+            if(((g.teams || [])[c.teamIdx] || []).includes(emp.id)){
+              const job = (typeof rotJobCot === 'function') ? rotJobCot(g, i) : null;
+              return { shift: c.shift, position: job || emp.position };
+            }
+          }
+        }else{
+          if((g.fixedIds || []).includes(emp.id) || p.turnId === emp.id)
+            return { shift: g.shift || emp.shift, position: g.job || emp.position };
+        }
+      }
+    }catch(e){}
+    return { shift: emp.shift, position: emp.position };
   }
 
   // ---------- Bộ vẽ biểu đồ ----------
@@ -8599,18 +8721,35 @@ window.renderTraining = taoBoSuuTap({
   // ---------- Dashboard hỗ trợ ----------
   function veDashHoTro(){
     const y = CUR.getFullYear(), ng = dsNguoi();
-    const ngayLoc = htNgay(y, LOC_VIEC);
-    const tongLuot = ngayLoc.reduce((s,k)=> s + D().hotro[k].ids.length, 0);
+    const dsBuoi = buoiList(y, LOC_VIEC);
+    const tongLuot = soLuot(dsBuoi);
     const theoNguoi = ng.map(e=>({ l:getEmployeeShortName(e), n:htDem(e.id, y, LOC_VIEC), full:e.name }))
                         .sort((a,b)=> b.n - a.n || a.l.localeCompare(b.l,'vi'))
-                        .map(r=>({ ...r, title:`${r.full}: ${r.n} lượt` }));
-    const theoViec = D().viec.map(v=>({ key:v, nm:v, n:htNgay(y, v).length, on: LOC_VIEC === v }))
-                             .sort((a,b)=> b.n - a.n);
+                        .map(r=>({ ...r, title:`${r.full}: ${r.n} buổi` }));
+    const theoViec = D().viec.map(v=>{
+      const ds = buoiList(y, v);
+      return { key:v, nm:v, n:ds.length, luot:soLuot(ds), on: LOC_VIEC === v };
+    }).sort((a,b)=> b.n - a.n || b.luot - a.luot);
     const theoThang = THANG.map((t,i)=>{
-      const pre = `${y}-${pad(i+1)}-`;
-      const n = ngayLoc.filter(k=>k.startsWith(pre)).reduce((s,k)=> s + D().hotro[k].ids.length, 0);
-      return { l:'T'+(i+1), n, title:`${t}: ${n} lượt` };
+      const n = soLuot(buoiList(y, LOC_VIEC, i));
+      return { l:'T'+(i+1), n, title:`${t}: ${n} lượt người` };
     });
+
+    // Bảng: mỗi việc đi bao nhiêu buổi và huy động tổng bao nhiêu người
+    const coViec = theoViec.filter(v=>v.n > 0).slice().sort((a,b)=> b.luot - a.luot);
+    const tBuoi = coViec.reduce((s,v)=> s + v.n, 0);
+    const tNguoi = coViec.reduce((s,v)=> s + v.luot, 0);
+    const bangSN = coViec.length ? `<div class="hk-sn">
+        <div class="hk-snr hd"><span>Việc</span><span>Buổi</span><span>Người</span><span>TB</span></div>
+        ${coViec.map(v=>`<div class="hk-snr">
+          <div class="nm">${esc(v.nm)}</div>
+          <div class="v">${v.n}</div>
+          <div class="v ng">${v.luot}</div>
+          <div class="v tb">${(v.luot / v.n).toFixed(1)}</div></div>`).join('')}
+        <div class="hk-snr tong"><div class="nm">Tổng cộng</div>
+          <div class="v">${tBuoi}</div><div class="v ng">${tNguoi}</div>
+          <div class="v tb">${tBuoi ? (tNguoi / tBuoi).toFixed(1) : '0.0'}</div></div>
+      </div>` : '<p class="empty-msg">Chưa có buổi hỗ trợ nào.</p>';
 
     $('hkDash').className = 'hk-db';
     $('hkDash').innerHTML = `
@@ -8618,54 +8757,79 @@ window.renderTraining = taoBoSuuTap({
         ${LOC_VIEC ? `<span class="hk-chipf">Lọc: ${esc(LOC_VIEC)}<button id="hkBoLoc" title="Bỏ lọc">✕</button></span>` : ''}</div>
       <div class="hk-kpi">
         <div><div class="v">${tongLuot}</div><div class="k">Lượt hỗ trợ${LOC_VIEC ? ' (đã lọc)' : ''}</div></div>
-        <div><div class="v">${ngayLoc.length}</div><div class="k">Buổi đã đi</div></div>
+        <div><div class="v">${dsBuoi.length}</div><div class="k">Buổi đã đi</div></div>
       </div>
       <div class="hk-dbgrid">
         <section>
-          <div class="hk-dbt">Những việc đã đi hỗ trợ <span class="g">· bấm để lọc · số lần trong năm</span></div>
-          <div id="hkDbViec">${theoViec.length ? barTen(theoViec, { click:true, donVi:'lần' }) : '<p class="empty-msg">Chưa có loại việc nào.</p>'}</div>
+          <div class="hk-dbt">Những việc đã đi hỗ trợ <span class="g">· bấm để lọc · số buổi trong năm</span></div>
+          <div id="hkDbViec">${theoViec.length ? barTen(theoViec, { click:true, donVi:'buổi' }) : '<p class="empty-msg">Chưa có loại việc nào.</p>'}</div>
         </section>
         <section>
-          <div class="hk-dbt">Lượt hỗ trợ theo tháng <span class="g">· mỗi tầng là một lượt</span></div>
+          <div class="hk-dbt">Lượt hỗ trợ theo tháng <span class="g">· mỗi tầng là một lượt người</span></div>
           ${thap(theoThang)}
+          <div class="hk-dbt" style="margin:18px 0 10px;">Mỗi việc huy động bao nhiêu người
+            <span class="g">· TB = số người mỗi buổi</span></div>
+          ${bangSN}
         </section>
       </div>
       <div class="hk-dbrow">
-        <div class="hk-dbt">Số lần hỗ trợ theo người <span class="g">· xếp từ nhiều đến ít</span></div>
+        <div class="hk-dbt">Số buổi hỗ trợ theo người <span class="g">· xếp từ nhiều đến ít</span></div>
         ${theoNguoi.length ? thap(theoNguoi, 'nguoi') : '<p class="empty-msg">Chưa có ai trong danh sách nhân sự kho thành phẩm.</p>'}
       </div>`;
 
-    const bl = $('hkBoLoc'); if(bl) bl.onclick = ()=>{ LOC_VIEC = null; render(); };
+    const bl = $('hkBoLoc'); if(bl) bl.onclick = ()=>{ LOC_VIEC = null; NK_THANG = null; render(); };
     $('hkDash').querySelectorAll('.hk-barw').forEach(b=>{
-      b.onclick = ()=>{ LOC_VIEC = (LOC_VIEC === b.dataset.v) ? null : b.dataset.v; render(); };
+      b.onclick = ()=>{ LOC_VIEC = (LOC_VIEC === b.dataset.v) ? null : b.dataset.v; NK_THANG = null; render(); };
     });
   }
 
   // ---------- Nhật ký hỗ trợ: chỉ ngày thực sự có người đi ----------
   function veNhatKy(){
-    const y = CUR.getFullYear(), ds = htNgay(y, LOC_VIEC), h = D().hotro;
+    const y = CUR.getFullYear();
+    const caNam = buoiList(y, LOC_VIEC);
+    // tháng nào có buổi thì mới hiện nút chọn tháng
+    const demThang = {};
+    caNam.forEach(o=>{ const m = Number(o.key.slice(5,7)) - 1; demThang[m] = (demThang[m] || 0) + 1; });
+    const coThang = Object.keys(demThang).map(Number).sort((a,b)=>a-b);
+    if(NK_THANG != null && !demThang[NK_THANG]) NK_THANG = null;
+    const ds = NK_THANG == null ? caNam : buoiList(y, LOC_VIEC, NK_THANG);
+
+    const chonThang = coThang.length > 1 ? `<div class="hk-nkloc">
+        <button class="${NK_THANG==null?'on':''}" data-hkthang="all">Cả năm<small>${caNam.length}</small></button>
+        ${coThang.map(m=>`<button class="${NK_THANG===m?'on':''}" data-hkthang="${m}">T${m+1}<small>${demThang[m]}</small></button>`).join('')}
+      </div>` : '';
+
+    const gan = ()=>{
+      $('hkChinh').querySelectorAll('[data-hkthang]').forEach(b=> b.onclick = ()=>{
+        NK_THANG = b.dataset.hkthang === 'all' ? null : Number(b.dataset.hkthang); render();
+      });
+    };
+
     if(!ds.length){
-      $('hkChinh').innerHTML = `<div class="panel"><p class="empty-msg">${
-        LOC_VIEC ? 'Chưa có buổi hỗ trợ nào thuộc loại việc này.'
-                 : 'Chưa ghi buổi hỗ trợ nào trong năm ' + y + '. Bấm “+ Ghi buổi hỗ trợ”.'}</p></div>`;
+      $('hkChinh').innerHTML = `<div class="panel">
+        <h2><span class="n">📒</span>Nhật ký hỗ trợ ${y}</h2>${chonThang}
+        <p class="empty-msg">${LOC_VIEC ? 'Chưa có buổi hỗ trợ nào thuộc loại việc này.'
+          : 'Chưa ghi buổi hỗ trợ nào trong năm ' + y + '. Bấm “+ Ghi buổi hỗ trợ”.'}</p></div>`;
+      gan();
       return;
     }
+
     const nhom = {};
-    ds.forEach(k=> (nhom[k.slice(0,7)] = nhom[k.slice(0,7)] || []).push(k));
+    ds.forEach(o=> (nhom[o.key.slice(0,7)] = nhom[o.key.slice(0,7)] || []).push(o));
 
     $('hkChinh').innerHTML = `<div class="panel">
       <h2><span class="n">📒</span>Nhật ký hỗ trợ ${y}<span class="h2spacer"></span>
         <span style="font-size:12.5px; font-weight:600; text-transform:none; letter-spacing:0; color:var(--ink-soft);">
-          ${ds.length} buổi · chỉ hiện ngày thực sự có người đi</span></h2>
+          ${ds.length} buổi · ${soLuot(ds)} lượt người${NK_THANG != null ? ' · ' + THANG[NK_THANG] : ''}</span></h2>
+      ${chonThang}
       ${Object.keys(nhom).sort().reverse().map(t=>{
-        const ks = nhom[t].sort().reverse();
-        const luot = ks.reduce((s,k)=> s + h[k].ids.length, 0);
+        const os = nhom[t].slice().reverse();
         const m = Number(t.slice(5,7)) - 1;
         return `<div class="hk-nkthang">${THANG[m]} / ${t.slice(0,4)}<span class="sp"></span>
-            <span>${ks.length} buổi · ${luot} lượt</span></div>` +
-          ks.map(k=>{
-            const b = h[k], d = fromKey(k);
-            const lan = htNgay(y, b.viec).filter(x => x <= k).length;
+            <span>${os.length} buổi · ${soLuot(os)} lượt</span></div>` +
+          os.map(o=>{
+            const b = o.b, d = fromKey(o.key);
+            const lan = b.viec ? lanThu(o.key, o.i, b.viec, y) : 0;
             return `<div class="hk-nk">
               <div class="ngay">${pad(d.getDate())}/${pad(d.getMonth()+1)}<small>${DOW[d.getDay()]}</small></div>
               <div class="viec">${esc(b.viec || 'Chưa ghi việc')}</div>
@@ -8673,19 +8837,24 @@ window.renderTraining = taoBoSuuTap({
               <div class="ng">${b.ids.map(id=>`<b>${esc(tenNgan(id))}</b>`).join(', ')}
                 <span style="color:var(--ink-soft); font-weight:600;"> (${esc(b.ids.map(tenCua).join(', '))})</span></div>
               <div class="sl">${b.ids.length} người</div>
-              <div class="act"><button class="ghost sm" data-hksua="${k}" title="Sửa">✎</button>
-                <button class="danger sm" data-hkxoa="${k}" title="Xoá buổi">✕</button></div>
+              <div class="act"><button class="ghost sm" data-hksua="${o.key}" data-hki="${o.i}" title="Sửa">✎</button>
+                <button class="danger sm" data-hkxoa="${o.key}" data-hki="${o.i}" title="Xoá buổi">✕</button></div>
               ${b.gc ? `<div class="gc">Ghi chú: ${esc(b.gc)}</div>` : ''}
             </div>`;
           }).join('');
       }).join('')}
     </div>`;
 
-    $('hkChinh').querySelectorAll('[data-hksua]').forEach(b=> b.onclick = ()=>buoiHoTroModal(b.dataset.hksua));
+    gan();
+    $('hkChinh').querySelectorAll('[data-hksua]').forEach(b=>
+      b.onclick = ()=>buoiHoTroModal(b.dataset.hksua, Number(b.dataset.hki)));
     $('hkChinh').querySelectorAll('[data-hkxoa]').forEach(b=> b.onclick = async ()=>{
-      const k = b.dataset.hkxoa;
-      if(!await confirmBox(`Xoá buổi hỗ trợ ngày ${k.split('-').reverse().join('/')}?`)) return;
-      delete D().hotro[k];
+      const k = b.dataset.hkxoa, i = Number(b.dataset.hki), h = D().hotro;
+      const b0 = h[k] && h[k][i];
+      if(!b0) return;
+      if(!await confirmBox(`Xoá buổi “${b0.viec || 'chưa ghi việc'}” ngày ${k.split('-').reverse().join('/')}?`)) return;
+      h[k].splice(i, 1);
+      if(!h[k].length) delete h[k];
       await luu(); render(); toast('✓ Đã xoá buổi hỗ trợ');
     });
   }
@@ -8693,14 +8862,14 @@ window.renderTraining = taoBoSuuTap({
   // ---------- Kiểm kê: ô đề xuất người tiếp theo ----------
   function xepHang(key){
     const y = fromKey(key).getFullYear();
-    const daChon = D().kiemke[key] || [], ng = aiNghi(key);
-    return dsUngVien().map(e=>({
+    const daChon = D().kiemke[key] || [], bo = aiBo(key);
+    return dsUngVien(key).map(e=>({
         emp:e, n:kkDem(e.id, y),
-        da: daChon.includes(e.id), don: ng.don.has(e.id), tay: ng.tay.has(e.id)
+        da: daChon.includes(e.id), don: bo.don.has(e.id), qua: bo.qua.has(e.id)
       }))
-      .map(o=>({ ...o, nghi: o.don || o.tay }))
+      .map(o=>({ ...o, bo: o.don || o.qua }))
       .sort((a,b)=>{
-        const wa = (a.da ? 2 : 0) + (a.nghi ? 1 : 0), wb = (b.da ? 2 : 0) + (b.nghi ? 1 : 0);
+        const wa = (a.da ? 2 : 0) + (a.bo ? 1 : 0), wb = (b.da ? 2 : 0) + (b.bo ? 1 : 0);
         return wa - wb || a.n - b.n || a.emp.name.localeCompare(b.emp.name, 'vi');
       });
   }
@@ -8711,10 +8880,11 @@ window.renderTraining = taoBoSuuTap({
       KK_NGAY = (t7.find(o => o.key >= todayKey()) || t7[t7.length - 1]).key;
     }
     const d = fromKey(KK_NGAY), hang = xepHang(KK_NGAY);
-    const san = hang.filter(o => !o.da && !o.nghi);
+    const san = hang.filter(o => !o.da && !o.bo);
     const daChon = hang.filter(o => o.da);
-    const nghiTay = hang.filter(o => o.tay && !o.da);
-    const nghiDon = hang.filter(o => o.don && !o.tay && !o.da);
+    const daDoi = hang.filter(o => o.qua && !o.da);
+    const nghiDon = hang.filter(o => o.don && !o.qua && !o.da);
+    const caKhac = dsCaKhac(KK_NGAY);
     const top = san[0];
 
     const oChinh = top
@@ -8722,16 +8892,17 @@ window.renderTraining = taoBoSuuTap({
           <div class="ten"><b>${esc(top.emp.name)}</b>
             <span>mới đi ${top.n} lần trong năm${san[1] && san[1].n === top.n ? ' · đang bằng điểm với người kế' : ''}</span></div>
           <div class="btnrow"><button id="hkTtChon">✓ Chọn người này</button>
-            <button class="ghost sm" id="hkTtNghi">Hôm nay nghỉ</button></div></div>`
+            <button class="ghost sm" id="hkTtDoi" ${san.length < 2 ? 'disabled title="Không còn ai khác để đổi"' : ''}>⇄ Đổi người khác</button></div></div>`
       : `<div class="hk-ttgoi het"><div class="stt">—</div>
           <div class="ten"><b>Không còn ai để đề xuất</b>
-            <span>${daChon.length} người đã chọn${nghiDon.length + nghiTay.length ? ' · ' + (nghiDon.length + nghiTay.length) + ' người nghỉ' : ''}</span></div></div>`;
+            <span>${daChon.length} người đã chọn${daDoi.length ? ' · đã bỏ qua ' + daDoi.length : ''}${nghiDon.length ? ' · ' + nghiDon.length + ' người nghỉ phép' : ''}</span></div>
+          ${daDoi.length ? '<div class="btnrow"><button class="ghost sm" id="hkTtDatLai">↺ Xét lại từ đầu</button></div>' : ''}</div>`;
 
     $('hkDash').className = 'hk-tt';
     $('hkDash').innerHTML = `
       <div class="hk-tthead"><span class="t">Người tiếp theo đi kiểm kê</span>
         <select id="hkTtNgay">${t7.map(o=>`<option value="${o.key}" ${o.key===KK_NGAY?'selected':''}>Thứ Bảy ${o.d}/${o.m+1}/${y}</option>`).join('')}</select>
-        <span class="s">chỉ xét ca hành chính, bỏ ca 1 · ca 2 · vị trí Stock — còn ${dsUngVien().length} người</span></div>
+        <span class="s">ca hành chính đúng tuần đó theo lịch tab Đổi ca, bỏ vị trí Stock — còn ${hang.length} người</span></div>
       <div class="hk-ttbody">
         <div>
           ${oChinh}
@@ -8741,18 +8912,21 @@ window.renderTraining = taoBoSuuTap({
           ${nghiDon.length ? `<div class="hk-ttdp"><div class="hd">CÓ ĐƠN NGHỈ HÔM ĐÓ — LẤY TỪ TAB TĂNG CA</div>
             ${nghiDon.map(o=>`<div class="hk-ttr nghi"><span class="i">·</span><span class="nm">${esc(o.emp.name)}</span>
               <span class="tag don">nghỉ cả ngày</span></div>`).join('')}</div>` : ''}
-          ${nghiTay.length ? `<div class="hk-ttdp"><div class="hd">BÁO NGHỈ NGAY TẠI ĐÂY</div>
-            <div class="hk-ttdsn">${nghiTay.map(o=>`<span class="c">${esc(getEmployeeShortName(o.emp))}<button data-hkhonghi="${o.emp.id}" title="Bỏ báo nghỉ">✕</button></span>`).join('')}</div></div>` : ''}
+          ${daDoi.length ? `<div class="hk-ttdp"><div class="hd">ĐÃ BẤM ĐỔI NGƯỜI KHÁC</div>
+            <div class="hk-ttdsn">${daDoi.map(o=>`<span class="c doi">${esc(getEmployeeShortName(o.emp))}<button data-hkxetlai="${o.emp.id}" title="Xét lại người này">↺</button></span>`).join('')}</div></div>` : ''}
+          ${caKhac.length ? `<div class="hk-ttdp"><div class="hd">TUẦN ĐÓ ĐANG CA KHÁC — KHÔNG XÉT</div>
+            ${caKhac.map(o=>`<div class="hk-ttr nghi"><span class="i">·</span><span class="nm">${esc(o.e.name)}</span>
+              <span class="tag ca">${esc(o.c.shift)}</span></div>`).join('')}</div>` : ''}
         </div>
         <div>
           <div class="hk-dbt">Thứ tự ưu tiên <span class="g">· ai ít lần nhất đứng trước</span></div>
-          ${hang.slice(0,7).map(o=>`<div class="hk-ttr ${o.da?'da':''} ${o.nghi?'nghi':''}">
-              <span class="i">${o.da || o.nghi ? '·' : (san.indexOf(o) + 1)}</span>
+          ${hang.slice(0,8).map(o=>`<div class="hk-ttr ${o.da?'da':''} ${o.bo?'nghi':''}">
+              <span class="i">${o.da || o.bo ? '·' : (san.indexOf(o) + 1)}</span>
               <span class="nm">${esc(o.emp.name)}</span>
               ${o.da ? '<span class="tag da">đã chọn</span>' : ''}
-              ${o.don ? '<span class="tag don">có đơn nghỉ</span>' : (o.tay ? '<span class="tag nghi">nghỉ</span>' : '')}
+              ${o.don ? '<span class="tag don">có đơn nghỉ</span>' : (o.qua ? '<span class="tag doi">đã đổi</span>' : '')}
               <span class="n">${o.n} lần/năm</span></div>`).join('')
-            || '<p class="empty-msg">Không có ai thuộc ca hành chính.</p>'}
+            || '<p class="empty-msg">Tuần này không có ai thuộc ca hành chính.</p>'}
         </div>
       </div>`;
 
@@ -8764,22 +8938,27 @@ window.renderTraining = taoBoSuuTap({
       await luu(); render();
       toast(`✓ Đã chọn ${top.emp.name} cho thứ Bảy ${pad(d.getDate())}/${pad(d.getMonth()+1)}`);
     };
-    const bn = $('hkTtNghi');
-    if(bn) bn.onclick = async ()=>{
+    const bd = $('hkTtDoi');
+    if(bd) bd.onclick = async ()=>{
       const ten = top.emp.name;
-      datNghiTay(KK_NGAY, top.emp.id, true);
+      datBoQua(KK_NGAY, top.emp.id, true);
       await luu(); render();
-      const ke = xepHang(KK_NGAY).filter(o => !o.da && !o.nghi)[0];
-      toast(ke ? `${ten} nghỉ — đề xuất ${ke.emp.name}` : `${ten} nghỉ — không còn ai để đề xuất`);
+      const ke = xepHang(KK_NGAY).filter(o => !o.da && !o.bo)[0];
+      toast(ke ? `⇄ Bỏ qua ${ten} — đề xuất ${ke.emp.name}` : `⇄ Bỏ qua ${ten} — không còn ai khác`);
+    };
+    const bl = $('hkTtDatLai');
+    if(bl) bl.onclick = async ()=>{
+      delete D().boqua[KK_NGAY];
+      await luu(); render(); toast('↺ Đã xét lại toàn bộ danh sách');
     };
     $('hkDash').querySelectorAll('[data-hkbo]').forEach(b=> b.onclick = async ()=>{
       const kk = D().kiemke, a = (kk[KK_NGAY] || []).filter(id => id !== b.dataset.hkbo);
       if(a.length) kk[KK_NGAY] = a; else delete kk[KK_NGAY];
       await luu(); render(); toast('✓ Đã bỏ khỏi buổi này');
     });
-    $('hkDash').querySelectorAll('[data-hkhonghi]').forEach(b=> b.onclick = async ()=>{
-      datNghiTay(KK_NGAY, b.dataset.hkhonghi, false);
-      await luu(); render(); toast('✓ Đã bỏ báo nghỉ');
+    $('hkDash').querySelectorAll('[data-hkxetlai]').forEach(b=> b.onclick = async ()=>{
+      datBoQua(KK_NGAY, b.dataset.hkxetlai, false);
+      await luu(); render(); toast('↺ Đã đưa trở lại danh sách xét');
     });
   }
 
@@ -8787,7 +8966,13 @@ window.renderTraining = taoBoSuuTap({
   function veLuoiKiemKe(){
     const y = CUR.getFullYear(), q = Math.floor(CUR.getMonth() / 3);
     const t7 = thu7TrongQuy(y, q), kk = D().kiemke;
-    const ng = KK_CHI_HC ? dsUngVien() : dsNguoi();
+    // Ca của mỗi người thay đổi theo tuần, nên "chỉ ca hành chính" ở đây nghĩa là
+    // ai có ít nhất một thứ Bảy trong quý thuộc ca HC. Ô nào tuần đó họ đang ca
+    // khác thì làm mờ và ghi rõ ca trong tooltip.
+    const caTheoNgay = {};
+    dsNguoi().forEach(e=>{ caTheoNgay[e.id] = {}; t7.forEach(g=>{ caTheoNgay[e.id][g.key] = caNgay(e, g.key); }); });
+    const hopLe = (id, key)=>{ const c = caTheoNgay[id][key]; return c.shift === 'Ca HC' && c.position !== 'Stock'; };
+    const ng = KK_CHI_HC ? dsNguoi().filter(e => t7.some(g => hopLe(e.id, g.key))) : dsNguoi();
 
     const nhomThang = [];
     t7.forEach(o=>{
@@ -8807,12 +8992,17 @@ window.renderTraining = taoBoSuuTap({
           const dq = kkDem(e.id, y, q*3, 3), dn = kkDem(e.id, y);
           return `<tr><td class="ten"><div class="nm">${esc(e.name)}</div>
             <div class="sub">Quý: <b>${dq}</b> · Cả năm: <b>${dn}</b></div></td>` +
-            t7.map(g=>`<td class="o ${(kk[g.key]||[]).includes(e.id)?'on':''} ${g.key===KK_NGAY?'chon':''}"
-              data-hkid="${e.id}" data-hkkey="${g.key}" title="${esc(e.name)} · thứ Bảy ${g.d}/${g.m+1}"></td>`).join('') + `</tr>`;
+            t7.map(g=>{
+              const c = caTheoNgay[e.id][g.key], ok = hopLe(e.id, g.key);
+              return `<td class="o ${(kk[g.key]||[]).includes(e.id)?'on':''} ${g.key===KK_NGAY?'chon':''} ${ok?'':'khac'}"
+                data-hkid="${e.id}" data-hkkey="${g.key}"
+                title="${esc(e.name)} · thứ Bảy ${g.d}/${g.m+1} · ${esc(c.shift)}${ok?'':' — tuần đó không thuộc ca hành chính'}"></td>`;
+            }).join('') + `</tr>`;
         }).join('') || '<tr><td class="empty-msg" colspan="20">Chưa có ai trong danh sách nhân sự.</td></tr>'}</tbody>
         <tfoot><tr><td class="ten">Số người mỗi buổi</td>${t7.map(g=>`<td>${(kk[g.key]||[]).length || ''}</td>`).join('')}</tr></tfoot>
       </table></div>
-      <div class="note">Chỉ hiện ngày thứ Bảy vì kho vải chỉ kiểm kê vào thứ Bảy. Bấm ô để đánh dấu, bấm lần nữa để bỏ.</div>
+      <div class="note">Chỉ hiện ngày thứ Bảy vì kho vải chỉ kiểm kê vào thứ Bảy. Bấm ô để đánh dấu, bấm lần nữa để bỏ.
+        Ô gạch chéo mờ là tuần đó người này đang ca khác theo lịch tab Đổi ca — vẫn tick được nếu thực tế có đi.</div>
     </div>`;
 
     $('hkKkLoc').onclick = ()=>{ KK_CHI_HC = !KK_CHI_HC; render(); };
@@ -8827,26 +9017,55 @@ window.renderTraining = taoBoSuuTap({
     });
   }
 
+  // ---------- Danh sách người có ô tìm, dùng chung cho 2 hộp thoại ----------
+  // rows: [{e, n, nhan, donVi}] đã sắp sẵn. chon: Set các id đang tick.
+  function gnList(box, tim, rows, chon, onDoi){
+    const ve = ()=>{
+      const q = normName(tim ? tim.value : '');
+      const loc = q ? rows.filter(o => normName(o.e.name).includes(q)) : rows;
+      box.innerHTML = loc.length ? loc.map(o=>`
+        <div class="hkgn-row ${chon.has(o.e.id)?'on':''}" data-hkid="${o.e.id}">
+          <span class="hkgn-tick"></span><span class="hkgn-nm">${esc(o.e.name)}</span>
+          ${o.nhan || ''}<span class="hkgn-sl">${o.n} ${o.donVi || 'buổi/năm'}</span></div>`).join('')
+        : `<div class="hkgn-trong">Không có ai tên giống “${esc(tim.value)}”</div>`;
+      box.querySelectorAll('.hkgn-row').forEach(r=> r.onclick = ()=>{
+        const id = r.dataset.hkid;
+        if(chon.has(id)) chon.delete(id); else chon.add(id);
+        r.classList.toggle('on'); onDoi();
+      });
+    };
+    if(tim) tim.oninput = ve;
+    ve();
+  }
+
   // ---------- Hộp ghi buổi hỗ trợ ----------
-  function buoiHoTroModal(key){
-    const y = CUR.getFullYear(), h = D().hotro, cu = key ? h[key] : null;
+  // key + idx: đang sửa buổi thứ idx của ngày key. Bỏ trống = ghi buổi mới.
+  function buoiHoTroModal(key, idx){
+    const y = CUR.getFullYear(), h = D().hotro;
+    const cu = (key != null && h[key]) ? h[key][idx] : null;
     const m = openModal(cu ? 'Sửa buổi hỗ trợ' : 'Ghi buổi hỗ trợ mới', `
+      <div class="hk-luubar" id="hkBLuuBar">
+        <button data-ok>💾 Lưu buổi này</button>
+        <span class="hkgn-dem" id="hkBDem"></span></div>
       <div class="row2">
-        <div><label class="field-label">Ngày</label><input type="date" id="hkBNgay"></div>
-        <div><label class="field-label">Đi hỗ trợ việc gì</label><select id="hkBViec"></select></div>
+        <div><label class="field-label" style="margin-top:0;">Ngày</label><input type="date" id="hkBNgay"></div>
+        <div><label class="field-label" style="margin-top:0;">Đi hỗ trợ việc gì</label><select id="hkBViec"></select></div>
       </div>
       <div class="btnrow" style="margin-top:7px; display:flex; gap:7px;">
         <button class="ghost sm" id="hkBThemViec">+ Thêm loại việc</button>
         <button class="danger sm" id="hkBXoaViec">✕ Xoá loại việc đang chọn</button></div>
       <label class="field-label">Ghi chú (không bắt buộc)</label>
       <input type="text" id="hkBGc" placeholder="VD: hỗ trợ cont 40 gấp cho khách">
-      <label class="field-label" style="margin-top:12px;">Chọn người — ai ít lượt nhất nằm trên cùng</label>
-      <div class="hkgn-list" id="hkBList"></div>
-      <div class="hkgn-dem" id="hkBDem"></div>
-      <div class="row2" style="margin-top:16px;"><button class="ghost" data-no>Huỷ</button><button data-ok>Lưu</button></div>`);
+      <label class="field-label" style="margin-top:12px;">Chọn người — ai ít buổi nhất nằm trên cùng</label>
+      <div class="hkgn-tim"><input type="text" id="hkBTim" placeholder="Tìm theo tên…"></div>
+      <div class="hkgn-list" id="hkBList"></div>`);
+
+    // thanh Lưu dính ngay dưới tiêu đề hộp thoại, đo chiều cao thật cho chắc
+    const head = m.el.querySelector('.modal-head');
+    if(head) $('hkBLuuBar').style.top = (head.offsetHeight || 53) + 'px';
 
     const iNgay = m.body.querySelector('#hkBNgay'), iViec = m.body.querySelector('#hkBViec');
-    iNgay.value = key || (todayKey().startsWith(y + '-') ? todayKey() : `${y}-${pad(CUR.getMonth()+1)}-01`);
+    iNgay.value = (key != null) ? key : (todayKey().startsWith(y + '-') ? todayKey() : `${y}-${pad(CUR.getMonth()+1)}-01`);
     const veViec = (chonV)=>{
       iViec.innerHTML = D().viec.map(v=>`<option value="${esc(v)}" ${v===chonV?'selected':''}>${esc(v)}</option>`).join('');
     };
@@ -8854,10 +9073,9 @@ window.renderTraining = taoBoSuuTap({
     m.body.querySelector('#hkBGc').value = cu ? (cu.gc || '') : '';
 
     m.body.querySelector('#hkBThemViec').onclick = ()=>{
-      const m2 = openModal('Thêm loại việc', `<label class="field-label">Tên loại việc</label>
-        <input type="text" id="hkVTen" placeholder="VD: Kiểm cont">
-        <div class="row2" style="margin-top:16px;"><button class="ghost" data-no>Huỷ</button><button data-ok>Thêm</button></div>`);
-      m2.body.querySelector('[data-no]').onclick = m2.close;
+      const m2 = openModal('Thêm loại việc', `<label class="field-label" style="margin-top:0;">Tên loại việc</label>
+        <input type="text" id="hkVTen" placeholder="VD: Hỗ trợ kho vải">
+        <div style="margin-top:16px;"><button data-ok style="width:100%">Thêm</button></div>`);
       m2.body.querySelector('[data-ok]').onclick = async ()=>{
         const t = m2.body.querySelector('#hkVTen').value.trim();
         if(!t){ toast('⚠ Nhập tên loại việc'); return; }
@@ -8868,44 +9086,58 @@ window.renderTraining = taoBoSuuTap({
     m.body.querySelector('#hkBXoaViec').onclick = async ()=>{
       const v = iViec.value;
       if(!v){ toast('⚠ Chưa có loại việc nào'); return; }
-      const dung = htNgay(y, v).length;
+      const dung = buoiList(y, v).length;
       if(!await confirmBox(dung
         ? `Xoá loại việc “${v}”? Có ${dung} buổi đang dùng, các buổi đó sẽ chuyển thành “Chưa ghi việc”.`
         : `Xoá loại việc “${v}”?`)) return;
       D().viec = D().viec.filter(x => x !== v);
-      Object.keys(h).forEach(k=>{ if(h[k].viec === v) h[k].viec = ''; });
+      Object.keys(h).forEach(k=> h[k].forEach(b=>{ if(b.viec === v) b.viec = ''; }));
       if(LOC_VIEC === v) LOC_VIEC = null;
       await luu(); veViec(D().viec[0]); toast('✓ Đã xoá loại việc');
     };
 
-    let chon = new Set(cu ? cu.ids : []);
-    const veDem = ()=> m.body.querySelector('#hkBDem').textContent = chon.size ? `Đang chọn ${chon.size} người` : 'Chưa chọn ai';
+    const chon = new Set(cu ? cu.ids : []);
+    const veDem = ()=> m.body.querySelector('#hkBDem').textContent =
+      chon.size ? `Đang chọn ${chon.size} người` : 'Chưa chọn ai';
     const rows = dsNguoi().map(e=>({ e, n: htDem(e.id, y, null) }))
                           .sort((a,b)=> a.n - b.n || a.e.name.localeCompare(b.e.name,'vi'));
     const min = rows.length ? rows[0].n : 0;
-    m.body.querySelector('#hkBList').innerHTML = rows.map(o=>`
-      <div class="hkgn-row ${chon.has(o.e.id)?'on':''}" data-hkid="${o.e.id}">
-        <span class="hkgn-tick"></span><span class="hkgn-nm">${esc(o.e.name)}</span>
-        ${o.n === min ? '<span class="hkgn-goi">nên gọi</span>' : ''}
-        <span class="hkgn-sl">${o.n} lượt/năm</span></div>`).join('');
-    m.body.querySelectorAll('#hkBList .hkgn-row').forEach(r=> r.onclick = ()=>{
-      const id = r.dataset.hkid;
-      if(chon.has(id)) chon.delete(id); else chon.add(id);
-      r.classList.toggle('on'); veDem();
-    });
+    rows.forEach(o=>{ if(o.n === min) o.nhan = '<span class="hkgn-goi">nên gọi</span>'; });
+    gnList(m.body.querySelector('#hkBList'), m.body.querySelector('#hkBTim'), rows, chon, veDem);
     veDem();
 
-    m.body.querySelector('[data-no]').onclick = m.close;
     m.body.querySelector('[data-ok]').onclick = async ()=>{
-      const k = iNgay.value;
+      const k = iNgay.value, viec = iViec.value, gc = m.body.querySelector('#hkBGc').value.trim();
       if(!k){ toast('⚠ Chọn ngày trước'); return; }
       if(!chon.size){ toast('⚠ Chọn ít nhất một người'); return; }
-      if(key && key !== k) delete h[key];
-      h[k] = { viec: iViec.value, gc: m.body.querySelector('#hkBGc').value.trim(),
-               ids: dsNguoi().filter(e=>chon.has(e.id)).map(e=>e.id) };
-      const d = fromKey(k); CUR = new Date(d.getFullYear(), d.getMonth(), 1);
-      await luu(); m.close(); render();
-      toast(`✓ Đã ghi ${chon.size} người · ${iViec.value} · ${k.split('-').reverse().join('/')}`);
+      const ids = dsNguoi().filter(e => chon.has(e.id)).map(e => e.id);
+
+      if(key != null && h[key]){                 // đang sửa một buổi sẵn có
+        h[key].splice(idx, 1);
+        if(!h[key].length) delete h[key];
+      }
+      h[k] = h[k] || [];
+      // Cùng ngày mà khác việc thì thành một buổi riêng, không đè lên nhau.
+      // Cùng ngày cùng việc thì cộng dồn người vào buổi đã có.
+      const j = h[k].findIndex(b => (b.viec || '') === viec);
+      let loiNhan;
+      if(j >= 0){
+        const themMoi = ids.filter(id => !h[k][j].ids.includes(id)).length;
+        const gop = new Set(h[k][j].ids.concat(ids));
+        h[k][j].ids = dsNguoi().filter(e => gop.has(e.id)).map(e => e.id);
+        if(gc && gc !== h[k][j].gc) h[k][j].gc = h[k][j].gc ? h[k][j].gc + ' · ' + gc : gc;
+        loiNhan = themMoi
+          ? `✓ Cộng dồn vào buổi “${viec}” cùng ngày — thêm ${themMoi} người, tổng ${h[k][j].ids.length}`
+          : `✓ Đã cập nhật buổi “${viec}” ngày ${k.split('-').reverse().join('/')}`;
+      }else{
+        h[k].push({ viec, gc, ids });
+        h[k].sort((a,b)=> (a.viec||'').localeCompare(b.viec||'','vi'));
+        loiNhan = `✓ Đã ghi ${ids.length} người · ${viec} · ${k.split('-').reverse().join('/')}`;
+      }
+      const d = fromKey(k);
+      CUR = new Date(d.getFullYear(), d.getMonth(), 1);
+      NK_THANG = null;
+      await luu(); m.close(); render(); toast(loiNhan);
     };
   }
 
@@ -8914,12 +9146,18 @@ window.renderTraining = taoBoSuuTap({
     const y = CUR.getFullYear(), q = Math.floor(CUR.getMonth() / 3), t7 = thu7TrongQuy(y, q), kk = D().kiemke;
     if(!t7.length){ toast('⚠ Quý này không có ngày thứ Bảy nào'); return; }
     const m = openModal('Ghi buổi kiểm kê kho vải', `
-      <label class="field-label">Thứ Bảy nào</label>
+      <div class="hk-luubar" id="hkKLuuBar">
+        <button data-ok>💾 Lưu buổi này</button>
+        <span class="hkgn-dem" id="hkKDem"></span></div>
+      <label class="field-label" style="margin-top:0;">Thứ Bảy nào</label>
       <select id="hkKNgay">${t7.map(o=>`<option value="${o.key}">Thứ Bảy ${o.d}/${o.m+1}/${y}</option>`).join('')}</select>
       <label class="field-label" style="margin-top:12px;">Chọn người — ai ít lượt nhất nằm trên cùng</label>
-      <div class="hkgn-list" id="hkKList"></div>
-      <div class="hkgn-dem" id="hkKDem"></div>
-      <div class="row2" style="margin-top:16px;"><button class="ghost" data-no>Huỷ</button><button data-ok>Lưu</button></div>`);
+      <div class="note" style="margin:0 0 8px;">Danh sách lọc theo ca hành chính <b>của đúng tuần đó</b> (lấy từ tab Đổi ca).</div>
+      <div class="hkgn-tim"><input type="text" id="hkKTim" placeholder="Tìm theo tên…"></div>
+      <div class="hkgn-list" id="hkKList"></div>`);
+
+    const head = m.el.querySelector('.modal-head');
+    if(head) $('hkKLuuBar').style.top = (head.offsetHeight || 53) + 'px';
 
     const iNgay = m.body.querySelector('#hkKNgay');
     iNgay.value = (t7.find(o=>o.key === KK_NGAY) || t7.find(o=>o.key >= todayKey()) || t7[t7.length-1]).key;
@@ -8928,28 +9166,25 @@ window.renderTraining = taoBoSuuTap({
     const veDem = ()=> m.body.querySelector('#hkKDem').textContent =
       chon.size ? `Đang chọn ${chon.size} người` : 'Chưa chọn ai — lưu sẽ xoá hết tên của buổi này';
     const veDs = ()=>{
-      chon = new Set(kk[iNgay.value] || []);
-      const ng = aiNghi(iNgay.value);
-      const rows = (KK_CHI_HC ? dsUngVien() : dsNguoi()).map(e=>({ e, n: kkDem(e.id, y), nghi: ng.don.has(e.id) || ng.tay.has(e.id) }))
-        .sort((a,b)=> (a.nghi?1:0) - (b.nghi?1:0) || a.n - b.n || a.e.name.localeCompare(b.e.name,'vi'));
-      const san = rows.filter(o=>!o.nghi);
+      const key = iNgay.value;
+      chon = new Set(kk[key] || []);
+      const bo = aiBo(key);
+      const rows = (KK_CHI_HC ? dsUngVien(key) : dsNguoi())
+        .map(e=>({ e, n: kkDem(e.id, y), donVi:'lượt/năm',
+                   nghi: bo.don.has(e.id), qua: bo.qua.has(e.id), ca: caNgay(e, key).shift }))
+        .sort((a,b)=> ((a.nghi||a.qua)?1:0) - ((b.nghi||b.qua)?1:0) || a.n - b.n || a.e.name.localeCompare(b.e.name,'vi'));
+      const san = rows.filter(o=>!o.nghi && !o.qua);
       const min = san.length ? san[0].n : 0;
-      m.body.querySelector('#hkKList').innerHTML = rows.map(o=>`
-        <div class="hkgn-row ${chon.has(o.e.id)?'on':''}" data-hkid="${o.e.id}">
-          <span class="hkgn-tick"></span><span class="hkgn-nm">${esc(o.e.name)}</span>
-          ${o.nghi ? '<span class="hkgn-sl" style="color:var(--red)">nghỉ</span>'
-                   : (o.n === min ? '<span class="hkgn-goi">nên gọi</span>' : '')}
-          <span class="hkgn-sl">${o.n} lượt/năm</span></div>`).join('');
-      m.body.querySelectorAll('#hkKList .hkgn-row').forEach(r=> r.onclick = ()=>{
-        const id = r.dataset.hkid;
-        if(chon.has(id)) chon.delete(id); else chon.add(id);
-        r.classList.toggle('on'); veDem();
+      rows.forEach(o=>{
+        o.nhan = o.nghi ? '<span class="hkgn-sl" style="color:var(--red)">nghỉ phép</span>'
+               : o.qua  ? '<span class="hkgn-sl" style="color:var(--ink-soft)">đã đổi</span>'
+               : (o.n === min ? '<span class="hkgn-goi">nên gọi</span>' : '');
       });
+      gnList(m.body.querySelector('#hkKList'), m.body.querySelector('#hkKTim'), rows, chon, veDem);
       veDem();
     };
     iNgay.onchange = veDs; veDs();
 
-    m.body.querySelector('[data-no]').onclick = m.close;
     m.body.querySelector('[data-ok]').onclick = async ()=>{
       const k = iNgay.value;
       if(chon.size) kk[k] = dsNguoi().filter(e=>chon.has(e.id)).map(e=>e.id);
@@ -8963,12 +9198,11 @@ window.renderTraining = taoBoSuuTap({
   // ---------- Thêm người: chỉ hỏi tên, ca và vị trí để mặc định ----------
   function themNguoiModal(){
     const m = openModal('Thêm người vào kho thành phẩm', `
-      <label class="field-label">Họ và tên</label>
+      <label class="field-label" style="margin-top:0;">Họ và tên</label>
       <input type="text" id="hkNsTen" placeholder="VD: Nguyễn Văn A">
       <div class="note">Người mới vào <b>Ca HC — vị trí Xuất</b>. Muốn đổi ca hoặc vị trí thì sửa ở
         tab Tăng ca / Nghỉ phép, tab này tự cập nhật theo.</div>
-      <div class="row2" style="margin-top:16px;"><button class="ghost" data-no>Huỷ</button><button data-ok>Thêm</button></div>`);
-    m.body.querySelector('[data-no]').onclick = m.close;
+      <div style="margin-top:16px;"><button data-ok style="width:100%">Thêm vào kho</button></div>`);
     m.body.querySelector('[data-ok]').onclick = async ()=>{
       const t = m.body.querySelector('#hkNsTen').value.trim();
       if(!t){ toast('⚠ Nhập tên trước'); return; }
@@ -8984,22 +9218,30 @@ window.renderTraining = taoBoSuuTap({
   // ---------- Xuất Excel ----------
   function xuatExcel(){
     if(!window.XLSX){ toast('⚠ Chưa tải được thư viện Excel — kiểm tra mạng rồi tải lại trang'); return; }
-    const y = CUR.getFullYear(), wb = XLSX.utils.book_new(), ng = dsNguoi(), h = D().hotro, kk = D().kiemke;
+    const y = CUR.getFullYear(), wb = XLSX.utils.book_new(), ng = dsNguoi(), kk = D().kiemke;
 
     const a1 = [['NHẬT KÝ HỖ TRỢ ' + y], [], ['Ngày','Thứ','Loại việc','Số người','Danh sách','Ghi chú']];
-    htNgay(y, null).forEach(k=>{
-      const b = h[k], d = fromKey(k);
-      a1.push([fmtVN(d), DOW[d.getDay()], b.viec || '', b.ids.length, b.ids.map(tenCua).join(', '), b.gc || '']);
+    buoiList(y, null).forEach(o=>{
+      const d = fromKey(o.key);
+      a1.push([fmtVN(d), DOW[d.getDay()], o.b.viec || '', o.b.ids.length,
+               o.b.ids.map(tenCua).join(', '), o.b.gc || '']);
     });
     const ws1 = XLSX.utils.aoa_to_sheet(a1);
-    ws1['!cols'] = [{wch:12},{wch:6},{wch:16},{wch:9},{wch:56},{wch:30}];
+    ws1['!cols'] = [{wch:12},{wch:6},{wch:20},{wch:9},{wch:56},{wch:30}];
     XLSX.utils.book_append_sheet(wb, ws1, 'HỖ TRỢ');
 
     const viecs = D().viec;
     const a2 = [['TỔNG HỢP HỖ TRỢ ' + y], [], ['STT','TÊN','TỔNG'].concat(viecs)];
     ng.forEach((e,i)=> a2.push([i+1, e.name, htDem(e.id, y, null)].concat(viecs.map(v=>htDem(e.id, y, v)))));
+    a2.push([]);
+    a2.push(['SỐ BUỔI VÀ SỐ NGƯỜI THEO VIỆC']);
+    a2.push(['Việc','Số buổi','Tổng người','TB người/buổi']);
+    viecs.forEach(v=>{
+      const ds = buoiList(y, v);
+      if(ds.length) a2.push([v, ds.length, soLuot(ds), Number((soLuot(ds)/ds.length).toFixed(1))]);
+    });
     const ws2 = XLSX.utils.aoa_to_sheet(a2);
-    ws2['!cols'] = [{wch:5},{wch:24},{wch:8}].concat(viecs.map(()=>({wch:13})));
+    ws2['!cols'] = [{wch:22},{wch:24},{wch:12}].concat(viecs.map(()=>({wch:15})));
     XLSX.utils.book_append_sheet(wb, ws2, 'TỔNG HỢP HỖ TRỢ');
 
     const t7 = [0,1,2,3].reduce((a,q)=> a.concat(thu7TrongQuy(y, q)), []);
@@ -9030,19 +9272,19 @@ window.renderTraining = taoBoSuuTap({
   // ---------- Gắn sự kiện một lần ----------
   function hkBind(){
     document.querySelectorAll('#hkMuc button').forEach(b=>{
-      b.onclick = ()=>{ MUC = b.dataset.muc; LOC_VIEC = null; render(); };
+      b.onclick = ()=>{ MUC = b.dataset.muc; LOC_VIEC = null; NK_THANG = null; render(); };
     });
     $('hkPrev').onclick = ()=>{
       CUR = MUC === 'hotro' ? new Date(CUR.getFullYear() - 1, 0, 1)
                             : new Date(CUR.getFullYear(), CUR.getMonth() - 3, 1);
-      render();
+      NK_THANG = null; render();
     };
     $('hkNext').onclick = ()=>{
       CUR = MUC === 'hotro' ? new Date(CUR.getFullYear() + 1, 0, 1)
                             : new Date(CUR.getFullYear(), CUR.getMonth() + 3, 1);
-      render();
+      NK_THANG = null; render();
     };
-    $('hkNay').onclick = ()=>{ CUR = new Date(); KK_NGAY = null; render(); };
+    $('hkNay').onclick = ()=>{ CUR = new Date(); KK_NGAY = null; NK_THANG = null; render(); };
     $('hkThem').onclick = ()=>{ if(MUC === 'hotro') buoiHoTroModal(null); else buoiKiemKeModal(); };
     $('hkThemNguoi').onclick = ()=>themNguoiModal();
     $('hkXuat').onclick = ()=>xuatExcel();
