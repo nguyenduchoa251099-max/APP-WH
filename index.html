@@ -321,6 +321,95 @@
   .xh-ok .tick.mo{opacity:.25; cursor:default;}
   #xhBody tr.xh-xong .xh-stt{background:#e6f2ea; color:#1f6b5c;}
 
+  /* ===== Biểu đồ sản lượng xuất hàng ===== */
+  .xh-bd{padding:14px 16px 12px;}
+  .xh-bdhead{display:flex; align-items:center; gap:11px; flex-wrap:wrap; margin-bottom:10px;}
+  .xh-bdhead .t{font-size:15px; font-weight:800;}
+  .xh-bdhead .sp{flex:1;}
+  .xh-bdseg{display:inline-flex; border:1px solid var(--line); border-radius:8px; overflow:hidden; background:#fff;}
+  .xh-bdseg button{border:0; background:transparent; padding:5px 14px; font-size:12.5px; font-weight:700; color:var(--ink-soft);}
+  .xh-bdseg button.on{background:var(--blue); color:#fff;}
+  .xh-bdso{font-size:12.5px; font-weight:700; color:var(--ink-soft); white-space:nowrap;}
+  .xh-bdso b{color:var(--ink); font-weight:800; font-variant-numeric:tabular-nums;}
+  .xh-bdso i{font-style:normal; color:var(--line); margin:0 7px;}
+  /* Vùng vẽ: trục dọc và lưới đứng yên, chỉ dải cột cuộn ngang */
+  .xh-bdplot{position:relative; padding:18px 0 0 54px;}
+  .xh-bdy{position:absolute; left:0; top:18px; width:50px; height:150px; pointer-events:none;}
+  .xh-bdy span{position:absolute; right:6px; transform:translateY(50%);
+    font-size:10px; font-weight:800; color:var(--ink-soft); font-variant-numeric:tabular-nums; white-space:nowrap;}
+  .xh-bdluoi{position:absolute; left:54px; right:0; top:18px; height:150px; pointer-events:none; z-index:1;}
+  .xh-bdluoi u{position:absolute; left:0; right:0; height:1px; background:var(--line-soft); text-decoration:none;}
+  .xh-bdluoi u.day{background:var(--line);}
+  .xh-bdwrap{overflow-x:auto; padding-bottom:4px; position:relative; z-index:2;}
+  .xh-bdchart{display:flex; align-items:flex-end; gap:4px; padding-bottom:0;}
+  .xh-bdchart .c{flex:1 0 30px; min-width:30px; display:flex; flex-direction:column;
+    justify-content:flex-end; align-items:center; gap:4px; cursor:pointer; border-radius:5px 5px 4px 4px; padding:0 1px 3px;}
+  .xh-bdchart .c:hover{background:rgba(0,150,190,.10);}
+  .xh-bdchart .bar{width:100%; height:150px; display:flex; align-items:flex-end; justify-content:center;}
+  .xh-bdchart .bar em{display:block; position:relative; width:70%; border-radius:3px 3px 0 0;
+    background:linear-gradient(180deg,#5b9bd5,#2f6ea8); min-height:3px; transition:height .25s;}
+  .xh-bdchart .bar em b{position:absolute; left:50%; top:-15px; transform:translateX(-50%);
+    font-size:9.5px; font-weight:800; color:var(--ink-soft); font-variant-numeric:tabular-nums;
+    line-height:1; white-space:nowrap;}
+  .xh-bdchart .c.nay .bar em{background:linear-gradient(180deg,#f0b429,#d97a06);}
+  .xh-bdchart .c.nay b{color:#a3631a;}
+  .xh-bdchart .c.xong .bar em{background:linear-gradient(180deg,#4bb17a,#2f7a4f);}
+  .xh-bdchart .c .l{font-size:10.5px; font-weight:800; color:var(--ink-soft); line-height:1.25; text-align:center; white-space:nowrap;}
+  .xh-bdchart .c .l i{display:block; font-style:normal; font-size:9px; font-weight:700; opacity:.7;}
+  .xh-bdchart .c.nay .l{color:#a3631a;}
+  .xh-bdghi{font-size:11.5px; color:var(--ink-soft); font-weight:600; margin-top:8px;}
+  .xh-bdghi i{font-style:normal; display:inline-block; width:10px; height:10px; border-radius:3px; vertical-align:-1px; margin-right:5px;}
+  .xh-bd .trong{text-align:center; color:var(--ink-soft); font-weight:700; font-size:13px; padding:40px 0;}
+  @media(max-width:700px){
+    .xh-bdplot{padding-left:44px;} .xh-bdy{width:40px;} .xh-bdluoi{left:44px;}
+    .xh-bdchart .c{flex:1 0 26px; min-width:26px;}
+    .xh-bdchart .bar, .xh-bdy, .xh-bdluoi{height:120px;}
+  }
+
+  /* ===== Tỷ trọng theo khách hàng ===== */
+  .xh-kh{border-top:1px solid var(--line-soft); margin-top:14px; padding-top:13px;}
+  .xh-khhead{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:10px;}
+  .xh-khhead .t{font-size:15px; font-weight:800;}
+  .xh-khhead .s{font-size:12.5px; font-weight:600; color:var(--ink-soft);}
+  .xh-khbody{display:flex; align-items:center; gap:22px; flex-wrap:wrap;}
+  .xh-khtron{flex:0 0 auto;}
+  .xh-khtron svg{display:block;}
+  .xh-khtron .lat{transition:opacity .15s; cursor:default;}
+  .xh-khtron .lat:hover{opacity:.78;}
+  .xh-khtron .tam{font-size:22px; font-weight:800; fill:var(--ink); text-anchor:middle;}
+  .xh-khtron .tam2{font-size:10px; font-weight:800; fill:var(--ink-soft); text-anchor:middle;
+    letter-spacing:.08em; text-transform:uppercase;}
+  .xh-khds{flex:1 1 320px; min-width:260px;}
+  .xh-khr{display:grid; grid-template-columns:13px 1fr 84px 52px; align-items:center; gap:9px;
+    padding:5px 7px; border-radius:7px; font-size:13px;}
+  .xh-khr:hover{background:var(--blue-bg);}
+  .xh-khr i{width:11px; height:11px; border-radius:3px; display:block;}
+  .xh-khr .nm{font-weight:700; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .xh-khr .nm small{color:var(--ink-soft); font-weight:600;}
+  .xh-khr .v{text-align:right; font-weight:800; font-variant-numeric:tabular-nums;}
+  .xh-khr .p{text-align:right; font-weight:700; color:var(--ink-soft); font-variant-numeric:tabular-nums;}
+  .xh-khr.hd{background:#eef1f6; font-size:10.5px; font-weight:800; color:var(--ink-soft);
+    text-transform:uppercase; letter-spacing:.05em;}
+  .xh-khr.hd .v, .xh-khr.hd .p{font-size:10.5px;}
+  @media(max-width:760px){ .xh-khbody{justify-content:center;} }
+
+  /* ===== Loại xe đóng hàng ===== */
+  .xh-xe{border-top:1px solid var(--line-soft); margin-top:14px; padding-top:13px;}
+  .xh-xedai{display:flex; height:30px; border-radius:8px; overflow:hidden; background:#eceff4; margin-bottom:12px;}
+  .xh-xedai > span{display:flex; align-items:center; justify-content:center; min-width:0;
+    color:#fff; font-size:12px; font-weight:800; white-space:nowrap; transition:flex-basis .25s;}
+  .xh-xedai > span small{font-weight:700; opacity:.85; margin-left:5px;}
+  .xh-xethe{display:grid; grid-template-columns:repeat(3,1fr); gap:10px;}
+  .xh-xethe > div{position:relative; background:#fff; border:1px solid var(--line);
+    border-left:3px solid var(--ink-soft); border-radius:10px; padding:9px 12px 10px;}
+  .xh-xethe .k{font-size:10px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-soft);}
+  .xh-xethe .v{font-size:22px; font-weight:800; line-height:1.2; margin-top:2px; font-variant-numeric:tabular-nums;}
+  .xh-xethe .v small{font-size:11.5px; font-weight:700; color:var(--ink-soft); margin-left:4px;}
+  .xh-xethe .s{font-size:11.5px; font-weight:600; color:var(--ink-soft); margin-top:3px;}
+  .xh-xethe .s b{color:var(--ink); font-weight:800; font-variant-numeric:tabular-nums;}
+  .xh-xethe .mo{opacity:.45;}
+  @media(max-width:760px){ .xh-xethe{grid-template-columns:1fr;} }
+
   /* Dashboard: ba thẻ lớn phía trên thanh công cụ */
   .xh-cards{display:grid; grid-template-columns:repeat(4, 1fr); gap:10px; margin-bottom:10px;}
   .xh-card{position:relative; background:#fff; border:1px solid var(--line); border-left:3px solid var(--ink-soft);
@@ -502,10 +591,11 @@
 
   .xh-tbl th, .xh-tbl td{border-right:1px solid #c7d3e4; border-bottom:1px solid #c7d3e4; padding:0;}
   .xh-tbl th:last-child, .xh-tbl td:last-child{border-right:0;}
-  .xh-tbl .xh-title{position:sticky; top:64px; z-index:11; height:58px; padding:0 10px;
+  .xh-tbl .xh-title{position:relative; z-index:11; height:58px; padding:0 10px;
     background:#1F4E79; color:#fff; font-size:17px; font-weight:800; letter-spacing:.02em;
     text-transform:none; border-bottom:1px solid #1F4E79;}
-  .xh-tbl thead tr:nth-child(2) th{position:sticky; top:122px; z-index:10; height:34px;
+  .xh-tbl thead tr:nth-child(2) th{position:sticky; top:64px; z-index:12; height:34px;
+    box-shadow:0 2px 6px rgba(16,24,40,.12);
     background:#D9E2F3; color:#1F4E79; font-size:13px; font-weight:800; text-align:center;
     text-transform:none; letter-spacing:0;}
   .xh-tbl td{background:#fff;}
@@ -532,7 +622,7 @@
   @media (max-width:1300px){
     .xh-wrap{overflow-x:auto;}
     .xh-bar{position:static;}
-    .xh-tbl .xh-title{top:0;} .xh-tbl thead tr:nth-child(2) th{top:58px;}
+    .xh-tbl thead tr:nth-child(2) th{top:0;}
   }
   /* Nút "!" bật/tắt dòng hướng dẫn cho khỏi rối mắt */
   .hintbar{display:flex; justify-content:flex-end; margin-top:8px;}
@@ -1772,6 +1862,40 @@
         <button class="secondary sm" id="xhXlsx">⬇ Xuất Excel</button>
       </div>
     </div>
+
+    <div class="panel xh-bd">
+      <div class="xh-bdhead">
+        <span class="t">Sản lượng xuất hàng</span>
+        <span class="xh-bdseg" id="xhBdSeg">
+          <button data-bd="thang" class="on">Tháng</button>
+          <button data-bd="nam">Cả năm</button>
+        </span>
+        <span class="sp"></span>
+        <span class="xh-bdso" id="xhBdSo"></span>
+      </div>
+      <div class="xh-bdplot" id="xhBdPlot">
+        <div class="xh-bdy" id="xhBdY"></div>
+        <div class="xh-bdluoi" id="xhBdLuoi"></div>
+        <div class="xh-bdwrap"><div class="xh-bdchart" id="xhBdChart"></div></div>
+      </div>
+      <div class="xh-bdghi" id="xhBdGhi"></div>
+
+      <div class="xh-kh" id="xhKhBox">
+        <div class="xh-khhead"><span class="t">Tỷ trọng theo khách hàng</span>
+          <span class="s" id="xhKhKy"></span></div>
+        <div class="xh-khbody">
+          <div class="xh-khtron" id="xhKhTron"></div>
+          <div class="xh-khds" id="xhKhDs"></div>
+        </div>
+      </div>
+
+      <div class="xh-xe" id="xhXeBox">
+        <div class="xh-khhead"><span class="t">Loại xe đóng hàng</span>
+          <span class="s" id="xhXeKy"></span></div>
+        <div class="xh-xedai" id="xhXeDai"></div>
+        <div class="xh-xethe" id="xhXeThe"></div>
+      </div>
+    </div>
   </main>
 
   <main class="tabpage" id="tab-checkct">
@@ -2278,7 +2402,6 @@ const SEED_EMPLOYEES = [
   { id:"NV0038", name:"Hà Viết Thành", warehouseId:"phulieu", shift:"Ca HC", position:"Xuất", otOpeningBalance:46 },
   { id:"NV0039", name:"Hoàng Thị Thủy", warehouseId:"phulieu", shift:"Ca HC", position:"Xuất", otOpeningBalance:98 },
   { id:"NV0040", name:"Bùi Văn Thọ", warehouseId:"phulieu", shift:"Ca HC", position:"Xuất", otOpeningBalance:49 },
-  { id:"NV0041", name:"Tạ Thị Hằng", warehouseId:"thanhpham", shift:"Ca HC", position:"Giám sát", otOpeningBalance:50 },
   { id:"NV0042", name:"Nguyễn Đức Hòa", warehouseId:"thanhpham", shift:"Ca HC", position:"Giám sát", otOpeningBalance:140.5 },
   { id:"NV0043", name:"Ngô Chí Thái", warehouseId:"thanhpham", shift:"Ca 2", position:"Nhập", otOpeningBalance:40 },
   { id:"NV0044", name:"Đỗ Hữu Tuyền", warehouseId:"thanhpham", shift:"Ca 1", position:"Nhập", otOpeningBalance:114 },
@@ -2288,14 +2411,14 @@ const SEED_EMPLOYEES = [
   { id:"NV0048", name:"Giang Quốc Tuấn", warehouseId:"thanhpham", shift:"Ca HC", position:"Xuất", otOpeningBalance:41.5 },
   { id:"NV0049", name:"Trần Văn Nam", warehouseId:"thanhpham", shift:"Ca 2", position:"Xuất", otOpeningBalance:121 },
   { id:"NV0050", name:"Bùi Chí Cương", warehouseId:"thanhpham", shift:"Ca HC", position:"Xuất", otOpeningBalance:81 },
-  { id:"NV0051", name:"Phạm Hùng Cường", warehouseId:"thanhpham", shift:"Ca HC", position:"Xuất", otOpeningBalance:75.5 },
   { id:"NV0052", name:"Nguyễn Văn Vinh", warehouseId:"thanhpham", shift:"Ca HC", position:"Stock", otOpeningBalance:81.5 },
   { id:"NV0053", name:"Nguyễn Hữu Lợi", warehouseId:"thanhpham", shift:"Ca HC", position:"Xuất", otOpeningBalance:118 },
   { id:"NV0054", name:"Nguyễn Văn Kỷ", warehouseId:"thanhpham", shift:"Ca HC", position:"Xuất", otOpeningBalance:108.5 },
-  { id:"NV0055", name:"Bùi Quốc Toản", warehouseId:"thanhpham", shift:"Ca HC", position:"Xuất", otOpeningBalance:107.5 },
   { id:"NV0056", name:"Hoàng Văn Toàn", warehouseId:"thanhpham", shift:"Ca HC", position:"Xuất", otOpeningBalance:72 },
   { id:"NV0057", name:"Đinh Văn Hoàng", warehouseId:"thanhpham", shift:"Ca HC", position:"Xuất", otOpeningBalance:38.5 },
   { id:"NV0058", name:"Bùi Văn Vũ", warehouseId:"thanhpham", shift:"Ca HC", position:"Stock", otOpeningBalance:15.5 },
+  { id:"NV0059", name:"Nguyễn Văn Thái Bảo", warehouseId:"thanhpham", shift:"Ca HC", position:"Xuất", otOpeningBalance:0, maSo:"THV0019371" },
+  { id:"NV0060", name:"Đinh Thành Phú", warehouseId:"thanhpham", shift:"Ca HC", position:"Xuất", otOpeningBalance:0, maSo:"THV0019376" },
 ];
 
 // =====================================================================
@@ -5546,6 +5669,9 @@ function renderXuatHang(){
     });
   });
   xhVeDash();
+  xhVeBieuDo();
+  xhVeTronKhach();
+  xhVeLoaiXe();
   xhVeVung();
   const th = $('xhTitle');
   if(th) th.classList.toggle('khac-ngay', key !== todayKey());
@@ -5593,6 +5719,268 @@ async function xhCopyMa(r){
   }
   const ok = await xhCopyVanBan(ma);
   toast(ok ? '✓ Đã xong · đã copy: ' + ma : '✓ Đã xong — nhưng trình duyệt chặn copy');
+}
+
+// ---- Biểu đồ sản lượng xuất hàng ----
+// Cột đơn: tổng CTN mỗi ngày, CHỈ vẽ ngày thực sự có hàng cho khỏi loãng.
+// Bấm vào cột là nhảy thẳng sang ngày đó trong bảng.
+let XH_BD = 'thang';
+const XH_THU = ['CN','T2','T3','T4','T5','T6','T7'];
+// Mốc trục dọc: 2000 · 3000 · 4000 · 4500 · 5000 · 5500 theo yêu cầu.
+// Vượt 5500 thì nối tiếp mỗi 500 (6000, 6500…). Nếu số quá lớn — ví dụ xem
+// cả năm — thì chuyển sang bước tròn để lưới khỏi dày đặc.
+const XH_MOC_GOC = [2000, 3000, 4000, 4500, 5000, 5500];
+function xhMocTruc(max){
+  max = Math.max(1, max || 0);
+  if(max <= 5500){
+    const tran = Math.max(2000, Math.ceil(max / 500) * 500);
+    const ds = XH_MOC_GOC.filter(v => v <= tran);
+    if(!ds.length) ds.push(2000);
+    return { ds, tran: ds[ds.length - 1] };
+  }
+  if(max <= 8000){
+    const ds = XH_MOC_GOC.slice();
+    let t = 5500;
+    while(t < max){ t += 500; ds.push(t); }
+    return { ds, tran: t };
+  }
+  const b = Math.pow(10, Math.floor(Math.log10(max / 5)));
+  const step = [1, 2, 2.5, 5, 10].map(x => x * b).find(x => max / x <= 6) || b * 10;
+  const tran = Math.ceil(max / step) * step, ds = [];
+  for(let v = step; v <= tran + 1e-6; v += step) ds.push(Math.round(v));
+  return { ds, tran };
+}
+function xhCtnCuaNgay(key){
+  const ds = (curKho().xuathang || {})[key] || [];
+  let ctn = 0, lenh = 0, xong = 0;
+  ds.forEach(r=>{
+    if(!r || xhRowEmpty(r)) return;
+    lenh++; ctn += xhSoCtn(r.ctn);
+    if(r.xong) xong++;
+  });
+  return { ctn, lenh, xong };
+}
+function xhVeBieuDo(){
+  const chart = $('xhBdChart');
+  if(!chart) return;
+  document.querySelectorAll('#xhBdSeg [data-bd]').forEach(b=> b.classList.toggle('on', b.dataset.bd === XH_BD));
+
+  const all = curKho().xuathang || {};
+  const key = xhKey(), nam = key.slice(0, 4), tk = todayKey();
+  let cot = [];
+
+  if(XH_BD === 'thang'){
+    const pre = key.slice(0, 7) + '-';
+    Object.keys(all).filter(k=>k.startsWith(pre)).sort().forEach(k=>{
+      const o = xhCtnCuaNgay(k);
+      if(!o.lenh) return;
+      const d = fromKey(k);
+      cot.push({ k, ...o, l: pad(d.getDate()) + '/' + pad(d.getMonth()+1), phu: XH_THU[d.getDay()],
+                 nay: k === key, tip: `${XH_THU[d.getDay()]} ${fmtVN(d)} · ${o.ctn.toLocaleString('vi-VN')} CTN · ${o.lenh} lệnh · đã xong ${o.xong}/${o.lenh}` });
+    });
+  }else{
+    for(let m = 0; m < 12; m++){
+      const pre = `${nam}-${pad(m+1)}-`;
+      let ctn = 0, lenh = 0, xong = 0, dau = '';
+      Object.keys(all).filter(k=>k.startsWith(pre)).sort().forEach(k=>{
+        const o = xhCtnCuaNgay(k);
+        if(!o.lenh) return;
+        if(!dau) dau = k;
+        ctn += o.ctn; lenh += o.lenh; xong += o.xong;
+      });
+      if(!lenh) continue;
+      cot.push({ k: dau, ctn, lenh, xong, l: 'T' + (m+1), phu: '',
+                 nay: key.slice(0,7) === `${nam}-${pad(m+1)}`,
+                 tip: `Tháng ${m+1}/${nam} · ${ctn.toLocaleString('vi-VN')} CTN · ${lenh} lệnh · đã xong ${xong}/${lenh}` });
+    }
+  }
+
+  if(!cot.length){
+    chart.innerHTML = `<div class="trong">Chưa có lệnh xuất nào trong ${XH_BD === 'thang' ? 'tháng ' + key.slice(5,7) + '/' + nam : 'năm ' + nam}</div>`;
+    $('xhBdSo').innerHTML = ''; $('xhBdGhi').innerHTML = '';
+    if($('xhBdY')) $('xhBdY').innerHTML = '';
+    if($('xhBdLuoi')) $('xhBdLuoi').innerHTML = '';
+    return;
+  }
+
+  const max = Math.max(...cot.map(c=>c.ctn), 1);
+  const truc = xhMocTruc(max), tran = truc.tran;
+  const tong = cot.reduce((s,c)=>s + c.ctn, 0);
+  const cao = cot.reduce((a,b)=> b.ctn > a.ctn ? b : a, cot[0]);
+  const so = n => n.toLocaleString('vi-VN');
+  const donVi = XH_BD === 'thang' ? 'ngày' : 'tháng';
+
+  $('xhBdSo').innerHTML = `Tổng <b>${so(tong)}</b> CTN<i>·</i>`
+    + `TB <b>${so(Math.round(tong / cot.length))}</b>/${donVi}<i>·</i>`
+    + `Cao nhất <b>${esc(cao.l)}</b> — <b>${so(cao.ctn)}</b> CTN<i>·</i>`
+    + `<b>${cot.length}</b> ${donVi} có hàng`;
+
+  // Trục dọc và lưới ngang — đứng yên khi dải cột cuộn ngang
+  const yBox = $('xhBdY'), luoi = $('xhBdLuoi');
+  if(yBox) yBox.innerHTML = truc.ds.map(v=>
+    `<span style="bottom:${(v / tran * 100).toFixed(2)}%">${so(v)}</span>`).join('')
+    + `<span style="bottom:0">0</span>`;
+  if(luoi) luoi.innerHTML = truc.ds.map(v=>
+    `<u class="${v === tran ? 'day' : ''}" style="bottom:${(v / tran * 100).toFixed(2)}%"></u>`).join('')
+    + `<u class="day" style="bottom:0"></u>`;
+
+  chart.innerHTML = cot.map(c=>`<div class="c ${c.nay ? 'nay' : ''} ${(c.xong === c.lenh && c.lenh) ? 'xong' : ''}"
+      data-bdk="${c.k}" title="${esc(c.tip)}">
+      <div class="bar"><em style="height:${Math.max(2, c.ctn / tran * 100).toFixed(1)}%"><b>${so(c.ctn)}</b></em></div>
+      <div class="l">${esc(c.l)}${c.phu ? `<i>${esc(c.phu)}</i>` : ''}</div>
+    </div>`).join('');
+
+  $('xhBdGhi').innerHTML = `<i style="background:linear-gradient(180deg,#4bb17a,#2f7a4f)"></i>đã tích xong hết lệnh`
+    + ` &nbsp; <i style="background:linear-gradient(180deg,#f0b429,#d97a06)"></i>${XH_BD === 'thang' ? 'ngày' : 'tháng'} đang mở`
+    + ` &nbsp; · Bấm vào cột để nhảy tới ${XH_BD === 'thang' ? 'ngày' : 'tháng'} đó.`;
+
+  chart.querySelectorAll('[data-bdk]').forEach(el=>{
+    el.onclick = ()=>{ if(XH_BD === 'nam') XH_BD = 'thang'; xhGoDay(el.dataset.bdk); };
+  });
+}
+
+// ---- Tỷ trọng CTN theo khách hàng (biểu đồ tròn) ----
+// Gộp tên: mọi dòng ghi CT, CT 1, CT 6 - BK00… đều là CHARLES TYRWHITT.
+// Ưu tiên BUYER gốc lấy lúc import, không có mới dùng ô customer trong bảng.
+const XH_MAU_KH = ['#2f6ea8','#0e9f6e','#e08a1e','#8b5cf6','#c8102e',
+                   '#0ea5b7','#d946a0','#65a30d','#f59e0b','#64748b'];
+function xhTenKhach(r){
+  let t = String(r.buyer || r.customer || '').trim().toUpperCase().replace(/\s+/g, ' ');
+  if(!t) return '';
+  // CT / CT1 / CT 6 - BK00 / CT 7 - KHÁC BK  ->  CHARLES TYRWHITT
+  if(/^CT\b/.test(t) || /^CT\s*\d/.test(t) || t.indexOf('CHARLES') === 0) return 'CHARLES TYRWHITT';
+  return t;
+}
+function xhTheoKhach(){
+  const all = curKho().xuathang || {}, key = xhKey();
+  const loc = XH_BD === 'nam' ? key.slice(0, 4) + '-' : key.slice(0, 7) + '-';
+  const gom = {};
+  Object.keys(all).filter(k=>k.startsWith(loc)).forEach(k=>{
+    (all[k] || []).forEach(r=>{
+      if(!r || xhRowEmpty(r)) return;
+      const ten = xhTenKhach(r);
+      if(!ten) return;
+      const o = gom[ten] || (gom[ten] = { ten, ctn:0, lenh:0 });
+      o.ctn += xhSoCtn(r.ctn); o.lenh++;
+    });
+  });
+  return Object.values(gom).sort((a, b)=> b.ctn - a.ctn || b.lenh - a.lenh);
+}
+function xhVeTronKhach(){
+  const box = $('xhKhTron'), ds = $('xhKhDs');
+  if(!box || !ds) return;
+  const key = xhKey();
+  $('xhKhKy').textContent = XH_BD === 'nam'
+    ? 'năm ' + key.slice(0, 4)
+    : 'tháng ' + key.slice(5, 7) + '/' + key.slice(0, 4);
+
+  let rows = xhTheoKhach();
+  const tong = rows.reduce((s, r)=> s + r.ctn, 0);
+  if(!rows.length || !tong){
+    box.innerHTML = ''; ds.innerHTML = '<p class="empty-msg">Chưa có dữ liệu khách hàng.</p>';
+    return;
+  }
+  // Nhiều khách quá thì giữ 8 cái lớn nhất, phần còn lại gộp thành "Khác"
+  if(rows.length > 9){
+    const giu = rows.slice(0, 8), con = rows.slice(8);
+    giu.push({ ten:'Khác (' + con.length + ' khách)', ctn:con.reduce((s,r)=>s+r.ctn,0),
+               lenh:con.reduce((s,r)=>s+r.lenh,0), khac:true });
+    rows = giu;
+  }
+  const so = n => n.toLocaleString('vi-VN');
+  const R = 62, W = 26, C = 2 * Math.PI * R, S = (R + W/2 + 4) * 2;
+  let goc = 0;
+  const lat = rows.map((r, i)=>{
+    const p = r.ctn / tong, len = C * p;
+    const el = `<circle class="lat" cx="${S/2}" cy="${S/2}" r="${R}" fill="none"
+        stroke="${XH_MAU_KH[i % XH_MAU_KH.length]}" stroke-width="${W}"
+        stroke-dasharray="${len.toFixed(2)} ${(C - len).toFixed(2)}"
+        stroke-dashoffset="${(-goc).toFixed(2)}"><title>${esc(r.ten)} — ${so(r.ctn)} CTN (${(p*100).toFixed(1)}%)</title></circle>`;
+    goc += len;
+    return el;
+  }).join('');
+
+  box.innerHTML = `<svg width="${S}" height="${S}" viewBox="0 0 ${S} ${S}">
+    <g transform="rotate(-90 ${S/2} ${S/2})">${lat}</g>
+    <text class="tam" x="${S/2}" y="${S/2 + 2}">${so(tong)}</text>
+    <text class="tam2" x="${S/2}" y="${S/2 + 18}">CTN</text>
+  </svg>`;
+
+  ds.innerHTML = `<div class="xh-khr hd"><span></span><span>Khách hàng</span><span class="v">CTN</span><span class="p">%</span></div>`
+    + rows.map((r, i)=>`<div class="xh-khr" title="${esc(r.ten)} · ${r.lenh} lệnh">
+        <i style="background:${XH_MAU_KH[i % XH_MAU_KH.length]}"></i>
+        <span class="nm">${esc(r.ten)}<small> · ${r.lenh} lệnh</small></span>
+        <span class="v">${so(r.ctn)}</span>
+        <span class="p">${(r.ctn / tong * 100).toFixed(1)}%</span></div>`).join('');
+}
+
+// ---- Loại xe đóng hàng ----
+// Chỉ ba loại nên dùng một dải ngang xếp chồng 100%: nhìn một cái là ra tỷ
+// lệ. Ba ô bên dưới cho biết số xe, tổng CTN và trung bình CTN mỗi xe —
+// con số dùng để ước lượng cần mấy xe cho lô hàng tới.
+const XH_LOAI_XE = [
+  { key:'CONT40', ten:'Cont 40',  mau:'#2563eb' },
+  { key:'CONT20', ten:'Cont 20',  mau:'#0e9f6e' },
+  { key:'TRUCK',  ten:'Xe tải',   mau:'#e08a1e' },
+  { key:'KHAC',   ten:'Loại khác',mau:'#8a94a6' },
+];
+function xhChuanLoaiXe(v){
+  const t = String(v || '').trim().toUpperCase().replace(/\s+/g, '');
+  if(!t) return '';
+  if(t.indexOf('40') >= 0) return 'CONT40';
+  if(t.indexOf('20') >= 0) return 'CONT20';
+  if(t.indexOf('TRUCK') >= 0 || t.indexOf('TAI') >= 0 || t.indexOf('TẢI') >= 0) return 'TRUCK';
+  return 'KHAC';
+}
+function xhVeLoaiXe(){
+  const dai = $('xhXeDai'), the = $('xhXeThe');
+  if(!dai || !the) return;
+  const all = curKho().xuathang || {}, key = xhKey();
+  const loc = XH_BD === 'nam' ? key.slice(0, 4) + '-' : key.slice(0, 7) + '-';
+  $('xhXeKy').textContent = XH_BD === 'nam'
+    ? 'năm ' + key.slice(0, 4)
+    : 'tháng ' + key.slice(5, 7) + '/' + key.slice(0, 4);
+
+  const gom = {}, tenLa = {};
+  XH_LOAI_XE.forEach(x=> gom[x.key] = { xe:0, ctn:0 });
+  Object.keys(all).filter(k=>k.startsWith(loc)).forEach(k=>{
+    (all[k] || []).forEach(r=>{
+      if(!r || xhRowEmpty(r)) return;
+      const t = xhChuanLoaiXe(r.type);
+      if(!t) return;
+      gom[t].xe++; gom[t].ctn += xhSoCtn(r.ctn);
+      if(t === 'KHAC'){ const v = String(r.type).trim().toUpperCase(); tenLa[v] = (tenLa[v] || 0) + 1; }
+    });
+  });
+  const tongCtn = XH_LOAI_XE.reduce((s,x)=> s + gom[x.key].ctn, 0);
+  const tongXe  = XH_LOAI_XE.reduce((s,x)=> s + gom[x.key].xe, 0);
+  const so = n => n.toLocaleString('vi-VN');
+
+  if(!tongXe){
+    dai.innerHTML = ''; the.innerHTML = '<p class="empty-msg" style="grid-column:1/-1">Chưa có lệnh nào trong kỳ này.</p>';
+    return;
+  }
+  // Loại khác chỉ hiện khi thật sự có
+  const ds = XH_LOAI_XE.filter(x=> x.key !== 'KHAC' || gom.KHAC.xe > 0);
+
+  dai.innerHTML = ds.filter(x=>gom[x.key].ctn > 0).map(x=>{
+    const g = gom[x.key], p = g.ctn / tongCtn * 100;
+    return `<span style="flex:0 0 ${p.toFixed(2)}%; background:${x.mau}"
+      title="${x.ten}: ${so(g.ctn)} CTN · ${g.xe} xe · ${p.toFixed(1)}%">${
+      p >= 9 ? esc(x.ten) + `<small>${p.toFixed(0)}%</small>` : (p >= 4 ? p.toFixed(0) + '%' : '')}</span>`;
+  }).join('');
+
+  the.innerHTML = ds.map(x=>{
+    const g = gom[x.key];
+    const tb = g.xe ? Math.round(g.ctn / g.xe) : 0;
+    return `<div class="${g.xe ? '' : 'mo'}" style="border-left-color:${x.mau}">
+      <div class="k">${esc(x.ten)}</div>
+      <div class="v" style="color:${g.xe ? x.mau : 'var(--ink-soft)'}">${g.xe}<small>xe</small></div>
+      <div class="s"><b>${so(g.ctn)}</b> CTN · TB <b>${so(tb)}</b> CTN/xe
+        · <b>${tongCtn ? (g.ctn / tongCtn * 100).toFixed(1) : '0.0'}%</b>${
+        x.key === 'KHAC' && g.xe ? '<br>ghi là: ' + esc(Object.keys(tenLa).map(v=>v + ' (' + tenLa[v] + ')').join(', ')) : ''}</div>
+    </div>`;
+  }).join('');
 }
 
 // ---- Dashboard tab Xuất hàng ----
@@ -6842,23 +7230,56 @@ function jobListModal(khoId, after){
 }
 
 // ---- Modal lịch sử OT của 1 người ----
+// Chỉ liệt kê bản ghi của MỘT tháng cho gọn, mặc định là tháng đang xem.
+// Bấm ◀ ▶ để xem tháng khác; tháng nào không có bản ghi thì nói rõ.
 function otHistoryModal(empId){
   const e = empById(empId);
-  const recs = HR.ot.filter(r=>r.employeeId===empId).sort((a,b)=>b.date.localeCompare(a.date));
   const t = otTotals(empId, new Date());
+  let thang = toKey(new Date()).slice(0, 7);          // 'YYYY-MM'
   const m = openModal(`Lịch sử tăng ca · ${e.name}`, `
     <div class="note">Hôm nay ${fmtHours(t.day)} · Tuần ${fmtHours(t.week)} · Tháng ${fmtHours(t.month)} · Năm ${fmtHours(t.year)} (gồm ${fmtHours(Number(e.otOpeningBalance)||0)} đầu kỳ)</div>
-    ${recs.length ? recs.map(r=>`<div class="rowline"><div><b>${fmtVN(fromKey(r.date))}</b><div style="font-size:12px;color:#888">${fmtHours(r.hours)} tăng ca</div></div>
-      <div style="display:flex;gap:6px"><button class="secondary sm" data-e="${r.id}">Sửa</button><button class="danger sm" data-d="${r.id}">✕</button></div></div>`).join('')
-      : '<p class="empty-msg">Chưa có bản ghi tăng ca nào.</p>'}
+    <div class="btnrow" style="margin:10px 0 8px; align-items:center;">
+      <button class="ghost sm" id="mHistPrev" title="Tháng trước">◀</button>
+      <b id="mHistThang" style="min-width:132px; text-align:center;">—</b>
+      <button class="ghost sm" id="mHistNext" title="Tháng sau">▶</button>
+      <span style="flex:1"></span>
+      <span id="mHistTong" style="font-size:12.5px; font-weight:700; color:var(--ink-soft);"></span>
+    </div>
+    <div id="mHistBox"></div>
     <div class="btnrow" style="margin-top:14px;"><button id="mHistAdd">+ Thêm bản ghi mới</button></div>`);
-  m.body.querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>{ const r = HR.ot.find(x=>x.id===b.dataset.e); m.close(); otModal(empId, r); });
-  m.body.querySelectorAll('[data-d]').forEach(b=>b.onclick=async ()=>{
-    if(!await confirmBox('Xoá bản ghi tăng ca này?')) return;
-    HR.ot = HR.ot.filter(x=>x.id!==b.dataset.d);
-    await saveHr(); m.close(); render(); toast('✓ Đã xoá');
-  });
+
+  const luiThangKey = (k, n)=>{
+    let [y, mo] = k.split('-').map(Number);
+    mo += n;
+    while(mo <= 0){ mo += 12; y--; }
+    while(mo > 12){ mo -= 12; y++; }
+    return y + '-' + pad(mo);
+  };
+  const draw = ()=>{
+    const tatCa = HR.ot.filter(r=>r.employeeId === empId);
+    const recs = tatCa.filter(r=>String(r.date).slice(0, 7) === thang)
+                      .sort((a, b)=>b.date.localeCompare(a.date));
+    const tong = recs.reduce((s, r)=>s + (Number(r.hours) || 0), 0);
+    const khac = tatCa.length - recs.length;
+    $('mHistThang').textContent = 'Tháng ' + thang.slice(5) + '/' + thang.slice(0, 4);
+    $('mHistTong').textContent = recs.length
+      ? `${recs.length} buổi · ${fmtHours(tong)}`
+      : (khac ? `còn ${khac} bản ghi ở tháng khác` : '');
+    $('mHistBox').innerHTML = recs.length
+      ? recs.map(r=>`<div class="rowline"><div><b>${fmtVN(fromKey(r.date))}</b><div style="font-size:12px;color:#888">${fmtHours(r.hours)} tăng ca</div></div>
+          <div style="display:flex;gap:6px"><button class="secondary sm" data-e="${r.id}">Sửa</button><button class="danger sm" data-d="${r.id}">✕</button></div></div>`).join('')
+      : `<p class="empty-msg">Tháng này chưa có bản ghi tăng ca nào.${khac ? ' Bấm ◀ ▶ để xem tháng khác.' : ''}</p>`;
+    $('mHistBox').querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>{ const r = HR.ot.find(x=>x.id===b.dataset.e); m.close(); otModal(empId, r); });
+    $('mHistBox').querySelectorAll('[data-d]').forEach(b=>b.onclick=async ()=>{
+      if(!await confirmBox('Xoá bản ghi tăng ca này?')) return;
+      HR.ot = HR.ot.filter(x=>x.id!==b.dataset.d);
+      await saveHr(); draw(); render(); toast('✓ Đã xoá');
+    });
+  };
+  $('mHistPrev').onclick = ()=>{ thang = luiThangKey(thang, -1); draw(); };
+  $('mHistNext').onclick = ()=>{ thang = luiThangKey(thang,  1); draw(); };
   $('mHistAdd').onclick = ()=>{ m.close(); otModal(empId, null); };
+  draw();
 }
 
 // ---- Quản lý nhân sự ----
@@ -7482,6 +7903,9 @@ $('xhToday').onclick = ()=>xhGoDay(todayKey());
 $('xhDate').addEventListener('change', e=>{ if(e.target.value) xhGoDay(e.target.value); });
 document.querySelectorAll('#xhKy [data-xky]').forEach(b=>{
   b.onclick = ()=>{ XH_KY = b.dataset.xky; xhVeDash(); };
+});
+document.querySelectorAll('#xhBdSeg [data-bd]').forEach(b=>{
+  b.onclick = ()=>{ XH_BD = b.dataset.bd; xhVeBieuDo(); xhVeTronKhach(); xhVeLoaiXe(); };
 });
 $('xhAddRow').onclick = async ()=>{ xhRows().push(xhEmptyRow()); await saveKho(); renderXuatHang(); };
 $('xhClean').onclick  = ()=>xhClean();
@@ -10089,8 +10513,16 @@ window.renderTraining = taoBoSuuTap({
     return true;
   }
   function chuaSet(e){ return !e.ngayVao && !e.phepMuc && (e.phepGio == null || e.phepGio === ''); }
-  function fmtG(g){ return (Math.round(g * 10) / 10).toFixed(1).replace('.0', '') + 'h'; }
+  // Hiện đúng số giờ, không làm tròn kiểu 1 chữ số. Giữ tới 2 số lẻ và cắt
+  // những số 0 thừa ở đuôi: -0.98h · 19.17h · 8.35h · 40h
+  function fmtG(g){
+    let s = (Math.round((Number(g) || 0) * 100) / 100).toFixed(2);
+    if(s.indexOf('.') >= 0) s = s.replace(/0+$/, '').replace(/\.$/, '');
+    return s + 'h';
+  }
   function ngayCua(g){ return g / TP_GIO_NGAY; }
+  // Số giờ giữ đúng không làm tròn, riêng số ngày làm tròn 2 số lẻ cho gọn.
+  function fmtNgay(g){ return (Number(g) || 0).toFixed(2); }
   function ddmm(d){ return pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear(); }
   function ddmmNgan(key){ const a = String(key || '').split('-'); return a.length === 3 ? a[2] + '/' + a[1] : key; }
 
@@ -10142,7 +10574,7 @@ window.renderTraining = taoBoSuuTap({
             r.t.daNghi ? ` · phép đã dùng <b>−${fmtG(r.t.daNghi)}</b>` : ''}${
             r.kl ? ` · <i>${r.kl} lượt không lương</i>` : ''}</small></span>
           <span class="track${ton < 0 ? ' am' : ''}"><em class="${mau}" style="width:${Math.min(100, Math.abs(ton) / max * 100).toFixed(1)}%"></em></span>
-          <span class="gio ${ton < 0 ? 'am' : (ng >= muc.ngay ? 'cao' : '')}">${fmtG(ton)}<small>${ng.toFixed(2)} ngày</small></span>
+          <span class="gio ${ton < 0 ? 'am' : (ng >= muc.ngay ? 'cao' : '')}">${fmtG(ton)}<small>${fmtNgay(ng)} ngày</small></span>
           <span class="act"><button class="ghost sm" data-tpcf="${r.e.id}">⚙ Cài đặt</button></span></div>`;
       }).join('') : '<p class="empty-msg">Kho này chưa có nhân viên nào.</p>');
 
@@ -10202,7 +10634,7 @@ window.renderTraining = taoBoSuuTap({
       const cu = tinh(e);
       $('tpXem').innerHTML = dau
         + `Đang có <b>${fmtG(cu.ton)}</b>${cu.daNghi ? ` (đã trừ ${fmtG(cu.daNghi)} phép dùng từ ${ddmmNgan(ngayChot(e))})` : ''}.<br>`
-        + `Lưu lại → chốt <b>${fmtG(so)}</b> (${ngayCua(so).toFixed(2)} ngày) tính từ <b>${ddmmNgan(todayKey())}</b>. `
+        + `Lưu lại → chốt <b>${fmtG(so)}</b> (${fmtNgay(ngayCua(so))} ngày) tính từ <b>${ddmmNgan(todayKey())}</b>. `
         + `Ngày <b>01/${thangSau()}</b> sẽ cộng thêm <b>${gio.toFixed(2)}h</b> → <b>${fmtG(so + gio)}</b>, và mỗi ngày 01 hằng tháng sau đó cũng vậy.`;
     };
     $('tpMucBox').querySelectorAll('[data-tpm]').forEach(b=> b.onclick = ()=>{ if(!b.disabled){ muc = b.dataset.tpm; xem(); } });
@@ -10230,8 +10662,25 @@ window.renderTraining = taoBoSuuTap({
   // Chỉ điền cho người CHƯA có số liệu, nên chạy lại bao nhiêu lần cũng không
   // ghi đè thứ bạn đã sửa tay. Khớp theo tên trong từng kho.
   const SEED_PHEP = [{"kho":"vai","ten":"Nguyễn Văn Phúc","maSo":"THV0007916","gio":10.0,"ton":0.0},{"kho":"vai","ten":"Nguyễn Thị Ngọc Anh","maSo":"THV0018431","gio":9.33,"ton":0.0},{"kho":"vai","ten":"Nguyễn Trung Hiếu","maSo":"THV0001917","gio":10.66,"ton":0.0},{"kho":"vai","ten":"Nguyễn Duy Sơn","maSo":"THV0002733","gio":10.66,"ton":0.0},{"kho":"vai","ten":"Nguyễn Ngọc Mẫn","maSo":"THV0005326","gio":10.66,"ton":0.0},{"kho":"vai","ten":"Nguyễn Hữu Thu","maSo":"THV0009073","gio":10.0,"ton":0.0},{"kho":"vai","ten":"Trần Mạnh Đạt","maSo":"THV0008244","gio":10.0,"ton":0.0},{"kho":"vai","ten":"Quách Đình Thanh","maSo":"THV0013122","gio":10.0,"ton":0.0},{"kho":"vai","ten":"Nguyen Ngoc Duy","maSo":"THV0014682","gio":9.33,"ton":0.0},{"kho":"vai","ten":"Nguyễn Thanh Bằng","maSo":"THV0008149","gio":10.0,"ton":0.0},{"kho":"vai","ten":"Trần Trọng Khiên","maSo":"THV0017535","gio":9.33,"ton":0.0},{"kho":"vai","ten":"Nguyễn Đình Niêm","maSo":"THV0017640","gio":9.33,"ton":0.0},{"kho":"vai","ten":"Dương Phúc Đạt","maSo":"THV0018512","gio":9.33,"ton":0.0},{"kho":"vai","ten":"Nguyễn Hữu Sơn","maSo":"THV0018649","gio":9.33,"ton":0.0},{"kho":"vai","ten":"Quách Công Nghĩa","maSo":"THV0019299","gio":9.33,"ton":0.0},{"kho":"vai","ten":"Nguyễn Văn Lương","maSo":"THV0019358","gio":9.33,"ton":0.0},{"kho":"vai","ten":"Đinh Tiến Hải","maSo":"THV0019378","gio":9.33,"ton":0.0},{"kho":"phulieu","ten":"Nguyễn Minh Tuấn","maSo":"THV0018650","gio":9.33,"ton":0.0},{"kho":"phulieu","ten":"Trịnh Ngọc Hải","maSo":"THV0000716","gio":10.66,"ton":0.0},{"kho":"phulieu","ten":"Hoàng Thị Thủy","maSo":"THV0003141","gio":10.66,"ton":0.0},{"kho":"phulieu","ten":"Nguyễn Tự Nam","maSo":"THV0005222","gio":10.66,"ton":0.0},{"kho":"phulieu","ten":"Đỗ Thị Duyên","maSo":"THV0006137","gio":10.0,"ton":0.0},{"kho":"phulieu","ten":"Đinh Quang Nam","maSo":"THV0004753","gio":10.66,"ton":0.0},{"kho":"phulieu","ten":"Nguyễn Thị Hương","maSo":"THV0003498","gio":10.66,"ton":0.0},{"kho":"phulieu","ten":"Nguyễn Hoàng Anh","maSo":"THV0007740","gio":10.0,"ton":0.0},{"kho":"phulieu","ten":"Phạm văn Lực","maSo":"THV0010111","gio":10.0,"ton":0.0},{"kho":"phulieu","ten":"Nguyễn Đức Trung","maSo":"THV0012744","gio":10.0,"ton":0.0},{"kho":"phulieu","ten":"Bùi Văn Anh","maSo":"THV0013110","gio":10.0,"ton":0.0},{"kho":"phulieu","ten":"Nguyễn Hoàng Anh","maSo":"THV0014891","gio":9.33,"ton":0.0},{"kho":"phulieu","ten":"Nguyễn Văn Nam","maSo":"THV0014869","gio":9.33,"ton":0.0},{"kho":"phulieu","ten":"Bùi Văn Nguyên","maSo":"THV0016060","gio":9.33,"ton":0.0},{"kho":"phulieu","ten":"Nguyễn Thị Huế","maSo":"THV0016268","gio":9.33,"ton":0.0},{"kho":"phulieu","ten":"Bùi Văn Mạnh","maSo":"THV0001083","gio":10.66,"ton":0.0},{"kho":"phulieu","ten":"Bùi Quốc Trượng","maSo":"THV0017899","gio":9.33,"ton":0.0},{"kho":"phulieu","ten":"Nguyễn Minh Đạt","maSo":"THV0018335","gio":9.33,"ton":0.0},{"kho":"phulieu","ten":"Hoàng Văn Huy","maSo":"THV0018552","gio":9.33,"ton":0.0},{"kho":"phulieu","ten":"Hà Viết Thành","maSo":"THV0018657","gio":9.33,"ton":0.0},{"kho":"phulieu","ten":"Qoách Đức Hiền","maSo":"THV0018721","gio":9.33,"ton":0.0},{"kho":"phulieu","ten":"Bùi Văn Thọ","maSo":"THV0018810","gio":9.33,"ton":0.0},{"kho":"thanhpham","ten":"Nguyễn Đức Hoà","maSo":"THV0012803","gio":10.0,"ton":-0.98},{"kho":"thanhpham","ten":"Ngô Chí Thái","maSo":"THV0003985","gio":10.66,"ton":8.62},{"kho":"thanhpham","ten":"Đỗ Hữu Tuyền","maSo":"THV0000717","gio":10.66,"ton":11.41},{"kho":"thanhpham","ten":"Nguyễn Đình Chí","maSo":"THV0008288","gio":10.0,"ton":11.5},{"kho":"thanhpham","ten":"Hoàng Hoài Bắc","maSo":"THV0000006","gio":10.66,"ton":13.41},{"kho":"thanhpham","ten":"Lê Văn Luận","maSo":"THV0004491","gio":10.66,"ton":23.15},{"kho":"thanhpham","ten":"Giang Quôc Tuấn","maSo":"THV0007164","gio":10.0,"ton":4.75},{"kho":"thanhpham","ten":"Trần Văn Nam","maSo":"THV0013929","gio":9.33,"ton":19.17},{"kho":"thanhpham","ten":"Bùi Chí Cương","maSo":"THV0014297","gio":9.33,"ton":19.17},{"kho":"thanhpham","ten":"Nguyễn Văn Vinh","maSo":"THV0014892","gio":9.33,"ton":3.17},{"kho":"thanhpham","ten":"Nguyễn Hữu Lợi","maSo":"THV0016205","gio":9.33,"ton":-12.19},{"kho":"thanhpham","ten":"Nguyễn Văn Kỷ","maSo":"THV0016989","gio":9.33,"ton":-10.55},{"kho":"thanhpham","ten":"Hoàng Văn Toàn","maSo":"THV0018558","gio":9.33,"ton":16.81},{"kho":"thanhpham","ten":"Đinh Văn Hoàng","maSo":"THV0018796","gio":9.33,"ton":23.19},{"kho":"thanhpham","ten":"Bùi Văn Vũ","maSo":"THV0019070","gio":9.33,"ton":-3.64},{"kho":"thanhpham","ten":"Nguyễn Văn Thái Bảo","maSo":"THV0019371","gio":9.33,"ton":3.84},{"kho":"thanhpham","ten":"Đinh Thành Phú","maSo":"THV0019376","gio":9.33,"ton":10.17}];
+  // Ba người đã nghỉ việc. Bản dự phòng cũ nhúng trong file còn tên họ, nên
+  // nếu có lần nào app phải chạy bằng bản dự phòng thì họ sẽ quay lại danh
+  // sách. Danh sách dưới đây để dọn một lần cho dứt điểm.
+  const DA_NGHI_VIEC = [
+    { kho:'thanhpham', ten:'Tạ Thị Hằng' },
+    { kho:'thanhpham', ten:'Phạm Hùng Cường' },
+    { kho:'thanhpham', ten:'Bùi Quốc Toản' },
+  ];
+  function donNguoiDaNghi(){
+    const truoc = HR.employees.length;
+    HR.employees = HR.employees.filter(e =>
+      !DA_NGHI_VIEC.some(x => x.kho === e.warehouseId && normName(x.ten) === normName(e.name)));
+    return truoc - HR.employees.length;
+  }
+
   window.napPhepLanDau = async function(){
     let n = 0;
+    const bo = donNguoiDaNghi();
+    if(bo){ n += bo; toast('✓ Đã gỡ ' + bo + ' người đã nghỉ việc khỏi danh sách nhân sự'); }
     // Số tồn trong file chốt trước hôm nay, nên đặt mốc là HÔM QUA để đơn nghỉ
     // ghi trong hôm nay vẫn được trừ bình thường.
     const homQua = (()=>{ const d = new Date(); d.setDate(d.getDate() - 1); return toKey(d); })();
