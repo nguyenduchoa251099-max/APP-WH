@@ -351,6 +351,21 @@
   .xh-card.xong .ic{background:var(--teal-bg); color:#1f6b5c;}
   .xh-card.xong .bar em{background:var(--teal);}
   .xh-card.xong .s{color:#1f6b5c;}
+  /* Cảnh báo trùng id / cont / seal */
+  #xhCanhBao .cb{display:flex; align-items:center; gap:9px; flex-wrap:wrap; font-size:12.5px;
+    background:var(--red-bg); border:1px solid #e0b6ab; color:#8a2f1c;
+    border-radius:9px; padding:7px 12px; margin-bottom:8px; font-weight:600;}
+  #xhCanhBao .cb b{font-weight:800;}
+  #xhCanhBao .cb .ch{display:inline-flex; align-items:center; gap:5px; background:#fff;
+    border:1px solid #e0b6ab; border-radius:999px; padding:1px 10px; cursor:pointer;
+    font-size:12px; font-weight:700; color:#8a2f1c;}
+  #xhCanhBao .cb .ch:hover{background:#8a2f1c; color:#fff; border-color:#8a2f1c;}
+  #xhCanhBao .cb .ch small{font-weight:700; opacity:.75;}
+  .xh-tbl td.xh-cell.trung{background:#fdeae5 !important; box-shadow:inset 0 0 0 1.5px #d4674f;}
+  .xh-tbl td.xh-cell.trung .v{color:#8a2f1c; font-weight:800;}
+  .xh-tbl tr.nhapnhay td{animation:xhNhay 1.1s ease 2;}
+  @keyframes xhNhay{0%,100%{background:transparent} 45%{background:#ffe9c7}}
+
   .xh-card.xe{border-left-color:#5b6470;}
   .xh-card.xe .ic{background:#eef1f6; color:#3d4756;}
   .xh-cards .trong{grid-column:1 / -1; background:#fff; border:1px solid var(--line); border-radius:10px;
@@ -1336,6 +1351,67 @@
   #tab-hotrokk .hk-kk .o.khac{background:repeating-linear-gradient(135deg,#f4f4f1 0 5px,#ececea 5px 10px);}
   #tab-hotrokk .hk-kk .o.khac.on{background:#7fc3d8 !important;}
 
+/* ===================================================================
+   TỒN PHÉP NĂM  (mục con của tab Tăng ca / Nghỉ phép, cả 3 kho)
+   =================================================================== */
+  #sub-tonphep .tp-top{display:flex; align-items:center; gap:9px; flex-wrap:wrap; margin-bottom:12px;}
+  #sub-tonphep .tp-the{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:12px;}
+  #sub-tonphep .tp-the > div{position:relative; background:#fff; border:1px solid var(--line);
+    border-left:3px solid var(--ink-soft); border-radius:10px; padding:10px 13px 11px; box-shadow:var(--bong);}
+  #sub-tonphep .tp-the .k{font-size:9.5px; font-weight:800; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--ink-soft); padding-right:28px;}
+  #sub-tonphep .tp-the .v{font-size:24px; font-weight:800; line-height:1.2; margin-top:2px; font-variant-numeric:tabular-nums;}
+  #sub-tonphep .tp-the .v small{font-size:12px; font-weight:700; color:var(--ink-soft); margin-left:5px;}
+  #sub-tonphep .tp-the .s{font-size:11.5px; font-weight:600; color:var(--ink-soft); margin-top:3px; line-height:1.5;}
+  #sub-tonphep .tp-the .s b{color:var(--ink); font-weight:800;}
+  #sub-tonphep .tp-the .ic{position:absolute; top:9px; right:10px; width:22px; height:22px; border-radius:6px;
+    display:flex; align-items:center; justify-content:center; font-size:12px;
+    background:var(--paper); color:var(--ink-soft);}
+  #sub-tonphep .tp-the .cao{border-left-color:#c8102e;} #sub-tonphep .tp-the .cao .v{color:#c8102e;}
+  #sub-tonphep .tp-the .cao .ic{background:var(--red-bg); color:var(--red);}
+  #sub-tonphep .tp-the .cao .s b{color:#8a2f1c;}
+  #sub-tonphep .tp-the .ok{border-left-color:var(--teal);} #sub-tonphep .tp-the .ok .v{color:var(--teal);}
+  #sub-tonphep .tp-the .ok .ic{background:var(--teal-bg); color:#1f6b5c;}
+  #sub-tonphep .tp-the .am{border-left-color:#e08a1e;} #sub-tonphep .tp-the .am .v{color:#d97a06;}
+  #sub-tonphep .tp-the .am .ic{background:#fdf0d8; color:#a3631a;}
+  #sub-tonphep .tp-the .am .s b{color:#8a5a12;}
+  @media(max-width:1000px){ #sub-tonphep .tp-the{grid-template-columns:1fr 1fr;} }
+  @media(max-width:700px){ #sub-tonphep .tp-the{grid-template-columns:1fr;} }
+
+  #sub-tonphep .tp-r{display:grid; grid-template-columns:32px 1fr 130px 100px 82px; align-items:center;
+    gap:10px; padding:8px 11px; border:1px solid var(--line-soft); border-radius:9px; margin-bottom:6px; background:#fff;}
+  #sub-tonphep .tp-r:hover{border-color:var(--blue); background:#fcfeff;}
+  #sub-tonphep .tp-r.hd{background:#eef1f6; border-color:var(--line); font-size:10.5px; font-weight:800;
+    color:var(--ink-soft); text-transform:uppercase; letter-spacing:.05em; padding:6px 11px;}
+  #sub-tonphep .tp-r .stt{font-size:12px; font-weight:800; color:var(--ink-soft); text-align:center;}
+  #sub-tonphep .tp-r .nm{font-weight:700; font-size:14.5px; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  #sub-tonphep .tp-r .nm small{display:block; font-size:11px; font-weight:600; color:var(--ink-soft);}
+  #sub-tonphep .tp-r .nm small b{color:var(--red); font-weight:800;}
+  #sub-tonphep .tp-r .nm small i{font-style:normal; color:#8a5a12; font-weight:800;}
+  #sub-tonphep .tp-r .track{height:16px; background:#eceff4; border-radius:5px; overflow:hidden;}
+  #sub-tonphep .tp-r .track em{display:block; height:100%; border-radius:5px; background:#5b9bd5;}
+  #sub-tonphep .tp-r .track em.cao{background:#c8102e;}
+  #sub-tonphep .tp-r .track em.vua{background:#e08a1e;}
+  #sub-tonphep .tp-r .track em.it{background:var(--teal);}
+  #sub-tonphep .tp-r .track.am{background:#fbe3dd;}
+  #sub-tonphep .tp-r .gio{text-align:right; font-size:16px; font-weight:800; font-variant-numeric:tabular-nums;}
+  #sub-tonphep .tp-r .gio small{display:block; font-size:11px; font-weight:700; color:var(--ink-soft);}
+  #sub-tonphep .tp-r .gio.cao, #sub-tonphep .tp-r .gio.am{color:#c8102e;}
+  #sub-tonphep .tp-r .act{display:flex; justify-content:flex-end;}
+  #sub-tonphep .tp-r.chuaset{background:#fffaf0; border-color:var(--amber-line);}
+  #sub-tonphep .tp-r.chuaset .nm small{color:#8a5a12;}
+  #sub-tonphep .tp-r.am3{box-shadow:inset 3px 0 0 #c8102e;}
+  @media(max-width:760px){
+    #sub-tonphep .tp-r{grid-template-columns:28px 1fr 90px; row-gap:6px;}
+    #sub-tonphep .tp-r .track{grid-column:2 / -1;}
+    #sub-tonphep .tp-r.hd{display:none;}
+  }
+  #sub-tonphep .tp-ghi{font-size:12.5px; color:var(--ink-soft); margin-top:12px; line-height:1.65;}
+  #sub-tonphep .tp-ghi b{color:var(--ink);}
+  .tp-muc{display:grid; grid-template-columns:1fr 1fr; gap:6px;}
+  .tp-muc button{text-align:left; padding:8px 12px; font-size:13px;}
+  .tp-muc button small{display:block; font-weight:600; opacity:.75; font-size:11px;}
+
 </style>
 </head>
 <body>
@@ -1622,6 +1698,7 @@
   <main class="tabpage" id="tab-xuathang">
     <div class="panel">
       <div class="xh-cards" id="xhCards"></div>
+      <div id="xhCanhBao"></div>
       <div class="note hint-box" id="xhHint" hidden>
         <b>Chọn ô:</b> bấm 1 ô · bấm giữ rồi <b>kéo</b> để chọn cả vùng · <b>Shift+bấm</b> để nới vùng ·
         bấm <b>số thứ tự</b> chọn cả dòng · bấm <b>tên cột</b> chọn cả cột · bấm ô <b>◤</b> góc trên chọn hết bảng.<br>
@@ -1635,7 +1712,11 @@
         <b>Esc</b> huỷ, <b>Delete</b> xoá nội dung ô đang chọn.<br>
         <b>Đổi thứ tự dòng:</b> bấm giữ ⠿ bên trái số thứ tự rồi kéo cả dòng lên/xuống.<br>
         <b>Xuống dòng:</b> kéo <b>mép dưới</b> ô số thứ tự để nới cao dòng (bấm đúp cho vừa nội dung), hoặc chọn dòng rồi bấm <b>Alt+W</b>.<br>
-        <b>Ngày:</b> <b>Alt+T</b> về hôm nay · nút <b>◀ ▶</b> hoặc ô ngày để sang ngày khác.<br>
+        <b>Ngày:</b> <b>Alt+T</b> về hôm nay · nút <b>◀ ▶</b> để sang ngày khác.<br>
+        <b>Ô tích ✓:</b> bấm để đánh dấu lệnh đã xong, đồng thời <b>tự copy mã shipment</b>
+        dạng <code>SHIPMENT/CHARLE_20260923-0069/7-TEHV02780</code> để dán sang chỗ khác.
+        Giữ <b>Ctrl</b> rồi bấm nếu chỉ muốn copy lại mà không đổi trạng thái.
+        Mã lấy từ dữ liệu import, nên lệnh gõ tay hoặc import từ trước khi có tính năng này sẽ thiếu REQUEST_ID.<br>
         <b>Import:</b> lưu trang <b>SHIPMENT REQUEST DETAILS</b> thành file (.html hoặc .mhtml) rồi bấm <b>⬆ Import</b> — chọn được nhiều file một lúc.
         App tự lấy <b>BUYER → customer</b>, <b>4 số cuối REQUEST_ID → id</b>, <b>TYPE → type</b>, <b>CTNS → CTN (… THÙNG)</b>;
         trùng customer + id thì cập nhật đè lên dòng cũ, chưa có thì điền vào dòng trống đầu tiên. Điền xong vẫn sửa tay tự do.
@@ -1654,7 +1735,7 @@
                   <button data-xky="thang">Tháng</button>
                 </span>
               </span>
-              <input type="date" id="xhDate">
+              <input type="date" id="xhDate" hidden>
               <button class="secondary sm" id="xhToday" hidden>Hôm nay</button>
             </div>
 
@@ -1795,6 +1876,7 @@
       <button data-sub="ds" class="active">👥 Danh sách &amp; giờ OT</button>
       <button data-sub="dk">✍ Đăng ký nhanh</button>
       <button data-sub="lich">📅 Lịch tháng</button>
+      <button data-sub="tonphep">🌴 Tồn phép năm</button>
     </div>
 
     <div class="subpage active" id="sub-ds">
@@ -1854,7 +1936,7 @@
             </div>
           </div>
           <div id="qkReasonBox" style="display:none;">
-            <label class="field-label">Lý do nghỉ</label>
+            <label class="field-label" id="qkReasonLabel">Lý do nghỉ</label>
             <select id="qkReason"></select>
           </div>
           <div id="qkWarn"></div>
@@ -1886,6 +1968,27 @@
         </div>
         <div class="hintbar"><button class="hint-btn" data-hint="calHint" title="Xem ký hiệu">!</button></div>
         <div class="note hint-box" id="calHint" hidden>Ô có dữ liệu bấm vào để xem chi tiết và xoá. Ký hiệu: <b>N</b> nghỉ · <b>S</b> về sớm · <b>M</b> đi muộn · <b>OT</b> tăng ca · <b>OS…</b> chuyến gia công.</div>
+      </div>
+    </div>
+
+    <div class="subpage" id="sub-tonphep">
+      <div class="panel">
+        <h2><span class="n">08</span>Tồn phép năm — <span id="tpKhoName">kho</span>
+          <span class="h2spacer"></span><span class="chip info" id="tpKy">—</span></h2>
+        <div class="tp-top">
+          <button class="secondary sm" id="tpSort">↓ Tồn nhiều nhất trước</button>
+          <button class="secondary sm" id="tpXuat">⬇ Xuất Excel</button>
+          <span style="flex:1"></span>
+          <button class="hint-btn" data-hint="tpHint" title="Xem cách tính">!</button>
+        </div>
+        <div class="note hint-box" id="tpHint" hidden>
+          Mỗi người có một <b>mức phép</b> theo thâm niên. Bấm <b>⚙ Cài đặt</b> ở từng dòng để nhập
+          mã số, ngày vào làm và số phép tồn hiện tại — những mục này không hiện ra bảng.
+          Điền ngày vào làm thì mức phép tự nhảy khi tròn 5 năm, khỏi sửa tay.
+        </div>
+        <div class="tp-the" id="tpThe"></div>
+        <div id="tpBody"></div>
+        <div class="tp-ghi" id="tpGhi"></div>
       </div>
     </div>
   </main>
@@ -2011,6 +2114,8 @@ const XH_MIN_ROWS = 10;                       // luôn hiện sẵn 10 dòng tr�
 const DOW_FULL = ['Chủ Nhật','Thứ Hai','Thứ Ba','Thứ Tư','Thứ Năm','Thứ Sáu','Thứ Bảy'];
 function xhTieuDe(key){ const d = fromKey(key); return `${DOW_FULL[d.getDay()]} - ${fmtVN(d)}`; }
 const LEAVE_REASONS = ["Nghỉ phép", "Nghỉ không lương", "Nghỉ ốm", "Nghỉ việc riêng"];
+// Đi muộn / về sớm chỉ có hai lựa chọn: tính vào phép năm hay không
+const LEAVE_REASONS_GIO = ["Nghỉ phép", "Nghỉ không lương"];
 const LIMITS = { day: 4, week: 12, month: 24, year: 280 };
 // y = ngưỡng "sắp hết hạn mức" (vàng tươi), r = ngưỡng "hết hạn mức" (đỏ tươi)
 const TH = { day: { y: null, r: 4 }, week: { y: 8, r: 12 }, month: { y: 20, r: 24 }, year: { y: 250, r: 280 } };
@@ -2967,6 +3072,7 @@ function render(){
     if(activeSub === 'ds') renderOtList();
     if(activeSub === 'dk') renderQuickEntry();
     if(activeSub === 'lich') renderCalendar();
+    if(activeSub === 'tonphep'){ $('tpKhoName').textContent = khoName(CUR_KHO); renderTonPhep(); }
   }
   if(activeTab === 'ghichu') renderNotes();
 }
@@ -3036,6 +3142,8 @@ function renderAll3(){
         <div><span class="k">Nghỉ phép</span><span class="v">${st.nghi}</span></div>
         <div><span class="k">OT hôm nay</span><span class="v">${fmtHours(st.otTodayH)}</span></div>
         <div><span class="k">OT tháng này</span><span class="v">${fmtHours(st.otMonthH)}</span></div>
+        <div><span class="k">Phép tồn trên 24h</span><span class="v">${
+          (typeof tpDemTonTren === 'function') ? tpDemTonTren(w.id, 24) : 0}</span></div>
       </div></div>`;
   }).join('');
 
@@ -5332,6 +5440,58 @@ function xhToiO(r, c, noiRong){
 }
 
 // ---- Dựng bảng ----
+// Các ô bị trùng trong cùng một ngày: id, số cont, số seal.
+// Trùng ba thứ này gần như chắc chắn là gõ nhầm, phát hiện sớm đỡ tốn tiền.
+const XH_COT_DUY_NHAT = [
+  { key:'id',   ten:'id' },
+  { key:'cont', ten:'số cont' },
+  { key:'seal', ten:'số seal' },
+];
+let XH_TRUNG = {};
+function xhChuanHoa(v){ return String(v || '').trim().toUpperCase().replace(/\s+/g, ''); }
+function xhTinhTrung(){
+  const rows = xhRows();
+  XH_TRUNG = {};
+  XH_COT_DUY_NHAT.forEach(c=>{
+    const gom = {};
+    rows.forEach((r, i)=>{
+      if(xhRowEmpty(r)) return;
+      const v = xhChuanHoa(r[c.key]);
+      if(!v) return;
+      (gom[v] = gom[v] || []).push(i);
+    });
+    const trung = Object.keys(gom).filter(v=>gom[v].length > 1)
+      .map(v=>({ v, dong: gom[v], goc: rows[gom[v][0]][c.key] }));
+    if(trung.length) XH_TRUNG[c.key] = trung;
+  });
+  return XH_TRUNG;
+}
+function xhOTrung(r, key){
+  const ds = XH_TRUNG[key];
+  if(!ds) return false;
+  const v = xhChuanHoa(r[key]);
+  return !!v && ds.some(t=>t.v === v);
+}
+function xhVeCanhBao(){
+  const box = $('xhCanhBao');
+  if(!box) return;
+  const co = XH_COT_DUY_NHAT.filter(c=>XH_TRUNG[c.key]);
+  if(!co.length){ box.innerHTML = ''; return; }
+  box.innerHTML = co.map(c=>`<div class="cb">
+      <span>⚠ Trùng <b>${esc(c.ten)}</b> — kiểm tra lại kẻo nhầm lệnh:</span>
+      ${XH_TRUNG[c.key].map(t=>`<span class="ch" data-cbdong="${t.dong[0]}" title="Bấm để nhảy tới dòng ${t.dong[0] + 1}">
+        ${esc(t.goc)} <small>dòng ${t.dong.map(x=>x + 1).join(', ')}</small></span>`).join('')}
+    </div>`).join('');
+  box.querySelectorAll('[data-cbdong]').forEach(el=> el.onclick = ()=>{
+    const tr = document.querySelector(`#xhBody tr[data-xr="${el.dataset.cbdong}"]`);
+    if(!tr) return;
+    tr.scrollIntoView({ block:'center', behavior:'smooth' });
+    tr.classList.remove('nhapnhay');
+    void tr.offsetWidth;                       // ép trình duyệt chạy lại hiệu ứng
+    tr.classList.add('nhapnhay');
+  });
+}
+
 function xhRowHtml(r, i){
   const cao = Number(r.h) || 0, trong = xhRowEmpty(r);
   const cls = [ trong ? '' : 'xh-filled', cao ? 'wrap' : '', (!trong && r.xong) ? 'xh-xong' : '' ].filter(Boolean).join(' ');
@@ -5341,10 +5501,10 @@ function xhRowHtml(r, i){
       <span class="xh-rgrip" data-rgrip="${i}" title="Kéo xuống để nới cao dòng · bấm đúp cho vừa nội dung"></span>
     </td>
     <td class="xh-ok"><span class="tick ${r.xong ? 'on' : ''} ${trong ? 'mo' : ''}" ${trong ? '' : `data-xok="${i}"`}
-      title="${trong ? 'Dòng trống' : 'Tích khi xe này đã xong'}"></span></td>
+      title="${trong ? 'Dòng trống' : esc('Tích khi xe này đã xong — đồng thời copy: ' + (xhMaShipment(r) || '(chưa có REQUEST_ID)') + '\nCtrl + bấm = chỉ copy lại')}"></span></td>
     ${XH_COLS.map((c, ci)=>{
       const f = xhFmt(r, c.key) || {};
-      const k = ['xh-cell', f.h ? 'hl' : '', f.c ? 'ct' : ''].filter(Boolean).join(' ');
+      const k = ['xh-cell', f.h ? 'hl' : '', f.c ? 'ct' : '', xhOTrung(r, c.key) ? 'trung' : ''].filter(Boolean).join(' ');
       return `<td class="${k}" data-r="${i}" data-c="${ci}" tabindex="-1"><div class="v${f.b ? ' b' : ''}">${esc(r[c.key] || '')}</div></td>`;
     }).join('')}
     <td class="xh-del"><button class="danger sm" data-xdel="${i}" title="Xoá dòng này">✕</button></td>
@@ -5367,23 +5527,72 @@ function renderXuatHang(){
   $('xhCg').innerHTML = `<col style="width:56px"><col style="width:34px">`
     + XH_COLS.map(c=>`<col data-gc="${c.key}" style="width:${xhColW(c)}px">`).join('')
     + `<col style="width:40px">`;
+  xhTinhTrung();
   $('xhBody').innerHTML = rows.map(xhRowHtml).join('');
+  xhVeCanhBao();
   $('xhBody').querySelectorAll('[data-xok]').forEach(el=>{
     el.addEventListener('mousedown', ev=>ev.stopPropagation());   // đừng chạm vào cơ chế chọn ô
-    el.addEventListener('click', async ()=>{
+    el.addEventListener('click', async (ev)=>{
       const i = Number(el.dataset.xok), r = xhRows()[i];
       if(!r || xhRowEmpty(r)) return;
+      // Giữ Ctrl (hoặc Cmd) rồi bấm = chỉ copy lại mã, không đổi trạng thái
+      if(ev.ctrlKey || ev.metaKey){ await xhCopyMa(r); return; }
       r.xong = !r.xong;
       el.classList.toggle('on', !!r.xong);
       el.closest('tr').classList.toggle('xh-xong', !!r.xong);
       xhVeDash();
       await saveKho();
+      if(r.xong) await xhCopyMa(r);             // tích xong thì copy luôn mã shipment
     });
   });
   xhVeDash();
   xhVeVung();
   const th = $('xhTitle');
   if(th) th.classList.toggle('khac-ngay', key !== todayKey());
+}
+
+// ---- Mã shipment để copy khi tích "đã xong" ----
+// Mẫu:  SHIPMENT/CHARLE_20260923-0069/7-TEHV02780
+//   SHIPMENT · dấu / · dấu _ là chữ cố định
+//   CHARLE   = 6 ký tự đầu của BUYER sau khi bỏ hết khoảng trắng
+//   20260923-0069 = REQUEST_ID đầy đủ
+//   7-TEHV02780   = REMARK, các số khác nhau nối tiếp bằng dấu /
+// Mọi phần đều lấy từ BẢN GỐC lúc import (r.buyer, r.reqId, r.remarks),
+// không đọc lại ô trong bảng, nên sửa tay hay xuất lại đều không ảnh hưởng.
+function xhBoTrang(v){ return String(v == null ? '' : v).replace(/\s+/g, ''); }
+function xhMaShipment(r){
+  if(!r) return '';
+  const ten = xhBoTrang(r.buyer || r.customer).slice(0, 6);
+  const req = xhBoTrang(r.reqId);
+  if(!req) return '';
+  const ds = Array.isArray(r.remarks) ? r.remarks : (r.remark ? [r.remark] : []);
+  const rm = [...new Set(ds.map(xhBoTrang).filter(Boolean))];
+  let ma = 'SHIPMENT/' + ten + '_' + req;
+  if(rm.length) ma += '/' + rm.join('/');
+  return ma;
+}
+async function xhCopyVanBan(txt){
+  try{
+    if(navigator.clipboard && window.isSecureContext){ await navigator.clipboard.writeText(txt); return true; }
+  }catch(e){}
+  try{                                        // dự phòng cho trình duyệt cũ / trang http
+    const ta = document.createElement('textarea');
+    ta.value = txt;
+    ta.style.cssText = 'position:fixed; top:-1000px; opacity:0;';
+    document.body.appendChild(ta); ta.select();
+    const ok = document.execCommand('copy');
+    ta.remove();
+    return ok;
+  }catch(e){ return false; }
+}
+async function xhCopyMa(r){
+  const ma = xhMaShipment(r);
+  if(!ma){
+    toast('✓ Đã đánh dấu xong — dòng này thiếu REQUEST_ID nên chưa copy được, import lại để có');
+    return;
+  }
+  const ok = await xhCopyVanBan(ma);
+  toast(ok ? '✓ Đã xong · đã copy: ' + ma : '✓ Đã xong — nhưng trình duyệt chặn copy');
 }
 
 // ---- Dashboard tab Xuất hàng ----
@@ -6064,6 +6273,24 @@ function xhBocTrang(html, tenFile){
     }
   }
 
+  // 3) REMARK ở bảng JOB_ORDER — lấy các giá trị KHÁC NHAU, giữ nguyên thứ tự.
+  //    Nhiều dòng job order thường cùng một số TEHV nên phải lọc trùng.
+  let dsRemark = [];
+  const bRm = bangs.find(b=>xhCot(b.headers,'REMARK') >= 0 && xhCot(b.headers,'JOB_ORDER_NO') >= 0)
+           || bangs.find(b=>xhCot(b.headers,'REMARK') >= 0);
+  if(bRm){
+    const j = xhCot(bRm.headers,'REMARK'), thay = new Set();
+    let coNull = false;
+    bRm.rows.forEach(r=>{
+      const v = xhChuan(r[j]);
+      if(!v || /^(NULL|N\/A|-)$/i.test(v)){ coNull = true; return; }
+      if(!thay.has(v)){ thay.add(v); dsRemark.push(v); }
+    });
+    // Dòng nào có số thì chỉ lấy dòng đó, bỏ qua những dòng NULL.
+    // Nhưng nếu CẢ CỘT đều NULL thì lấy đúng chữ NULL.
+    if(!dsRemark.length && coNull) dsRemark = ['NULL'];
+  }
+
   const ra = [];
   bReq.rows.forEach(r=>{
     const idFull = xhChuan(r[iId]);
@@ -6077,6 +6304,11 @@ function xhBocTrang(html, tenFile){
       id: idNgan,
       type: type,
       ctn: so ? `${so} THÙNG` : '',
+      // Ba trường ẩn: không hiện ra bảng, chỉ dùng khi copy mã shipment.
+      // Lấy nguyên văn từ file import nên sửa tay trong bảng không ảnh hưởng.
+      buyer: buyer,
+      reqId: idFull,
+      remarks: dsRemark.slice(),
       idFull, tenFile,
     });
   });
@@ -6138,6 +6370,9 @@ async function xhImportFiles(files){
       r.id = it.id;
       r.type = it.type;
       r.ctn = it.ctn;
+      r.buyer = it.buyer || '';                 // BUYER nguyên văn (ẩn)
+      r.reqId = it.reqId || '';                 // REQUEST_ID đầy đủ (ẩn)
+      r.remarks = (it.remarks || []).slice();   // các số TEHV khác nhau (ẩn)
     });
     if(!xhRowEmpty(rows[rows.length - 1])) rows.push(xhEmptyRow());
     await saveKho();
@@ -6480,7 +6715,9 @@ function leaveModal(empId){
     $('mLvHours').style.display = type==='nghi' ? 'none' : 'block';
   });
   $('mLvSave').onclick = async ()=>{
-    const extra = type==='nghi' ? {reason: $('mLvReasonSel').value} : {hours: pickerValue('mLv')};
+    const extra = type==='nghi'
+      ? {reason: $('mLvReasonSel').value}
+      : {hours: pickerValue('mLv'), reason: $('mLvReasonSel').value};
     if(type!=='nghi' && !extra.hours){ toast('⚠ Chọn số giờ'); return; }
     const eid = $('mLvEmp').value, dt = $('mLvDate').value;
 
@@ -6638,7 +6875,7 @@ function manageEmpModal(){
       <label class="field-label">Kho</label>
       <select id="mEmpKho">${WAREHOUSES.map(w=>`<option value="${w.id}" ${w.id===khoId?'selected':''}>${w.name}</option>`).join('')}</select>
       <div style="font-size:12px;color:#888;margin:8px 0">${list.length} nhân sự</div>
-      ${list.map(e=>`<div class="rowline"><div><b>${esc(e.name)}</b><div style="font-size:11px;color:#888">${esc(e.shift||'')}${e.position?' - '+esc(e.position):''} · OT đầu kỳ ${fmtHours(Number(e.otOpeningBalance)||0)}</div></div>
+      ${list.map(e=>`<div class="rowline"><div><b>${esc(e.name)}</b><div style="font-size:11px;color:#888">${e.maSo?esc(e.maSo)+' · ':''}${esc(e.shift||'')}${e.position?' - '+esc(e.position):''} · OT đầu kỳ ${fmtHours(Number(e.otOpeningBalance)||0)}</div></div>
         <div style="display:flex;gap:6px"><button class="secondary sm" data-ee="${e.id}">Sửa</button><button class="danger sm" data-de="${e.id}">✕</button></div></div>`).join('')}
       <div class="btnrow" style="margin-top:14px;"><button id="mEmpAdd">+ Thêm nhân viên vào ${esc(khoName(khoId))}</button></div>`;
     $('mEmpKho').onchange = ()=>{ khoId = $('mEmpKho').value; draw(); };
@@ -6669,6 +6906,8 @@ function empFormModal(emp, khoId){
   let shift = emp?emp.shift:SHIFTS[3], position = emp?emp.position:khoJobs(kho0)[0];
   const m = openModal(emp?'Sửa thông tin nhân viên':'Thêm nhân viên mới', `
     <label class="field-label">Họ và tên</label><input type="text" id="mEfName" value="${emp?esc(emp.name):''}" placeholder="VD: Nguyễn Văn A">
+    <label class="field-label">Mã số nhân viên <span style="font-weight:600;color:var(--ink-soft)">— chỉ dùng khi xuất Excel, không hiện trong app</span></label>
+    <input type="text" id="mEfMa" value="${emp?esc(emp.maSo||''):''}" placeholder="VD: THV0012803">
     <label class="field-label">Kho</label>
     <select id="mEfKho">${WAREHOUSES.map(w=>`<option value="${w.id}" ${w.id===(emp?emp.warehouseId:khoId)?'selected':''}>${w.name}</option>`).join('')}</select>
     <label class="field-label">Ca làm việc</label>
@@ -6683,7 +6922,8 @@ function empFormModal(emp, khoId){
   $('mEfSave').onclick = async ()=>{
     const name = $('mEfName').value.trim();
     if(!name){ toast('⚠ Nhập họ tên'); return; }
-    const data = { name, warehouseId: $('mEfKho').value, shift, position, otOpeningBalance: Number($('mEfBal').value)||0 };
+    const data = { name, warehouseId: $('mEfKho').value, shift, position,
+                   maSo: $('mEfMa').value.trim(), otOpeningBalance: Number($('mEfBal').value)||0 };
     if(emp) Object.assign(emp, data);
     else HR.employees.push({ id: nextEmployeeId(), forklift:false, skills:{}, ...data });
     await saveHr(); m.close(); render(); toast('✓ Đã lưu nhân viên');
@@ -6705,7 +6945,16 @@ function renderQuickEntry(){
     : `<option value="">— Không tìm thấy tên nào —</option>`;
   if(keep && emps.some(e=>e.id===keep)) sel.value = keep;
   if(!$('qkDate').value) $('qkDate').value = todayKey();
-  if(!$('qkReason').options.length) $('qkReason').innerHTML = LEAVE_REASONS.map(r=>`<option>${r}</option>`).join('');
+  // Nghỉ cả ngày dùng đủ 4 lý do; đi muộn / về sớm chỉ 2 lý do liên quan tới phép
+  (function(){
+    const ds = (qkType !== 'tangca' && qkSub !== 'nghi') ? LEAVE_REASONS_GIO : LEAVE_REASONS;
+    const sel = $('qkReason'), giu = sel.value;
+    const hienTai = [...sel.options].map(o=>o.value).join('|');
+    if(hienTai !== ds.join('|')){
+      sel.innerHTML = ds.map(r=>`<option>${r}</option>`).join('');
+      if(ds.includes(giu)) sel.value = giu;
+    }
+  })();
 
   const isOT = qkType==='tangca';
   $('qkTypeOT').className = 'pick' + (isOT?' on':'');
@@ -6714,7 +6963,9 @@ function renderQuickEntry(){
   $('qkLeaveSub').querySelectorAll('[data-sub]').forEach(b=>b.className = 'pick' + (b.dataset.sub===qkSub?' on red':''));
   const showHours = isOT || qkSub!=='nghi';
   $('qkHourBox').style.display = showHours ? 'block' : 'none';
-  $('qkReasonBox').style.display = (!isOT && qkSub==='nghi') ? 'block' : 'none';
+  $('qkReasonBox').style.display = isOT ? 'none' : 'block';
+  $('qkReasonLabel').textContent = (qkSub === 'nghi')
+    ? 'Lý do nghỉ' : 'Tính vào phép năm hay không';
   $('qkHourLabel').textContent = isOT ? 'Số giờ tăng ca (chọn 0 giờ nếu dưới 1 tiếng — tối đa 4h/ngày)'
                                       : (qkSub==='muon' ? 'Thời gian đi muộn' : 'Thời gian về sớm');
 
@@ -6806,7 +7057,9 @@ async function qkSubmit(){
     const h = Number($('qkHour').value) + Number($('qkMin').value)/60;
     if(h <= 0){ toast('⚠ 0 giờ 00 phút là không hợp lệ — chọn thêm số phút'); return; }
     const ex = HR.leave.find(l=>l.employeeId===empId && l.date===date && l.type===qkSub);
-    if(ex){ ex.hours = h; ex.note = note; } else HR.leave.push({id:'lv'+Date.now(), employeeId:empId, date, type:qkSub, hours:h, note});
+    const lyDo = $('qkReason').value;
+    if(ex){ ex.hours = h; ex.note = note; ex.reason = lyDo; }
+    else HR.leave.push({id:'lv'+Date.now(), employeeId:empId, date, type:qkSub, hours:h, reason:lyDo, note});
   }
   await saveHr();
   renderQkStat();
@@ -7040,7 +7293,7 @@ function dungBangCong(khoId, ym){
       const l = lv.get(key);
       const gioNghi = l ? (l.nghiCaNgay ? CA : l.gio) : 0;
       rows.push({
-        ngay: new Date(d), ten: e.name, pos: cv.pos, ratio: cv.ratio,
+        ngay: new Date(d), maSo: e.maSo || '', ten: e.name, pos: cv.pos, ratio: cv.ratio,
         normal: CA, ot: lam(gioOT), leave: lam(gioNghi),
         tt: lam(CA + gioOT - gioNghi), kho: e._kho
       });
@@ -7055,8 +7308,8 @@ function xuatBangCongXlsx(khoId, ym){
   const { rows, soNguoi } = dungBangCong(khoId, ym);
   if(!rows.length){ toast('⚠ Kho này chưa có nhân viên nào'); return false; }
 
-  const head = ['TransDate','FullName','Position','Ratio','NormalHrs','OTHrs','LeaveHrs','TT','Warehouse'];
-  const data = [head, ...rows.map(r=>[r.ngay, r.ten, r.pos, r.ratio, r.normal, r.ot, r.leave, r.tt, r.kho])];
+  const head = ['TransDate','EmpCode','FullName','Position','Ratio','NormalHrs','OTHrs','LeaveHrs','TT','Warehouse'];
+  const data = [head, ...rows.map(r=>[r.ngay, r.maSo, r.ten, r.pos, r.ratio, r.normal, r.ot, r.leave, r.tt, r.kho])];
 
   const ws = XLSX.utils.aoa_to_sheet(data, { cellDates: true });
   // Cột ngày: định dạng dd/mm/yyyy để Excel hiểu là ngày tháng thật
@@ -7064,8 +7317,8 @@ function xuatBangCongXlsx(khoId, ym){
     const o = ws[XLSX.utils.encode_cell({ r: i, c: 0 })];
     if(o) o.z = 'dd/mm/yyyy';
   }
-  ws['!cols'] = [{wch:12},{wch:26},{wch:15},{wch:7},{wch:11},{wch:9},{wch:10},{wch:8},{wch:18}];
-  ws['!autofilter'] = { ref: `A1:I${data.length}` };
+  ws['!cols'] = [{wch:12},{wch:14},{wch:26},{wch:15},{wch:7},{wch:11},{wch:9},{wch:10},{wch:8},{wch:18}];
+  ws['!autofilter'] = { ref: `A1:J${data.length}` };
 
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Cong ' + ym);
@@ -9714,6 +9967,302 @@ window.renderTraining = taoBoSuuTap({
   else hkBind();
 })();
 
+
+// =====================================================================
+// 21. TỒN PHÉP NĂM  (mục con của tab Tăng ca / Nghỉ phép — cả 3 kho)
+//
+// Bọc IIFE, chỉ lộ ra window.renderTonPhep cho render() tổng gọi.
+//
+// Số liệu phép nằm ngay trong hồ sơ nhân viên (HR.employees) nên danh sách
+// luôn khớp với Quản lý nhân sự: thêm người là có ngay, xoá người là mất luôn.
+//   e.maSo       mã số nhân viên (ẩn, chỉ dùng khi xuất Excel)
+//   e.ngayVao    ngày vào làm  -> thâm niên và mức phép tự tính, tự lên mốc
+//   e.phepMuc    ngưỡng chọn tay khi chưa biết ngày vào làm
+//   e.phepGio    số giờ/tháng nạp từ file phép (dùng khi chưa có hai cái trên)
+//   e.phepTon    số giờ phép tồn tại thời điểm mốc
+//   e.phepMoc    mốc 'YYYY-MM' để bắt đầu cộng dồn
+//
+// Quy tắc: dưới 5 năm 14 ngày phép/năm, cứ thêm 5 năm thâm niên thêm 1 ngày.
+// Một ngày phép = 8 giờ, nên giờ mỗi tháng = ngày × 8 ÷ 12.
+// =====================================================================
+(function(){
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const TP_GIO_NGAY = 8;
+  const TP_MUC = [
+    { key:'d5',     ten:'Dưới 5 năm',  ngay:14, gio:9.33  },
+    { key:'5_10',   ten:'5 – 10 năm',  ngay:15, gio:10.00 },
+    { key:'10_15',  ten:'10 – 15 năm', ngay:16, gio:10.66 },
+    { key:'15_20',  ten:'15 – 20 năm', ngay:17, gio:11.33 },
+    { key:'tren20', ten:'Trên 20 năm', ngay:18, gio:12.00 },
+  ];
+  let TP_GIAM = true;            // sắp xếp: tồn nhiều nhất lên trước
+
+  // ---------- Tính toán ----------
+  function mucTheoNam(nam){
+    const n = Math.max(0, Number(nam) || 0);
+    return TP_MUC[Math.min(TP_MUC.length - 1, Math.floor(n / 5))];
+  }
+  function mucTheoGio(gio){
+    const g = Number(gio) || 0;
+    let tot = TP_MUC[0], lech = 99;
+    TP_MUC.forEach(m=>{ const d = Math.abs(m.gio - g); if(d < lech){ lech = d; tot = m; } });
+    return tot;
+  }
+  function thamNien(ngayVao, denNgay){
+    if(!ngayVao) return null;
+    const a = new Date(ngayVao), b = denNgay ? new Date(denNgay) : new Date();
+    if(isNaN(a.getTime())) return null;
+    let nam = b.getFullYear() - a.getFullYear(), thang = b.getMonth() - a.getMonth();
+    if(b.getDate() < a.getDate()) thang--;
+    if(thang < 0){ nam--; thang += 12; }
+    return { nam: Math.max(0, nam), thang: Math.max(0, thang) };
+  }
+  function mocKeTiep(ngayVao){
+    const tn = thamNien(ngayVao);
+    if(!tn) return null;
+    const buoc = (Math.floor(tn.nam / 5) + 1) * 5;
+    const d = new Date(ngayVao);
+    d.setFullYear(d.getFullYear() + buoc);
+    return { ngay: d, nam: buoc, muc: TP_MUC[Math.min(TP_MUC.length - 1, buoc / 5)] };
+  }
+  // Mức phép hiện hành: ngày vào làm > ngưỡng chọn tay > số giờ nạp từ file
+  function mucCua(c){
+    const tn = thamNien(c.ngayVao);
+    if(tn) return mucTheoNam(tn.nam);
+    if(c.phepMuc){ const m = TP_MUC.find(x=>x.key === c.phepMuc); if(m) return m; }
+    if(c.phepGio != null && c.phepGio !== '') return mucTheoGio(c.phepGio);
+    return null;
+  }
+  function gioMoiThang(c){ const m = mucCua(c); return m ? m.gio : 0; }
+  function soThang(moc, nay){
+    if(!moc || !nay) return 0;
+    const [y1, m1] = moc.split('-').map(Number), [y2, m2] = nay.split('-').map(Number);
+    if(!y1 || !y2) return 0;
+    return Math.max(0, (y2 - y1) * 12 + (m2 - m1));
+  }
+  function luiThang(thang, n){
+    let [y, m] = thang.split('-').map(Number);
+    m -= n;
+    while(m <= 0){ m += 12; y--; }
+    return y + '-' + String(m).padStart(2, '0');
+  }
+  function thangNay(){ const d = new Date(); return d.getFullYear() + '-' + pad(d.getMonth() + 1); }
+  // Giờ phép đã dùng kể từ mốc. Nghỉ cả ngày vì phép = 8 giờ; đi muộn / về
+  // sớm ghi lý do "Nghỉ phép" thì trừ đúng số giờ. Lý do khác không trừ.
+  function daNghi(empId, moc, denThang){
+    const tu = (moc || '0000-00') + '-01';
+    const het = denThang ? denThang + '-31' : '9999-99-99';
+    let g = 0;
+    (HR.leave || []).forEach(l=>{
+      if(l.employeeId !== empId || l.date < tu || l.date > het) return;
+      if(String(l.reason || '').trim() !== 'Nghỉ phép') return;
+      g += (l.type === 'nghi') ? TP_GIO_NGAY : (Number(l.hours) || 0);
+    });
+    return g;
+  }
+  function soLanKhongLuong(empId, moc){
+    const tu = (moc || '0000-00') + '-01';
+    return (HR.leave || []).filter(l => l.employeeId === empId && l.date >= tu &&
+      String(l.reason || '').trim() === 'Nghỉ không lương').length;
+  }
+  function tinh(e, denThang){
+    const gio = gioMoiThang(e);
+    const n = soThang(e.phepMoc, denThang || thangNay());
+    const congDon = gio * n;
+    const dn = daNghi(e.id, e.phepMoc, denThang);
+    return { gio, soThang:n, congDon, daNghi:dn, ton:(Number(e.phepTon) || 0) + congDon - dn };
+  }
+  // Âm phép suốt 3 tháng gần nhất
+  function amLienTuc(e, sl){
+    const n = sl || 3, tn = thangNay();
+    for(let k = n - 1; k >= 0; k--) if(tinh(e, luiThang(tn, k)).ton >= 0) return false;
+    return true;
+  }
+  function chuaSet(e){ return !e.ngayVao && !e.phepMuc && (e.phepGio == null || e.phepGio === ''); }
+  function fmtG(g){ return (Math.round(g * 10) / 10).toFixed(1).replace('.0', '') + 'h'; }
+  function ngayCua(g){ return g / TP_GIO_NGAY; }
+  function ddmm(d){ return pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear(); }
+
+  // ---------- Vẽ ----------
+  function renderTonPhep(){
+    const box = $('tpBody');
+    if(!box) return;
+    const ds = khoEmployees(CUR_KHO);
+    const rows = ds.map(e=>({
+      e, cs: chuaSet(e), t: tinh(e),
+      am3: chuaSet(e) ? false : amLienTuc(e), kl: soLanKhongLuong(e.id, e.phepMoc)
+    }));
+    rows.sort((a, b)=>{
+      if(a.cs !== b.cs) return a.cs ? 1 : -1;
+      return TP_GIAM ? b.t.ton - a.t.ton : a.t.ton - b.t.ton;
+    });
+    const co = rows.filter(r=>!r.cs);
+    const am = co.filter(r=>r.t.ton < 0);
+    const kl = rows.filter(r=>r.kl > 0);
+    const am3 = co.filter(r=>r.am3);
+    const ten = a => a.map(r=>`<b>${esc(getEmployeeShortName(r.e))}</b>`).join(', ');
+    const max = Math.max(1, ...co.map(r=>Math.abs(r.t.ton)));
+
+    $('tpSort').textContent = TP_GIAM ? '↓ Tồn nhiều nhất trước' : '↑ Tồn ít nhất trước';
+    $('tpKy').textContent = 'Tính đến tháng ' + thangNay().split('-').reverse().join('/');
+
+    $('tpThe').innerHTML = `
+      <div class="${am.length ? 'cao' : 'ok'}"><div class="ic">${am.length ? '⚠' : '✓'}</div>
+        <div class="k">Đang âm phép</div><div class="v">${am.length}<small>người</small></div>
+        <div class="s">${am.length ? ten(am) : 'không ai âm phép'}</div></div>
+      <div class="${kl.length ? 'am' : 'ok'}"><div class="ic">📄</div>
+        <div class="k">Đăng ký nghỉ không lương</div><div class="v">${kl.length}<small>người</small></div>
+        <div class="s">${kl.length ? ten(kl) + ' — tổng ' + kl.reduce((s,r)=>s + r.kl, 0) + ' lượt' : 'không ai đăng ký'}</div></div>
+      <div class="${am3.length ? 'cao' : 'ok'}"><div class="ic">${am3.length ? '⚠' : '✓'}</div>
+        <div class="k">Âm phép 3 tháng liên tục</div><div class="v">${am3.length}<small>người</small></div>
+        <div class="s">${am3.length ? ten(am3) : 'không ai âm kéo dài'}</div></div>`;
+
+    box.innerHTML = `<div class="tp-r hd"><span>#</span><span>Họ tên</span><span>Mức tồn</span>
+        <span style="text-align:right">Tồn phép</span><span></span></div>`
+      + (rows.length ? rows.map((r, i)=>{
+        if(r.cs) return `<div class="tp-r chuaset"><span class="stt">${i + 1}</span>
+          <span class="nm">${esc(r.e.name)}<small>⚠ chưa cài đặt mức phép — bấm ⚙ để nhập</small></span>
+          <span class="track"></span><span class="gio">—</span>
+          <span class="act"><button class="ghost sm" data-tpcf="${r.e.id}">⚙ Cài đặt</button></span></div>`;
+        const ton = r.t.ton, ng = ngayCua(ton), muc = mucCua(r.e) || TP_MUC[0];
+        const mau = ton < 0 ? 'cao' : (ng >= muc.ngay ? 'cao' : (ng >= muc.ngay * 0.6 ? 'vua' : 'it'));
+        return `<div class="tp-r${r.am3 ? ' am3' : ''}"><span class="stt">${i + 1}</span>
+          <span class="nm">${esc(r.e.name)}<small>${esc(muc.ten)} · +${r.t.gio.toFixed(2)}h/tháng${
+            r.t.daNghi ? ` · phép đã dùng <b>−${fmtG(r.t.daNghi)}</b>` : ''}${
+            r.kl ? ` · <i>${r.kl} lượt không lương</i>` : ''}</small></span>
+          <span class="track${ton < 0 ? ' am' : ''}"><em class="${mau}" style="width:${Math.min(100, Math.abs(ton) / max * 100).toFixed(1)}%"></em></span>
+          <span class="gio ${ton < 0 ? 'am' : (ng >= muc.ngay ? 'cao' : '')}">${fmtG(ton)}<small>${ng.toFixed(2)} ngày</small></span>
+          <span class="act"><button class="ghost sm" data-tpcf="${r.e.id}">⚙ Cài đặt</button></span></div>`;
+      }).join('') : '<p class="empty-msg">Kho này chưa có nhân viên nào.</p>');
+
+    $('tpGhi').innerHTML = 'Mức phép: dưới 5 năm <b>14 ngày/năm</b> (9.33h/tháng) · 5–10 năm <b>15 ngày</b> (10h) · '
+      + '10–15 năm <b>16 ngày</b> (10.66h) · 15–20 năm <b>17 ngày</b> (11.33h). Một ngày phép = 8 giờ.<br>'
+      + 'Trừ phép: <b>nghỉ cả ngày vì phép</b> trừ 8 giờ · <b>đi muộn / về sớm ghi lý do Nghỉ phép</b> trừ đúng số giờ đã ghi · '
+      + '<b>nghỉ không lương</b> và các lý do khác không trừ.';
+
+    box.querySelectorAll('[data-tpcf]').forEach(b=> b.onclick = ()=>caiDatPhepModal(empById(b.dataset.tpcf)));
+  }
+
+  // ---------- Hộp cài đặt ----------
+  function caiDatPhepModal(e){
+    if(!e) return;
+    let muc = e.phepMuc || (e.phepGio != null ? mucTheoGio(e.phepGio).key : null);
+    const m = openModal('Cài đặt phép — ' + e.name, `
+      <div class="note">Những mục này chỉ nằm trong cài đặt, không hiện ra bảng bên ngoài.</div>
+      <label class="field-label">Mã số nhân viên</label>
+      <input type="text" id="tpMa" value="${esc(e.maSo || '')}" placeholder="VD: THV0012803">
+      <label class="field-label">Ngày vào làm <span style="font-weight:600;color:var(--ink-soft)">— biết thì điền, ngưỡng tự nhảy khi tròn 5 năm</span></label>
+      <input type="date" id="tpVao" value="${esc(e.ngayVao || '')}">
+      <label class="field-label">Ngưỡng thâm niên <span style="font-weight:600;color:var(--ink-soft)" id="tpMucGhi">— chọn tay nếu chưa biết ngày vào làm</span></label>
+      <div class="tp-muc" id="tpMucBox">${TP_MUC.map(x=>`<button class="pick${x.key === muc ? ' on' : ''}" data-tpm="${x.key}">${x.ten}<small>${x.ngay} ngày/năm · ${x.gio.toFixed(2)}h/tháng</small></button>`).join('')}</div>
+      <label class="field-label">Số phép tồn hiện tại (giờ)</label>
+      <input type="number" step="0.01" id="tpTon" value="${e.phepTon != null ? e.phepTon : ''}">
+      <label class="field-label">Tính cộng dồn từ tháng</label>
+      <input type="month" id="tpMoc" value="${esc(e.phepMoc || thangNay())}">
+      <div id="tpXem" class="note" style="margin-top:12px"></div>
+      <div class="btnrow" style="margin-top:14px"><button id="tpLuu" style="width:100%">Lưu cài đặt</button></div>`);
+
+    const xem = ()=>{
+      const vao = $('tpVao').value, tn = thamNien(vao);
+      const tuDong = !!tn;
+      if(tuDong) muc = mucTheoNam(tn.nam).key;
+      $('tpMucBox').querySelectorAll('[data-tpm]').forEach(b=>{
+        b.className = 'pick' + (b.dataset.tpm === muc ? ' on' : '');
+        b.disabled = tuDong; b.style.opacity = tuDong ? .55 : 1; b.style.cursor = tuDong ? 'default' : 'pointer';
+      });
+      $('tpMucGhi').textContent = tuDong ? '— đang tính theo ngày vào làm' : '— chọn tay nếu chưa biết ngày vào làm';
+
+      const gia = { ngayVao:vao, phepMuc:muc, phepGio:e.phepGio,
+                    phepTon:$('tpTon').value, phepMoc:$('tpMoc').value, id:e.id };
+      const t = tinh(gia);
+      let dau = '';
+      if(tn){
+        const ke = mocKeTiep(vao);
+        dau = `Đã làm <b>${tn.nam} năm ${tn.thang} tháng</b> → mức <b>${mucTheoNam(tn.nam).ten}</b>. `
+          + (ke ? `Tròn ${ke.nam} năm vào <b>${ddmm(ke.ngay)}</b>, khi đó tự lên <b>${ke.muc.ngay} ngày/năm</b> (${ke.muc.gio.toFixed(2)}h/tháng).` : '')
+          + '<br>';
+      }
+      $('tpXem').innerHTML = dau + `<b>${t.gio.toFixed(2)}h/tháng</b> · cộng dồn ${t.soThang} tháng = <b>${fmtG(t.congDon)}</b>`
+        + (t.daNghi ? ` · phép đã dùng <b>−${fmtG(t.daNghi)}</b>` : '')
+        + ` → tồn hiện tại <b>${fmtG(t.ton)}</b> (${ngayCua(t.ton).toFixed(2)} ngày).`;
+    };
+    $('tpMucBox').querySelectorAll('[data-tpm]').forEach(b=> b.onclick = ()=>{ if(!b.disabled){ muc = b.dataset.tpm; xem(); } });
+    $('tpVao').oninput = xem; $('tpVao').onchange = xem;
+    $('tpTon').oninput = xem; $('tpMoc').onchange = xem;
+    xem();
+
+    $('tpLuu').onclick = async ()=>{
+      const vao = $('tpVao').value;
+      if(!vao && !muc){ toast('⚠ Điền ngày vào làm hoặc chọn ngưỡng thâm niên'); return; }
+      e.maSo    = $('tpMa').value.trim();
+      e.ngayVao = vao || null;
+      e.phepMuc = muc || null;
+      e.phepGio = null;                       // đã có mức rõ ràng thì bỏ số nạp từ file
+      e.phepTon = $('tpTon').value === '' ? null : Number($('tpTon').value);
+      e.phepMoc = $('tpMoc').value || thangNay();
+      await saveHr(); m.close(); render(); toast('✓ Đã lưu cài đặt cho ' + e.name);
+    };
+  }
+
+  // ---------- Nạp số liệu lần đầu từ file phép năm ----------
+  // Chỉ điền cho người CHƯA có số liệu, nên chạy lại bao nhiêu lần cũng không
+  // ghi đè thứ bạn đã sửa tay. Khớp theo tên trong từng kho.
+  const SEED_PHEP = [{"kho":"vai","ten":"Nguyễn Văn Phúc","maSo":"THV0007916","gio":10.0,"ton":0.0},{"kho":"vai","ten":"Nguyễn Thị Ngọc Anh","maSo":"THV0018431","gio":9.33,"ton":0.0},{"kho":"vai","ten":"Nguyễn Trung Hiếu","maSo":"THV0001917","gio":10.66,"ton":0.0},{"kho":"vai","ten":"Nguyễn Duy Sơn","maSo":"THV0002733","gio":10.66,"ton":0.0},{"kho":"vai","ten":"Nguyễn Ngọc Mẫn","maSo":"THV0005326","gio":10.66,"ton":0.0},{"kho":"vai","ten":"Nguyễn Hữu Thu","maSo":"THV0009073","gio":10.0,"ton":0.0},{"kho":"vai","ten":"Trần Mạnh Đạt","maSo":"THV0008244","gio":10.0,"ton":0.0},{"kho":"vai","ten":"Quách Đình Thanh","maSo":"THV0013122","gio":10.0,"ton":0.0},{"kho":"vai","ten":"Nguyen Ngoc Duy","maSo":"THV0014682","gio":9.33,"ton":0.0},{"kho":"vai","ten":"Nguyễn Thanh Bằng","maSo":"THV0008149","gio":10.0,"ton":0.0},{"kho":"vai","ten":"Trần Trọng Khiên","maSo":"THV0017535","gio":9.33,"ton":0.0},{"kho":"vai","ten":"Nguyễn Đình Niêm","maSo":"THV0017640","gio":9.33,"ton":0.0},{"kho":"vai","ten":"Dương Phúc Đạt","maSo":"THV0018512","gio":9.33,"ton":0.0},{"kho":"vai","ten":"Nguyễn Hữu Sơn","maSo":"THV0018649","gio":9.33,"ton":0.0},{"kho":"vai","ten":"Quách Công Nghĩa","maSo":"THV0019299","gio":9.33,"ton":0.0},{"kho":"vai","ten":"Nguyễn Văn Lương","maSo":"THV0019358","gio":9.33,"ton":0.0},{"kho":"vai","ten":"Đinh Tiến Hải","maSo":"THV0019378","gio":9.33,"ton":0.0},{"kho":"phulieu","ten":"Nguyễn Minh Tuấn","maSo":"THV0018650","gio":9.33,"ton":0.0},{"kho":"phulieu","ten":"Trịnh Ngọc Hải","maSo":"THV0000716","gio":10.66,"ton":0.0},{"kho":"phulieu","ten":"Hoàng Thị Thủy","maSo":"THV0003141","gio":10.66,"ton":0.0},{"kho":"phulieu","ten":"Nguyễn Tự Nam","maSo":"THV0005222","gio":10.66,"ton":0.0},{"kho":"phulieu","ten":"Đỗ Thị Duyên","maSo":"THV0006137","gio":10.0,"ton":0.0},{"kho":"phulieu","ten":"Đinh Quang Nam","maSo":"THV0004753","gio":10.66,"ton":0.0},{"kho":"phulieu","ten":"Nguyễn Thị Hương","maSo":"THV0003498","gio":10.66,"ton":0.0},{"kho":"phulieu","ten":"Nguyễn Hoàng Anh","maSo":"THV0007740","gio":10.0,"ton":0.0},{"kho":"phulieu","ten":"Phạm văn Lực","maSo":"THV0010111","gio":10.0,"ton":0.0},{"kho":"phulieu","ten":"Nguyễn Đức Trung","maSo":"THV0012744","gio":10.0,"ton":0.0},{"kho":"phulieu","ten":"Bùi Văn Anh","maSo":"THV0013110","gio":10.0,"ton":0.0},{"kho":"phulieu","ten":"Nguyễn Hoàng Anh","maSo":"THV0014891","gio":9.33,"ton":0.0},{"kho":"phulieu","ten":"Nguyễn Văn Nam","maSo":"THV0014869","gio":9.33,"ton":0.0},{"kho":"phulieu","ten":"Bùi Văn Nguyên","maSo":"THV0016060","gio":9.33,"ton":0.0},{"kho":"phulieu","ten":"Nguyễn Thị Huế","maSo":"THV0016268","gio":9.33,"ton":0.0},{"kho":"phulieu","ten":"Bùi Văn Mạnh","maSo":"THV0001083","gio":10.66,"ton":0.0},{"kho":"phulieu","ten":"Bùi Quốc Trượng","maSo":"THV0017899","gio":9.33,"ton":0.0},{"kho":"phulieu","ten":"Nguyễn Minh Đạt","maSo":"THV0018335","gio":9.33,"ton":0.0},{"kho":"phulieu","ten":"Hoàng Văn Huy","maSo":"THV0018552","gio":9.33,"ton":0.0},{"kho":"phulieu","ten":"Hà Viết Thành","maSo":"THV0018657","gio":9.33,"ton":0.0},{"kho":"phulieu","ten":"Qoách Đức Hiền","maSo":"THV0018721","gio":9.33,"ton":0.0},{"kho":"phulieu","ten":"Bùi Văn Thọ","maSo":"THV0018810","gio":9.33,"ton":0.0},{"kho":"thanhpham","ten":"Nguyễn Đức Hoà","maSo":"THV0012803","gio":10.0,"ton":-0.98},{"kho":"thanhpham","ten":"Ngô Chí Thái","maSo":"THV0003985","gio":10.66,"ton":8.62},{"kho":"thanhpham","ten":"Đỗ Hữu Tuyền","maSo":"THV0000717","gio":10.66,"ton":11.41},{"kho":"thanhpham","ten":"Nguyễn Đình Chí","maSo":"THV0008288","gio":10.0,"ton":11.5},{"kho":"thanhpham","ten":"Hoàng Hoài Bắc","maSo":"THV0000006","gio":10.66,"ton":13.41},{"kho":"thanhpham","ten":"Lê Văn Luận","maSo":"THV0004491","gio":10.66,"ton":23.15},{"kho":"thanhpham","ten":"Giang Quôc Tuấn","maSo":"THV0007164","gio":10.0,"ton":4.75},{"kho":"thanhpham","ten":"Trần Văn Nam","maSo":"THV0013929","gio":9.33,"ton":19.17},{"kho":"thanhpham","ten":"Bùi Chí Cương","maSo":"THV0014297","gio":9.33,"ton":19.17},{"kho":"thanhpham","ten":"Nguyễn Văn Vinh","maSo":"THV0014892","gio":9.33,"ton":3.17},{"kho":"thanhpham","ten":"Nguyễn Hữu Lợi","maSo":"THV0016205","gio":9.33,"ton":-12.19},{"kho":"thanhpham","ten":"Nguyễn Văn Kỷ","maSo":"THV0016989","gio":9.33,"ton":-10.55},{"kho":"thanhpham","ten":"Hoàng Văn Toàn","maSo":"THV0018558","gio":9.33,"ton":16.81},{"kho":"thanhpham","ten":"Đinh Văn Hoàng","maSo":"THV0018796","gio":9.33,"ton":23.19},{"kho":"thanhpham","ten":"Bùi Văn Vũ","maSo":"THV0019070","gio":9.33,"ton":-3.64},{"kho":"thanhpham","ten":"Nguyễn Văn Thái Bảo","maSo":"THV0019371","gio":9.33,"ton":3.84},{"kho":"thanhpham","ten":"Đinh Thành Phú","maSo":"THV0019376","gio":9.33,"ton":10.17}];
+  window.napPhepLanDau = async function(){
+    let n = 0;
+    SEED_PHEP.forEach(s=>{
+      const e = HR.employees.find(x => x.warehouseId === s.kho && normName(x.name) === normName(s.ten));
+      if(!e || !chuaSet(e) || e.phepTon != null) return;
+      e.maSo = e.maSo || s.maSo;
+      e.phepGio = s.gio;
+      e.phepTon = s.ton;
+      e.phepMoc = e.phepMoc || thangNay();
+      n++;
+    });
+    if(n){ await saveHr(); render(); }
+    return n;
+  };
+
+  // Đếm số người của một kho có tồn phép vượt ngưỡng (mặc định 24 giờ = 3 ngày).
+  // Dùng cho thẻ tổng quan 3 kho.
+  window.tpDemTonTren = function(khoId, nguong){
+    const g = (nguong == null) ? 24 : Number(nguong);
+    // Tính cho cả người mới có số tồn mà chưa kịp chọn mức phép
+    return khoEmployees(khoId).filter(e =>
+      (!chuaSet(e) || e.phepTon != null) && tinh(e).ton > g).length;
+  };
+  window.renderTonPhep = renderTonPhep;
+  window.tpXuatExcel = function(){
+    if(typeof XLSX === 'undefined'){ toast('⚠ Chưa tải được thư viện Excel'); return; }
+    const rows = khoEmployees(CUR_KHO).map(e=>{
+      const t = tinh(e), muc = mucCua(e);
+      const tn = thamNien(e.ngayVao);
+      return [e.maSo || '', e.name, muc ? muc.ten : '', muc ? muc.ngay : '',
+              Number(t.gio.toFixed(2)), tn ? tn.nam + ' năm ' + tn.thang + ' tháng' : '',
+              e.phepMoc || '', Number((Number(e.phepTon) || 0).toFixed(2)),
+              Number(t.congDon.toFixed(2)), Number(t.daNghi.toFixed(2)),
+              Number(t.ton.toFixed(2)), Number(ngayCua(t.ton).toFixed(2))];
+    });
+    const head = ['Mã số','Họ tên','Ngưỡng','Ngày phép/năm','Giờ/tháng','Thâm niên',
+                  'Mốc','Tồn tại mốc (h)','Cộng dồn (h)','Đã dùng (h)','Tồn hiện tại (h)','Quy ra ngày'];
+    const ws = XLSX.utils.aoa_to_sheet([head, ...rows]);
+    ws['!cols'] = [{wch:14},{wch:26},{wch:14},{wch:14},{wch:11},{wch:16},{wch:10},{wch:15},{wch:13},{wch:12},{wch:15},{wch:12}];
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Ton phep');
+    XLSX.writeFile(wb, `ton-phep-${CUR_KHO}-${thangNay()}.xlsx`);
+    toast('✓ Đã xuất ' + rows.length + ' người');
+  };
+
+  function bind(){
+    const s = $('tpSort'), x = $('tpXuat');
+    if(s) s.onclick = ()=>{ TP_GIAM = !TP_GIAM; renderTonPhep(); };
+    if(x) x.onclick = ()=>window.tpXuatExcel();
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bind);
+  else bind();
+})();
+
 // 18. KHỞI ĐỘNG
 // =====================================================================
 (async function init(){
@@ -9724,6 +10273,8 @@ window.renderTraining = taoBoSuuTap({
   try{ await loadAll(); }catch(e){ console.error(e); }
   // Áp lịch đổi ca của tuần hiện tại (tự có hiệu lực từ thứ Hai)
   try{ const n = applyRotation('thanhpham'); if(n){ await saveHr(); await saveKho(); } }catch(e){}
+  // Nạp số liệu phép năm lần đầu từ bảng đã khai sẵn (chỉ điền cho ai chưa có)
+  try{ if(typeof napPhepLanDau === 'function') await napPhepLanDau(); }catch(e){}
   render();
   setInterval(()=>syncNow(true), 15000);
   // Nếu để app mở qua đêm Chủ nhật -> sáng thứ Hai tự áp lịch đổi ca mới
