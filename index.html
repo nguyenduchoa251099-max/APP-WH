@@ -73,6 +73,15 @@
   #sidebar .sb-item .sb-ic{font-size:15px; flex:0 0 auto;}
   #sidebar .sb-item .sb-sub{display:block; font-size:11px; font-weight:600; color:var(--ink-soft); margin-top:1px;}
   #sidebar .sb-sep{height:1px; background:var(--sb-line); margin:10px 8px 12px;}
+  /* Trang AI PROJECTS nhúng trong app */
+  .aiproj-bar{display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:10px;}
+  .aiproj-ten{font-size:15px; font-weight:800; letter-spacing:.04em; color:var(--ink);}
+  .aiproj-ghi{font-size:12.5px; color:var(--ink-soft); flex:1; min-width:200px;}
+  .aiproj-mo{font-size:13px; font-weight:700; color:var(--blue-dark); text-decoration:none;
+    border:1px solid var(--line); border-radius:8px; padding:6px 12px; background:var(--panel);}
+  .aiproj-mo:hover{background:var(--blue-bg);}
+  .aiproj-frame{display:block; width:100%; height:calc(100vh - 200px); min-height:560px;
+    border:1px solid var(--line); border-radius:12px; background:#fff;}
   /* Mũi tên sổ xuống */
   #sidebar .sb-item .sb-caret{margin-left:auto; font-size:10px; color:var(--ink-soft); transition:transform .15s;}
   #sidebar .sb-item.mo .sb-caret{transform:rotate(180deg);}
@@ -923,6 +932,62 @@
   .cal-tag{color:#fff; font-size:9px; font-weight:700; border-radius:5px; padding:2px 4px; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
   /* Nhãn gia công: máy tính hiện mã đầy đủ (OSTESTẢI...), điện thoại chỉ hiện "OS" */
   .gc-tag .gc-short{display:none;}
+
+  /* ===== Tổng quan 3 kho: Phép tồn trên 24h (chia 3 kho) ===== */
+  .ton24{border:1px solid var(--line-soft); border-top:3px solid var(--kho); border-radius:10px; padding:10px 12px; background:var(--panel);}
+  .ton24-hd{display:flex; align-items:center; gap:8px; font-size:14px; margin-bottom:6px;}
+  .ton24-hd .sw{width:10px; height:10px; border-radius:3px; background:var(--kho);}
+  .ton24-hd .dem{margin-left:auto; font-size:12px; font-weight:700; color:var(--ink-soft);}
+  .ton24-ds{list-style:none; margin:0; padding:0;}
+  .ton24-ds li{display:flex; justify-content:space-between; align-items:baseline; gap:10px; padding:6px 0; border-top:1px dashed var(--line-soft); font-size:13.5px;}
+  .ton24-ds li:first-child{border-top:0;}
+  .ton24-ds .gio{font-weight:800; color:var(--ink); white-space:nowrap;}
+  .ton24-ds .gio small{font-weight:600; color:var(--ink-soft); margin-left:6px; font-size:11.5px;}
+
+  /* ===== Tổng quan 3 kho: biểu đồ giờ tăng ca theo tháng ===== */
+  .otc-seg{display:inline-flex; border:1px solid var(--line); border-radius:9px; overflow:hidden; text-transform:none; letter-spacing:0;}
+  .otc-seg button{background:var(--panel); color:var(--ink-soft); border:0; border-radius:0; padding:6px 12px; font-size:12.5px; font-weight:700; cursor:pointer;}
+  .otc-seg button + button{border-left:1px solid var(--line);}
+  .otc-seg button.on{background:var(--blue-bg); color:var(--blue-dark);}
+  .otc-kpi{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:12px;}
+  @media(max-width:860px){ .otc-kpi{grid-template-columns:1fr;} }
+  .otc-the{border:1px solid var(--line-soft); border-radius:10px; padding:10px 12px; background:var(--panel);}
+  .otc-the .k{display:flex; align-items:center; gap:7px; font-size:13px; font-weight:700; color:var(--ink);}
+  .otc-the .k small{color:var(--ink-soft); font-weight:600;}
+  .otc-the .sw{width:10px; height:10px; border-radius:3px; background:var(--kho); flex:0 0 auto;}
+  .otc-the .v{font-size:24px; font-weight:800; color:var(--ink); margin:4px 0 2px;}
+  .otc-the .v small{font-size:11.5px; font-weight:600; color:var(--ink-soft); margin-left:6px;}
+  .otc-the .d{font-size:12.5px; color:var(--ink-soft);}
+  .otc-the .d b{color:var(--ink);}
+  .otc-the .ss{margin-left:4px; font-weight:700; white-space:nowrap;}
+  .otc-the .ss.len{color:#c8102e;} .otc-the .ss.xuong{color:var(--teal);}
+  .otc-legend{display:flex; gap:16px; flex-wrap:wrap; align-items:center; font-size:12.5px; font-weight:700; color:var(--ink); margin-bottom:4px;}
+  .otc-legend i{width:12px; height:12px; border-radius:3px; display:inline-block; vertical-align:-2px; margin-right:6px;}
+  .otc-legend .phu{margin-left:auto; color:var(--ink-soft); font-weight:600;}
+  .otc-wrap{position:relative; overflow-x:auto;}
+  .otc-wrap svg{display:block;}
+  .otc-grid{stroke:#eef1f5; stroke-width:1;}
+  .otc-base{stroke:#c9d0da; stroke-width:1;}
+  .otc-ax{font-size:11.5px; fill:var(--ink-soft); font-family:var(--font);}
+  .otc-thang{font-size:12.5px; font-weight:700; fill:var(--ink);}
+  .otc-thang.nay{fill:var(--blue-dark);}
+  .otc-phu{font-size:10.5px; fill:#98a1ad;}
+  .otc-val{font-size:11px; font-weight:800; fill:var(--ink); font-family:var(--font);}
+  .otc-val.khong{fill:#98a1ad; font-weight:700;}
+  .otc-band{fill:transparent; cursor:pointer;}
+  .otc-band.on{fill:rgba(0,150,190,.06);}
+  .otc-bar{pointer-events:none;}
+  .otc-tip{position:absolute; top:6px; min-width:190px; background:var(--panel); border:1px solid var(--line); border-radius:10px;
+    box-shadow:0 8px 24px rgba(16,24,40,.12); padding:9px 11px; font-size:12.5px; pointer-events:none; z-index:3;}
+  .otc-tip .th{font-weight:800; margin-bottom:5px; color:var(--ink);}
+  .otc-tip .r{display:flex; align-items:center; gap:7px; padding:2px 0; color:var(--ink);}
+  .otc-tip .r i{width:10px; height:10px; border-radius:3px; flex:0 0 auto;}
+  .otc-tip .r b{margin-left:auto; padding-left:14px;}
+  .otc-tip .r.tong{border-top:1px solid var(--line-soft); margin-top:4px; padding-top:5px; color:var(--ink-soft);}
+  .otc-note{font-size:12px; color:var(--ink-soft); margin-top:4px;}
+  .otc-tbl{margin-top:10px;}
+  .otc-tbl summary{cursor:pointer; font-size:13px; font-weight:700; color:var(--blue-dark);}
+  .otc-tbl tr.tong td{border-top:2px solid var(--line);}
 
 </style>
 <style>/* css/modal.css */
@@ -2023,12 +2088,38 @@
       <div class="ovboard" id="all3Boards"></div>
     </div>
     <div class="panel" style="margin-top:18px;">
-      <h2><span class="n">⚠</span>Cảnh báo hạn mức tăng ca<span class="h2spacer"></span><span class="chip info">Tuần tối đa 12h · Tháng tối đa 24h</span></h2>
+      <h2><span class="n">⚠</span>Cảnh báo hạn mức tăng ca<span class="h2spacer"></span><span class="chip info" id="all3LimitRule">Ngày &gt;4h · Tuần &gt;12h · Tháng &gt;24h · Năm ≥350h</span></h2>
       <div class="tblwrap"><table id="all3Limit"></table></div>
+    </div>
+    <div class="panel" style="margin-top:18px;">
+      <h2><span class="n">🌴</span>Phép tồn trên 24h<span class="h2spacer"></span><span class="chip info">Số còn lại sau mọi đơn đã đăng ký</span></h2>
+      <div class="grid3" id="all3Ton24"></div>
+    </div>
+    <div class="panel" style="margin-top:18px;">
+      <h2><span class="n">📊</span>Giờ tăng ca theo tháng — 3 kho<span class="h2spacer"></span>
+        <span class="otc-seg" id="otcMode" role="group" aria-label="Cách tính">
+          <button data-m="tong" class="on">Tổng giờ</button><button data-m="bq">Bình quân / người</button>
+        </span>
+      </h2>
+      <div class="otc-kpi" id="otcKpi"></div>
+      <div class="otc-legend" id="otcLegend"></div>
+      <div class="otc-wrap" id="otcChart"></div>
+      <div class="otc-note" id="otcNote"></div>
+      <details class="otc-tbl"><summary>Xem bảng số liệu</summary><div class="tblwrap"><table id="otcTable"></table></div></details>
     </div>
   </main>
 
   <!-- ============ TAB: TỔNG QUAN TỪNG KHO ============ -->
+  <main class="tabpage" id="page-aiproj">
+    <div class="aiproj-bar">
+      <span class="aiproj-ten">AI PROJECTS</span>
+      <span class="aiproj-ghi">Dự án riêng (GitHub · Vercel · database riêng) — hiển thị ngay trong app</span>
+      <a class="aiproj-mo" id="aiprojMo" target="_blank" rel="noopener">↗ Mở tab mới</a>
+    </div>
+    <iframe id="aiprojFrame" class="aiproj-frame" title="AI PROJECTS" loading="lazy"
+      allow="clipboard-read; clipboard-write; fullscreen"></iframe>
+  </main>
+
   <main class="tabpage" id="tab-dashboard">
     <div class="grid3">
       <div class="stat s1 stat-multi">
@@ -2756,6 +2847,8 @@ const ICON_VAI = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" str
 const ICON_PHULIEU = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="14.5" r="6"/><circle cx="11.8" cy="12.8" r="0.85" fill="currentColor" stroke="none"/><circle cx="15.2" cy="12.8" r="0.85" fill="currentColor" stroke="none"/><circle cx="11.8" cy="16.2" r="0.85" fill="currentColor" stroke="none"/><circle cx="15.2" cy="16.2" r="0.85" fill="currentColor" stroke="none"/><path d="M2.6 3.2c0 3.4 2.2 4.6 4.6 5.4"/><path d="M1.8 2.2l1.6 2.2"/></svg>';
 const ICON_THANHPHAM = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.2 12 4l9 4.2v8.6L12 21l-9-4.2z"/><path d="M3 8.2 12 12.4l9-4.2"/><path d="M12 12.4V21"/><path d="M7.4 6 16.4 10.2"/></svg>';
 const ICON_ALL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/></svg>';
+// Dự án AI PROJECTS (GitHub + Vercel, database riêng) — nhúng nguyên trang vào mục sidebar
+const AI_PROJECTS_URL = 'https://ai-projects-lilac.vercel.app/';
 const WAREHOUSES = [
   { id: "vai", name: "Kho vải", icon: ICON_VAI },
   { id: "phulieu", name: "Kho phụ liệu", icon: ICON_PHULIEU },
@@ -3368,7 +3461,9 @@ function defaultHr(){
 
 let HR = defaultHr();
 let KHO = defaultKhoAll();
-let VIEW = 'tong3kho';       // 'kho' | 'tong3kho' — mở app vào Tổng quan 3 kho
+let VIEW = 'tong3kho';       // 'kho' | 'tong3kho' | 'aiproj' — mở app vào Tổng quan 3 kho
+// Các trang đứng riêng (không thuộc kho nào, không có hàng tab): VIEW -> id trang
+const TRANG_RIENG = { tong3kho:'page-tong3kho', aiproj:'page-aiproj' };
 let CUR_KHO = 'vai';
 let activeTab = 'dashboard';
 let activeSub = 'ds';
@@ -3764,10 +3859,10 @@ function setView(view, khoId){
   if(view === 'kho' && khoId) SB_MO = khoId;     // vào kho nào thì sổ menu kho đó
   const sb = $('shell');
   if(window.innerWidth < 900) sb.classList.remove('sb-open');
-  $('tabNav').style.display = (view === 'tong3kho') ? 'none' : 'flex';
+  $('tabNav').style.display = TRANG_RIENG[view] ? 'none' : 'flex';
   document.querySelectorAll('.tabpage').forEach(el=>el.classList.remove('active'));
-  if(view === 'tong3kho'){
-    $('page-tong3kho').classList.add('active');
+  if(TRANG_RIENG[view]){
+    $(TRANG_RIENG[view]).classList.add('active');
   }else{
     $('tab-' + activeTab).classList.add('active');
   }
@@ -3799,6 +3894,7 @@ function buildSidebar(){
   // thay cho hàng tab nằm ngang phía trên nội dung.
   $('sbItems').innerHTML =
     `<button class="sb-item" data-view="tong3kho"><span>TỔNG QUAN 3 KHO</span></button>
+     <button class="sb-item" data-view="aiproj"><span>AI PROJECTS</span></button>
      <div class="sb-sep"></div>` +
     WAREHOUSES.map(w=>
       `<button class="sb-item" data-view="kho" data-kho="${w.id}">
@@ -3855,7 +3951,7 @@ function veMenuSidebar(){
 
   // Menu đang sổ thì bỏ hàng tab ngang. Thu menu lại thì trả hàng tab ngang về,
   // để lúc nào cũng còn đường chuyển tab.
-  nav.style.display = dungMenu ? 'none' : (VIEW === 'tong3kho' ? 'none' : 'flex');
+  nav.style.display = dungMenu ? 'none' : (TRANG_RIENG[VIEW] ? 'none' : 'flex');
 }
 // Kho thành phẩm có tab "Đổi ca"; tab "Vị trí & Năng lực" đổi tên thành "Năng lực" và bỏ bảng phân công
 function applyTabVisibility(){
@@ -3869,7 +3965,7 @@ function applyTabVisibility(){
   }
   const hb0 = $('otHintBar'); if(hb0) hb0.style.display = 'none';
   const isTp = CUR_KHO === 'thanhpham';
-  $('tabNav').style.display = (VIEW === 'tong3kho') ? 'none' : 'flex';
+  $('tabNav').style.display = TRANG_RIENG[VIEW] ? 'none' : 'flex';
   const btnDoica = document.querySelector('#tabNav button[data-tab="doica"]');
   const btnPhancong = document.querySelector('#tabNav button[data-tab="phancong"]');
   if(btnDoica) btnDoica.style.display = isTp ? '' : 'none';
@@ -3913,13 +4009,13 @@ function applyTabVisibility(){
   if(st) st.style.display = isTp ? 'none' : '';
   if(!isTp && activeTab === 'doica'){ activeTab = 'dashboard'; }
   document.querySelectorAll('.tabpage').forEach(el=>el.classList.remove('active'));
-  if(VIEW !== 'tong3kho'){ const pg = $('tab-' + activeTab); if(pg) pg.classList.add('active'); }
-  else $('page-tong3kho').classList.add('active');
+  if(!TRANG_RIENG[VIEW]){ const pg = $('tab-' + activeTab); if(pg) pg.classList.add('active'); }
+  else $(TRANG_RIENG[VIEW]).classList.add('active');
   document.querySelectorAll('#tabNav button[data-tab]').forEach(b=>b.classList.toggle('active', b.dataset.tab===activeTab));
 }
 function renderSidebar(){
   document.querySelectorAll('#sidebar .sb-item').forEach(b=>{
-    const on = (b.dataset.view==='tong3kho' && VIEW==='tong3kho') || (b.dataset.view==='kho' && VIEW==='kho' && b.dataset.kho===CUR_KHO);
+    const on = (b.dataset.view!=='kho' && b.dataset.view===VIEW) || (b.dataset.view==='kho' && VIEW==='kho' && b.dataset.kho===CUR_KHO);
     b.classList.toggle('active', on);
   });
 }
@@ -3936,10 +4032,12 @@ function render(){
   const now = new Date();
   $('todayBadge').textContent = now.toLocaleDateString('vi-VN');
   const w = WAREHOUSES.find(x=>x.id===CUR_KHO) || WAREHOUSES[0];
-  $('khoBadge').innerHTML = (VIEW === 'tong3kho') ? `${ICON_ALL} Tổng quan 3 kho` : `${w.icon} ${esc(w.name)}`;
+  $('khoBadge').innerHTML = (VIEW === 'tong3kho') ? `${ICON_ALL} Tổng quan 3 kho`
+                         : (VIEW === 'aiproj') ? 'AI Projects' : `${w.icon} ${esc(w.name)}`;
   renderSidebar();
   applyTabVisibility();
   if(VIEW === 'tong3kho'){ renderAll3(); return; }
+  if(VIEW === 'aiproj'){ moAiProjects(); return; }
 
   if(activeTab === 'dashboard') renderDashboard();
   if(activeTab === 'phancong'){ renderStatusLine(); renderCycleTag(); renderAssignTable(); renderEmpTable(); }
@@ -3966,6 +4064,14 @@ function render(){
 // =====================================================================
 
 // ===== Trang tổng quan 3 kho và từng kho =====
+
+// Trang AI PROJECTS: chỉ nạp khung lần đầu mở (không làm chậm lúc mở app).
+// Rời trang rồi quay lại vẫn giữ nguyên chỗ đang xem trong khung.
+function moAiProjects(){
+  const f = $('aiprojFrame'), a = $('aiprojMo');
+  if(a && !a.href) a.href = AI_PROJECTS_URL;
+  if(f && !f.getAttribute('src')) f.setAttribute('src', AI_PROJECTS_URL);
+}
 
 </script>
 <script>/* js/modules/overview/overview-3kho.js */
@@ -4040,19 +4146,248 @@ function renderAll3(){
 
   renderAll3Boards();
 
-  const warns = [];
-  WAREHOUSES.forEach(w=>warns.push(...otWarnings(w.id, ref)));
-  warns.sort((a,b)=>{ if(a.level!==b.level) return a.level==='bad' ? -1 : 1; return b.val - a.val; });
-  $('all3Limit').innerHTML = warns.length
-    ? `<thead><tr><th>Họ tên</th><th>Kho</th><th>Cảnh báo</th><th style="text-align:right">Đã tăng ca</th><th style="text-align:right">Hạn mức</th></tr></thead>
-       <tbody>${warns.map(a=>`<tr class="row-hot-${a.level==='bad'?'red':'yellow'}">
+  renderAll3ViPham(ref);
+  renderAll3Ton24();
+  renderOtChart();
+}
+
+// ---------------------------------------------------------------------
+// CẢNH BÁO HẠN MỨC TĂNG CA (Tổng quan 3 kho — cho giám đốc bộ phận)
+// Chỉ báo khi ĐÃ VƯỢT, không báo "sắp chạm". Ngưỡng cố định, không theo hạn
+// mức tháng cài trong app (cài 36h thì vượt 24h vẫn báo).
+//   Ngày  > 4h     Tuần (thứ 2 – thứ 7) > 12h     Tháng > 24h
+//   Năm  >= 350h   (quy định 380h, báo sớm từ 350h)
+// Xét trong THÁNG HIỆN TẠI: các ngày của tháng này, các tuần có ngày nằm
+// trong tháng này, tổng tháng này và tổng năm nay (kể cả số đầu kỳ).
+// ---------------------------------------------------------------------
+const OT_VI_PHAM = { ngay:4, tuan:12, thang:24, nam:350, namQuyDinh:380 };
+function otViPham(khoId, ref){
+  const out = [];
+  const y = ref.getFullYear(), mo = ref.getMonth();
+  const dauThang = new Date(y, mo, 1), cuoiThang = new Date(y, mo + 1, 0);
+  khoEmployees(khoId).forEach(e=>{
+    const recs = HR.ot.filter(r=>r.employeeId===e.id);
+    const theoNgay = {};
+    recs.forEach(r=>{ theoNgay[r.date] = (theoNgay[r.date] || 0) + (Number(r.hours) || 0); });
+    const add = (kind, title, val, limit, chiTiet)=>out.push({ emp:e, khoId, kind, title, val, limit, chiTiet });
+    // Ngày
+    const ngayVuot = Object.keys(theoNgay).filter(d=>inCurrentMonth(d, ref) && theoNgay[d] > OT_VI_PHAM.ngay).sort();
+    if(ngayVuot.length){
+      const max = Math.max(...ngayVuot.map(d=>theoNgay[d]));
+      add('ngay', `Vượt ${OT_VI_PHAM.ngay}h/ngày`, max, OT_VI_PHAM.ngay,
+        `${ngayVuot.length} ngày: ` + ngayVuot.map(d=>`${ddmmNgay(d)} · ${fmtHours(theoNgay[d])}`).join(', '));
+    }
+    // Tuần: mọi tuần có ngày rơi vào tháng này
+    const tuanVuot = [];
+    for(let mon = getMonday(dauThang); mon <= cuoiThang; mon = addDays(mon, 7)){
+      const sat = addDays(mon, 5);
+      const tong = Object.keys(theoNgay).filter(d=>{ const dd = fromKey(d); return dd >= mon && dd <= sat; })
+                         .reduce((s, d)=>s + theoNgay[d], 0);
+      if(tong > OT_VI_PHAM.tuan) tuanVuot.push({ mon, sat, tong });
+    }
+    if(tuanVuot.length){
+      add('tuan', `Vượt ${OT_VI_PHAM.tuan}h/tuần`, Math.max(...tuanVuot.map(t=>t.tong)), OT_VI_PHAM.tuan,
+        tuanVuot.map(t=>`Tuần ${ddmmNgay(toKey(t.mon))}–${ddmmNgay(toKey(t.sat))} · ${fmtHours(t.tong)}`).join(', '));
+    }
+    // Tháng
+    const thang = Object.keys(theoNgay).filter(d=>inCurrentMonth(d, ref)).reduce((s, d)=>s + theoNgay[d], 0);
+    if(thang > OT_VI_PHAM.thang) add('thang', `Vượt ${OT_VI_PHAM.thang}h/tháng`, thang, OT_VI_PHAM.thang, `Tháng ${pad(mo + 1)}/${y}`);
+    // Năm (kể cả số giờ đầu kỳ nhập tay)
+    const nam = Object.keys(theoNgay).filter(d=>inCurrentYear(d, ref)).reduce((s, d)=>s + theoNgay[d], 0)
+              + (Number(e.otOpeningBalance) || 0);
+    if(nam >= OT_VI_PHAM.nam) add('nam', `Năm ≥ ${OT_VI_PHAM.nam}h`, nam, OT_VI_PHAM.namQuyDinh,
+      `Năm ${y} · quy định ${OT_VI_PHAM.namQuyDinh}h, còn ${fmtHours(Math.max(0, OT_VI_PHAM.namQuyDinh - nam))}`);
+  });
+  return out;
+}
+function renderAll3ViPham(ref){
+  const thuTu = { nam:0, thang:1, tuan:2, ngay:3 };
+  const ds = [];
+  WAREHOUSES.forEach(w=>ds.push(...otViPham(w.id, ref)));
+  ds.sort((a, b)=>(thuTu[a.kind] - thuTu[b.kind]) || (b.val - a.val));
+  $('all3LimitRule').textContent = `Tháng ${pad(ref.getMonth() + 1)}/${ref.getFullYear()} · Ngày >${OT_VI_PHAM.ngay}h · Tuần >${OT_VI_PHAM.tuan}h · Tháng >${OT_VI_PHAM.thang}h · Năm ≥${OT_VI_PHAM.nam}h`;
+  $('all3Limit').innerHTML = ds.length
+    ? `<thead><tr><th>Họ tên</th><th>Kho</th><th>Vi phạm</th><th>Chi tiết</th><th style="text-align:right">Số giờ</th><th style="text-align:right">Quy định</th></tr></thead>
+       <tbody>${ds.map(a=>`<tr class="row-hot-red">
          <td><b>${esc(a.emp.name)}</b>${maSoDuoiTen(a.emp)}</td>
          <td>${esc(khoName(a.khoId))}</td>
-         <td><span class="chip hot-${a.level==='bad'?'red':'yellow'}">${a.title}</span></td>
+         <td><span class="chip hot-red">⚠ ${a.title}</span></td>
+         <td style="font-size:13px">${esc(a.chiTiet)}</td>
          <td style="text-align:right"><b>${fmtHours(a.val)}</b></td>
          <td style="text-align:right">${a.limit}h</td></tr>`).join('')}</tbody>`
-    : `<tbody><tr><td class="empty-msg">Không có ai chạm ngưỡng cảnh báo tăng ca.</td></tr></tbody>`;
+    : `<tbody><tr><td class="empty-msg">✓ Tháng này không có ai vượt hạn mức tăng ca.</td></tr></tbody>`;
 }
+
+// ---------------------------------------------------------------------
+// PHÉP TỒN TRÊN 24H — chia theo 3 kho
+// ---------------------------------------------------------------------
+// Màu nhận diện từng kho trên biểu đồ / danh sách: xanh dương · xanh lá · cam
+// (cam thay cho tím của thẻ kho thành phẩm vì tím đứng cạnh xanh dương khó phân biệt).
+// Đã kiểm tra: tách biệt được cả với người mù màu, đủ tương phản trên nền trắng.
+const KHO_MAU = { vai:'#2368b1', phulieu:'#208b72', thanhpham:'#d07514' };
+function renderAll3Ton24(){
+  const box = $('all3Ton24'); if(!box) return;
+  box.innerHTML = WAREHOUSES.map(w=>{
+    const ds = (typeof tpDsTonTren === 'function') ? tpDsTonTren(w.id, 24) : [];
+    return `<div class="ton24" style="--kho:${KHO_MAU[w.id] || 'var(--blue)'}">
+      <div class="ton24-hd"><span class="sw"></span><b>${esc(khoName(w.id))}</b><span class="dem">${ds.length} người</span></div>
+      ${ds.length ? `<ol class="ton24-ds">${ds.map(x=>`<li><span class="ten">${esc(x.e.name)}${maSoDuoiTen(x.e)}</span>
+          <span class="gio">${x.gio}<small>${x.ngay} ngày</small></span></li>`).join('')}</ol>`
+        : `<p class="empty-msg">Không ai tồn phép trên 24h.</p>`}
+    </div>`;
+  }).join('');
+}
+
+// ---------------------------------------------------------------------
+// BIỂU ĐỒ GIỜ TĂNG CA THEO THÁNG — 3 kho, 08/2026 → 12/2026
+// Cột nhóm theo tháng, mỗi kho một màu (trùng màu thẻ kho). Có 2 cách xem:
+// tổng giờ, hoặc bình quân mỗi người (chia cho số người hiện có của kho) để
+// so được giữa các kho đông/ít người. Rê chuột vào tháng để xem số chi tiết.
+// ---------------------------------------------------------------------
+const OTC_THANG = ['2026-08','2026-09','2026-10','2026-11','2026-12'];
+let OTC_MODE = 'tong';
+function otcSoLieu(){
+  const nay = thangKey(new Date());
+  const khoCua = {};
+  HR.employees.forEach(e=>{ khoCua[e.id] = e.warehouseId; });
+  const tong = {}; WAREHOUSES.forEach(w=>{ tong[w.id] = {}; OTC_THANG.forEach(m=>{ tong[w.id][m] = 0; }); });
+  HR.ot.forEach(r=>{
+    const k = khoCua[r.employeeId], m = String(r.date || '').slice(0, 7);
+    if(tong[k] && m in tong[k]) tong[k][m] += Number(r.hours) || 0;
+  });
+  const soNguoi = {}; WAREHOUSES.forEach(w=>{ soNguoi[w.id] = khoEmployees(w.id).length || 1; });
+  const giaTri = (k, m) => OTC_MODE === 'bq' ? tong[k][m] / soNguoi[k] : tong[k][m];
+  const trangThai = m => m < nay ? 'qua' : (m === nay ? 'nay' : 'toi');
+  return { tong, soNguoi, giaTri, trangThai, nay };
+}
+function thangKey(d){ return d.getFullYear() + '-' + pad(d.getMonth() + 1); }
+function otcTenThang(m){ const [y, mm] = m.split('-'); return `T${Number(mm)}/${y}`; }
+function otcNhan(v){ return (OTC_MODE === 'bq' ? fmtNumShort(v) : Math.round(v)) + 'h'; }
+function otcFmt(v){ return OTC_MODE === 'bq' ? fmtNumShort(v) + 'h' : fmtHours(v); }
+function otcTronTren(v){            // làm tròn trục lên số đẹp gần nhất: 12, 15, 20, 25, 30, 40, 50...
+  if(v <= 0) return 10;
+  const p = Math.pow(10, Math.floor(Math.log10(v))), n = v / p;
+  return [1, 1.2, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10].find(x=>n <= x) * p;
+}
+function renderOtChart(){
+  const wrap = $('otcChart'); if(!wrap) return;
+  const S = otcSoLieu();
+  const khos = WAREHOUSES.map(w=>w.id);
+
+  // Nút chuyển cách xem
+  $('otcMode').querySelectorAll('[data-m]').forEach(b=>{
+    b.classList.toggle('on', b.dataset.m === OTC_MODE);
+    b.onclick = ()=>{ OTC_MODE = b.dataset.m; renderOtChart(); };
+  });
+
+  // Thẻ số: tổng cả kỳ · tháng đang chạy (đến hôm nay) · tháng đủ gần nhất so
+  // với tháng đủ trước đó (không so tháng đang chạy dở với cả tháng — dễ hiểu nhầm)
+  const mNay = OTC_THANG.find(m=>S.trangThai(m) === 'nay');
+  const thangDu = OTC_THANG.filter(m=>S.trangThai(m) === 'qua');
+  const mDu = thangDu[thangDu.length - 1], mDuTruoc = thangDu[thangDu.length - 2];
+  $('otcKpi').innerHTML = khos.map(k=>{
+    const tongKy = OTC_THANG.reduce((s, m)=>s + S.tong[k][m], 0);
+    const kyHien = OTC_MODE === 'bq' ? tongKy / S.soNguoi[k] : tongKy;
+    let ss = '';
+    if(mDu && mDuTruoc){
+      const a = S.giaTri(k, mDu), b = S.giaTri(k, mDuTruoc);
+      if(b > 0){ const pt = Math.round((a - b) / b * 100);
+        ss = `<span class="ss ${pt > 0 ? 'len' : pt < 0 ? 'xuong' : ''}">${pt > 0 ? '▲' : pt < 0 ? '▼' : '•'} ${Math.abs(pt)}% so với ${otcTenThang(mDuTruoc)}</span>`; }
+      else if(a > 0) ss = `<span class="ss len">▲ mới phát sinh (${otcTenThang(mDuTruoc)}: 0h)</span>`;
+    }
+    return `<div class="otc-the" style="--kho:${KHO_MAU[k]}">
+      <div class="k"><span class="sw"></span>${esc(khoName(k))} <small>· ${S.soNguoi[k]} người</small></div>
+      <div class="v">${otcFmt(kyHien)}<small>${OTC_MODE === 'bq' ? 'mỗi người · ' : ''}08–12/2026</small></div>
+      ${mNay ? `<div class="d">${otcTenThang(mNay)} (đến hôm nay): <b>${otcFmt(S.giaTri(k, mNay))}</b></div>` : ''}
+      ${mDu ? `<div class="d">${otcTenThang(mDu)}: <b>${otcFmt(S.giaTri(k, mDu))}</b> ${ss}</div>` : ''}
+    </div>`;
+  }).join('');
+
+  $('otcLegend').innerHTML = khos.map(k=>`<span><i style="background:${KHO_MAU[k]}"></i>${esc(khoName(k))}</span>`).join('')
+    + `<span class="phu">${OTC_MODE === 'bq' ? 'Giờ tăng ca bình quân mỗi người / tháng' : 'Tổng giờ tăng ca / tháng'}</span>`;
+
+  // ---- Vẽ SVG ----
+  const W = Math.max(560, wrap.clientWidth || 900), H = 300;
+  const L = 52, R = 16, T = 18, B = 44;
+  const pw = W - L - R, ph = H - T - B;
+  const maxV = Math.max(0, ...khos.flatMap(k=>OTC_THANG.map(m=>S.giaTri(k, m))));
+  const top = otcTronTren(maxV * 1.12);
+  const yOf = v => T + ph - (v / top) * ph;
+  const band = pw / OTC_THANG.length;
+  const KHE = 8;                                                    // chừa chỗ cho số trên đầu cột
+  const bw = Math.max(10, Math.min(24, (band * 0.7 - 2 * KHE) / 3)); // cột tối đa 24px
+  const gw = bw * 3 + 2 * KHE;
+  const SO_VACH = 5;
+  let svg = `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" role="img" aria-label="Giờ tăng ca theo tháng của 3 kho, tháng 8 đến tháng 12 năm 2026">`;
+  // lưới + nhãn trục
+  for(let i = 0; i <= SO_VACH; i++){
+    const v = top * i / SO_VACH, y = yOf(v);
+    svg += `<line x1="${L}" x2="${W - R}" y1="${y}" y2="${y}" class="${i ? 'otc-grid' : 'otc-base'}"/>`
+         + `<text x="${L - 8}" y="${y + 4}" text-anchor="end" class="otc-ax">${fmtNumShort(v)}h</text>`;
+  }
+  OTC_THANG.forEach((m, i)=>{
+    const cx = L + band * i + band / 2, tt = S.trangThai(m);
+    svg += `<rect x="${L + band * i}" y="${T}" width="${band}" height="${ph}" class="otc-band" data-i="${i}"/>`;
+    svg += `<text x="${cx}" y="${H - B + 20}" text-anchor="middle" class="otc-ax otc-thang${tt === 'nay' ? ' nay' : ''}">${otcTenThang(m)}</text>`;
+    if(tt === 'nay') svg += `<text x="${cx}" y="${H - B + 35}" text-anchor="middle" class="otc-ax otc-phu">đến hôm nay</text>`;
+    if(tt === 'toi'){ svg += `<text x="${cx}" y="${yOf(0) - 10}" text-anchor="middle" class="otc-ax otc-phu">chưa tới</text>`; return; }
+    khos.forEach((k, j)=>{
+      const v = S.giaTri(k, m), x = cx - gw / 2 + j * (bw + KHE), y = yOf(v), h = yOf(0) - y;
+      if(h > 0){
+        const r = Math.min(4, h, bw / 2);
+        svg += `<path d="M${x},${yOf(0)} V${y + r} Q${x},${y} ${x + r},${y} H${x + bw - r} Q${x + bw},${y} ${x + bw},${y + r} V${yOf(0)} Z" fill="${KHO_MAU[k]}" class="otc-bar"/>`;
+      }
+      // Số giờ trên đầu mọi cột (kể cả 0h để thấy kho không tăng ca). Số làm tròn
+      // cho gọn; số chính xác xem ở bảng chi tiết khi rê chuột / bảng số liệu.
+      svg += `<text x="${x + bw / 2}" y="${y - 6}" text-anchor="middle" class="otc-val${v ? '' : ' khong'}">${otcNhan(v)}</text>`;
+    });
+  });
+  svg += `</svg><div class="otc-tip" id="otcTip" hidden></div>`;
+  wrap.innerHTML = svg;
+
+  // Rê chuột / chạm vào tháng -> tooltip đủ 3 kho + tổng
+  const tip = $('otcTip');
+  wrap.querySelectorAll('.otc-band').forEach(b=>{
+    const hien = ()=>{
+      const m = OTC_THANG[Number(b.dataset.i)], tt = S.trangThai(m);
+      wrap.querySelectorAll('.otc-band').forEach(x=>x.classList.toggle('on', x === b));
+      const tongThang = khos.reduce((s, k)=>s + S.tong[k][m], 0);
+      tip.innerHTML = `<div class="th">${otcTenThang(m)}${tt === 'nay' ? ' · đến hôm nay' : tt === 'toi' ? ' · chưa tới' : ''}</div>`
+        + khos.map(k=>`<div class="r"><i style="background:${KHO_MAU[k]}"></i><span>${esc(khoName(k))}</span><b>${otcFmt(S.giaTri(k, m))}</b></div>`).join('')
+        + `<div class="r tong"><span>Tổng 3 kho</span><b>${fmtHours(tongThang)}</b></div>`;
+      tip.hidden = false;
+      // Đặt cạnh tháng đang xem (bên phải, hết chỗ thì bên trái) để không che cột
+      const tyLe = wrap.clientWidth / W;
+      const trai = Number(b.getAttribute('x')) * tyLe, phai = trai + Number(b.getAttribute('width')) * tyLe;
+      const giua = (trai + phai) / 2, nuaCum = (gw / 2 + 10) * tyLe;
+      let x = giua + nuaCum;
+      if(x + tip.offsetWidth > wrap.clientWidth - 4) x = giua - nuaCum - tip.offsetWidth;
+      tip.style.left = Math.max(4, x) + 'px';
+    };
+    b.addEventListener('mouseenter', hien);
+    b.addEventListener('click', hien);
+  });
+  wrap.onmouseleave = ()=>{ tip.hidden = true; wrap.querySelectorAll('.otc-band').forEach(x=>x.classList.remove('on')); };
+
+  $('otcNote').textContent = OTC_MODE === 'bq'
+    ? 'Bình quân = tổng giờ tăng ca của kho ÷ số người hiện có trong kho. Tháng chưa tới để trống.'
+    : 'Tính theo kho hiện tại của từng người. Tháng chưa tới để trống.';
+
+  // Bảng số liệu (cho ai cần số chính xác / in ra)
+  const tongCot = k => OTC_THANG.reduce((s, m)=>s + S.giaTri(k, m), 0);
+  $('otcTable').innerHTML = `<thead><tr><th>Tháng</th>${khos.map(k=>`<th style="text-align:right">${esc(khoName(k))}</th>`).join('')}<th style="text-align:right">Tổng 3 kho</th></tr></thead>
+    <tbody>${OTC_THANG.map(m=>`<tr><td>${otcTenThang(m)}${S.trangThai(m) === 'nay' ? ' <small>(đến hôm nay)</small>' : S.trangThai(m) === 'toi' ? ' <small>(chưa tới)</small>' : ''}</td>
+      ${khos.map(k=>`<td style="text-align:right">${otcFmt(S.giaTri(k, m))}</td>`).join('')}
+      <td style="text-align:right"><b>${fmtHours(khos.reduce((s, k)=>s + S.tong[k][m], 0))}</b></td></tr>`).join('')}
+    <tr class="tong"><td><b>Cả kỳ</b></td>${khos.map(k=>`<td style="text-align:right"><b>${otcFmt(tongCot(k))}</b></td>`).join('')}
+      <td style="text-align:right"><b>${fmtHours(khos.reduce((s, k)=>s + OTC_THANG.reduce((a, m)=>a + S.tong[k][m], 0), 0))}</b></td></tr></tbody>`;
+}
+// Đổi cỡ cửa sổ -> vẽ lại cho vừa khung
+let otcHenGio = null;
+window.addEventListener('resize', ()=>{
+  clearTimeout(otcHenGio);
+  otcHenGio = setTimeout(()=>{ if(VIEW === 'tong3kho') renderOtChart(); }, 200);
+});
 
 
 // ===== Bảng nhân sự theo ca & vị trí cho tab Tổng quan 3 kho =====
@@ -12990,6 +13325,16 @@ window.renderTraining = taoBoSuuTap({
     if(!x.coSo) return { gio:'—', cls:'', ghi:'chưa cài đặt mức phép (mục Tồn phép năm)' };
     return { gio: fmtG(x.sau), cls: x.sau < 0 ? 'hot' : 'ok',
              ghi: x.vuotAm ? `<b class="am">⛔ Vượt mức âm tối đa ${fmtG(TP_AM_TOI_DA)} — chỉ đăng ký được lý do không trừ phép</b>` : '' };
+  };
+  // Danh sách người có tồn phép vượt ngưỡng (nhiều nhất trước) — cho Tổng quan 3 kho
+  window.tpDsTonTren = function(khoId, nguong){
+    const g = (nguong == null) ? 24 : Number(nguong);
+    return khoEmployees(khoId)
+      .filter(e => !chuaSet(e) || e.phepTon != null)
+      .map(e => ({ e, ton: tinh(e).ton }))
+      .filter(x => x.ton > g)
+      .sort((a, b) => b.ton - a.ton)
+      .map(x => ({ e: x.e, ton: x.ton, gio: fmtG(x.ton), ngay: fmtNgay(ngayCua(x.ton)) }));
   };
   window.renderTonPhep = renderTonPhep;
   window.tpXuatExcel = function(){
