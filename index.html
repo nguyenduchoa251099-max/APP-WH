@@ -682,6 +682,29 @@
   .qk-stat .it .v{font-size:17px; font-weight:800; color:var(--ink);}
   .qk-stat .it .v.hot{color:#c8102e;}
   .qk-stat .it .v.ok{color:var(--blue);}
+  .qk-stat .it .v.warn, .qk-stat .it .s b.warn{color:var(--amber);}
+  .qk-stat .it .s b.hot{color:#c8102e;} .qk-stat .it .s b.ok{color:var(--blue);}
+  /* Lý do nghỉ không trừ phép (không lương, ốm, việc riêng) */
+  select.ld-khongtru, option.ld-khongtru{color:var(--teal); font-weight:700;}
+  select.ld-khongtru option:not(.ld-khongtru){color:var(--ink); font-weight:400;}
+  .ld-txt{color:#888; font-size:12px;}
+  .ld-txt.ld-khongtru{color:var(--teal); font-weight:700;}
+  .qk-stat .it .s{font-size:12px; font-weight:600; color:var(--ink-soft);}
+  .qk-stat .it .s b, .lv-ton .s b{color:var(--ink);}
+  .qk-stat .it .s b.am, .lv-ton .s b.am{color:#c8102e;}
+  .lv-ton{flex:1; min-width:0; font-size:13px; line-height:1.35;}
+  .lv-ton .k{font-weight:700; color:var(--ink-soft);}
+  .lv-ton .v{font-size:17px; font-weight:800; color:var(--blue);}
+  .lv-ton .v.hot{color:#c8102e;}
+  .lv-ton .s{display:block; font-size:12px; font-weight:600; color:var(--ink-soft);}
+  /* Nghỉ nhiều ngày: "Đến ngày" + bỏ Chủ nhật */
+  .lbl-phu{font-weight:600; color:var(--ink-soft);}
+  .chk-dong{display:flex; align-items:center; gap:8px; margin-top:8px; font-size:13.5px; font-weight:600; color:var(--ink); cursor:pointer;}
+  .chk-dong input{width:auto; margin:0;}
+  .range-info{font-size:13px; margin-top:6px; color:var(--ink);}
+  .range-info:empty{display:none;}
+  .range-info .phu{color:var(--ink-soft);}
+  .range-info .loi{color:#c8102e; font-weight:700;}
   .toast.bad{background:#FF2020; font-weight:800;}
   .save-alert{position:sticky; top:0; z-index:60; display:flex; align-items:center; gap:12px; flex-wrap:wrap;
     background:#FF2020; color:#fff; padding:11px 16px; border-radius:10px; margin:10px 0 2px;
@@ -1965,7 +1988,7 @@
   </div>
 
   <div id="tabLayout">
-  <nav class="tabnav" id="tabNav">
+  <nav class="tabnav" id="tabNav" style="display:none">
     <button data-tab="dashboard" class="active">🏠 Tổng quan</button>
     <button data-tab="phancong">🔄 Vị trí &amp; Năng lực</button>
     <button data-tab="lichsu">🕘 Lịch sử</button>
@@ -1986,7 +2009,7 @@
   </nav>
 
   <!-- ============ TRANG TỔNG QUAN 3 KHO ============ -->
-  <main class="tabpage" id="page-tong3kho">
+  <main class="tabpage active" id="page-tong3kho">
     <div class="grid3" id="all3Cards"></div>
     <div class="panel" style="margin-top:18px;">
       <h2><span class="n">👥</span>Nhân sự theo ca &amp; vị trí — hôm nay<span class="h2spacer"></span>
@@ -2006,7 +2029,7 @@
   </main>
 
   <!-- ============ TAB: TỔNG QUAN TỪNG KHO ============ -->
-  <main class="tabpage active" id="tab-dashboard">
+  <main class="tabpage" id="tab-dashboard">
     <div class="grid3">
       <div class="stat s1 stat-multi">
         <small>Nhân sự</small>
@@ -2582,8 +2605,14 @@
             <button class="pick" data-sub="som">Về sớm</button>
             <button class="pick" data-sub="muon">Đi muộn</button>
           </div>
-          <label class="field-label">Ngày</label>
+          <label class="field-label" id="qkDateLabel">Ngày</label>
           <input type="date" id="qkDate">
+          <div id="qkToBox" style="display:none;">
+            <label class="field-label">Đến ngày <span class="lbl-phu">— để trống nếu chỉ nghỉ 1 ngày</span></label>
+            <input type="date" id="qkDateTo">
+            <label class="chk-dong"><input type="checkbox" id="qkSkipSun" checked> Bỏ qua Chủ nhật</label>
+            <div id="qkRangeInfo" class="range-info"></div>
+          </div>
           <div id="qkHourBox">
             <label class="field-label" id="qkHourLabel">Số giờ tăng ca (tối đa 4h/ngày)</label>
             <div class="row2">
@@ -3339,7 +3368,7 @@ function defaultHr(){
 
 let HR = defaultHr();
 let KHO = defaultKhoAll();
-let VIEW = 'kho';            // 'kho' | 'tong3kho'
+let VIEW = 'tong3kho';       // 'kho' | 'tong3kho' — mở app vào Tổng quan 3 kho
 let CUR_KHO = 'vai';
 let activeTab = 'dashboard';
 let activeSub = 'ds';
@@ -3415,25 +3444,116 @@ function setSyncTime(){
   if(el) el.textContent = txt;
 }
 
-async function saveHr(){
+// ---------------------------------------------------------------------
+// CHỐNG GHI ĐÈ LẪN NHAU
+// Dữ liệu lưu thành 1 khối, nên trước đây ai bấm lưu sau là xoá mất phần người
+// khác vừa lưu (VD: A ghi tăng ca trên điện thoại, 10 giây sau B ghi nghỉ phép
+// trên máy tính -> đơn tăng ca của A biến mất).
+// Nay trước khi ghi luôn đọc bản trên máy chủ. Nếu đã có máy khác lưu sau lần
+// mình tải gần nhất thì gộp 3 chiều:
+//   gốc  = bản mình tải về lần trước    mình = bản đang sửa    họ = bản trên máy chủ
+//   - chỗ chỉ mình sửa -> lấy của mình, chỗ chỉ họ sửa -> lấy của họ
+//   - danh sách có id (đơn tăng ca, nghỉ phép, nhân viên...) gộp theo từng id:
+//     mình thêm / sửa / xoá đơn nào thì chỉ đụng đơn đó, đơn của họ giữ nguyên
+//   - cả hai cùng sửa đúng một chỗ -> lấy của mình (thao tác mới nhất)
+// Gộp thẳng vào object đang dùng để các biến đang cầm tham chiếu không bị lạc.
+// ---------------------------------------------------------------------
+function gopBang(a, b){ return a === b || JSON.stringify(a) === JSON.stringify(b); }
+function laObjThuong(v){ return v != null && typeof v === 'object' && !Array.isArray(v); }
+function laMangId(v){ return Array.isArray(v) && v.every(x=>laObjThuong(x) && x.id != null); }
+function gopGiaTri(m, b, t){
+  if(gopBang(m, b)) return t;                  // mình không đụng -> theo họ
+  if(gopBang(t, b) || gopBang(m, t)) return m;  // họ không đụng -> theo mình
+  if(laObjThuong(m) && laObjThuong(t)){ gopObj(m, laObjThuong(b) ? b : {}, t); return m; }
+  if(laMangId(m) && laMangId(t)){ gopMangId(m, laMangId(b) ? b : [], t); return m; }
+  return m;                                    // cùng sửa 1 chỗ -> lấy của mình
+}
+function gopObj(m, b, t){
+  const keys = new Set([...Object.keys(m), ...Object.keys(b || {}), ...Object.keys(t || {})]);
+  keys.forEach(k=>{
+    const r = gopGiaTri(m[k], b ? b[k] : undefined, t ? t[k] : undefined);
+    if(r === undefined) delete m[k]; else m[k] = r;
+  });
+}
+function gopMangId(m, b, t){
+  const theoId = a => new Map(a.map(x=>[String(x.id), x]));
+  const mB = theoId(b), mT = theoId(t), mM = theoId(m);
+  const kq = [];
+  m.forEach(x=>{
+    const id = String(x.id);
+    // họ đã xoá: mình cũng không sửa gì thì bỏ theo họ, mình có sửa thì giữ của mình
+    if(mB.has(id) && !mT.has(id)){ if(!gopBang(x, mB.get(id))) kq.push(x); return; }
+    kq.push(gopGiaTri(x, mB.get(id), mT.get(id)));
+  });
+  // đơn họ mới thêm (mình chưa có, gốc cũng chưa có). Đơn có trong gốc mà mình
+  // không còn nghĩa là mình đã xoá -> không đưa lại.
+  t.forEach(x=>{ const id = String(x.id); if(!mM.has(id) && !mB.has(id)) kq.push(x); });
+  m.length = 0; kq.forEach(x=>m.push(x));
+}
+// Ghi có gộp. data bị gộp trực tiếp (nếu cần). Trả về chuỗi đã ghi thành công.
+// Các lần lưu của cùng một máy xếp hàng lần lượt, không chạy chồng lên nhau.
+const HANG_DOI_GHI = {};
+function ghiCoGop(key, data, baseRaw){
+  const truoc = HANG_DOI_GHI[key] || Promise.resolve();
+  const p = truoc.then(()=>ghiCoGopNgay(key, data, key === KEY_HR ? lastRawHr : key === KEY_KHO ? lastRawKho : baseRaw));
+  HANG_DOI_GHI[key] = p.catch(()=>{});
+  return p;
+}
+async function ghiCoGopNgay(key, data, baseRaw){
+  let goc = baseRaw;
+  for(let lan = 0; lan < 3; lan++){
+    const sv = await sbGet(key);
+    if(sv && sv !== goc){
+      gopObj(data, goc ? JSON.parse(goc) : null, JSON.parse(sv));
+      console.info('[đồng bộ] đã gộp với thay đổi của máy khác:', key);
+    }
+    const raw = JSON.stringify(data);
+    await sbSet(key, raw);
+    const back = await sbGet(key);
+    if(back === raw){
+      // cập nhật mốc gốc ngay tại đây để lần lưu đang xếp hàng phía sau dùng đúng mốc
+      if(key === KEY_HR) lastRawHr = raw; else if(key === KEY_KHO) lastRawKho = raw;
+      return raw;
+    }
+    // Có máy khác chen vào ghi đúng lúc này -> lấy bản vừa đọc làm gốc, gộp lại lần nữa
+    goc = sv;
+  }
+  throw new Error('Nhiều máy cùng lưu một lúc — chưa gộp được, bấm lưu lại sau vài giây');
+}
+
+// opt.ghiDe = true: cố ý thay hẳn bản trên máy chủ (khôi phục bản cũ, đẩy bản
+// trên máy lên) -> bỏ qua bước gộp, nếu không bản cũ sẽ bị gộp ngược lại.
+async function saveHr(opt){
   if(!DA_TAI_HR) return chanGhi('nhân sự');
   ensureSkills();
   const raw = JSON.stringify(HR);
   luuBanCu(KEY_HR);                   // giữ bản cũ lại trước khi ghi đè
   lsSet(KEY_HR, raw); lsSet(KEY_HR + ':at', new Date().toISOString());
   let ok = false;
-  try{ await sbSetVerified(KEY_HR, raw); lastRawHr = raw; OFFLINE = false; setUnsaved('hr', null); ok = true; }
+  try{
+    let daGhi = raw;
+    if(opt && opt.ghiDe) await sbSetVerified(KEY_HR, raw);
+    else daGhi = await ghiCoGop(KEY_HR, HR, lastRawHr);
+    if(daGhi !== raw) lsSet(KEY_HR, daGhi);
+    lastRawHr = daGhi; OFFLINE = false; setUnsaved('hr', null); ok = true;
+  }
   catch(e){ OFFLINE = true; setUnsaved('hr', e.message || String(e)); toast('⚠ CHƯA LƯU ĐƯỢC lên máy chủ — xem thanh đỏ phía trên'); }
   setSyncTime();
   return ok;
 }
-async function saveKho(){
+async function saveKho(opt){
   if(!DA_TAI_KHO) return chanGhi('3 kho');
   const raw = JSON.stringify(KHO);
   luuBanCu(KEY_KHO);                  // giữ bản cũ lại trước khi ghi đè
   lsSet(KEY_KHO, raw); lsSet(KEY_KHO + ':at', new Date().toISOString());
   let ok = false;
-  try{ await sbSetVerified(KEY_KHO, raw); lastRawKho = raw; OFFLINE = false; setUnsaved('kho', null); ok = true; }
+  try{
+    let daGhi = raw;
+    if(opt && opt.ghiDe) await sbSetVerified(KEY_KHO, raw);
+    else daGhi = await ghiCoGop(KEY_KHO, KHO, lastRawKho);
+    if(daGhi !== raw){ lsSet(KEY_KHO, daGhi); applySettings(); }
+    lastRawKho = daGhi; OFFLINE = false; setUnsaved('kho', null); ok = true;
+  }
   catch(e){ OFFLINE = true; setUnsaved('kho', e.message || String(e)); toast('⚠ CHƯA LƯU ĐƯỢC lên máy chủ — xem thanh đỏ phía trên'); }
   setSyncTime();
   return ok;
@@ -7806,29 +7926,72 @@ function leaveModal(empId){
   const m = openModal('Đăng ký nghỉ phép', `
     <label class="field-label">Nhân viên</label>
     <select id="mLvEmp">${emps.map(e=>`<option value="${e.id}" ${e.id===empId?'selected':''}>${esc(tenKemMaSo(e))}${CUR_KHO!=='vai'?` — ${esc(e.shift||'')}`:''}</option>`).join('')}</select>
-    <label class="field-label">Ngày</label><input type="date" id="mLvDate" value="${todayKey()}">
     <label class="field-label">Loại</label>
     <div class="row3">
       <button class="pick on red" data-lv="nghi">Nghỉ cả ngày</button>
       <button class="pick" data-lv="muon">Đi muộn</button>
       <button class="pick" data-lv="som">Về sớm</button>
     </div>
+    <label class="field-label" id="mLvDateLbl">Từ ngày</label><input type="date" id="mLvDate" value="${todayKey()}">
+    <div id="mLvToBox">
+      <label class="field-label">Đến ngày <span class="lbl-phu">— để trống nếu chỉ nghỉ 1 ngày</span></label>
+      <input type="date" id="mLvDateTo">
+      <label class="chk-dong"><input type="checkbox" id="mLvSkipSun" checked> Bỏ qua Chủ nhật</label>
+      <div id="mLvRange" class="range-info"></div>
+    </div>
     <div id="mLvReason"><label class="field-label">Lý do nghỉ</label>
-      <select id="mLvReasonSel">${LEAVE_REASONS.map(r=>`<option>${r}</option>`).join('')}</select></div>
+      <select id="mLvReasonSel">${lyDoOptions(LEAVE_REASONS)}</select></div>
     <div id="mLvHours" style="display:none;"><label class="field-label">Số giờ</label>${pickerHtml('mLv',[0,1,2,3,4,5,6,7],null)}</div>
-    <div class="btnrow" style="margin-top:16px;"><button id="mLvSave">Lưu</button></div>`);
+    <div class="btnrow" style="margin-top:16px; align-items:center;"><button id="mLvSave">Lưu</button><div id="mLvTon" class="lv-ton"></div></div>`);
+  // Nghỉ cả ngày được chọn nhiều ngày (Đến ngày); đi muộn / về sớm chỉ 1 ngày
+  const ngayNghi = ()=>dsNgayNghi($('mLvDate').value, type==='nghi' ? $('mLvDateTo').value : '', $('mLvSkipSun').checked);
+  // Phép tồn của người đang chọn, trừ thử theo loại / số giờ / lý do
+  const veTon = ()=>{
+    toMauLyDo($('mLvReasonSel'));
+    const r = ngayNghi();
+    $('mLvRange').innerHTML = type==='nghi' ? tomTatNgayNghi(r) : '';
+    const p = window.tpXemTruocHtml($('mLvEmp').value, r.ngay.length ? r.ngay : [$('mLvDate').value || todayKey()], type,
+                                    type==='nghi' ? 0 : pickerValue('mLv'), $('mLvReasonSel').value);
+    $('mLvTon').innerHTML = `<span class="k">Phép tồn</span> <b class="v ${p.cls}">${p.gio}</b><span class="s">${p.ghi}</span>`;
+  };
+  ['mLvEmp','mLvDate','mLvDateTo','mLvSkipSun','mLvReasonSel','mLvH','mLvM'].forEach(id=>$(id).addEventListener('change', veTon));
   m.body.querySelectorAll('[data-lv]').forEach(b=>b.onclick=()=>{
     type = b.dataset.lv;
     m.body.querySelectorAll('[data-lv]').forEach(x=>x.className='pick'+(x.dataset.lv===type?' on red':''));
     $('mLvReason').style.display = type==='nghi' ? 'block' : 'none';
     $('mLvHours').style.display = type==='nghi' ? 'none' : 'block';
+    $('mLvToBox').style.display = type==='nghi' ? 'block' : 'none';
+    $('mLvDateLbl').textContent = type==='nghi' ? 'Từ ngày' : 'Ngày';
+    veTon();
   });
+  veTon();
   $('mLvSave').onclick = async ()=>{
     const extra = type==='nghi'
       ? {reason: $('mLvReasonSel').value}
       : {hours: pickerValue('mLv'), reason: $('mLvReasonSel').value};
     if(type!=='nghi' && !extra.hours){ toast('⚠ Chọn số giờ'); return; }
     const eid = $('mLvEmp').value, dt = $('mLvDate').value;
+    const r = ngayNghi();
+    if(r.loi){ toast('⚠ ' + r.loi); return; }
+    // Phép âm tối đa −16h: lý do "Nghỉ phép" làm tồn xuống dưới mức đó thì không lưu
+    const chanAm = window.tpChanAmPhep(eid, type==='nghi' ? r.ngay : [dt], type, extra.hours, extra.reason);
+    if(chanAm){ veTon(); $('mLvTon').innerHTML += `<span class="s"><b class="am">${esc(chanAm)}</b></span>`; toast('⛔ Vượt mức âm phép tối đa — chưa lưu'); return; }
+    // Nghỉ nhiều ngày: ghi một lượt. Ngày đã có nghỉ cả ngày thì cập nhật lý do,
+    // ngày có đi muộn / về sớm thì hỏi rồi thay bằng nghỉ cả ngày.
+    if(type==='nghi' && r.ngay.length > 1){
+      const chong = HR.leave.filter(l=>l.employeeId===eid && l.type!=='nghi' && r.ngay.includes(l.date));
+      if(chong.length && !await confirmBox(`${empName(eid)} đang có đi muộn / về sớm ở ${chong.length} ngày trong khoảng này (${[...new Set(chong.map(l=>ddmmNgay(l.date)))].join(', ')}). Ghi nghỉ cả ngày sẽ xoá các mục đó. Tiếp tục?`)) return;
+      if(chong.length){ const bo = new Set(chong.map(l=>l.id)); HR.leave = HR.leave.filter(l=>!bo.has(l.id)); }
+      const goc = Date.now();
+      r.ngay.forEach((d, i)=>{
+        const ex = HR.leave.find(l=>l.employeeId===eid && l.date===d && l.type==='nghi');
+        if(ex) Object.assign(ex, extra);
+        else HR.leave.push({id:`lv${goc}_${i}`, employeeId:eid, date:d, type, ...extra});
+      });
+      await saveHr(); m.close(); render();
+      toast(`✓ Đã lưu nghỉ ${r.ngay.length} ngày (${ddmmNgay(r.ngay[0])} → ${ddmmNgay(r.ngay[r.ngay.length-1])})`);
+      return;
+    }
 
     // (a) đã nghỉ cả ngày rồi thì không ghi đi muộn / về sớm nữa
     const full = HR.leave.find(l=>l.employeeId===eid && l.date===dt && l.type==='nghi');
@@ -8079,7 +8242,46 @@ function empFormModal(emp, khoId){
 // =====================================================================
 // 14. ĐĂNG KÝ NHANH
 // =====================================================================
-let qkType = 'tangca', qkSub = 'nghi';
+let qkType = 'tangca', qkSub = 'nghi', qkSoNgayVuaLuu = null;
+// Chỉ lý do "Nghỉ phép" mới trừ phép năm. Ba lý do còn lại (không lương, ốm,
+// việc riêng) không trừ -> tô chữ màu riêng (xanh) cho dễ nhớ, dễ phân biệt.
+function lyDoKhongTru(r){ return !!r && String(r).trim() !== 'Nghỉ phép'; }
+function lyDoOptions(ds){ return ds.map(r=>`<option${lyDoKhongTru(r) ? ' class="ld-khongtru"' : ''}>${r}</option>`).join(''); }
+function toMauLyDo(sel){ if(sel) sel.classList.toggle('ld-khongtru', lyDoKhongTru(sel.value)); }
+// Nghỉ nhiều ngày: danh sách ngày từ "tu" đến "den" (bỏ Chủ nhật nếu chọn).
+// "den" trống hoặc trùng "tu" = nghỉ 1 ngày. Trả { ngay:[], boCN:[], loi }.
+const NGHI_TOI_DA_NGAY = 31;
+function dsNgayNghi(tu, den, boCN){
+  if(!tu) return { ngay:[], boCN:[], loi:'Chọn ngày bắt đầu' };
+  if(!den || den === tu) return { ngay:[tu], boCN:[] };
+  if(den < tu) return { ngay:[], boCN:[], loi:'"Đến ngày" đang trước ngày bắt đầu' };
+  const ngay = [], bo = [];
+  for(let d = fromKey(tu); toKey(d) <= den; d = addDays(d, 1)){
+    if(ngay.length + bo.length >= NGHI_TOI_DA_NGAY) return { ngay:[], boCN:[], loi:`Tối đa ${NGHI_TOI_DA_NGAY} ngày một lần` };
+    (boCN && d.getDay() === 0 ? bo : ngay).push(toKey(d));
+  }
+  if(!ngay.length) return { ngay, boCN:bo, loi:'Khoảng ngày này chỉ có Chủ nhật' };
+  return { ngay, boCN:bo };
+}
+function ddmmNgay(k){ const a = k.split('-'); return a[2] + '/' + a[1]; }
+// Dòng tóm tắt: "Nghỉ 5 ngày: 05/10 → 10/10 (bỏ Chủ nhật 11/10)"
+function tomTatNgayNghi(r){
+  if(r.loi) return `<span class="loi">⚠ ${r.loi}</span>`;
+  if(r.ngay.length < 2 && !r.boCN.length) return '';
+  return `Nghỉ <b>${r.ngay.length} ngày</b>: ${ddmmNgay(r.ngay[0])} → ${ddmmNgay(r.ngay[r.ngay.length-1])}`
+    + (r.boCN.length ? ` <span class="phu">(bỏ Chủ nhật ${r.boCN.map(ddmmNgay).join(', ')})</span>` : '');
+}
+// Phép âm quá mức cho phép (−16h) -> không lưu, báo đỏ ngay dưới nút Gửi
+function qkChanAm(loi){
+  if(!loi) return false;
+  $('qkResult').innerHTML = `<span style="color:#c8102e; font-weight:700;">⛔ ${esc(loi)}</span>`;
+  toast('⛔ Vượt mức âm phép tối đa — chưa lưu');
+  return true;
+}
+function qkNgayNghi(){
+  const coKhoang = qkType !== 'tangca' && qkSub === 'nghi';
+  return dsNgayNghi($('qkDate').value, coKhoang ? $('qkDateTo').value : '', $('qkSkipSun').checked);
+}
 function renderQuickEntry(){
   const all = khoEmployees(CUR_KHO);
   const q = normName($('qkSearch') ? $('qkSearch').value : '');
@@ -8097,7 +8299,7 @@ function renderQuickEntry(){
     const sel = $('qkReason'), giu = sel.value;
     const hienTai = [...sel.options].map(o=>o.value).join('|');
     if(hienTai !== ds.join('|')){
-      sel.innerHTML = ds.map(r=>`<option>${r}</option>`).join('');
+      sel.innerHTML = lyDoOptions(ds);
       if(ds.includes(giu)) sel.value = giu;
     }
   })();
@@ -8110,6 +8312,9 @@ function renderQuickEntry(){
   const showHours = isOT || qkSub!=='nghi';
   $('qkHourBox').style.display = showHours ? 'block' : 'none';
   $('qkReasonBox').style.display = isOT ? 'none' : 'block';
+  const coKhoang = !isOT && qkSub === 'nghi';      // chỉ nghỉ cả ngày mới chọn được nhiều ngày
+  $('qkToBox').style.display = coKhoang ? 'block' : 'none';
+  $('qkDateLabel').textContent = coKhoang ? 'Từ ngày' : 'Ngày';
   $('qkReasonLabel').textContent = (qkSub === 'nghi')
     ? 'Lý do nghỉ' : 'Tính vào phép năm hay không';
   $('qkHourLabel').textContent = isOT ? 'Số giờ tăng ca (chọn 0 giờ nếu dưới 1 tiếng — tối đa 4h/ngày)'
@@ -8126,14 +8331,19 @@ function renderQuickEntry(){
   renderQkToday();
 }
 function qkRecalc(){
+  $('qkRangeInfo').innerHTML = (qkType !== 'tangca' && qkSub === 'nghi') ? tomTatNgayNghi(qkNgayNghi()) : '';
   renderQkStat();
   if(qkType!=='tangca' || !$('qkHour').value){ $('qkWarn').innerHTML=''; return; }
   const h = Number($('qkHour').value) + Number($('qkMin').value)/60;
-  $('qkWarn').innerHTML = warnHtml(checkOTLimits($('qkEmp').value, $('qkDate').value, h, null));
+  // Ngày đó đã có tăng ca thì lúc Gửi số mới sẽ THAY số cũ -> loại bản cũ ra khi
+  // tính hạn mức (trước đây cộng cả hai: sửa 3h thành 2h lại báo 5h vượt 4h/ngày).
+  const ex = HR.ot.find(r=>r.employeeId===$('qkEmp').value && r.date===$('qkDate').value);
+  $('qkWarn').innerHTML = warnHtml(checkOTLimits($('qkEmp').value, $('qkDate').value, h, ex ? ex.id : null));
 }
 // Thống kê trong tháng của người được chọn (thay cho ô ghi chú cũ)
 function renderQkStat(){
   const box = $('qkStat'); if(!box) return;
+  toMauLyDo($('qkReason'));
   const empId = $('qkEmp') ? $('qkEmp').value : '';
   const e = empId ? empById(empId) : null;
   if(!e){ box.innerHTML = ''; return; }
@@ -8142,7 +8352,6 @@ function renderQkStat(){
   const cungThang = d => inCurrentMonth(d, ref);
 
   const otH = HR.ot.filter(r=>r.employeeId===empId && cungThang(r.date)).reduce((a,r)=>a + (Number(r.hours)||0), 0);
-  const otNgay = new Set(HR.ot.filter(r=>r.employeeId===empId && cungThang(r.date)).map(r=>r.date)).size;
   const lv = HR.leave.filter(l=>l.employeeId===empId && cungThang(l.date));
   const soNgayNghi = new Set(lv.filter(l=>l.type==='nghi').map(l=>l.date)).size;
   const lanMuon = lv.filter(l=>l.type==='muon');
@@ -8150,16 +8359,33 @@ function renderQkStat(){
   const gioMuon = lanMuon.reduce((a,l)=>a + (Number(l.hours)||0), 0);
   const gioSom  = lanSom.reduce((a,l)=>a + (Number(l.hours)||0), 0);
 
-  const it = (k, v, cls)=>`<div class="it"><span class="k">${k}</span><span class="v ${cls||''}">${v}</span></div>`;
+  const it = (k, v, cls, ghi)=>`<div class="it"><span class="k">${k}</span><span class="v ${cls||''}">${v}</span>${ghi ? `<span class="s">${ghi}</span>` : ''}</div>`;
+  // Phép tồn (lấy từ Tồn phép năm), trừ thử theo loại / số giờ / lý do đang chọn
+  const phep = () => {
+    const gioChon = $('qkHour').value === '' ? 0 : Number($('qkHour').value) + Number($('qkMin').value)/60;
+    const ngay = qkSub === 'nghi' ? qkNgayNghi().ngay : [$('qkDate').value || todayKey()];
+    const p = window.tpXemTruocHtml(empId, ngay.length ? ngay : [$('qkDate').value || todayKey()], qkSub, gioChon, $('qkReason').value);
+    return it('Phép tồn', p.gio, p.cls, p.ghi);
+  };
+  // OT tuần (thứ 2 – thứ 7 của tuần chứa ngày đang chọn, sang tuần mới tự về 0)
+  // và OT tháng. Chọn số giờ là con số cộng luôn vào (0h / 12h -> 1h / 12h).
+  // Ngày đó đã có tăng ca thì bản mới thay bản cũ, nên bỏ bản cũ ra khi cộng thử.
+  const otMuc = (daCo, han, nguongVang) => {
+    const gioChon = $('qkHour').value === '' ? 0 : Number($('qkHour').value) + Number($('qkMin').value)/60;
+    const cu = HR.ot.filter(r=>r.employeeId===empId && r.date===($('qkDate').value || todayKey()))
+                    .reduce((a,r)=>a + (Number(r.hours)||0), 0);
+    const sau = daCo - cu + gioChon;
+    const cls = x => x >= han ? 'hot' : (x >= nguongVang ? 'warn' : 'ok');
+    return [fmtHours(sau) + ` / ${han}h`, cls(sau)];
+  };
+  const otTuan = HR.ot.filter(r=>r.employeeId===empId && inCurrentWeek(r.date, ref)).reduce((a,r)=>a + (Number(r.hours)||0), 0);
   const rows = (qkType === 'tangca')
-    ? it('Đã tăng ca trong tháng', fmtHours(otH) + ` / ${LIMITS.month}h`, otH >= LIMITS.month ? 'hot' : (otH >= TH.month.y ? 'hot' : 'ok'))
-      + it('Số ngày có tăng ca', otNgay + ' ngày')
-      + it('Nghỉ cả ngày', soNgayNghi + ' ngày')
-      + it('Đi muộn / về sớm', `${lanMuon.length} / ${lanSom.length} lần`)
+    ? it('Số giờ OT/tuần', ...otMuc(otTuan, LIMITS.week, TH.week.y))
+      + it('Số giờ OT/tháng', ...otMuc(otH, LIMITS.month, TH.month.y))
     : it('Nghỉ cả ngày trong tháng', soNgayNghi + ' ngày', soNgayNghi ? 'hot' : '')
       + it('Đi muộn', `${lanMuon.length} lần${gioMuon ? ' · ' + fmtHours(gioMuon) : ''}`)
       + it('Về sớm', `${lanSom.length} lần${gioSom ? ' · ' + fmtHours(gioSom) : ''}`)
-      + it('Đã tăng ca trong tháng', fmtHours(otH), 'ok');
+      + phep();
   box.innerHTML = `<div class="qk-stat">
     <div class="hd">${esc(e.name)} — tháng ${thang}</div>
     <div class="rows">${rows}</div></div>`;
@@ -8173,7 +8399,7 @@ function renderQkToday(){
     ...HR.ot.filter(r=>ids.has(r.employeeId) && r.date>=today)
         .map(r=>({date:r.date, name:empName(r.employeeId), chip:`<span class="chip info">Tăng ca ${fmtHours(r.hours)}</span>`})),
     ...HR.leave.filter(l=>ids.has(l.employeeId) && l.date>=today)
-        .map(l=>({date:l.date, name:empName(l.employeeId), chip:`<span class="chip warn">${lb[l.type]}${l.hours?' · '+fmtHours(l.hours):''}</span>${l.reason?` <span style="color:#888;font-size:12px">${esc(l.reason)}</span>`:''}`})),
+        .map(l=>({date:l.date, name:empName(l.employeeId), chip:`<span class="chip warn">${lb[l.type]}${l.hours?' · '+fmtHours(l.hours):''}</span>${l.reason?` <span class="ld-txt${lyDoKhongTru(l.reason) ? ' ld-khongtru' : ''}">${esc(l.reason)}</span>`:''}`})),
   ].sort((a,b)=>a.date.localeCompare(b.date) || a.name.localeCompare(b.name,'vi'));
 
   $('qkTodayBox').innerHTML = items.length
@@ -8195,22 +8421,40 @@ async function qkSubmit(){
     toast('⚠ Người này đã đăng ký nghỉ cả ngày — không ghi thêm đi muộn/về sớm');
     return;
   }else if(qkSub==='nghi'){
-    const ex = HR.leave.find(l=>l.employeeId===empId && l.date===date && l.type==='nghi');
-    const reason = $('qkReason').value;
-    if(ex){ ex.reason = reason; ex.note = note; } else HR.leave.push({id:'lv'+Date.now(), employeeId:empId, date, type:'nghi', reason, note});
+    const r = qkNgayNghi();
+    if(r.loi){ toast('⚠ ' + r.loi); return; }
+    if(qkChanAm(window.tpChanAmPhep(empId, r.ngay, 'nghi', 0, $('qkReason').value))) return;
+    if(r.ngay.length > 1){
+      // Nhiều ngày: ngày nào đã có đi muộn / về sớm thì nghỉ cả ngày sẽ thay chỗ
+      const chong = HR.leave.filter(l=>l.employeeId===empId && l.type!=='nghi' && r.ngay.includes(l.date));
+      if(chong.length && !await confirmBox(`${empName(empId)} đang có đi muộn / về sớm ở ${chong.length} ngày trong khoảng này (${[...new Set(chong.map(l=>ddmmNgay(l.date)))].join(', ')}). Ghi nghỉ cả ngày sẽ xoá các mục đó. Tiếp tục?`)) return;
+      if(chong.length){ const bo = new Set(chong.map(l=>l.id)); HR.leave = HR.leave.filter(l=>!bo.has(l.id)); }
+    }
+    const reason = $('qkReason').value, goc = Date.now();
+    r.ngay.forEach((d, i)=>{
+      const ex = HR.leave.find(l=>l.employeeId===empId && l.date===d && l.type==='nghi');
+      if(ex){ ex.reason = reason; ex.note = note; }
+      else HR.leave.push({id:'lv'+goc+(r.ngay.length > 1 ? '_'+i : ''), employeeId:empId, date:d, type:'nghi', reason, note});
+    });
+    qkSoNgayVuaLuu = r.ngay;
   }else{
     if($('qkHour').value === ''){ toast('⚠ Chọn số giờ'); return; }
     const h = Number($('qkHour').value) + Number($('qkMin').value)/60;
     if(h <= 0){ toast('⚠ 0 giờ 00 phút là không hợp lệ — chọn thêm số phút'); return; }
     const ex = HR.leave.find(l=>l.employeeId===empId && l.date===date && l.type===qkSub);
     const lyDo = $('qkReason').value;
+    if(qkChanAm(window.tpChanAmPhep(empId, [date], qkSub, h, lyDo))) return;
     if(ex){ ex.hours = h; ex.note = note; ex.reason = lyDo; }
     else HR.leave.push({id:'lv'+Date.now(), employeeId:empId, date, type:qkSub, hours:h, reason:lyDo, note});
   }
   await saveHr();
+  const nhieu = qkSoNgayVuaLuu && qkSoNgayVuaLuu.length > 1 ? qkSoNgayVuaLuu : null;
+  qkSoNgayVuaLuu = null;
+  if(nhieu) $('qkDateTo').value = '';             // xong đợt nghỉ dài thì xoá "Đến ngày" cho lần sau
   renderQkStat();
   const now = new Date();
-  $('qkResult').innerHTML = `<span style="color:var(--teal); font-weight:700;">✓ Đã lưu lúc ${pad(now.getHours())}:${pad(now.getMinutes())} — ${esc(empName(empId))}, ${fmtVN(fromKey(date))}</span>`;
+  $('qkResult').innerHTML = `<span style="color:var(--teal); font-weight:700;">✓ Đã lưu lúc ${pad(now.getHours())}:${pad(now.getMinutes())} — ${esc(empName(empId))}, ${
+    nhieu ? `nghỉ ${nhieu.length} ngày ${fmtVN(fromKey(nhieu[0]))} → ${fmtVN(fromKey(nhieu[nhieu.length-1]))}` : fmtVN(fromKey(date))}</span>`;
   render();
 }
 
@@ -8834,8 +9078,7 @@ async function khoiPhucModal(){
       luuBanCu(KEY_KHO);                       // giữ lại bản hiện tại trước khi thay
       WAREHOUSES.forEach(w=>{ KHO[w.id] = Object.assign(defaultKhoConfig(w.id), parsed[w.id] || {}); });
       KHO.settings = Object.assign({...DEFAULT_SETTINGS}, parsed.settings || {});
-      lastRawKho = null;
-      await saveKho(); applySettings(); render();
+      await saveKho({ ghiDe:true }); applySettings(); render();   // khôi phục = thay hẳn, không gộp
       m.close(); toast('✓ Đã khôi phục dữ liệu');
     }catch(e){ toast('⚠ Bản này hỏng, không đọc được — chọn bản khác'); }
   });
@@ -8856,7 +9099,7 @@ function localBackupModal(){
     const h = lsGet(KEY_HR), k = lsGet(KEY_KHO);
     if(h){ try{ HR = Object.assign(defaultHr(), JSON.parse(h)); }catch(e){} }
     if(k){ try{ const pr = JSON.parse(k); WAREHOUSES.forEach(w=>{ KHO[w.id] = Object.assign(defaultKhoConfig(w.id), pr[w.id] || {}); }); }catch(e){} }
-    const ok1 = await saveHr(), ok2 = await saveKho();
+    const ok1 = await saveHr({ ghiDe:true }), ok2 = await saveKho({ ghiDe:true });   // thay hẳn, không gộp
     m.close(); render();
     toast(ok1 && ok2 ? '✓ Đã đẩy bản trên máy này lên máy chủ' : '⚠ Vẫn chưa đẩy lên được — máy chủ đang từ chối ghi');
   };
@@ -9088,7 +9331,7 @@ $('btnRotWeeks').onclick = async ()=>{
 $('qkTypeOT').onclick = ()=>{ qkType='tangca'; renderQuickEntry(); };
 $('qkTypeLeave').onclick = ()=>{ qkType='nghi'; renderQuickEntry(); };
 $('qkLeaveSub').querySelectorAll('[data-sub]').forEach(b=>b.onclick=()=>{ qkSub=b.dataset.sub; renderQuickEntry(); });
-['qkEmp','qkDate','qkHour','qkMin'].forEach(id=>$(id).addEventListener('change', ()=>{ qkRecalc(); renderQkToday(); }));
+['qkEmp','qkDate','qkDateTo','qkSkipSun','qkHour','qkMin','qkReason'].forEach(id=>$(id).addEventListener('change', ()=>{ qkRecalc(); renderQkToday(); }));
 $('qkSubmit').onclick = qkSubmit;
 
 $('calPrev').onclick = ()=>{ calCursor = new Date(calCursor.getFullYear(), calCursor.getMonth()-1, 1); renderCalendar(); };
@@ -12403,6 +12646,7 @@ window.renderTraining = taoBoSuuTap({
   'use strict';
   const $ = id => document.getElementById(id);
   const TP_GIO_NGAY = 8;
+  const TP_AM_TOI_DA = -16;      // phép âm tối đa: không cho đăng ký "Nghỉ phép" làm tồn xuống dưới mức này
   const TP_MUC = [
     { key:'d5',     ten:'Dưới 5 năm',  ngay:14, gio:9.33  },
     { key:'5_10',   ten:'5 – 10 năm',  ngay:15, gio:10.00 },
@@ -12472,10 +12716,12 @@ window.renderTraining = taoBoSuuTap({
   function ngayChot(e){ return e.phepChot || ((e.phepMoc || '0000-00') + '-01'); }
   // Giờ phép đã dùng SAU ngày chốt. Nghỉ cả ngày vì phép = 8 giờ; đi muộn / về
   // sớm ghi lý do "Nghỉ phép" thì trừ đúng số giờ. Lý do khác không trừ.
-  // Đơn ghi cho ngày tương lai chưa trừ, phải tới ngày đó mới tính.
+  // Đơn cho ngày tương lai TRỪ NGAY khi đăng ký, để số tồn luôn là số còn lại
+  // thật sau mọi đơn đã đăng ký. Xoá đơn thì phép tự cộng trả lại.
+  // denThang = 'YYYY-MM': chỉ tính tới hết tháng đó (dùng cho kiểm tra âm 3 tháng).
   function daNghi(empId, chot, denThang){
     const tu = chot || '0000-00-00';
-    const het = denThang ? denThang + '-31' : todayKey();
+    const het = denThang ? denThang + '-31' : '9999-12-31';
     let g = 0;
     (HR.leave || []).forEach(l=>{
       if(l.employeeId !== empId || l.date <= tu || l.date > het) return;
@@ -12573,7 +12819,8 @@ window.renderTraining = taoBoSuuTap({
       + 'Cộng phép: <b>vào ngày 01 mỗi tháng</b> cộng đủ một suất, không chia theo số ngày đã làm trong tháng.'
       + ` Lần cộng tới: <b>01/${thangSau()}</b>.<br>`
       + 'Trừ phép: <b>nghỉ cả ngày vì phép</b> trừ 8 giờ · <b>đi muộn / về sớm ghi lý do Nghỉ phép</b> trừ đúng số giờ đã ghi · '
-      + '<b>nghỉ không lương</b> và các lý do khác không trừ. Đơn ghi cho ngày tương lai chưa trừ, tới ngày đó mới tính.';
+      + '<b>nghỉ không lương</b> và các lý do khác không trừ. Đơn cho ngày tương lai <b>trừ ngay khi đăng ký</b> (xoá đơn thì cộng trả lại).<br>'
+      + `Phép âm tối đa: <b>${fmtG(TP_AM_TOI_DA)}</b> — không đăng ký được "Nghỉ phép" làm tồn xuống dưới mức này (vẫn đăng ký được lý do không trừ phép).`;
 
     box.querySelectorAll('[data-tpcf]').forEach(b=> b.onclick = ()=>caiDatPhepModal(empById(b.dataset.tpcf)));
   }
@@ -12596,8 +12843,8 @@ window.renderTraining = taoBoSuuTap({
         <span style="font-weight:600;color:var(--ink-soft)">— sửa thẳng con số này để thêm hoặc bớt</span></label>
       <input type="number" step="0.01" id="tpTon" value="${tonBanDau}">
       <div class="note" style="margin:6px 0 0; font-size:12.5px;">
-        Đang hiện <b>số tồn tính tới hôm nay</b>. Bấm lưu là chốt luôn con số này làm mốc mới:
-        đơn nghỉ phép đã ghi tới hôm nay sẽ không bị trừ lại lần nữa, chỉ đơn từ ngày mai trở đi mới trừ tiếp.
+        Đang hiện <b>số tồn còn lại sau mọi đơn đã đăng ký</b> (kể cả đơn cho ngày tương lai).
+        Bấm lưu là chốt luôn con số này làm mốc mới: các đơn đã ghi không bị trừ lại lần nữa, chỉ đơn đăng ký sau đó mới trừ tiếp.
       </div>
       <div id="tpXem" class="note" style="margin-top:12px"></div>
       <div class="btnrow" style="margin-top:14px"><button id="tpLuu" style="width:100%">Lưu cài đặt</button></div>`);
@@ -12641,7 +12888,10 @@ window.renderTraining = taoBoSuuTap({
       e.phepGio = null;                       // đã có mức rõ ràng thì bỏ số nạp từ file
       // Chốt lại: con số vừa nhập là tồn TÍNH ĐẾN HÔM NAY, nên mốc đặt về
       // hôm nay để đơn nghỉ cũ không bị trừ lại lần thứ hai.
-      e.phepTon  = $('tpTon').value === '' ? null : Number($('tpTon').value);
+      // Số nhập vào đã trừ cả đơn cho ngày tương lai (ngày > hôm nay). Các đơn đó
+      // vẫn nằm sau mốc chốt nên sẽ bị trừ lại khi tính -> cộng bù vào số lưu.
+      const tuongLai = daNghi(e.id, todayKey());
+      e.phepTon  = $('tpTon').value === '' ? null : Math.round((Number($('tpTon').value) + tuongLai) * 100) / 100;
       e.phepMoc  = thangNay();
       e.phepChot = todayKey();
       await saveHr(); m.close(); render(); toast('✓ Đã lưu cài đặt cho ' + e.name);
@@ -12700,6 +12950,46 @@ window.renderTraining = taoBoSuuTap({
     // Tính cho cả người mới có số tồn mà chưa kịp chọn mức phép
     return khoEmployees(khoId).filter(e =>
       (!chuaSet(e) || e.phepTon != null) && tinh(e).ton > g).length;
+  };
+  // Xem trước phép tồn khi đang đăng ký nghỉ (Đăng ký nhanh + hộp "Nghỉ").
+  // Chỉ lý do "Nghỉ phép" mới trừ — đúng như cách tính ở bảng tồn phép:
+  // nghỉ cả ngày trừ 8 giờ, đi muộn / về sớm trừ đúng số giờ chọn.
+  // Nếu ngày đó đã có bản ghi cùng loại (và đã bị trừ) thì bản mới sẽ thay
+  // bản cũ, nên cộng trả phần cũ lại trước để khỏi trừ hai lần.
+  // date có thể là 1 ngày hoặc danh sách ngày (nghỉ nhiều ngày: mỗi ngày −8 giờ).
+  window.tpXemTruoc = function(empId, date, type, hours, reason){
+    const e = empById(empId);
+    if(!e || (chuaSet(e) && e.phepTon == null)) return { coSo:false };
+    const ton = tinh(e).ton;
+    const laPhep = String(reason || '').trim() === 'Nghỉ phép';
+    const ngay = Array.isArray(date) ? date : [date];
+    const tru = !laPhep ? 0 : ngay.length * (type === 'nghi' ? TP_GIO_NGAY : (Number(hours) || 0));
+    let traLai = 0;
+    ngay.forEach(d=>{
+      const cu = (HR.leave || []).find(l => l.employeeId === empId && l.date === d && l.type === type);
+      if(cu && cu.date > ngayChot(e) && String(cu.reason || '').trim() === 'Nghỉ phép')
+        traLai += (cu.type === 'nghi' ? TP_GIO_NGAY : (Number(cu.hours) || 0));
+    });
+    const sau = ton + traLai - tru;
+    // Vượt mức âm tối đa: chỉ chặn khi đơn này làm tồn GIẢM thêm (sửa đơn cũ cho
+    // ít giờ đi, hay đổi sang lý do không trừ phép thì vẫn cho).
+    const vuotAm = laPhep && sau < TP_AM_TOI_DA - 1e-9 && sau < ton - 1e-9;
+    return { coSo:true, ton, tru, laPhep, sau, vuotAm, fmt: fmtG };
+  };
+  // Trả về câu báo lỗi nếu đơn làm phép âm quá mức cho phép, ngược lại null.
+  window.tpChanAmPhep = function(empId, date, type, hours, reason){
+    const x = window.tpXemTruoc(empId, date, type, hours, reason);
+    if(!x.coSo || !x.vuotAm) return null;
+    return `${empName(empId)}: sau khi nghỉ phép còn ${fmtG(x.sau)}, vượt mức âm tối đa ${fmtG(TP_AM_TOI_DA)}. `
+      + 'Không đăng ký được "Nghỉ phép" — chọn lý do không trừ phép (Nghỉ không lương, Nghỉ ốm, Nghỉ việc riêng).';
+  };
+  // Số hiện ra là phép tồn SAU khi trừ đơn đang chọn (13.41h -> chọn nghỉ cả
+  // ngày vì phép -> 5.41h). Lý do không trừ phép thì giữ nguyên số tồn.
+  window.tpXemTruocHtml = function(empId, date, type, hours, reason){
+    const x = window.tpXemTruoc(empId, date, type, hours, reason);
+    if(!x.coSo) return { gio:'—', cls:'', ghi:'chưa cài đặt mức phép (mục Tồn phép năm)' };
+    return { gio: fmtG(x.sau), cls: x.sau < 0 ? 'hot' : 'ok',
+             ghi: x.vuotAm ? `<b class="am">⛔ Vượt mức âm tối đa ${fmtG(TP_AM_TOI_DA)} — chỉ đăng ký được lý do không trừ phép</b>` : '' };
   };
   window.renderTonPhep = renderTonPhep;
   window.tpXuatExcel = function(){
