@@ -2073,6 +2073,21 @@
     .cd-bang td.cd-nut button{margin:2px 0 2px 4px;}
   }
 
+  /* ===== TRANG LỊCH SỬ CHỈNH SỬA ===== */
+  button.dau-ls{padding:0 6px; font-size:12px; line-height:18px; background:#fff; color:var(--ink-soft);
+    border:1px solid var(--line); border-radius:6px;}
+  button.dau-ls:hover{color:var(--blue); border-color:var(--blue); opacity:1;}
+  #page-lichsusua{padding-top:16px;}
+  .ls-loc{display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:8px; margin-bottom:12px; align-items:center;}
+  .ls-loc input, .ls-loc select{font-size:14px; padding:7px 9px;}
+  .ls-bang td{font-size:13.5px; vertical-align:top;}
+  .ls-bang td.ls-gio{white-space:nowrap; font-family:var(--mono); font-size:12.5px;}
+  .ls-bang td.ls-noi{min-width:220px;}
+  .ls-don-ten{font-weight:800; font-size:15px; margin-bottom:10px;}
+  .ls-dong{border-top:1px solid var(--line-soft); padding:9px 0;}
+  .ls-dong .ls-dau{display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+  .ls-dong .ls-noi{font-size:13.5px; margin-top:4px;}
+
 </style>
 </head>
 <body>
@@ -2172,6 +2187,8 @@
   <!-- ============ TAB: TỔNG QUAN TỪNG KHO ============ -->
   <!-- ============ TRANG CÀI ĐẶT TÀI KHOẢN (chủ trang) ============ -->
   <main class="tabpage" id="page-caidat"></main>
+  <!-- ============ TRANG LỊCH SỬ CHỈNH SỬA ============ -->
+  <main class="tabpage" id="page-lichsusua"></main>
 
   <main class="tabpage" id="page-aiproj">
     <div class="aiproj-bar">
@@ -3441,8 +3458,9 @@ const MUC_XEM = [
   { id: 'tong3kho', ten: 'Tổng quan 3 kho' },
   { id: 'aiproj',   ten: 'AI Projects' },
   ...WAREHOUSES.map(w => ({ id: w.id, ten: w.name })),
+  { id: 'lichsusua', ten: 'Lịch sử chỉnh sửa', canDangNhap: true },   // khách không xem được
 ];
-const AUTH = { token: null, user: null, khach: false, guestViews: MUC_XEM.map(m => m.id) };
+const AUTH = { token: null, user: null, khach: false, guestViews: MUC_XEM.filter(m => !m.canDangNhap).map(m => m.id) };
 let KHOI_DONG_XONG = false;          // main.js bật lên khi app đã tải xong
 
 // Gọi hàm RPC trên Supabase. Lỗi do máy chủ báo (APPWH_...) đổi thành câu dễ đọc.
@@ -3477,10 +3495,11 @@ function coSuaGi(){
   const u = AUTH.user;
   return !!u && (u.role === 'chu' || (u.role === 'giamsat' && (u.khos || []).length > 0));
 }
-// Mục sidebar: 'tong3kho' | 'aiproj' | mã kho | 'caidat'
+// Mục sidebar: 'tong3kho' | 'aiproj' | mã kho | 'lichsusua' | 'caidat'
 function coXem(muc){
   if(muc === 'caidat') return laChuTrang();
   const u = AUTH.user;
+  if(muc === 'lichsusua') return !!u && (u.role === 'chu' || (u.views || []).includes(muc));
   if(u) return u.role === 'chu' || (u.views || []).includes(muc) || (u.khos || []).includes(muc);
   return (AUTH.guestViews || []).includes(muc);
 }
@@ -3813,7 +3832,7 @@ let HR = defaultHr();
 let KHO = defaultKhoAll();
 let VIEW = 'tong3kho';       // 'kho' | 'tong3kho' | 'aiproj' | 'caidat' — mở app vào Tổng quan 3 kho
 // Các trang đứng riêng (không thuộc kho nào, không có hàng tab): VIEW -> id trang
-const TRANG_RIENG = { tong3kho:'page-tong3kho', aiproj:'page-aiproj', caidat:'page-caidat' };
+const TRANG_RIENG = { tong3kho:'page-tong3kho', aiproj:'page-aiproj', caidat:'page-caidat', lichsusua:'page-lichsusua' };
 let CUR_KHO = 'vai';
 let activeTab = 'dashboard';
 let activeSub = 'ds';
@@ -3903,7 +3922,17 @@ function setSyncTime(){
 //   - cả hai cùng sửa đúng một chỗ -> lấy của mình (thao tác mới nhất)
 // Gộp thẳng vào object đang dùng để các biến đang cầm tham chiếu không bị lạc.
 // ---------------------------------------------------------------------
-function gopBang(a, b){ return a === b || JSON.stringify(a) === JSON.stringify(b); }
+// Chuỗi JSON có khoá xếp theo thứ tự — máy chủ (jsonb) trả về khoá theo thứ tự khác
+// với trình duyệt, nên so sánh phải không phụ thuộc thứ tự khoá.
+function chuoiChuan(v){
+  return JSON.stringify(v, (k, x)=> laObjThuong(x) ? Object.keys(x).sort().reduce((o, key)=>(o[key] = x[key], o), {}) : x);
+}
+function gopBang(a, b){
+  if(a === b) return true;
+  const sa = JSON.stringify(a), sb = JSON.stringify(b);
+  if(sa === sb) return true;
+  return sa !== undefined && sb !== undefined && sa.length === sb.length && chuoiChuan(a) === chuoiChuan(b);
+}
 function laObjThuong(v){ return v != null && typeof v === 'object' && !Array.isArray(v); }
 function laMangId(v){ return Array.isArray(v) && v.every(x=>laObjThuong(x) && x.id != null); }
 function gopGiaTri(m, b, t){
@@ -4285,7 +4314,9 @@ function buildSidebar(){
       `<button class="sb-item" data-view="kho" data-kho="${w.id}">
          <span>${w.name.toUpperCase()}</span>${coSuaKho(w.id) ? '' : '<span class="sb-ro" title="Chỉ xem">👁</span>'}<span class="sb-caret">▾</span></button>
        <div class="sb-menu" id="sbMenu-${w.id}"></div>`).join('') +
-    (laChuTrang() ? `<div class="sb-sep"></div><button class="sb-item" data-view="caidat"><span>⚙ CÀI ĐẶT TÀI KHOẢN</span></button>` : '');
+    ((coXem('lichsusua') || laChuTrang()) ? `<div class="sb-sep"></div>` : '') +
+    (coXem('lichsusua') ? `<button class="sb-item" data-view="lichsusua"><span>🕘 LỊCH SỬ CHỈNH SỬA</span></button>` : '') +
+    (laChuTrang() ? `<button class="sb-item" data-view="caidat"><span>⚙ CÀI ĐẶT TÀI KHOẢN</span></button>` : '');
 
   document.querySelectorAll('#sidebar .sb-item').forEach(b=>{
     b.onclick = ()=>{
@@ -4420,9 +4451,10 @@ function render(){
   const w = WAREHOUSES.find(x=>x.id===CUR_KHO) || WAREHOUSES[0];
   $('khoBadge').innerHTML = (VIEW === 'tong3kho') ? `${ICON_ALL} Tổng quan 3 kho`
                          : (VIEW === 'aiproj') ? 'AI Projects'
-                         : (VIEW === 'caidat') ? '⚙ Cài đặt tài khoản' : `${w.icon} ${esc(w.name)}`;
+                         : (VIEW === 'caidat') ? '⚙ Cài đặt tài khoản'
+                         : (VIEW === 'lichsusua') ? '🕘 Lịch sử chỉnh sửa' : `${w.icon} ${esc(w.name)}`;
   // Đang ở chế độ chỉ xem thì báo rõ ngay dưới tiêu đề
-  const ro = dangChiXem() && VIEW !== 'caidat' && VIEW !== 'aiproj';
+  const ro = dangChiXem() && !['caidat', 'aiproj', 'lichsusua'].includes(VIEW);
   document.body.classList.toggle('chi-xem', ro);
   const qb = $('quyenBadge');
   if(qb){ qb.style.display = ro ? '' : 'none'; qb.textContent = AUTH.user ? '👁 Chỉ xem' : '👁 Khách · chỉ xem'; }
@@ -4431,6 +4463,7 @@ function render(){
   if(VIEW === 'tong3kho'){ renderAll3(); return; }
   if(VIEW === 'aiproj'){ moAiProjects(); return; }
   if(VIEW === 'caidat'){ renderCaiDat(); return; }
+  if(VIEW === 'lichsusua'){ renderLichSuSua(); return; }
 
   if(activeTab === 'dashboard') renderDashboard();
   if(activeTab === 'phancong'){ renderStatusLine(); renderCycleTag(); renderAssignTable(); renderEmpTable(); }
@@ -13837,7 +13870,7 @@ function renderCaiDat(){
     <div class="panel">
       <h2>Khách (không đăng nhập)</h2>
       <p class="cd-ghi">Khách chỉ xem, không sửa được gì. Đánh dấu những mục sidebar khách được xem:</p>
-      <div class="cd-chon" id="cdKhach">${MUC_XEM.map(m => `
+      <div class="cd-chon" id="cdKhach">${MUC_XEM.filter(m => !m.canDangNhap).map(m => `
         <label><input type="checkbox" value="${m.id}"${guest.includes(m.id) ? ' checked' : ''}> ${esc(m.ten)}</label>`).join('')}
       </div>
       <button class="sm" id="cdLuuKhach" style="margin-top:10px;">Lưu quyền của khách</button>
@@ -13957,6 +13990,211 @@ async function cdXoa(u){
     toast('✓ Đã xoá tài khoản ' + u.username);
     CD_DS = null; renderCaiDat();
   }catch(e){ toast('⚠ ' + e.message); }
+}
+
+</script>
+<script>/* js/modules/lichsusua/lichsusua.js */
+// Lịch sử chỉnh sửa
+// Nhật ký do máy chủ ghi ở mỗi lần lưu (bảng appwh_audit): ai, lúc nào, thêm / sửa / xoá gì.
+//   - moLichSuDon(): hộp xem toàn bộ lịch sử của 1 đơn (nút 🕘 trong bảng)
+//   - renderLichSuSua(): trang Lịch sử chỉnh sửa có bộ lọc
+// =====================================================================
+const LS_LOAI = { ot: 'Tăng ca', leave: 'Nghỉ phép', employees: 'Nhân viên', events: 'Sự kiện',
+  giaCong: 'Gia công', khac: 'Nhân sự (khác)', kho: 'Dữ liệu kho', muc: 'Tài liệu / mục riêng' };
+const LS_HD = { them: 'Thêm', sua: 'Sửa', xoa: 'Xoá' };
+const LS_TRUONG = { hours: 'Số giờ', date: 'Ngày', type: 'Loại', reason: 'Lý do', note: 'Ghi chú',
+  employeeId: 'Nhân viên', name: 'Họ tên', shift: 'Ca', position: 'Vị trí', warehouseId: 'Kho', maSo: 'Mã số',
+  title: 'Tiêu đề', time: 'Giờ', room: 'Phòng', factory: 'Nhà máy', vehicleType: 'Loại xe',
+  forklift: 'Xe nâng', skills: 'Năng lực', phepTon: 'Phép tồn', otOpeningBalance: 'OT đầu kỳ',
+  factories: 'Danh sách nhà máy', monthLimitSetting: 'Hạn mức tháng' };
+const LS_MUC_KHO = { current: 'Phân công hiện tại', history: 'Lịch sử phân công', board: 'Sơ đồ 5S',
+  tpBoard: 'Sơ đồ 5S', rotation: 'Đổi ca', rotWeeks: 'Số tuần đổi ca', skills: 'Cột năng lực',
+  positions: 'Vị trí làm việc', notes: 'Ghi chú', xuathang: 'Xuất hàng', hotroKK: 'Hỗ trợ / Kiểm kê',
+  jobs: 'Danh sách vị trí', ca2: 'Ca 2', ca2Log: 'Nhật ký Ca 2', zones: 'Khu vực 5S',
+  shelfTitle: 'Tên khu vực kệ', monthLimit: 'Hạn mức tăng ca tháng', settings: 'Cài đặt chung' };
+const LV_LB = { nghi: 'Nghỉ cả ngày', som: 'Về sớm', muon: 'Đi muộn' };
+
+function lsGio(iso){
+  if(!iso) return '';
+  const d = new Date(iso);
+  return isNaN(d) ? '' : `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+const laNgayKey = v => typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v);
+
+// Bấm nút 🕘 trong bảng -> mở lịch sử của đơn đó
+document.addEventListener('click', e => {
+  const b = e.target.closest && e.target.closest('[data-ls-id]');
+  if(!b) return;
+  e.preventDefault(); e.stopPropagation();
+  moLichSuDon(b.dataset.lsLoai, b.dataset.lsId);
+}, true);
+
+// ---- Diễn giải 1 dòng nhật ký ----
+function lsGiaTri(truong, v){
+  if(v === undefined || v === null || v === '') return '—';
+  if(truong === 'hours' || truong === 'otOpeningBalance') return fmtHours(Number(v) || 0);
+  if(laNgayKey(v)) return fmtVN(fromKey(v));
+  if(truong === 'employeeId') return empName(v);
+  if(truong === 'type') return LV_LB[v] || v;
+  if(truong === 'warehouseId') return khoName(v);
+  if(typeof v === 'boolean') return v ? 'Có' : 'Không';
+  if(typeof v === 'object') return Array.isArray(v) ? `${v.length} mục` : '(nhiều thông tin)';
+  const s = String(v);
+  return s.length > 60 ? s.slice(0, 60) + '…' : s;
+}
+function lsMoTaDon(loai, r){
+  if(!r) return '';
+  if(loai === 'ot') return `Tăng ca ${fmtHours(Number(r.hours) || 0)}${r.note ? ' · ' + r.note : ''}`;
+  if(loai === 'leave') return `${LV_LB[r.type] || r.type || 'Nghỉ'}${r.hours ? ' · ' + fmtHours(Number(r.hours)) : ''}${r.reason ? ' · ' + r.reason : ''}`;
+  if(loai === 'employees') return [r.position, r.shift, r.warehouseId ? khoName(r.warehouseId) : ''].filter(Boolean).join(' · ');
+  return r.title || '';
+}
+function lsTenKhoa(key){
+  if(/^appwh-wi/.test(key)) return 'WI';
+  const t = /^appwh-training-(\w+)/.exec(key); if(t) return 'Training ' + khoName(t[1]).toLowerCase();
+  if(/^appwh-checkct/.test(key)) return 'CHECK CT';
+  if(/^appwh-scanos/.test(key)) return 'SCAN OS';
+  if(/^appwh-scan/.test(key)) return 'SCAN';
+  return key;
+}
+// Cột "Mục": đơn của ai, ngày nào / phần nào của kho
+function lsMucTen(a){
+  if(a.loai === 'kho'){
+    const [k, muc, ngay] = String(a.rec_id || '').split('.');
+    const kho = WAREHOUSES.some(w => w.id === k) ? khoName(k) : (LS_MUC_KHO[k] || k);
+    return kho + (muc ? ' › ' + (LS_MUC_KHO[muc] || muc) : '') + (ngay ? ' ngày ' + (laNgayKey(ngay) ? fmtVN(fromKey(ngay)) : ngay) : '');
+  }
+  if(a.loai === 'muc') return lsTenKhoa(a.rec_id);
+  if(a.loai === 'khac') return LS_TRUONG[a.rec_id] || a.rec_id;
+  return String(a.nhan || a.rec_id || '').replace(/\d{4}-\d{2}-\d{2}/, m => fmtVN(fromKey(m)));
+}
+// Cột "Thay đổi"
+function lsTomTat(a){
+  const DON = ['ot', 'leave', 'employees', 'events', 'giaCong'];
+  if(DON.includes(a.loai)){
+    if(a.hanh_dong === 'them') return esc(lsMoTaDon(a.loai, a.moi));
+    if(a.hanh_dong === 'xoa') return 'Đã xoá — ' + esc(lsMoTaDon(a.loai, a.cu));
+    const cu = a.cu || {}, moi = a.moi || {};
+    const ds = [...new Set([...Object.keys(cu), ...Object.keys(moi)])]
+      .filter(k => !['nguoiTao', 'lucTao', 'nguoiSua', 'lucSua', 'id'].includes(k) && !gopBang(cu[k], moi[k]))
+      .map(k => `<b>${esc(LS_TRUONG[k] || k)}</b>: ${esc(lsGiaTri(k, cu[k]))} → ${esc(lsGiaTri(k, moi[k]))}`);
+    return ds.join('<br>') || 'Không đổi nội dung';
+  }
+  const doiDuoc = v => v === null || v === undefined || typeof v !== 'object';
+  if((a.loai === 'kho' || a.loai === 'khac') && a.hanh_dong === 'sua' && doiDuoc(a.cu) && doiDuoc(a.moi) && (a.cu != null || a.moi != null)){
+    const truong = String(a.rec_id).split('.').pop();
+    return `${esc(lsGiaTri(truong, a.cu))} → ${esc(lsGiaTri(truong, a.moi))}`;
+  }
+  return { them: 'Đã thêm', sua: 'Đã sửa', xoa: 'Đã xoá' }[a.hanh_dong] || a.hanh_dong;
+}
+function lsChip(hd){
+  return `<span class="chip ${hd === 'them' ? 'ok' : hd === 'xoa' ? 'warn' : 'info'}">${esc(LS_HD[hd] || hd)}</span>`;
+}
+
+// ---- Lịch sử của 1 đơn ----
+async function moLichSuDon(loai, id){
+  const m = openModal('Lịch sử chỉnh sửa', '<p class="cd-mo">Đang tải…</p>');
+  try{
+    const ds = await rpc('appwh_audit_list', { p_token: AUTH.token, p_loc: { loai, rec_id: String(id), n: 100 } });
+    if(!ds || !ds.length){
+      m.body.innerHTML = '<p class="empty-msg">Chưa có lịch sử. Mục này được ghi trước khi bật nhật ký, hoặc chưa ai sửa.</p>';
+      return;
+    }
+    m.body.innerHTML = `<div class="ls-don-ten">${esc(lsMucTen(ds[0]))}</div>` + ds.map(a => `
+      <div class="ls-dong">
+        <div class="ls-dau">${lsChip(a.hanh_dong)} <b>${esc(a.username)}</b> <span class="cd-mo">${esc(lsGio(a.at))}</span></div>
+        <div class="ls-noi">${lsTomTat(a)}</div>
+      </div>`).join('');
+  }catch(e){
+    m.body.innerHTML = `<p class="lg-err">${esc(e.message)}</p>`;
+  }
+}
+
+// ---- Trang Lịch sử chỉnh sửa ----
+const LS_LOC = { kho: '', loai: '', nguoi: '', tim: '', tu: '', den: '' };
+let LS_DS = null, LS_HET = false, LS_DANG_TAI = false, LS_LOI = '';
+const LS_TRANG = 100;
+
+function lsBoLoc(){
+  const f = { n: LS_TRANG };
+  ['kho', 'loai', 'nguoi', 'tim'].forEach(k => { if(LS_LOC[k].trim()) f[k] = LS_LOC[k].trim(); });
+  // ngày theo giờ máy (Việt Nam) -> đổi sang mốc thời gian chuẩn cho máy chủ
+  if(LS_LOC.tu) f.tu = fromKey(LS_LOC.tu).toISOString();
+  if(LS_LOC.den) f.den = addDays(fromKey(LS_LOC.den), 1).toISOString();
+  return f;
+}
+async function lsTai(themTiep){
+  if(LS_DANG_TAI) return;
+  LS_DANG_TAI = true; LS_LOI = '';
+  if(!themTiep){ LS_DS = null; LS_HET = false; }
+  if(VIEW === 'lichsusua') renderLichSuSua();
+  try{
+    const f = lsBoLoc();
+    if(themTiep && LS_DS && LS_DS.length) f.truoc = LS_DS[LS_DS.length - 1].id;
+    const ds = await rpc('appwh_audit_list', { p_token: AUTH.token, p_loc: f }) || [];
+    LS_DS = themTiep ? (LS_DS || []).concat(ds) : ds;
+    LS_HET = ds.length < LS_TRANG;
+  }catch(e){
+    LS_LOI = e.message || 'lỗi không rõ';
+    if(!LS_DS) LS_DS = [];
+  }
+  LS_DANG_TAI = false;
+  if(VIEW === 'lichsusua') renderLichSuSua();
+}
+
+function renderLichSuSua(){
+  const page = $('page-lichsusua');
+  if(!page) return;
+  if(!coXem('lichsusua')){
+    page.innerHTML = `<div class="panel"><h2>Lịch sử chỉnh sửa</h2><p>Tài khoản chưa được cấp quyền xem lịch sử chỉnh sửa.</p></div>`;
+    return;
+  }
+  if(LS_DS === null && !LS_DANG_TAI){ lsTai(false); return; }
+  const khoXem = WAREHOUSES.filter(w => laChuTrang() || coXem(w.id));
+  const opt = (v, t, cur) => `<option value="${esc(v)}"${v === cur ? ' selected' : ''}>${esc(t)}</option>`;
+  const ds = LS_DS || [];
+  page.innerHTML = `
+    <div class="panel">
+      <h2>Lịch sử chỉnh sửa <span class="h2spacer"></span><button class="sm ghost" id="lsTaiLai">↻ Tải lại</button></h2>
+      <div class="ls-loc">
+        <select data-loc="kho">${opt('', 'Tất cả kho', LS_LOC.kho)}${khoXem.map(w => opt(w.id, w.name, LS_LOC.kho)).join('')}</select>
+        <select data-loc="loai">${opt('', 'Mọi loại', LS_LOC.loai)}${Object.keys(LS_LOAI).map(k => opt(k, LS_LOAI[k], LS_LOC.loai)).join('')}</select>
+        <input type="text" data-loc="nguoi" value="${esc(LS_LOC.nguoi)}" placeholder="Người sửa (tên đăng nhập)">
+        <input type="text" data-loc="tim" value="${esc(LS_LOC.tim)}" placeholder="Tìm tên nhân viên / mục">
+        <input type="date" data-loc="tu" value="${esc(LS_LOC.tu)}" title="Từ ngày">
+        <input type="date" data-loc="den" value="${esc(LS_LOC.den)}" title="Đến ngày">
+        <button class="sm" id="lsLoc">Lọc</button>
+      </div>
+      ${LS_LOI ? `<p class="lg-err">Không tải được lịch sử — ${esc(LS_LOI)}</p>` : ''}
+      <div class="tblwrap"><table class="ls-bang">
+        <thead><tr><th>Thời gian</th><th>Người sửa</th><th>Kho</th><th>Loại</th><th>Mục</th><th>Thay đổi</th></tr></thead>
+        <tbody>${ds.map(a => `
+          <tr>
+            <td class="ls-gio">${esc(lsGio(a.at))}</td>
+            <td><b>${esc(a.username)}</b></td>
+            <td>${a.kho ? esc(khoName(a.kho)) : '<span class="cd-mo">Chung</span>'}</td>
+            <td>${lsChip(a.hanh_dong)} <span class="cd-mo">${esc(LS_LOAI[a.loai] || a.loai)}</span></td>
+            <td>${esc(lsMucTen(a))}${['ot', 'leave', 'employees', 'events', 'giaCong'].includes(a.loai)
+              ? ` <button class="dau-ls" data-ls-loai="${esc(a.loai)}" data-ls-id="${esc(a.rec_id)}" title="Toàn bộ lịch sử của mục này">🕘</button>` : ''}</td>
+            <td class="ls-noi">${lsTomTat(a)}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table></div>
+      ${LS_DANG_TAI ? '<p class="cd-mo">Đang tải…</p>'
+        : !ds.length ? '<p class="empty-msg">Chưa có thay đổi nào khớp bộ lọc.</p>'
+        : !LS_HET ? '<button class="sm ghost" id="lsThem" style="margin-top:10px;">Tải thêm</button>' : ''}
+      <p class="cd-ghi cd-mo">Nhật ký do máy chủ tự ghi ở mỗi lần lưu, không ai sửa hay xoá được. Cùng một người sửa liên tục
+        một mục trong 2 phút được gộp thành 1 dòng. Chỉ giữ 3 ngày gần nhất.</p>
+    </div>`;
+
+  page.querySelectorAll('[data-loc]').forEach(el => {
+    el.oninput = el.onchange = () => { LS_LOC[el.dataset.loc] = el.value; };
+    if(el.tagName === 'SELECT' || el.type === 'date') el.addEventListener('change', () => lsTai(false));
+    if(el.type === 'text') el.onkeydown = e => { if(e.key === 'Enter') lsTai(false); };
+  });
+  $('lsLoc').onclick = () => lsTai(false);
+  $('lsTaiLai').onclick = () => lsTai(false);
+  const them = $('lsThem'); if(them) them.onclick = () => lsTai(true);
 }
 
 </script>
