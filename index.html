@@ -2014,6 +2014,66 @@
   .tp-muc button small{display:block; font-weight:600; opacity:.75; font-size:11px;}
 
 </style>
+<style>/* css/modules/taikhoan.css */
+/* Đăng nhập, nút tài khoản, nhãn "chỉ xem", trang Cài đặt tài khoản */
+
+  /* ===== MÀN ĐĂNG NHẬP (phủ toàn trang) ===== */
+  #loginGate{position:fixed; inset:0; z-index:1000; display:none; align-items:center; justify-content:center;
+    padding:16px; background:linear-gradient(160deg, var(--blue-dark) 0%, var(--blue) 55%, #4bb8d6 100%); overflow-y:auto;}
+  #loginGate .lg-card{width:100%; max-width:380px; background:var(--panel); border-radius:14px; padding:26px 24px 20px;
+    box-shadow:0 18px 50px rgba(0,40,60,.28); display:flex; flex-direction:column;}
+  #loginGate .lg-logo{height:30px; width:auto; align-self:flex-start; margin-bottom:14px;}
+  #loginGate .lg-logo[src=""]{display:none;}
+  #loginGate .lg-eyebrow{font-size:11.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-soft); font-weight:800;}
+  #loginGate h2{margin:2px 0 14px; font-size:22px; font-weight:800; color:var(--ink);}
+  #loginGate .lg-note{background:var(--amber-bg); border:1px solid var(--amber-line); color:#6b4a0a;
+    border-radius:var(--radius); padding:8px 10px; font-size:13px; margin-bottom:6px;}
+  #loginGate button{margin-top:10px; width:100%;}
+  #loginGate button[type=submit]{margin-top:14px;}
+  #loginGate .lg-hint{font-size:12px; color:var(--ink-soft); margin-top:12px; text-align:center;}
+  .lg-err{color:var(--red); font-size:13px; font-weight:600; min-height:18px; margin-top:8px;}
+  #loginGate input, .modal-body input[type=password]{
+    font-family:inherit; font-size:16px; padding:10px 11px; border:1px solid var(--blue);
+    border-radius:var(--radius); width:100%; background:var(--blue-bg); color:var(--ink);}
+
+  /* ===== NÚT TÀI KHOẢN TRÊN THANH TIÊU ĐỀ ===== */
+  #btnTaiKhoan{background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.32); color:#fff;
+    border-radius:9px; padding:7px 12px; font-size:13px; font-weight:800; white-space:nowrap;
+    max-width:200px; overflow:hidden; text-overflow:ellipsis;}
+  #btnTaiKhoan:hover{background:rgba(255,255,255,.26); opacity:1;}
+  body.phone #btnTaiKhoan{padding:6px 8px; font-size:11px; max-width:110px;}
+  body.phone #btnTaiKhoan span{display:none;}
+
+  .acc-info{margin-bottom:14px;}
+  .acc-info .acc-ten{font-size:18px; font-weight:800;}
+  .acc-info .acc-sub{font-size:14px; color:var(--ink-soft); margin-top:3px;}
+  .acc-btns{display:flex; flex-direction:column; gap:8px;}
+
+  /* ===== NHÃN CHỈ XEM ===== */
+  header.top .quyen-badge{background:var(--hot-yellow); color:var(--hot-yellow-ink); border-radius:999px;
+    padding:1px 9px; font-size:12px; font-weight:800; white-space:nowrap;}
+  body.phone header.top .quyen-badge{display:none !important;}   /* điện thoại: nút 👁 trên thanh tiêu đề đã báo */
+  #sidebar .sb-item .sb-ro{font-size:11px; opacity:.6; margin-left:4px;}
+
+  /* ===== TRANG CÀI ĐẶT TÀI KHOẢN ===== */
+  #page-caidat{padding-top:16px;}
+  #page-caidat .cd-dem{font-size:12px; text-transform:none; letter-spacing:0; font-weight:600;}
+  .cd-mo{color:var(--ink-soft); font-size:12.5px;}
+  .cd-ghi{font-size:13.5px; margin:4px 0 8px;}
+  .cd-bang td{font-size:14px;}
+  .cd-bang td.cd-xem{max-width:260px;}
+  .cd-bang td.cd-nut{white-space:nowrap; text-align:right;}
+  .cd-bang td.cd-nut button{margin-left:4px;}
+  .cd-bang tr.cd-khoa td{opacity:.6;}
+  .cd-chon{display:flex; flex-wrap:wrap; gap:8px 18px;}
+  .cd-chon label, .cd-active{display:inline-flex; align-items:center; gap:7px; font-size:14px; cursor:pointer;}
+  .cd-active{margin-top:14px;}
+  @media(max-width:700px){
+    .cd-bang td.cd-nut{white-space:normal;}
+    .cd-bang td.cd-nut button{margin:2px 0 2px 4px;}
+  }
+
+</style>
 </head>
 <body>
 <div id="shell">
@@ -2034,7 +2094,7 @@
         <div>
           <div class="eyebrow">Warehouse Management</div>
           <h1 id="mainTitle">QUẢN LÝ KHO</h1>
-          <div class="subline"><span id="khoBadge">—</span><span>·</span><span id="todayBadge">—</span></div>
+          <div class="subline"><span id="khoBadge">—</span><span>·</span><span id="todayBadge">—</span><span id="quyenBadge" class="quyen-badge" style="display:none"></span></div>
         </div>
       </div>
       <div class="headright">
@@ -2110,6 +2170,9 @@
   </main>
 
   <!-- ============ TAB: TỔNG QUAN TỪNG KHO ============ -->
+  <!-- ============ TRANG CÀI ĐẶT TÀI KHOẢN (chủ trang) ============ -->
+  <main class="tabpage" id="page-caidat"></main>
+
   <main class="tabpage" id="page-aiproj">
     <div class="aiproj-bar">
       <span class="aiproj-ten">AI PROJECTS</span>
@@ -3174,6 +3237,8 @@ function toast(msg){
   if(typeof unsavedAny === 'function' && unsavedAny() && /^✓/.test(String(msg))){
     msg = '⚠ CHƯA LƯU ĐƯỢC lên máy chủ — xem thanh đỏ phía trên';
   }
+  // Thao tác vừa bị chặn vì chỉ xem -> bỏ câu "✓ đã lưu" mà nơi gọi báo ngay sau đó
+  if(/^✓/.test(String(msg)) && typeof CHAN_OK_DEN !== 'undefined' && Date.now() < CHAN_OK_DEN) return;
   const t = $('toast'); t.textContent = msg;
   t.classList.add('show');
   t.classList.toggle('bad', /^⚠/.test(String(msg)));
@@ -3265,24 +3330,26 @@ async function sbGet(key){
   const rows = await res.json();
   return (rows && rows.length) ? rows[0].value : null;
 }
+// Ghi qua hàm appwh_save (máy chủ kiểm tra quyền theo token đăng nhập).
+// Trả về chuỗi máy chủ THỰC SỰ đã lưu — có thể khác bản gửi lên nếu giám sát
+// sửa lẫn sang kho khác (máy chủ giữ nguyên phần đó).
 async function sbSet(key, value){
-  if(API_BASE) return apiSet(key, value);
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}`, {
-    method: 'POST',
-    headers: { ...SB_HEADERS, 'Content-Type':'application/json', Prefer:'resolution=merge-duplicates' },
-    body: JSON.stringify({ key, value, updated_at: new Date().toISOString() }),
-  });
-  if(!res.ok){
-    let msg = '';
-    try{ msg = (await res.json()).message || ''; }catch(e){}
-    throw new Error(`Máy chủ từ chối ghi (HTTP ${res.status})${msg ? ' — ' + msg : ''}`);
+  if(API_BASE){ await apiSet(key, value); return value; }
+  if(!coSuaKhoa(key)){
+    throw new Error(AUTH.user ? 'Chỉ xem — tài khoản không có quyền sửa mục này' : 'Chỉ xem — đăng nhập để chỉnh sửa');
+  }
+  try{
+    return await rpc('appwh_save', { p_token: AUTH.token, p_key: key, p_value: value });
+  }catch(e){
+    throw new Error(e.mayChu ? 'Máy chủ từ chối ghi — ' + e.message : 'Không kết nối được máy chủ');
   }
 }
 // Ghi xong ĐỌC LẠI để chắc chắn máy chủ đã nhận đúng — tránh mất dữ liệu âm thầm
 async function sbSetVerified(key, raw){
-  await sbSet(key, raw);
+  const luu = await sbSet(key, raw);
   const back = await sbGet(key);
-  if(back !== raw) throw new Error('Máy chủ báo ghi xong nhưng đọc lại không khớp — dữ liệu chưa thực sự lưu');
+  if(back !== luu) throw new Error('Máy chủ báo ghi xong nhưng đọc lại không khớp — dữ liệu chưa thực sự lưu');
+  return luu;
 }
 function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
 function lsSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
@@ -3358,6 +3425,289 @@ function setUnsaved(which, err){
   }else{
     box.style.display = 'none';
   }
+}
+
+</script>
+<script>/* js/services/auth.js */
+// Đăng nhập & phân quyền
+// Tài khoản, mật khẩu, phiên đăng nhập nằm trên Supabase (xem supabase/appwh-auth.sql).
+// Trình duyệt chỉ giữ token phiên; mọi lần ghi đi qua hàm appwh_save và máy chủ
+// tự kiểm tra quyền — phần kiểm tra ở đây chỉ để giao diện báo sớm, không phải chốt chặn.
+// =====================================================================
+const KHOA_PHIEN = 'appwh-auth';     // localStorage: { token, user } hoặc { khach: true }
+const VAI_TRO = { chu: 'Chủ trang', giamsat: 'Giám sát', xem: 'Chỉ xem' };
+// Các mục sidebar có thể cấp quyền xem
+const MUC_XEM = [
+  { id: 'tong3kho', ten: 'Tổng quan 3 kho' },
+  { id: 'aiproj',   ten: 'AI Projects' },
+  ...WAREHOUSES.map(w => ({ id: w.id, ten: w.name })),
+];
+const AUTH = { token: null, user: null, khach: false, guestViews: MUC_XEM.map(m => m.id) };
+let KHOI_DONG_XONG = false;          // main.js bật lên khi app đã tải xong
+
+// Gọi hàm RPC trên Supabase. Lỗi do máy chủ báo (APPWH_...) đổi thành câu dễ đọc.
+async function rpc(fn, args){
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${fn}`, {
+    method: 'POST',
+    headers: { ...SB_HEADERS, 'Content-Type': 'application/json' },
+    body: JSON.stringify(args || {}),
+  });
+  if(!res.ok){
+    let msg = '';
+    try{ msg = (await res.json()).message || ''; }catch(e){}
+    if(/APPWH_SESSION/.test(msg)) hetPhien();
+    if(res.status === 404 && !msg.startsWith('APPWH')) msg = 'Máy chủ chưa cài đăng nhập — chạy file supabase/appwh-auth.sql';
+    const err = new Error(msg.replace(/^APPWH_\w+:\s*/, '') || ('Máy chủ lỗi HTTP ' + res.status));
+    err.mayChu = true;
+    throw err;
+  }
+  const t = await res.text();
+  return t ? JSON.parse(t) : null;
+}
+
+// ---- Quyền ----
+function laChuTrang(){ return !!(AUTH.user && AUTH.user.role === 'chu'); }
+function coSuaKho(khoId){
+  const u = AUTH.user;
+  if(!u) return false;
+  return u.role === 'chu' || (u.role === 'giamsat' && (u.khos || []).includes(khoId));
+}
+// Có sửa được ít nhất một thứ gì không (khách / tài khoản chỉ xem: không)
+function coSuaGi(){
+  const u = AUTH.user;
+  return !!u && (u.role === 'chu' || (u.role === 'giamsat' && (u.khos || []).length > 0));
+}
+// Mục sidebar: 'tong3kho' | 'aiproj' | mã kho | 'caidat'
+function coXem(muc){
+  if(muc === 'caidat') return laChuTrang();
+  const u = AUTH.user;
+  if(u) return u.role === 'chu' || (u.views || []).includes(muc) || (u.khos || []).includes(muc);
+  return (AUTH.guestViews || []).includes(muc);
+}
+// Khoá lưu trữ riêng của từng kho (giống appwh__key_kho trên máy chủ)
+function khoCuaKhoa(key){
+  const m = /^appwh-training-(vai|phulieu|thanhpham)/.exec(key);
+  if(m) return m[1];
+  if(/^appwh-(wi|checkct|scan)/.test(key)) return 'thanhpham';
+  return null;
+}
+function coSuaKhoa(key){
+  if(laChuTrang()) return true;
+  if(!coSuaGi()) return false;
+  if(key === KEY_HR || key === KEY_KHO || key === 'appwh-test-ghi') return true;   // máy chủ tự lọc theo kho
+  const k = khoCuaKhoa(key);
+  return !!k && coSuaKho(k);
+}
+// Trang đang xem có ở chế độ chỉ xem không
+function dangChiXem(){
+  if(!coSuaGi()) return true;
+  return VIEW === 'kho' && !coSuaKho(CUR_KHO);
+}
+function moTaQuyen(u){
+  if(!u) return 'Khách — chỉ xem';
+  if(u.role === 'giamsat') return 'Giám sát · ' + ((u.khos || []).map(k => khoName(k)).join(', ') || 'chưa giao kho');
+  return VAI_TRO[u.role] || u.role;
+}
+
+// ---- Phiên đăng nhập ----
+function ghiPhien(){
+  try{
+    const v = AUTH.user ? { token: AUTH.token, user: AUTH.user } : (AUTH.khach ? { khach: true } : null);
+    if(v){ v.guestViews = AUTH.guestViews; localStorage.setItem(KHOA_PHIEN, JSON.stringify(v)); }
+    else localStorage.removeItem(KHOA_PHIEN);
+  }catch(e){}
+}
+// Gọi 1 lần lúc mở app, TRƯỚC khi tải dữ liệu. Xong khi đã đăng nhập hoặc chọn vào xem kiểu khách.
+async function batDauPhien(){
+  let nho = null;
+  try{ nho = JSON.parse(localStorage.getItem(KHOA_PHIEN) || 'null'); }catch(e){}
+  if(nho && Array.isArray(nho.guestViews)) AUTH.guestViews = nho.guestViews;
+  try{ const c = await rpc('appwh_public_config'); if(c && Array.isArray(c.guest_views)) AUTH.guestViews = c.guest_views; }catch(e){}
+
+  if(nho && nho.token){
+    try{
+      const u = await rpc('appwh_me', { p_token: nho.token });
+      if(u){ AUTH.token = nho.token; AUTH.user = u; ghiPhien(); return; }
+    }catch(e){
+      // Mất mạng: dùng tạm thông tin đã nhớ, khi có mạng máy chủ vẫn kiểm tra lại token
+      if(!e.mayChu && nho.user){ AUTH.token = nho.token; AUTH.user = nho.user; return; }
+    }
+  }
+  if(nho && nho.khach){ AUTH.khach = true; return; }
+  await moCongDangNhap();
+}
+
+// Màn đăng nhập. Trả Promise xong khi đăng nhập được hoặc bấm vào xem kiểu khách.
+function moCongDangNhap(loiNhan){
+  return new Promise(resolve => {
+    let gate = $('loginGate');
+    if(!gate){
+      gate = document.createElement('div');
+      gate.id = 'loginGate';
+      document.body.appendChild(gate);
+    }
+    gate.innerHTML = `
+      <form class="lg-card" autocomplete="on">
+        <img class="lg-logo" src="${document.querySelector('.brand-logo') ? document.querySelector('.brand-logo').src : ''}" alt="">
+        <div class="lg-eyebrow">Warehouse Management</div>
+        <h2>Đăng nhập</h2>
+        ${loiNhan ? `<div class="lg-note">${esc(loiNhan)}</div>` : ''}
+        <label class="field-label" for="lgUser">Tên đăng nhập</label>
+        <input id="lgUser" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" required>
+        <label class="field-label" for="lgPass">Mật khẩu</label>
+        <input id="lgPass" name="password" type="password" autocomplete="current-password" required>
+        <div class="lg-err" id="lgErr"></div>
+        <button type="submit" id="lgSubmit">Đăng nhập</button>
+        <button type="button" class="ghost" id="lgGuest">👁 Vào xem với tư cách khách</button>
+        <div class="lg-hint">Khách chỉ xem, không chỉnh sửa được. Cần tài khoản thì liên hệ chủ trang.</div>
+      </form>`;
+    gate.style.display = 'flex';
+    const form = gate.querySelector('form');
+    const xong = () => { gate.style.display = 'none'; gate.innerHTML = ''; resolve(); };
+    setTimeout(() => { const el = $('lgUser'); if(el) el.focus(); }, 50);
+
+    form.onsubmit = async ev => {
+      ev.preventDefault();
+      const btn = $('lgSubmit'), err = $('lgErr');
+      btn.disabled = true; btn.textContent = 'Đang đăng nhập…'; err.textContent = '';
+      try{
+        const r = await rpc('appwh_login', { p_username: $('lgUser').value, p_password: $('lgPass').value });
+        if(!r || r.error) throw new Error((r && r.error) || 'Đăng nhập không được');
+        AUTH.token = r.token; AUTH.user = r.user; AUTH.khach = false;
+        ghiPhien();
+        xong();
+      }catch(e){
+        err.textContent = (e instanceof TypeError) ? 'Không kết nối được máy chủ — kiểm tra mạng' : (e.message || 'Đăng nhập không được');
+        btn.disabled = false; btn.textContent = 'Đăng nhập';
+      }
+    };
+    $('lgGuest').onclick = () => {
+      AUTH.token = null; AUTH.user = null; AUTH.khach = true;
+      ghiPhien();
+      xong();
+    };
+  });
+}
+
+// Máy chủ báo token hết hạn / tài khoản bị khoá -> mời đăng nhập lại, giữ nguyên trang đang làm
+let DANG_MO_CONG = false;
+function hetPhien(){
+  if(DANG_MO_CONG || !AUTH.token) return;
+  DANG_MO_CONG = true;
+  AUTH.token = null; AUTH.user = null;
+  ghiPhien();
+  moCongDangNhap('Phiên đăng nhập đã hết hạn hoặc tài khoản đã bị đổi — đăng nhập lại để tiếp tục. Phần chưa lưu vẫn còn, bấm "Thử lưu lại" sau khi đăng nhập.')
+    .then(() => { DANG_MO_CONG = false; sauKhiDoiTaiKhoan(); });
+}
+// Vẽ lại mọi thứ phụ thuộc quyền
+function sauKhiDoiTaiKhoan(){
+  buildSidebar();
+  if(!coXem(VIEW === 'kho' ? CUR_KHO : VIEW)) chonTrangDauTien();
+  veNutTaiKhoan();
+  setView(VIEW, VIEW === 'kho' ? CUR_KHO : undefined);
+}
+// Mở app vào mục đầu tiên được xem
+function chonTrangDauTien(){
+  if(coXem('tong3kho')){ VIEW = 'tong3kho'; return; }
+  const kho = WAREHOUSES.find(w => coXem(w.id));
+  if(kho){ VIEW = 'kho'; CUR_KHO = kho.id; SB_MO = kho.id; return; }
+  if(coXem('aiproj')){ VIEW = 'aiproj'; return; }
+  VIEW = 'caidat';      // không được xem gì: trang Cài đặt báo chưa có quyền
+}
+async function dangXuat(){
+  const tok = AUTH.token;
+  AUTH.token = null; AUTH.user = null; AUTH.khach = false;
+  ghiPhien();
+  try{ if(tok) await rpc('appwh_logout', { p_token: tok }); }catch(e){}
+  location.reload();
+}
+
+// ---- Nút tài khoản trên thanh tiêu đề ----
+function veNutTaiKhoan(){
+  let b = $('btnTaiKhoan');
+  if(!b){
+    b = document.createElement('button');
+    b.id = 'btnTaiKhoan';
+    b.onclick = moTaiKhoan;
+    const hr = document.querySelector('.headright');
+    if(hr) hr.prepend(b);
+  }
+  const u = AUTH.user;
+  b.innerHTML = u ? `👤 <span>${esc(u.display_name || u.username)}</span>` : '👁 <span>Khách</span>';
+  b.title = moTaQuyen(u) + ' — bấm để xem tài khoản';
+}
+function moTaiKhoan(){
+  const u = AUTH.user;
+  const m = openModal('Tài khoản', u ? `
+      <div class="acc-info">
+        <div class="acc-ten">${esc(u.display_name || u.username)}</div>
+        <div class="acc-sub">Tên đăng nhập: <b>${esc(u.username)}</b></div>
+        <div class="acc-sub">Quyền: <b>${esc(moTaQuyen(u))}</b></div>
+      </div>
+      <div class="acc-btns">
+        <button class="secondary" data-act="matkhau">🔑 Đổi mật khẩu</button>
+        ${laChuTrang() ? '<button class="secondary" data-act="caidat">⚙ Quản lý tài khoản</button>' : ''}
+        <button class="danger" data-act="thoat">Đăng xuất</button>
+      </div>` : `
+      <div class="acc-info">
+        <div class="acc-ten">Khách</div>
+        <div class="acc-sub">Đang xem với tư cách khách — chỉ xem, không chỉnh sửa được.</div>
+      </div>
+      <div class="acc-btns"><button data-act="dangnhap">Đăng nhập</button></div>`);
+  m.body.querySelectorAll('[data-act]').forEach(btn => {
+    btn.onclick = () => {
+      const a = btn.dataset.act;
+      m.close();
+      if(a === 'matkhau') moDoiMatKhau();
+      if(a === 'caidat') setView('caidat');
+      if(a === 'thoat') dangXuat();
+      if(a === 'dangnhap'){
+        AUTH.khach = false;
+        moCongDangNhap().then(sauKhiDoiTaiKhoan);
+      }
+    };
+  });
+}
+function moDoiMatKhau(){
+  const m = openModal('Đổi mật khẩu', `
+    <label class="field-label">Mật khẩu hiện tại</label><input type="password" data-k="cu" autocomplete="current-password">
+    <label class="field-label">Mật khẩu mới (ít nhất 6 ký tự)</label><input type="password" data-k="moi" autocomplete="new-password">
+    <label class="field-label">Nhập lại mật khẩu mới</label><input type="password" data-k="lai" autocomplete="new-password">
+    <div class="lg-err" data-err></div>
+    <div class="row2" style="margin-top:16px;"><button class="ghost" data-no>Huỷ</button><button data-ok>Đổi mật khẩu</button></div>`);
+  const v = k => m.body.querySelector(`[data-k="${k}"]`).value;
+  const err = m.body.querySelector('[data-err]');
+  m.body.querySelector('[data-no]').onclick = m.close;
+  m.body.querySelector('[data-ok]').onclick = async () => {
+    if(v('moi').length < 6){ err.textContent = 'Mật khẩu mới phải có ít nhất 6 ký tự'; return; }
+    if(v('moi') !== v('lai')){ err.textContent = 'Hai lần nhập mật khẩu mới không khớp'; return; }
+    try{
+      await rpc('appwh_change_password', { p_token: AUTH.token, p_old: v('cu'), p_new: v('moi') });
+      m.close(); toast('✓ Đã đổi mật khẩu — các máy khác đang đăng nhập tài khoản này sẽ phải đăng nhập lại');
+    }catch(e){ err.textContent = e.message; }
+  };
+}
+
+// ---- Chặn sửa ở chế độ chỉ xem ----
+// Khi bị chặn: trả dữ liệu trên máy về bản đã tải từ máy chủ và báo cho người dùng.
+let CHAN_OK_DEN = 0;                 // trong lúc này không hiện thông báo "✓ đã lưu" của thao tác vừa bị chặn
+function chiXemHoanTac(which, opt){
+  if(!KHOI_DONG_XONG || (opt && opt.tuDong)) return false;   // lưu tự động / lúc khởi động: bỏ qua lặng lẽ
+  CHAN_OK_DEN = Date.now() + 1500;
+  toast('👁 Chỉ xem — ' + (AUTH.user
+    ? (VIEW === 'kho' ? `bạn không có quyền sửa ${khoName(CUR_KHO).toLowerCase()}` : 'tài khoản không có quyền sửa')
+    : 'đăng nhập để chỉnh sửa') + '. Thay đổi chưa được lưu.');
+  try{
+    if(which === 'hr' && lastRawHr){ HR = Object.assign(defaultHr(), JSON.parse(lastRawHr)); ensureSkills(); }
+    if(which === 'kho' && lastRawKho){
+      const p = JSON.parse(lastRawKho);
+      WAREHOUSES.forEach(w => { KHO[w.id] = Object.assign(defaultKhoConfig(w.id), p[w.id] || {}); });
+      KHO.settings = Object.assign({ ...DEFAULT_SETTINGS }, p.settings || {});
+      applySettings();
+    }
+  }catch(e){}
+  setTimeout(() => { try{ render(); }catch(e){} }, 0);
+  return false;
 }
 
 </script>
@@ -3461,9 +3811,9 @@ function defaultHr(){
 
 let HR = defaultHr();
 let KHO = defaultKhoAll();
-let VIEW = 'tong3kho';       // 'kho' | 'tong3kho' | 'aiproj' — mở app vào Tổng quan 3 kho
+let VIEW = 'tong3kho';       // 'kho' | 'tong3kho' | 'aiproj' | 'caidat' — mở app vào Tổng quan 3 kho
 // Các trang đứng riêng (không thuộc kho nào, không có hàng tab): VIEW -> id trang
-const TRANG_RIENG = { tong3kho:'page-tong3kho', aiproj:'page-aiproj' };
+const TRANG_RIENG = { tong3kho:'page-tong3kho', aiproj:'page-aiproj', caidat:'page-caidat' };
 let CUR_KHO = 'vai';
 let activeTab = 'dashboard';
 let activeSub = 'ds';
@@ -3603,12 +3953,14 @@ async function ghiCoGopNgay(key, data, baseRaw){
       console.info('[đồng bộ] đã gộp với thay đổi của máy khác:', key);
     }
     const raw = JSON.stringify(data);
-    await sbSet(key, raw);
+    const luu = await sbSet(key, raw);
     const back = await sbGet(key);
-    if(back === raw){
+    if(back === luu){
+      // Máy chủ giữ nguyên phần ngoài quyền -> áp đúng bản đã lưu vào dữ liệu đang dùng
+      if(luu !== raw) apBanDaLuu(key, data, raw, luu);
       // cập nhật mốc gốc ngay tại đây để lần lưu đang xếp hàng phía sau dùng đúng mốc
-      if(key === KEY_HR) lastRawHr = raw; else if(key === KEY_KHO) lastRawKho = raw;
-      return raw;
+      if(key === KEY_HR) lastRawHr = luu; else if(key === KEY_KHO) lastRawKho = luu;
+      return luu;
     }
     // Có máy khác chen vào ghi đúng lúc này -> lấy bản vừa đọc làm gốc, gộp lại lần nữa
     goc = sv;
@@ -3616,10 +3968,37 @@ async function ghiCoGopNgay(key, data, baseRaw){
   throw new Error('Nhiều máy cùng lưu một lúc — chưa gộp được, bấm lưu lại sau vài giây');
 }
 
+// Giám sát lưu kèm phần của kho khác (VD sửa ở Tổng quan 3 kho) -> máy chủ giữ nguyên
+// phần đó. Lấy lại đúng phần máy chủ đã giữ, vẽ lại để màn hình khớp với dữ liệu thật.
+function apBanDaLuu(key, data, raw, luu){
+  const a = JSON.parse(raw), b = JSON.parse(luu);
+  new Set([...Object.keys(a), ...Object.keys(b)]).forEach(k=>{
+    if(gopBang(a[k], b[k])) return;
+    if(key === KEY_KHO && WAREHOUSES.some(w=>w.id === k)) data[k] = Object.assign(defaultKhoConfig(k), b[k] || {});
+    else if(key === KEY_KHO && k === 'settings') data[k] = Object.assign({...DEFAULT_SETTINGS}, b[k] || {});
+    else if(b[k] !== undefined) data[k] = b[k];
+    else if(key === KEY_HR && Array.isArray(defaultHr()[k])) data[k] = [];
+    else delete data[k];
+  });
+  if(key === KEY_HR) ensureSkills();
+  if(key === KEY_KHO) applySettings();
+  setTimeout(()=>{ if(!isUserTyping()) try{ render(); }catch(e){} }, 0);
+}
+
+// Được ghi không: khách / tài khoản chỉ xem thì không; giám sát đang mở kho không phải
+// của mình thì không. opt.tuDong (đổi ca, nạp phép, gửi lại phần treo) / opt.ghiDe
+// không xét trang đang mở — máy chủ vẫn tự lọc theo kho.
+function duocGhi(opt){
+  if(!coSuaGi()) return false;
+  if(opt && (opt.tuDong || opt.ghiDe)) return true;
+  return !(VIEW === 'kho' && !coSuaKho(CUR_KHO));
+}
+
 // opt.ghiDe = true: cố ý thay hẳn bản trên máy chủ (khôi phục bản cũ, đẩy bản
 // trên máy lên) -> bỏ qua bước gộp, nếu không bản cũ sẽ bị gộp ngược lại.
 async function saveHr(opt){
   if(!DA_TAI_HR) return chanGhi('nhân sự');
+  if(!duocGhi(opt)) return chiXemHoanTac('hr', opt);
   ensureSkills();
   const raw = JSON.stringify(HR);
   luuBanCu(KEY_HR);                   // giữ bản cũ lại trước khi ghi đè
@@ -3627,7 +4006,7 @@ async function saveHr(opt){
   let ok = false;
   try{
     let daGhi = raw;
-    if(opt && opt.ghiDe) await sbSetVerified(KEY_HR, raw);
+    if(opt && opt.ghiDe){ daGhi = await sbSetVerified(KEY_HR, raw); if(daGhi !== raw) apBanDaLuu(KEY_HR, HR, raw, daGhi); }
     else daGhi = await ghiCoGop(KEY_HR, HR, lastRawHr);
     if(daGhi !== raw) lsSet(KEY_HR, daGhi);
     lastRawHr = daGhi; OFFLINE = false; setUnsaved('hr', null); ok = true;
@@ -3638,13 +4017,14 @@ async function saveHr(opt){
 }
 async function saveKho(opt){
   if(!DA_TAI_KHO) return chanGhi('3 kho');
+  if(!duocGhi(opt)) return chiXemHoanTac('kho', opt);
   const raw = JSON.stringify(KHO);
   luuBanCu(KEY_KHO);                  // giữ bản cũ lại trước khi ghi đè
   lsSet(KEY_KHO, raw); lsSet(KEY_KHO + ':at', new Date().toISOString());
   let ok = false;
   try{
     let daGhi = raw;
-    if(opt && opt.ghiDe) await sbSetVerified(KEY_KHO, raw);
+    if(opt && opt.ghiDe){ daGhi = await sbSetVerified(KEY_KHO, raw); if(daGhi !== raw) apBanDaLuu(KEY_KHO, KHO, raw, daGhi); }
     else daGhi = await ghiCoGop(KEY_KHO, KHO, lastRawKho);
     if(daGhi !== raw){ lsSet(KEY_KHO, daGhi); applySettings(); }
     lastRawKho = daGhi; OFFLINE = false; setUnsaved('kho', null); ok = true;
@@ -3657,8 +4037,8 @@ async function saveKho(opt){
 async function retrySave(){
   toast('Đang thử lưu lại…');
   let ok = true;
-  if(UNSAVED.hr)  ok = (await saveHr())  && ok;
-  if(UNSAVED.kho) ok = (await saveKho()) && ok;
+  if(UNSAVED.hr)  ok = (await saveHr({tuDong:true}))  && ok;
+  if(UNSAVED.kho) ok = (await saveKho({tuDong:true})) && ok;
   toast(ok ? '✓ Đã lưu lên máy chủ thành công' : '⚠ Vẫn chưa lưu được — bấm 🩺 Kiểm tra lưu trữ để xem lý do');
   return ok;
 }
@@ -3713,7 +4093,7 @@ async function loadAll(){
   if(!KHO.vai.board || hasOldVai){
     if(!KHO.vai.board) KHO.vai.board = { assign: {...B5_DEFAULT_ASSIGN}, note: B5_DEFAULT_NOTE, labels: {...B5_DEFAULT_LABELS} };
     KHO.vai.zones = { shelves: [], pairs: [], ops: [], equipment: [] };
-    if(netOk) await saveKho();
+    if(netOk) await saveKho({tuDong:true});
   }
   if(!KHO.vai.board.assign) KHO.vai.board.assign = {...B5_DEFAULT_ASSIGN};
   if(!KHO.thanhpham.rotation) KHO.thanhpham.rotation = defaultRotation();
@@ -3760,12 +4140,12 @@ async function loadAll(){
   // Đang chạy bằng bản lưu trên máy -> thử đẩy lên máy chủ, không được thì cảnh báo đỏ
   if(netOk && (dungBanMayHr || dungBanMayKho)){
     if(dungBanMayHr){
-      const ok = await saveHr();
-      if(!ok) setUnsaved('hr', 'Máy chủ chưa có dữ liệu nhân sự và đang từ chối ghi. Đang chạy bằng bản lưu trên máy này.');
+      const ok = await saveHr({tuDong:true});
+      if(!ok && coSuaGi()) setUnsaved('hr', 'Máy chủ chưa có dữ liệu nhân sự và đang từ chối ghi. Đang chạy bằng bản lưu trên máy này.');
     }
     if(dungBanMayKho){
-      const ok = await saveKho();
-      if(!ok) setUnsaved('kho', 'Máy chủ chưa có dữ liệu Năng lực · 5S · Đổi ca và đang từ chối ghi. Đang chạy bằng bản lưu trên máy này.');
+      const ok = await saveKho({tuDong:true});
+      if(!ok && coSuaGi()) setUnsaved('kho', 'Máy chủ chưa có dữ liệu Năng lực · 5S · Đổi ca và đang từ chối ghi. Đang chạy bằng bản lưu trên máy này.');
     }
   }
   setSyncTime();
@@ -3812,7 +4192,8 @@ const PHONE_W = 900;
 let FULL_MODE = false;
 try{ FULL_MODE = localStorage.getItem('appwh-fullmode') === '1'; }catch(e){}
 function manHinhHep(){ return window.innerWidth <= PHONE_W; }
-function isPhoneMode(){ return manHinhHep() && !FULL_MODE; }
+// Tài khoản không được xem kho thành phẩm thì điện thoại cũng hiện bản đầy đủ
+function isPhoneMode(){ return manHinhHep() && !FULL_MODE && coXem('thanhpham'); }
 function applyPhoneMode(){
   const on = isPhoneMode();
   document.body.classList.toggle('phone', on);
@@ -3854,6 +4235,7 @@ function toggleFullMode(){
   toast(FULL_MODE ? '💻 Đang xem bản đầy đủ' : '📱 Đã về bản điện thoại');
 }
 function setView(view, khoId){
+  if(view !== 'caidat' && !coXem(view === 'kho' ? (khoId || CUR_KHO) : view)){ toast('⚠ Tài khoản chưa được cấp quyền xem mục này'); return; }
   VIEW = view;
   if(khoId) CUR_KHO = khoId;
   if(view === 'kho' && khoId) SB_MO = khoId;     // vào kho nào thì sổ menu kho đó
@@ -3892,14 +4274,18 @@ let SB_MO = null;          // mã kho đang sổ menu con; null = đang thu hế
 function buildSidebar(){
   // Cả 3 kho đều có menu con ngay dưới tên kho, thụt vào 1 bậc,
   // thay cho hàng tab nằm ngang phía trên nội dung.
+  // Chỉ hiện những mục tài khoản được cấp quyền xem (chủ trang thấy hết + mục Cài đặt)
+  const dau = [
+    coXem('tong3kho') ? `<button class="sb-item" data-view="tong3kho"><span>TỔNG QUAN 3 KHO</span></button>` : '',
+    coXem('aiproj') ? `<button class="sb-item" data-view="aiproj"><span>AI PROJECTS</span></button>` : '',
+  ].join('');
   $('sbItems').innerHTML =
-    `<button class="sb-item" data-view="tong3kho"><span>TỔNG QUAN 3 KHO</span></button>
-     <button class="sb-item" data-view="aiproj"><span>AI PROJECTS</span></button>
-     <div class="sb-sep"></div>` +
-    WAREHOUSES.map(w=>
+    (dau ? dau + `<div class="sb-sep"></div>` : '') +
+    WAREHOUSES.filter(w=>coXem(w.id)).map(w=>
       `<button class="sb-item" data-view="kho" data-kho="${w.id}">
-         <span>${w.name.toUpperCase()}</span><span class="sb-caret">▾</span></button>
-       <div class="sb-menu" id="sbMenu-${w.id}"></div>`).join('');
+         <span>${w.name.toUpperCase()}</span>${coSuaKho(w.id) ? '' : '<span class="sb-ro" title="Chỉ xem">👁</span>'}<span class="sb-caret">▾</span></button>
+       <div class="sb-menu" id="sbMenu-${w.id}"></div>`).join('') +
+    (laChuTrang() ? `<div class="sb-sep"></div><button class="sb-item" data-view="caidat"><span>⚙ CÀI ĐẶT TÀI KHOẢN</span></button>` : '');
 
   document.querySelectorAll('#sidebar .sb-item').forEach(b=>{
     b.onclick = ()=>{
@@ -4033,11 +4419,18 @@ function render(){
   $('todayBadge').textContent = now.toLocaleDateString('vi-VN');
   const w = WAREHOUSES.find(x=>x.id===CUR_KHO) || WAREHOUSES[0];
   $('khoBadge').innerHTML = (VIEW === 'tong3kho') ? `${ICON_ALL} Tổng quan 3 kho`
-                         : (VIEW === 'aiproj') ? 'AI Projects' : `${w.icon} ${esc(w.name)}`;
+                         : (VIEW === 'aiproj') ? 'AI Projects'
+                         : (VIEW === 'caidat') ? '⚙ Cài đặt tài khoản' : `${w.icon} ${esc(w.name)}`;
+  // Đang ở chế độ chỉ xem thì báo rõ ngay dưới tiêu đề
+  const ro = dangChiXem() && VIEW !== 'caidat' && VIEW !== 'aiproj';
+  document.body.classList.toggle('chi-xem', ro);
+  const qb = $('quyenBadge');
+  if(qb){ qb.style.display = ro ? '' : 'none'; qb.textContent = AUTH.user ? '👁 Chỉ xem' : '👁 Khách · chỉ xem'; }
   renderSidebar();
   applyTabVisibility();
   if(VIEW === 'tong3kho'){ renderAll3(); return; }
   if(VIEW === 'aiproj'){ moAiProjects(); return; }
+  if(VIEW === 'caidat'){ renderCaiDat(); return; }
 
   if(activeTab === 'dashboard') renderDashboard();
   if(activeTab === 'phancong'){ renderStatusLine(); renderCycleTag(); renderAssignTable(); renderEmpTable(); }
@@ -13368,30 +13761,235 @@ window.renderTraining = taoBoSuuTap({
 })();
 
 </script>
+<script>/* js/modules/caidat/caidat.js */
+// Cài đặt tài khoản — chỉ chủ trang
+// Tạo / sửa / khoá / xoá tài khoản, đặt lại mật khẩu, giao kho cho giám sát,
+// cấp quyền xem từng mục sidebar, và chọn mục khách (không đăng nhập) được xem.
+// Mọi thao tác gọi hàm appwh_admin_* trên Supabase — máy chủ tự kiểm tra là chủ trang.
+// =====================================================================
+let CD_DS = null;          // { users:[...], guest_views:[...] } — lần tải gần nhất
+let CD_DANG_TAI = false;
+let CD_LOI = '';           // lỗi lần tải gần nhất — không tự tải lại liên tục khi máy chủ lỗi
+
+async function cdTai(){
+  CD_DANG_TAI = true;
+  try{ CD_DS = await rpc('appwh_admin_list', { p_token: AUTH.token }); CD_LOI = ''; }
+  catch(e){ CD_DS = null; CD_LOI = e.message || 'lỗi không rõ'; }
+  CD_DANG_TAI = false;
+  if(VIEW === 'caidat') renderCaiDat();
+}
+
+function renderCaiDat(){
+  const page = $('page-caidat');
+  if(!page) return;
+  if(!laChuTrang()){
+    page.innerHTML = `<div class="panel cd-trong">
+      <h2>Chưa có quyền</h2>
+      <p>Tài khoản <b>${esc(AUTH.user ? AUTH.user.username : 'khách')}</b> chưa được cấp quyền xem mục nào.
+      Liên hệ chủ trang để được cấp quyền.</p></div>`;
+    return;
+  }
+  if(!CD_DS){
+    page.innerHTML = `<div class="panel"><h2>Tài khoản</h2>${CD_LOI && !CD_DANG_TAI
+      ? `<p class="lg-err">Không tải được danh sách tài khoản — ${esc(CD_LOI)}</p><button class="sm" id="cdThuLai">↻ Thử lại</button>`
+      : '<p class="cd-mo">Đang tải…</p>'}</div>`;
+    if(CD_LOI && !CD_DANG_TAI){ $('cdThuLai').onclick = () => { CD_LOI = ''; renderCaiDat(); }; return; }
+    if(!CD_DANG_TAI) cdTai();
+    return;
+  }
+  const users = CD_DS.users || [];
+  const guest = CD_DS.guest_views || [];
+  const dem = r => users.filter(u => u.role === r).length;
+  const khoTxt = u => u.role === 'chu' ? '<span class="cd-mo">Tất cả</span>'
+    : u.role === 'giamsat' ? ((u.khos || []).map(k => `<span class="chip info">${esc(khoName(k))}</span>`).join(' ') || '<span class="chip warn">Chưa giao kho</span>')
+    : '<span class="cd-mo">—</span>';
+  const xemTxt = u => u.role === 'chu' ? '<span class="cd-mo">Tất cả</span>'
+    : (MUC_XEM.filter(m => (u.views || []).includes(m.id) || (u.khos || []).includes(m.id)).map(m => esc(m.ten)).join(', ') || '<span class="chip warn">Không mục nào</span>');
+
+  page.innerHTML = `
+    <div class="panel">
+      <h2>Tài khoản <span class="n">${users.length}</span>
+        <span class="cd-dem">${dem('chu')} chủ trang · ${dem('giamsat')} giám sát · ${dem('xem')} chỉ xem</span>
+        <span class="h2spacer"></span>
+        <button class="sm ghost" id="cdTaiLai">↻ Tải lại</button>
+        <button class="sm" id="cdThem">+ Tạo tài khoản</button>
+      </h2>
+      <div class="tblwrap"><table class="cd-bang">
+        <thead><tr><th>Tài khoản</th><th>Vai trò</th><th>Được sửa kho</th><th>Được xem mục</th><th>Trạng thái</th><th></th></tr></thead>
+        <tbody>${users.map(u => `
+          <tr class="${u.active ? '' : 'cd-khoa'}">
+            <td><b>${esc(u.display_name || u.username)}</b><div class="cd-mo">${esc(u.username)}${AUTH.user && u.id === AUTH.user.id ? ' · bạn' : ''}</div></td>
+            <td><span class="chip ${u.role === 'chu' ? 'violet' : u.role === 'giamsat' ? 'ok' : ''}">${esc(VAI_TRO[u.role] || u.role)}</span></td>
+            <td>${khoTxt(u)}</td>
+            <td class="cd-xem">${xemTxt(u)}</td>
+            <td>${u.active ? '<span class="chip ok">Đang dùng</span>' : '<span class="chip warn">Đã khoá</span>'}
+              <div class="cd-mo">${u.last_login ? 'Vào lần cuối ' + new Date(u.last_login).toLocaleString('vi-VN') : 'Chưa đăng nhập'}</div></td>
+            <td class="cd-nut">
+              <button class="sm secondary" data-sua="${esc(u.id)}">Sửa</button>
+              <button class="sm ghost" data-mk="${esc(u.id)}">Đặt lại mật khẩu</button>
+              ${AUTH.user && u.id === AUTH.user.id ? '' : `<button class="sm danger" data-xoa="${esc(u.id)}">Xoá</button>`}
+            </td>
+          </tr>`).join('')}
+        </tbody>
+      </table></div>
+    </div>
+
+    <div class="panel">
+      <h2>Khách (không đăng nhập)</h2>
+      <p class="cd-ghi">Khách chỉ xem, không sửa được gì. Đánh dấu những mục sidebar khách được xem:</p>
+      <div class="cd-chon" id="cdKhach">${MUC_XEM.map(m => `
+        <label><input type="checkbox" value="${m.id}"${guest.includes(m.id) ? ' checked' : ''}> ${esc(m.ten)}</label>`).join('')}
+      </div>
+      <button class="sm" id="cdLuuKhach" style="margin-top:10px;">Lưu quyền của khách</button>
+      <p class="cd-ghi cd-mo">Lưu ý: ẩn mục sidebar chỉ ẩn trên giao diện. Dữ liệu vẫn đọc được bằng khoá công khai của trang — quyền <b>ghi</b> mới được máy chủ chặn thật.</p>
+    </div>`;
+
+  $('cdTaiLai').onclick = () => { CD_DS = null; renderCaiDat(); };
+  $('cdThem').onclick = () => cdMoSua(null);
+  page.querySelectorAll('[data-sua]').forEach(b => b.onclick = () => cdMoSua(users.find(u => u.id === b.dataset.sua)));
+  page.querySelectorAll('[data-mk]').forEach(b => b.onclick = () => cdDatMatKhau(users.find(u => u.id === b.dataset.mk)));
+  page.querySelectorAll('[data-xoa]').forEach(b => b.onclick = () => cdXoa(users.find(u => u.id === b.dataset.xoa)));
+  $('cdLuuKhach').onclick = async () => {
+    const views = [...$('cdKhach').querySelectorAll('input:checked')].map(i => i.value);
+    try{
+      await rpc('appwh_admin_set_guest_views', { p_token: AUTH.token, p_views: views });
+      CD_DS.guest_views = views; AUTH.guestViews = views;
+      toast('✓ Đã lưu quyền của khách');
+    }catch(e){ toast('⚠ ' + e.message); }
+  };
+}
+
+// Hộp tạo / sửa tài khoản. u = null -> tạo mới.
+function cdMoSua(u){
+  const moi = !u;
+  u = u || { username: '', display_name: '', role: 'giamsat', khos: [], views: MUC_XEM.map(m => m.id), active: true };
+  const m = openModal(moi ? 'Tạo tài khoản' : 'Sửa tài khoản ' + u.username, `
+    <div class="row2">
+      <div><label class="field-label">Tên đăng nhập</label>
+        <input type="text" data-k="username" value="${esc(u.username)}" ${moi ? '' : 'disabled'} autocapitalize="none" spellcheck="false" placeholder="vd: gs.khovai1"></div>
+      <div><label class="field-label">Tên hiển thị</label>
+        <input type="text" data-k="display_name" value="${esc(u.display_name)}" placeholder="vd: Nguyễn Văn A"></div>
+    </div>
+    ${moi ? `<label class="field-label">Mật khẩu (ít nhất 6 ký tự)</label><input type="text" data-k="password" autocomplete="off" spellcheck="false">` : ''}
+    <label class="field-label">Vai trò</label>
+    <select data-k="role">${Object.keys(VAI_TRO).map(r => `<option value="${r}"${u.role === r ? ' selected' : ''}>${VAI_TRO[r]}</option>`).join('')}</select>
+    <div class="cd-ghi cd-mo" data-mota></div>
+    <div data-khokhoi>
+      <label class="field-label">Được sửa kho</label>
+      <div class="cd-chon" data-khos>${WAREHOUSES.map(w => `
+        <label><input type="checkbox" value="${w.id}"${(u.khos || []).includes(w.id) ? ' checked' : ''}> ${esc(w.name)}</label>`).join('')}</div>
+    </div>
+    <div data-xemkhoi>
+      <label class="field-label">Được xem mục sidebar</label>
+      <div class="cd-chon" data-views>${MUC_XEM.map(x => `
+        <label><input type="checkbox" value="${x.id}"${(u.views || []).includes(x.id) ? ' checked' : ''}> ${esc(x.ten)}</label>`).join('')}</div>
+    </div>
+    <label class="cd-active"><input type="checkbox" data-k="active"${u.active ? ' checked' : ''}> Cho phép đăng nhập (bỏ chọn = khoá tài khoản)</label>
+    <div class="lg-err" data-err></div>
+    <div class="row2" style="margin-top:16px;"><button class="ghost" data-no>Huỷ</button><button data-ok>${moi ? 'Tạo tài khoản' : 'Lưu'}</button></div>`);
+  const q = s => m.body.querySelector(s);
+  const doiVaiTro = () => {
+    const r = q('[data-k="role"]').value;
+    q('[data-khokhoi]').style.display = r === 'giamsat' ? '' : 'none';
+    q('[data-xemkhoi]').style.display = r === 'chu' ? 'none' : '';
+    q('[data-mota]').textContent = r === 'chu' ? 'Chủ trang sửa được mọi thứ, xem mọi mục và quản lý tài khoản.'
+      : r === 'giamsat' ? 'Giám sát chỉ sửa được dữ liệu của các kho được giao; các mục khác chỉ xem.'
+      : 'Chỉ xem, không sửa được gì.';
+  };
+  q('[data-k="role"]').onchange = doiVaiTro;
+  doiVaiTro();
+  // Giao kho nào thì tự cho xem kho đó
+  m.body.querySelectorAll('[data-khos] input').forEach(i => i.onchange = () => {
+    if(i.checked){ const v = q(`[data-views] input[value="${i.value}"]`); if(v) v.checked = true; }
+  });
+  q('[data-no]').onclick = m.close;
+  q('[data-ok]').onclick = async () => {
+    const btn = q('[data-ok]'), err = q('[data-err]');
+    const goi = {
+      id: u.id || null,
+      username: q('[data-k="username"]').value.trim(),
+      display_name: q('[data-k="display_name"]').value.trim(),
+      role: q('[data-k="role"]').value,
+      khos: [...m.body.querySelectorAll('[data-khos] input:checked')].map(i => i.value),
+      views: [...m.body.querySelectorAll('[data-views] input:checked')].map(i => i.value),
+      active: q('[data-k="active"]').checked,
+    };
+    if(moi) goi.password = q('[data-k="password"]').value;
+    if(goi.role === 'giamsat' && !goi.khos.length){ err.textContent = 'Chọn ít nhất 1 kho cho giám sát'; return; }
+    btn.disabled = true; err.textContent = '';
+    try{
+      const kq = await rpc('appwh_admin_save_user', { p_token: AUTH.token, p_user: goi });
+      m.close();
+      toast(moi ? `✓ Đã tạo tài khoản ${kq.username}` : '✓ Đã lưu tài khoản');
+      // Sửa chính mình -> cập nhật quyền đang dùng
+      if(AUTH.user && kq.id === AUTH.user.id){ AUTH.user = kq; ghiPhien(); sauKhiDoiTaiKhoan(); }
+      CD_DS = null; renderCaiDat();
+    }catch(e){ err.textContent = e.message; btn.disabled = false; }
+  };
+}
+
+function cdDatMatKhau(u){
+  if(!u) return;
+  const m = openModal('Đặt lại mật khẩu — ' + u.username, `
+    <label class="field-label">Mật khẩu mới (ít nhất 6 ký tự)</label>
+    <input type="text" data-k="mk" autocomplete="off" spellcheck="false">
+    <div class="cd-ghi cd-mo">Người này sẽ bị đăng xuất khỏi mọi máy và phải đăng nhập lại bằng mật khẩu mới.</div>
+    <div class="lg-err" data-err></div>
+    <div class="row2" style="margin-top:16px;"><button class="ghost" data-no>Huỷ</button><button data-ok>Đặt mật khẩu</button></div>`);
+  const err = m.body.querySelector('[data-err]');
+  m.body.querySelector('[data-no]').onclick = m.close;
+  m.body.querySelector('[data-ok]').onclick = async () => {
+    const mk = m.body.querySelector('[data-k="mk"]').value;
+    if(mk.length < 6){ err.textContent = 'Mật khẩu phải có ít nhất 6 ký tự'; return; }
+    try{
+      await rpc('appwh_admin_save_user', { p_token: AUTH.token, p_user: { ...u, password: mk } });
+      m.close(); toast('✓ Đã đặt lại mật khẩu cho ' + u.username);
+      CD_DS = null; renderCaiDat();
+    }catch(e){ err.textContent = e.message; }
+  };
+}
+
+async function cdXoa(u){
+  if(!u) return;
+  if(!await confirmBox(`Xoá hẳn tài khoản "${u.username}"? Muốn tạm ngưng thì nên dùng Sửa → bỏ "Cho phép đăng nhập".`)) return;
+  try{
+    await rpc('appwh_admin_delete_user', { p_token: AUTH.token, p_id: u.id });
+    toast('✓ Đã xoá tài khoản ' + u.username);
+    CD_DS = null; renderCaiDat();
+  }catch(e){ toast('⚠ ' + e.message); }
+}
+
+</script>
 <script>/* js/app/main.js */
 // Khởi động app — PHẢI nạp cuối cùng
 // (tách từ index.html dòng 10745-10772)
 // 18. KHỞI ĐỘNG
 // =====================================================================
 (async function init(){
+  // Đăng nhập (hoặc chọn vào xem kiểu khách) trước khi tải dữ liệu
+  await batDauPhien();
+  chonTrangDauTien();
   buildSidebar();
+  veNutTaiKhoan();
   $('noteDate').value = todayKey();
   $('qkDate').value = todayKey();
   if(window.innerWidth < 900) $('shell').classList.remove('sb-open');
   try{ await loadAll(); }catch(e){ console.error(e); }
-  // Áp lịch đổi ca của tuần hiện tại (tự có hiệu lực từ thứ Hai)
-  try{ const n = applyRotation('thanhpham'); if(n){ await saveHr(); await saveKho(); } }catch(e){}
+  // Áp lịch đổi ca của tuần hiện tại (tự có hiệu lực từ thứ Hai) — chỉ người được sửa kho thành phẩm
+  try{ if(coSuaKho('thanhpham')){ const n = applyRotation('thanhpham'); if(n){ await saveHr({tuDong:true}); await saveKho({tuDong:true}); } } }catch(e){}
   // Nạp số liệu phép năm lần đầu từ bảng đã khai sẵn (chỉ điền cho ai chưa có)
-  try{ if(typeof napPhepLanDau === 'function') await napPhepLanDau(); }catch(e){}
-  render();
+  try{ if(coSuaGi() && typeof napPhepLanDau === 'function') await napPhepLanDau(); }catch(e){}
+  setView(VIEW, VIEW === 'kho' ? CUR_KHO : undefined);
+  KHOI_DONG_XONG = true;
   setInterval(()=>syncNow(true), 15000);
   // Nếu để app mở qua đêm Chủ nhật -> sáng thứ Hai tự áp lịch đổi ca mới
   // (applyRotation an toàn khi gọi lại nhiều lần: chỉ đổi khi thực sự khác).
   setInterval(async ()=>{
     try{
       if(unsavedAny && unsavedAny()) return;
+      if(!coSuaKho('thanhpham')) return;
       const n = applyRotation('thanhpham');
-      if(n){ await saveHr(); await saveKho(); render(); toast('✓ Đã áp lịch đổi ca của tuần mới'); }
+      if(n){ await saveHr({tuDong:true}); await saveKho({tuDong:true}); render(); toast('✓ Đã áp lịch đổi ca của tuần mới'); }
     }catch(e){}
   }, 10 * 60 * 1000);
   document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) syncNow(true); });
