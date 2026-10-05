@@ -638,7 +638,9 @@
   .xh-tbl td{background:#fff;}
   .xh-tbl tbody tr:nth-child(even) td{background:#f4f6fa;}
   .xh-tbl .xh-stt{width:52px; text-align:center; font-size:13px; font-weight:700; color:var(--ink-soft);}
-  .xh-tbl .xh-del{width:40px; text-align:center;}
+  .xh-tbl .xh-del{width:74px; text-align:center; white-space:nowrap;}
+  .xh-tbl .xh-del button.xh-dh{background:#fff; border-color:var(--line); color:var(--ink-soft); margin-right:3px;}
+  .xh-tbl .xh-del button.xh-dh.co{opacity:1; background:var(--blue-bg); border-color:var(--blue);}
   .xh-tbl .xh-del button{padding:2px 7px; font-size:11px; opacity:.35;}
   .xh-tbl tr:hover .xh-del button{opacity:1;}
   .xh-tbl input.xh-in{width:100%; border:0; background:transparent; padding:7px 8px; font-size:13.5px;
@@ -2089,6 +2091,103 @@
   .ls-dong .ls-noi{font-size:13.5px; margin-top:4px;}
 
 </style>
+<style>/* css/modules/donghang.css */
+/* Tab Đóng hàng (kho thành phẩm): sơ đồ xếp thùng vào container / xe tải */
+
+  .dh-xe{display:flex; flex-wrap:wrap; gap:10px 18px; align-items:flex-end; margin-bottom:6px;}
+  .dh-xe label{display:flex; flex-direction:column; gap:4px; font-size:13px; font-weight:700; color:var(--ink-soft);}
+  .dh-xe select{min-width:220px;}
+  .dh-xe input[type=number]{width:90px; display:inline-block;}
+  .dh-xe-tt{font-size:13.5px; padding-bottom:9px;}
+  .dh-bang td{font-size:14px;}
+  .dh-bang select{min-width:200px; font-size:14px; padding:6px 8px;}
+  .dh-bang input.dh-sl{width:100px; font-size:14px; padding:6px 8px;}
+  .dh-bang td.dh-nut{white-space:nowrap; text-align:right;}
+  .dh-bang td.dh-nut button{margin-left:3px; padding:4px 9px;}
+  .dh-cham{display:inline-block; width:11px; height:11px; border-radius:3px; margin-right:6px; vertical-align:-1px;}
+
+  .dh-canh{background:var(--amber-bg); border:1px solid var(--amber-line); color:#6b4a0a; border-radius:var(--radius);
+    padding:8px 11px; font-size:13.5px; margin-bottom:8px;}
+  .dh-canh.bad{background:var(--red-bg); border-color:var(--red); color:var(--red);}
+  .dh-chip{display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:8px; margin:6px 0 12px;}
+  .dh-chip > div{background:var(--paper); border:1px solid var(--line-soft); border-radius:8px; padding:8px 11px;}
+  .dh-chip small{display:block; font-size:11.5px; color:var(--ink-soft); font-weight:700; text-transform:uppercase; letter-spacing:.03em;}
+  .dh-chip b{font-size:16px;}
+  .dh-chip b.dh-dang{font-size:13.5px;}
+
+  .dh-ve{background:#f6f7f9; border:1px solid var(--line-soft); border-radius:10px; padding:8px;}
+  .dh-svg{display:block; width:100%; height:auto; max-height:520px;}
+  .dh-svg.canh{max-height:240px;}
+  .dh-buoc{display:flex; flex-wrap:wrap; gap:8px 16px; align-items:center; margin:10px 0 4px; font-size:14px;}
+  .dh-buoc label{display:flex; align-items:center; gap:8px; font-weight:700; color:var(--ink-soft);}
+  .dh-buoc input[type=range]{width:220px; accent-color:var(--blue);}
+  .dh-h3{font-size:13px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-soft); margin:16px 0 8px;}
+  .dh-luoi{display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:10px;}
+  .dh-o{border:1px solid var(--line-soft); border-radius:8px; padding:8px; background:#f6f7f9;}
+  .dh-o-ten{font-size:13px; margin-bottom:4px;}
+  .dh-o .dh-svg{max-height:200px;}
+  @media(max-width:600px){
+    .dh-xe select{min-width:0; width:100%;}
+    .dh-buoc input[type=range]{width:100%;}
+  }
+
+  /* ---- Giai đoạn 2: lô, 3D xoay, nhập packing list ---- */
+  .dh-lo{display:flex; align-items:center; flex-wrap:wrap; gap:8px; background:var(--blue-bg); border:1px solid var(--blue);
+    border-radius:var(--radius); padding:7px 10px; font-size:13.5px; margin-bottom:10px;}
+  .dh-lo button{margin-left:auto;}
+  .dh-ve3d{position:relative; padding:0; overflow:hidden;}
+  .dh-canvas{display:block; width:100%; height:clamp(260px, 42vw, 520px); cursor:grab; touch-action:none;}
+  .dh-canvas:active{cursor:grabbing;}
+  .dh-goc{position:absolute; top:8px; right:8px; display:flex; flex-wrap:wrap; gap:4px; justify-content:flex-end;}
+  .dh-goc button{padding:4px 9px; font-size:12px; background:rgba(255,255,255,.92);}
+  .dh-goi-y{position:absolute; left:10px; bottom:8px; font-size:11.5px; color:var(--ink-soft); pointer-events:none;}
+  .modal-card.dh-modal-rong{max-width:960px; width:96vw;}
+  .dh-nhap-nguon textarea{font-family:var(--mono); font-size:12.5px;}
+  .dh-nhap-cot{display:grid; grid-template-columns:repeat(auto-fill, minmax(190px, 1fr)); gap:8px; margin:12px 0;}
+  .dh-nhap-cot label{display:flex; flex-direction:column; gap:3px; font-size:12.5px; font-weight:700; color:var(--ink-soft);}
+  .dh-nhap-cot select, .dh-nhap-cot input{font-size:13.5px; padding:6px 8px;}
+
+  /* phần dư dưới trần: vàng = thêm được 1 tầng, đỏ = kịch trần */
+  .dh-chu-thich{display:flex; flex-wrap:wrap; gap:6px 18px; font-size:12.5px; color:var(--ink-soft); margin:6px 2px 12px;}
+  .dh-chu-thich .o{display:inline-block; width:13px; height:13px; border-radius:3px; margin-right:6px; vertical-align:-2px;}
+  .dh-chu-thich .o.vang, .dh-dem-du .vang::before{background:#facc15; border:1px dashed #ca8a04;}
+  .dh-chu-thich .o.do, .dh-dem-du .do::before{background:#dc2626;}
+  .dh-dem-du{display:flex; flex-direction:column; gap:1px; margin-top:3px; font-size:11.5px; font-weight:700;}
+  .dh-dem-du span::before{content:''; display:inline-block; width:9px; height:9px; border-radius:2px; margin-right:5px;}
+  .dh-dem-du .vang{color:#a16207;}
+  .dh-dem-du .do{color:#b91c1c;}
+
+  /* ---- Chọn phương tiện + chọn mã hàng nhanh ---- */
+  .dh-buoc-nhap{display:flex; align-items:center; gap:8px; font-weight:800; font-size:13.5px; color:var(--ink); margin:14px 0 8px;}
+  .dh-buoc-nhap .so{display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:50%;
+    background:var(--blue); color:#fff; font-size:12px;}
+  .dh-seg{display:inline-flex; border:1px solid var(--blue); border-radius:9px; overflow:hidden; margin-bottom:8px;}
+  .dh-seg button{border:0; border-radius:0; background:#fff; color:var(--blue); padding:7px 16px; font-size:14px;}
+  .dh-seg button.on{background:var(--blue); color:#fff;}
+  .dh-the-ds{display:flex; flex-wrap:wrap; gap:8px;}
+  .dh-xe-ds{max-height:232px; overflow-y:auto; padding:2px;}
+  .dh-the{display:flex; flex-direction:column; align-items:flex-start; gap:2px; min-width:150px; text-align:left;
+    background:#fff; color:var(--ink); border:1px solid var(--line); border-radius:9px; padding:8px 12px;}
+  .dh-the b{font-size:15px;} .dh-the small{font-size:11.5px; color:var(--ink-soft); font-weight:600;}
+  .dh-the:hover{border-color:var(--blue); opacity:1;}
+  .dh-the.on{border-color:var(--blue); background:var(--blue-bg); box-shadow:0 0 0 2px var(--blue) inset;}
+  .dh-the.on b{color:var(--blue-dark);}
+  .dh-xe-tim{display:flex; gap:8px; align-items:center; margin-bottom:8px; max-width:520px;}
+  .dh-xe-tim input{flex:1;}
+  .dh-xe-tt{display:flex; flex-wrap:wrap; align-items:center; gap:6px 18px; font-size:13.5px; margin-top:10px;}
+  .dh-them-ma{position:relative; display:flex; gap:8px; align-items:center; margin-bottom:8px; max-width:640px;}
+  .dh-them-ma input{flex:1;}
+  .dh-goi-y-sp{position:absolute; top:100%; left:0; right:150px; z-index:50; margin-top:3px; background:#fff; border:1px solid var(--line);
+    border-radius:9px; box-shadow:0 8px 24px rgba(16,24,40,.14); max-height:300px; overflow-y:auto;}
+  .dh-goi-y-sp .mo{padding:7px 11px; cursor:pointer; display:flex; flex-wrap:wrap; align-items:baseline; gap:2px 8px; border-bottom:1px solid var(--line-soft);}
+  .dh-goi-y-sp .mo small{flex-basis:100%; font-size:11.5px; color:var(--ink-soft);}
+  .dh-goi-y-sp .mo.on, .dh-goi-y-sp .mo:hover{background:var(--blue-bg);}
+  .dh-goi-y-sp .trong{padding:10px 12px; font-size:13px; color:var(--ink-soft);}
+  .dh-tim-dm{max-width:200px; font-size:13.5px; padding:6px 9px; text-transform:none; letter-spacing:0;}
+  @media(max-width:600px){ .dh-goi-y-sp{right:0;} .dh-the{min-width:0; flex:1 1 140px;} }
+  .dh-bang select.dh-kieu{min-width:250px; font-size:13px; padding:5px 7px;}
+
+</style>
 </head>
 <body>
 <div id="shell">
@@ -2138,6 +2237,7 @@
     <button data-tab="checkct">🔎 CHECK CT</button>
     <button data-tab="scanos">📦 SCAN OS</button>
     <button data-tab="scan">📲 SCAN</button>
+    <button data-tab="donghang">🚛 Đóng hàng</button>
     <button data-tab="hotrokk">🤝 Hỗ trợ / KK</button>
     <button data-tab="tangca">⏱ Tăng ca/Nghỉ phép</button>
     <button data-tab="wi">📄 WI</button>
@@ -2610,6 +2710,9 @@
 </main>
 
 <!-- ============ SCAN: quét UCC theo JOB NO / BUYER PO / STYLE NO, lưu theo vị trí ============ -->
+<!-- ============ TAB: SƠ ĐỒ ĐÓNG HÀNG (kho thành phẩm) ============ -->
+<main class="tabpage" id="tab-donghang"></main>
+
 <main class="tabpage" id="tab-scan">
     <div id="scEmpty"></div>
     <div class="sc-top">
@@ -3507,7 +3610,7 @@ function coXem(muc){
 function khoCuaKhoa(key){
   const m = /^appwh-training-(vai|phulieu|thanhpham)/.exec(key);
   if(m) return m[1];
-  if(/^appwh-(wi|checkct|scan)/.test(key)) return 'thanhpham';
+  if(/^appwh-(wi|checkct|scan|donghang)/.test(key)) return 'thanhpham';
   return null;
 }
 function coSuaKhoa(key){
@@ -4393,8 +4496,8 @@ function applyTabVisibility(){
   const btnCheckct = document.querySelector('#tabNav button[data-tab="checkct"]');
   if(btnCheckct) btnCheckct.style.display = isTp ? '' : 'none';
   if(!isTp && activeTab === 'checkct') activeTab = 'dashboard';
-  // Tab SCAN OS và SCAN: chỉ có ở kho thành phẩm
-  ['scanos','scan'].forEach(t=>{
+  // Tab SCAN OS, SCAN và Đóng hàng: chỉ có ở kho thành phẩm
+  ['scanos','scan','donghang'].forEach(t=>{
     const b = document.querySelector(`#tabNav button[data-tab="${t}"]`);
     if(b) b.style.display = isTp ? '' : 'none';
     if(!isTp && activeTab === t) activeTab = 'dashboard';
@@ -4473,6 +4576,7 @@ function render(){
   if(activeTab === 'checkct') ccRender();
   if(activeTab === 'scanos') soRender();
   if(activeTab === 'scan') scanRender();
+  if(activeTab === 'donghang') renderDongHang();
   if(activeTab === 'hotrokk') hkRender();
   if(activeTab === 'wi') renderWI();
   if(activeTab === 'training') renderTraining();
@@ -7207,7 +7311,7 @@ function xhRowHtml(r, i){
       const k = ['xh-cell', f.h ? 'hl' : '', f.c ? 'ct' : '', xhOTrung(r, c.key) ? 'trung' : ''].filter(Boolean).join(' ');
       return `<td class="${k}" data-r="${i}" data-c="${ci}" tabindex="-1"><div class="v${f.b ? ' b' : ''}">${esc(r[c.key] || '')}</div></td>`;
     }).join('')}
-    <td class="xh-del"><button class="danger sm" data-xdel="${i}" title="Xoá dòng này">✕</button></td>
+    <td class="xh-del">${trong ? '' : `<button class="sm xh-dh${r.dh ? ' co' : ''}" data-xdh="${i}" title="${r.dh ? 'Mở sơ đồ đóng hàng đã lưu của lô này' : 'Lập sơ đồ đóng hàng cho lô này'}">🚛</button>`}<button class="danger sm" data-xdel="${i}" title="Xoá dòng này">✕</button></td>
   </tr>`;
 }
 function renderXuatHang(){
@@ -7226,7 +7330,7 @@ function renderXuatHang(){
     + `<th class="xh-del"></th>`;
   $('xhCg').innerHTML = `<col style="width:56px"><col style="width:34px">`
     + XH_COLS.map(c=>`<col data-gc="${c.key}" style="width:${xhColW(c)}px">`).join('')
-    + `<col style="width:40px">`;
+    + `<col style="width:74px">`;
   xhTinhTrung();
   $('xhBody').innerHTML = rows.map(xhRowHtml).join('');
   xhVeCanhBao();
@@ -7813,7 +7917,7 @@ function xhBind(){
 
   // --- bấm / kéo chọn ---
   body.addEventListener('mousedown', (e)=>{
-    if(e.target.closest('[data-xdel]')) return;
+    if(e.target.closest('[data-xdel]') || e.target.closest('[data-xdh]')) return;
     if(e.target.closest('.xh-move')) return;              // để tay nắm ⠿ kéo thả được
     const rg = e.target.closest('[data-rgrip]');
     if(rg){                                              // kéo mép dưới = nới cao dòng
@@ -7858,6 +7962,11 @@ function xhBind(){
     const td = e.target.closest('td[data-c]');
     if(!td) return;
     xhBatDauSua(Number(td.dataset.r), Number(td.dataset.c), null);
+  });
+  // mở sơ đồ đóng hàng của lô
+  body.addEventListener('click', (e)=>{
+    const b = e.target.closest('[data-xdh]');
+    if(b && typeof dhMoTuXuatHang === 'function') dhMoTuXuatHang(xhKey(), Number(b.dataset.xdh));
   });
   // xoá dòng
   body.addEventListener('click', async (e)=>{
@@ -13794,6 +13903,1421 @@ window.renderTraining = taoBoSuuTap({
 })();
 
 </script>
+<script>/* js/modules/donghang/dh-engine.js */
+// Sơ đồ đóng hàng — thuật toán xếp thùng (chỉ kho thành phẩm)
+// Không đụng giao diện: nhận danh sách mã hàng + kích thước thùng xe, trả về vị trí từng thùng.
+//
+// Luật xếp (theo yêu cầu kho):
+//   - Thứ tự: TRONG -> CỬA, DƯỚI -> TRÊN, TRÁI -> PHẢI. Hết mã A mới tới mã B; B lấp liền
+//     vào chỗ trống A để lại (cùng tầng, cùng vách).
+//   - Không lật nằm: thùng chỉ được quay "dọc" (cạnh dài nằm dọc thùng xe) hoặc "ngang".
+//   - Cao đều từ trong ra cửa: tìm chiều cao chung THẤP NHẤT mà vẫn chứa hết hàng, rồi hạ
+//     tối đa 1 tầng ở đoạn cuối để hàng ra sát cửa.
+//
+// Cách tính (xếp theo vách — George & Robinson 1980): thùng xe chia thành các vách đứng nối
+// tiếp nhau dọc chiều dài. Mỗi vách sâu D cm, mỗi tầng của vách là 1 hàng thùng ngang qua
+// chiều rộng thùng xe (một số thùng xếp dọc, một số quay ngang), mỗi vị trí chứa k thùng theo
+// chiều sâu. Toạ độ: x = dọc thùng (0 = vách trong cùng), y = ngang (0 = bên trái khi đứng ở
+// cửa nhìn vào), z = cao.
+// =====================================================================
+const DH_CONT = [
+  { id: 'c20',   ma: '20GP', ten: "Cont 20' (20GP)",    loai: 'cont', dai: 589,  rong: 235, cao: 239 },
+  { id: 'c40',   ma: '40DC', ten: "Cont 40' (40DC)",    loai: 'cont', dai: 1203, rong: 235, cao: 239 },
+  { id: 'c40hc', ma: '40HC', ten: "Cont 40' HC (40HC)", loai: 'cont', dai: 1203, rong: 235, cao: 269 },
+];
+const DH_EPS = 1e-6;
+
+// Các kiểu xếp 1 tầng của 1 vách cho thùng dài a × rộng b trong lòng rộng W.
+//   dọc  : sâu a, chiếm ngang b      ngang: sâu b, chiếm ngang a
+function dhCacKieu(a, b, W, Lmax){
+  const Ds = new Set();
+  [1, 2, 3].forEach(m => {
+    if(m * a <= Lmax + DH_EPS) Ds.add(+(m * a).toFixed(3));
+    if(m * b <= Lmax + DH_EPS) Ds.add(+(m * b).toFixed(3));
+  });
+  const ds = [];
+  Ds.forEach(D => {
+    const kd = Math.floor(D / a + DH_EPS), kn = Math.floor(D / b + DH_EPS);
+    const maxNd = kd ? Math.floor(W / b + DH_EPS) : 0;
+    for(let nd = 0; nd <= maxNd; nd++){
+      const conLai = W - nd * b;
+      for(let nn = kn ? Math.floor(conLai / a + DH_EPS) : 0; nn >= 0; nn--){
+        if(nd + nn === 0) continue;
+        const n = nd * kd + nn * kn;
+        ds.push({ D, nd, nn, kd, kn, n, tiLe: n * a * b / (D * W), hoNgang: W - nd * b - nn * a });
+        break;     // với mỗi nd chỉ lấy số thùng ngang nhiều nhất còn vừa
+      }
+    }
+  });
+  return ds;
+}
+// Các kiểu xếp mỗi tầng (khai cho từng mã trong Cài đặt, chỉnh riêng được ở từng dòng khi lập sơ đồ)
+const DH_KIEU = {
+  auto:      'Tự động — ưu tiên xếp dọc, quay ngang khi lấp kín hơn',
+  doc1ngang: 'Toàn dọc quay 1 ngang',
+  doc2ngang: 'Toàn dọc quay 2 ngang',
+  tuchon:    'Tự chọn số thùng dọc / ngang',
+};
+// Chọn kiểu xếp cho 1 mã hàng trong lòng rộng W.
+//   Tự động: ưu tiên toàn bộ xếp dọc; chỉ quay ngang khi lấp kín mặt sàn hơn rõ rệt (> 3%).
+//   Toàn dọc quay 1 / 2 ngang: 1 (2) thùng quay ngang, phần bề ngang còn lại xếp dọc hết cỡ
+//     (VD thùng 68×35,5 trong cont rộng 235: 1 ngang 68 cm + 4 dọc 142 cm).
+//   Tự chọn: số thùng dọc + số thùng ngang mỗi tầng do người dùng đặt.
+function dhChonKieu(sp, W, Lmax){
+  const a = +sp.dai, b = +sp.rong;
+  const ds = dhCacKieu(a, b, W, Lmax);
+  let nd = null, nn = null, nhan = '';
+  if(sp.kieu === 'tuchon' && (+sp.doc > 0 || +sp.ngang > 0)){
+    nd = +sp.doc || 0; nn = +sp.ngang || 0; nhan = 'tự chọn';
+  }else if(sp.kieu === 'doc1ngang' || sp.kieu === 'doc2ngang'){
+    nn = sp.kieu === 'doc1ngang' ? 1 : 2;
+    if(nn * a > W + DH_EPS) return { loi: `Quay ngang ${nn} thùng dài ${a} cm (${(nn * a).toFixed(1)} cm) quá lòng rộng ${W} cm` };
+    nd = Math.floor((W - nn * a) / b + DH_EPS);
+    nhan = `toàn dọc quay ${nn} ngang`;
+  }
+  if(nd !== null){
+    if(nd * b + nn * a > W + DH_EPS) return { loi: `${nd} dọc + ${nn} ngang rộng ${(nd * b + nn * a).toFixed(1)} cm, quá lòng thùng ${W} cm` };
+    // độ sâu vách: thử bội số của dài / rộng thùng, lấy cách lấp kín mặt sàn nhất
+    const Ds = new Set();
+    [1, 2, 3].forEach(m => { if(m * a <= Lmax + DH_EPS) Ds.add(+(m * a).toFixed(3)); if(m * b <= Lmax + DH_EPS) Ds.add(+(m * b).toFixed(3)); });
+    let tot = null;
+    Ds.forEach(D => {
+      const kd = Math.floor(D / a + DH_EPS), kn = Math.floor(D / b + DH_EPS);
+      if((nd && !kd) || (nn && !kn)) return;
+      const n = nd * kd + nn * kn, tiLe = n * a * b / (D * W);
+      if(n && (!tot || tiLe > tot.tiLe + DH_EPS)) tot = { D, nd, nn, kd, kn, n, tiLe, hoNgang: W - nd * b - nn * a, tuChon: true, nhan };
+    });
+    return tot || { loi: 'Kiểu xếp này không xếp được' };
+  }
+  if(!ds.length) return { loi: `Thùng ${a}×${b} cm không vừa lòng rộng ${W} cm` };
+  const tot = ds.reduce((m, k) => (k.tiLe > m.tiLe + DH_EPS || (Math.abs(k.tiLe - m.tiLe) <= DH_EPS && k.D < m.D)) ? k : m);
+  const docHet = ds.filter(k => k.nn === 0).reduce((m, k) => (!m || k.tiLe > m.tiLe + DH_EPS) ? k : m, null);
+  return (docHet && docHet.tiLe >= tot.tiLe - 0.03) ? docHet : tot;
+}
+// Mô tả kiểu xếp: "6 dọc", "4 dọc + 1 ngang"
+function dhMoTaKieu(k){
+  if(!k || k.loi) return '—';
+  const p = [];
+  if(k.nd) p.push(`${k.nd} dọc${k.kd > 1 ? ' ×' + k.kd + ' sâu' : ''}`);
+  if(k.nn) p.push(`${k.nn} ngang${k.kn > 1 ? ' ×' + k.kn + ' sâu' : ''}`);
+  return p.join(' + ');
+}
+
+// Chuẩn bị: kiểm tra số liệu, chọn kiểu xếp, dựng danh sách vị trí trong 1 tầng
+function dhChuanBi(xe, dong){
+  const L = +xe.dai, W = +xe.rong, H = +xe.cao;
+  const loi = [];
+  if(!(L > 0 && W > 0 && H > 0)) loi.push('Thùng xe chưa có đủ dài / rộng / cao');
+  const mh = dong.filter(d => d.sp && +d.sl > 0).map((d, i) => {
+    const sp = d.sp, a = +sp.dai, b = +sp.rong, h = +sp.cao;
+    const it = { i, sp, sl: Math.floor(+d.sl), a, b, h, kg: +sp.kg || 0,
+      tangMax: +sp.tangMax > 0 ? Math.floor(+sp.tangMax) : Infinity };
+    if(!(a > 0 && b > 0 && h > 0)){ loi.push(`${sp.ma}: chưa có đủ kích thước thùng`); return it; }
+    if(h > H) loi.push(`${sp.ma}: thùng cao ${h} cm, quá lòng thùng ${H} cm`);
+    it.kieu = dhChonKieu(sp, W, L);
+    if(it.kieu.loi){ loi.push(`${sp.ma}: ${it.kieu.loi}`); return it; }
+    const k = it.kieu, vt = [];
+    for(let n = 0; n < k.nd; n++) vt.push({ huong: 'doc', sau: a, rong: b });
+    for(let n = 0; n < k.nn; n++) vt.push({ huong: 'ngang', sau: b, rong: a });
+    it.viTri = vt;
+    return it;
+  });
+  if(!mh.length) loi.push('Chưa có mã hàng nào');
+  return { L, W, H, mh, loi };
+}
+
+// Xếp thử với giới hạn chiều cao từng vách: tran(soVach, maHang) -> cm.
+// Mỗi vách là một dãy CỘT ngang qua chiều rộng, chia theo kiểu xếp của mã mở vách.
+// Thùng luôn đặt lên cột THẤP NHẤT, cột bên TRÁI trước (dưới lên trên, trái sang phải).
+// Mã sau chồng tiếp lên cột của mã trước nếu vừa bề ngang và có đủ mặt đỡ bên dưới.
+function dhXepThu(ctx, tran){
+  const { L, W, H, mh } = ctx;
+  const thung = [], vach = [];
+  let v = null, hong = '';
+  const moVach = it => {
+    const x0 = v ? v.x0 + v.D : 0;
+    const cap = Math.min(H, tran(vach.length, it));
+    if(it.h > cap + DH_EPS){ hong = 'tran'; return false; }          // trần quá thấp cho mã này
+    if(x0 + it.kieu.D > L + DH_EPS){ hong = 'dai'; return false; }   // hết chiều dài
+    let y = 0;
+    const cot = it.viTri.map(p => {
+      const c = { y, rong: p.rong, top: 0, sauDo: null, soTang: 0, tangMax: Infinity };
+      y += p.rong;
+      return c;
+    });
+    v = { x0, D: it.kieu.D, cap, cot, thung: [] };
+    vach.push(v);
+    return true;
+  };
+  // Cách đặt mã it lên cột c: chọn hướng vừa bề ngang cột và đặt được nhiều thùng nhất theo chiều sâu
+  const cachDat = (c, it) => {
+    if(c.top + it.h > v.cap + DH_EPS) return null;
+    if(c.soTang >= Math.min(c.tangMax, it.tangMax)) return null;
+    const sauDo = c.sauDo === null ? v.D : c.sauDo;     // sàn: đỡ hết chiều sâu vách
+    const uuTien = it.kieu.nd >= it.kieu.nn ? 'doc' : 'ngang';
+    let tot = null;
+    [{ huong: 'doc', sau: it.a, rong: it.b }, { huong: 'ngang', sau: it.b, rong: it.a }].forEach(o => {
+      if(o.rong > c.rong + DH_EPS) return;
+      let k = Math.floor(sauDo / o.sau + DH_EPS), noi = false;
+      // cột còn ở sàn của vách cuối cùng: được nới vách cho thùng sâu hơn
+      if(!k && c.sauDo === null && v.x0 + o.sau <= L + DH_EPS){ k = 1; noi = true; }
+      if(!k) return;
+      if(!tot || k > tot.k || (k === tot.k && o.huong === uuTien)) tot = { ...o, k, noi };
+    });
+    return tot;
+  };
+  for(const it of mh){
+    let con = it.sl;
+    while(con > 0){
+      if(!v && !moVach(it)) break;
+      // cột thấp nhất (trùng thì lấy cột bên trái) mà mã này đặt được
+      let chon = null, cd = null;
+      for(const c of v.cot){
+        const d = cachDat(c, it);
+        if(!d) continue;
+        if(!chon || c.top < chon.top - DH_EPS || (Math.abs(c.top - chon.top) <= DH_EPS && c.y < chon.y)){ chon = c; cd = d; }
+      }
+      if(!chon){ if(!moVach(it)) break; continue; }
+      if(cd.noi){ v.D = Math.max(v.D, cd.sau); }
+      const m = Math.min(cd.k, con);
+      for(let j = 0; j < m; j++){
+        const t = { mh: it.i, x: v.x0 + j * cd.sau, y: chon.y, z: chon.top, dx: cd.sau, dy: cd.rong, dz: it.h, huong: cd.huong, vach: vach.length - 1, tang: chon.soTang };
+        thung.push(t); v.thung.push(t);
+      }
+      chon.top += it.h; chon.soTang++;
+      chon.rong = cd.rong; chon.sauDo = m * cd.sau;      // mặt đỡ cho thùng tầng trên
+      chon.tangMax = Math.min(chon.tangMax, it.tangMax);
+      con -= m;
+    }
+    if(con > 0) return { ok: false, hong, thung, vach, thieu: mh.slice(it.i).reduce((s, x, n) => s + (n ? x.sl : con), 0) };
+  }
+  const cuoi = v ? v.x0 + v.D : 0;
+  return { ok: true, thung, vach, thieu: 0, dai: cuoi };
+}
+
+// Chiều cao từng vách và kiểm tra luật "chỉ hạ / lên từng tầng 1" giữa 2 vách liền nhau
+function dhCaoVach(r){
+  return r.vach.filter(v => v.thung.length).map(v => ({
+    cao: v.thung.reduce((m, t) => Math.max(m, t.z + t.dz), 0),
+    tang: v.thung.reduce((m, t) => Math.max(m, t.dz), 0),     // 1 tầng = thùng cao nhất trong vách
+  }));
+}
+function dhBacOk(r){
+  const c = dhCaoVach(r);
+  return c.every((v, i) => !i || Math.abs(c[i - 1].cao - v.cao) <= Math.max(v.tang, c[i - 1].tang) + DH_EPS);
+}
+// Điểm để so phương án (nhỏ hơn = tốt hơn): chứa hết > đúng luật bậc > mặt trên thấp > ra sát cửa
+function dhDiem(r){
+  const c = dhCaoVach(r);
+  return [r.ok ? 0 : 1, dhBacOk(r) ? 0 : 1, Math.round(c.length ? Math.max(...c.map(v => v.cao)) : 0), -Math.round(r.dai || 0)];
+}
+function dhTotHon(p, q){
+  for(let i = 0; i < p.length; i++){ if(p[i] !== q[i]) return p[i] < q[i]; }
+  return false;
+}
+
+// Tính sơ đồ.
+//   xe: { dai, rong, cao (cm) }   dong: [{ sp, sl }] theo đúng thứ tự xếp
+// Cách chọn: tìm chiều cao chung thấp nhất vẫn chứa hết hàng, rồi thử thêm các dáng
+// "hạ 1 tầng từ vách s" và "hạ dần mỗi vách 1 tầng từ vách s" (bắt đầu từ mức đó hoặc cao
+// hơn vài bậc) — lấy dáng đúng luật bậc, mặt trên thấp nhất, ra sát cửa nhất.
+function dhTinh(xe, dong){
+  const ctx = dhChuanBi(xe, dong);
+  if(ctx.loi.length) return { loi: ctx.loi, ctx };
+  const { H, mh } = ctx;
+  const chay = tran => dhXepThu(ctx, tran);
+  const day = chay(() => H);
+  if(!day.ok) return dhTomTat(ctx, day, { kieuCao: 'khongdu', hgChung: H, buocHa: null, xe });
+
+  // các mức cao có thể: bội số chiều cao từng mã
+  const muc = new Set([H]);
+  mh.forEach(it => { for(let n = 1; n * it.h <= H + DH_EPS; n++) muc.add(+(n * it.h).toFixed(3)); });
+  const ds = [...muc].sort((p, q) => p - q);
+  let hgChung = H, deu = day;
+  for(const hg of ds){
+    const r = chay(() => hg);
+    if(r.ok){ deu = r; hgChung = hg; break; }
+  }
+  let tot = { r: deu, diem: dhDiem(deu), kieuCao: 'deu', hg: hgChung, s: null };
+  const thu = (r, kieuCao, hg, s) => {
+    const d = dhDiem(r);
+    if(dhTotHon(d, tot.diem)) tot = { r, diem: d, kieuCao, hg, s };
+  };
+  const N = deu.vach.length;
+  ds.filter(h => h >= hgChung - DH_EPS).slice(0, 4).forEach(hg => {
+    if(hg !== hgChung) thu(chay(() => hg), 'deu', hg, null);
+    for(let s = 1; s < N + 3; s++){
+      thu(chay((n, it) => n >= s ? hg - it.h : hg), 'bac', hg, s);                       // hạ 1 tầng từ vách s
+      thu(chay((n, it) => n >= s ? hg - (n - s + 1) * it.h : hg), 'doc', hg, s);         // hạ dần mỗi vách 1 tầng
+    }
+  });
+  return dhTomTat(ctx, tot.r, { kieuCao: tot.kieuCao, hgChung: tot.hg, buocHa: tot.s, bacOk: dhBacOk(tot.r), xe });
+}
+
+// Gom kết quả: tổng hợp theo mã, theo vách, các bước xếp
+function dhTomTat(ctx, kq, meta){
+  const { L, W, H, mh } = ctx;
+  const theoMa = mh.map(it => ({ it, sl: 0, vach: new Set(), tangMax: 0 }));
+  kq.thung.forEach(t => { const m = theoMa[t.mh]; m.sl++; m.vach.add(t.vach); m.tangMax = Math.max(m.tangMax, t.tang + 1); });
+  const vach = kq.vach.map((v, n) => {
+    const dem = {};
+    v.thung.forEach(t => { dem[t.mh] = (dem[t.mh] || 0) + 1; });
+    const cao = v.thung.reduce((m, t) => Math.max(m, t.z + t.dz), 0);
+    return { n, x0: v.x0, D: v.D, cao, soTang: v.thung.reduce((m, t) => Math.max(m, t.tang + 1), 0), dem, soThung: v.thung.length };
+  });
+  // Bước xếp: gom các vách liền nhau cùng 1 mã, cùng số thùng
+  const buoc = [];
+  vach.forEach(v => {
+    const ma = Object.keys(v.dem).map(Number);
+    const b = buoc[buoc.length - 1];
+    if(b && ma.length === 1 && b.ma.length === 1 && b.ma[0] === ma[0] && b.soThung1 === v.soThung && b.soTang === v.soTang){
+      b.den = v.n; b.soThung += v.soThung;
+    }else{
+      buoc.push({ tu: v.n, den: v.n, ma, dem: v.dem, soThung1: v.soThung, soThung: v.soThung, soTang: v.soTang });
+    }
+  });
+  let thuTu = 0;
+  buoc.forEach(b => { b.thungDen = (thuTu += b.soThung); });
+  const theTich = kq.thung.reduce((s, t) => s + t.dx * t.dy * t.dz, 0);
+  const tongKg = mh.reduce((s, it) => s + it.kg * it.sl, 0);
+  const caoDs = vach.filter(v => v.soThung).map(v => v.cao);
+  return {
+    ok: kq.ok, thieu: kq.thieu, hong: kq.hong, ctx, mh, thung: kq.thung, vach, buoc,
+    theoMa: theoMa.map(m => ({ ...m, vach: m.vach.size })),
+    daiDung: kq.thung.reduce((m, t) => Math.max(m, t.x + t.dx), 0),
+    caoMax: caoDs.length ? Math.max(...caoDs) : 0,
+    caoMin: caoDs.length ? Math.min(...caoDs) : 0,
+    theTichPct: theTich / (L * W * (+meta.xe.cao)) * 100,
+    tongKg,
+    ...meta,
+  };
+}
+
+// Phần trống dưới trần từng vách: còn thêm được 1 tầng nữa không (tính theo thùng thấp nhất
+// trong vách và số tầng chồng tối đa của các mã trong vách). Vách trống -> null.
+function dhDuTran(kq){
+  const H = kq.ctx.H;                      // chiều cao lòng thùng
+  return kq.vach.map(v => {
+    if(!v.soThung) return null;
+    const ma = Object.keys(v.dem).map(Number);
+    const hMin = Math.min(...ma.map(m => kq.mh[m].h));
+    const tm = Math.min(...ma.map(m => kq.mh[m].tangMax));
+    const du = Math.max(0, H - v.cao);
+    const hetTang = v.soTang >= tm;
+    const them = !hetTang && du + DH_EPS >= hMin;
+    return { du, hMin, them, lyDo: them ? '' : (hetTang ? 'tang' : 'tran') };
+  });
+}
+
+</script>
+<script>/* js/modules/donghang/dh-view.js */
+// Sơ đồ đóng hàng — vẽ hình (không cần thư viện ngoài)
+//   dhCanhVe(kq, den, cam) : dựng danh sách mặt cần vẽ theo góc nhìn (dùng chung cho SVG và canvas)
+//   dhVe3D(kq, den, nho)   : SVG góc nhìn chuẩn từ phía cửa — dùng cho ảnh từng bước và bản in
+//   dhVe3DCanvas(...)      : canvas xoay được (kéo chuột / vuốt), xem DhKhung3D trong dh-ui.js
+//   dhVeCanh(kq)           : hình nhìn ngang dọc thùng xe — để soát mặt trên có cao đều không
+// Toạ độ: x dọc thùng (0 = vách trong, L = cửa), y ngang (0 = bên trái khi đứng ở cửa nhìn vào), z cao.
+// =====================================================================
+// Không dùng đỏ / vàng cho mã hàng: 2 màu đó dành để báo phần dư dưới trần (hình nhìn ngang)
+const DH_MAU = ['#1e88e5', '#43a047', '#8e24aa', '#00897b', '#6d4c41', '#3949ab', '#7cb342', '#546e7a', '#00acc1', '#5e35b1', '#827717', '#ad1457'];
+function dhMau(i){ return DH_MAU[i % DH_MAU.length]; }
+// Pha màu: t > 0 sáng dần về trắng, t < 0 tối dần về đen
+function dhPha(hex, t){
+  const n = parseInt(hex.slice(1), 16), c = [n >> 16, (n >> 8) & 255, n & 255];
+  const m = c.map(v => Math.round(t >= 0 ? v + (255 - v) * t : v * (1 + t)));
+  return '#' + m.map(v => v.toString(16).padStart(2, '0')).join('');
+}
+const dhSo = v => (Math.round(v * 10) / 10).toString();
+
+// Góc nhìn: yaw = quay quanh trục đứng, pitch = độ cao mắt nhìn (radian).
+// Góc chuẩn: đứng phía cửa, chếch bên phải, nhìn xuống 30°.
+const DH_CAM_CHUAN = { yaw: Math.PI / 4, pitch: Math.PI / 6 };
+function dhCam(cam){
+  const { yaw, pitch } = cam || DH_CAM_CHUAN;
+  const cy = Math.cos(yaw), sy = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch);
+  const d = [cp * cy, cp * sy, sp];                 // hướng từ cảnh tới mắt
+  const r = [-sy, cy, 0];                           // trục ngang màn hình
+  const u = [-sp * cy, -sp * sy, cp];               // trục đứng màn hình
+  return {
+    d,
+    chieu: (x, y, z) => [x * r[0] + y * r[1], -(x * u[0] + y * u[1] + z * u[2])],
+    sau: (x, y, z) => x * d[0] + y * d[1] + z * d[2],
+  };
+}
+// Danh sách mặt (đa giác 2D + màu) theo thứ tự vẽ xa -> gần
+function dhCanhVe(kq, den, cam){
+  const { L, W } = kq.ctx, H = +kq.xe.cao;
+  const C = dhCam(cam), [dx, dy, dz] = C.d;
+  const P = arr => arr.map(p => C.chieu(p[0], p[1], p[2]));
+  const nen = [];
+  // sàn và các vách ở phía xa (mặt trong quay về phía mắt)
+  if(dz > 0) nen.push({ p: P([[0,0,0],[L,0,0],[L,W,0],[0,W,0]]), fill: '#c9ced6' });
+  if(dx > 0) nen.push({ p: P([[0,0,0],[0,W,0],[0,W,H],[0,0,H]]), fill: '#e2e6eb' });
+  if(dx < 0) nen.push({ p: P([[L,0,0],[L,W,0],[L,W,H],[L,0,H]]), fill: '#f1f3f5' });
+  if(dy > 0) nen.push({ p: P([[0,0,0],[L,0,0],[L,0,H],[0,0,H]]), fill: '#eef1f4' });
+  if(dy < 0) nen.push({ p: P([[0,W,0],[L,W,0],[L,W,H],[0,W,H]]), fill: '#eef1f4' });
+  const ds = kq.thung.slice(0, den == null ? kq.thung.length : den)
+    .map(t => ({ t, s: C.sau(t.x + t.dx / 2, t.y + t.dy / 2, t.z + t.dz / 2) }))
+    .sort((a, b) => a.s - b.s);
+  const mat = [];
+  ds.forEach(({ t }) => {
+    const x0 = t.x, x1 = t.x + t.dx, y0 = t.y, y1 = t.y + t.dy, z0 = t.z, z1 = t.z + t.dz, m = dhMau(t.mh);
+    const xf = dx >= 0 ? x1 : x0, yf = dy >= 0 ? y1 : y0;
+    mat.push({ p: P([[xf,y0,z0],[xf,y1,z0],[xf,y1,z1],[xf,y0,z1]]), fill: m });                 // mặt dọc (phía cửa / phía trong)
+    mat.push({ p: P([[x0,yf,z0],[x1,yf,z0],[x1,yf,z1],[x0,yf,z1]]), fill: dhPha(m, -0.22) });   // mặt bên
+    if(dz > 0) mat.push({ p: P([[x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1]]), fill: dhPha(m, 0.3) });   // mặt trên
+  });
+  // khung thùng xe (12 cạnh) + vị trí cửa
+  const g = [[0,0,0],[L,0,0],[L,W,0],[0,W,0],[0,0,H],[L,0,H],[L,W,H],[0,W,H]].map(p => C.chieu(...p));
+  const canh = [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]].map(([a, b]) => [g[a], g[b]]);
+  const xs = g.map(p => p[0]), ys = g.map(p => p[1]);
+  const khung = { x0: Math.min(...xs), y0: Math.min(...ys), x1: Math.max(...xs), y1: Math.max(...ys) };
+  return { nen, mat, canh, khung, cua: C.chieu(L, W / 2, 0), co: Math.max(L, W) };
+}
+function dhVe3D(kq, den, nho, cam){
+  const v = dhCanhVe(kq, den, cam);
+  const pad = v.co * 0.02;
+  const vb = [v.khung.x0 - pad, v.khung.y0 - pad, v.khung.x1 - v.khung.x0 + 2 * pad, v.khung.y1 - v.khung.y0 + 2 * pad];
+  const pts = p => p.map(q => dhSo(q[0]) + ',' + dhSo(q[1])).join(' ');
+  const vien = v.co / 1400;
+  let s = `<svg class="dh-svg${nho ? ' nho' : ''}" viewBox="${vb.map(dhSo).join(' ')}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Sơ đồ khối đóng hàng">`;
+  v.nen.forEach(f => { s += `<polygon points="${pts(f.p)}" fill="${f.fill}"/>`; });
+  s += `<g fill="none" stroke="#9aa3ad" stroke-width="${dhSo(vien * 1.6)}" stroke-dasharray="${dhSo(vien * 8)} ${dhSo(vien * 6)}">`
+    + v.canh.map(([a, b]) => `<line x1="${dhSo(a[0])}" y1="${dhSo(a[1])}" x2="${dhSo(b[0])}" y2="${dhSo(b[1])}"/>`).join('') + '</g>';
+  // viền vẽ cùng từng thùng (nhóm g mang nét chung) để thùng phía trước che đúng thùng phía sau
+  s += `<g stroke="rgba(0,0,0,.3)" stroke-width="${dhSo(vien)}" stroke-linejoin="round">`;
+  v.mat.forEach(f => { s += `<polygon points="${pts(f.p)}" fill="${f.fill}"/>`; });
+  s += '</g>';
+  if(!nho) s += `<text x="${dhSo(v.cua[0])}" y="${dhSo(v.cua[1] + pad * 0.8)}" font-size="${dhSo(v.co * 0.022)}" text-anchor="middle" fill="#5b6470" font-weight="700">CỬA</text>`;
+  return s + '</svg>';
+}
+// Vẽ lên canvas (xoay được). zoom > 1 = phóng to.
+function dhVe3DCanvas(cv, kq, den, cam, zoom){
+  const dpr = window.devicePixelRatio || 1;
+  const w = cv.clientWidth, h = cv.clientHeight;
+  if(cv.width !== Math.round(w * dpr) || cv.height !== Math.round(h * dpr)){ cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.clearRect(0, 0, cv.width, cv.height);
+  const v = dhCanhVe(kq, den, cam);
+  const kw = v.khung.x1 - v.khung.x0, kh = v.khung.y1 - v.khung.y0;
+  const k = Math.min(w / kw, h / kh) * 0.92 * (zoom || 1);
+  const ox = w / 2 - (v.khung.x0 + kw / 2) * k, oy = h / 2 - (v.khung.y0 + kh / 2) * k;
+  ctx.setTransform(dpr * k, 0, 0, dpr * k, dpr * ox, dpr * oy);
+  const ve = (p, fill, net) => {
+    ctx.beginPath(); ctx.moveTo(p[0][0], p[0][1]);
+    for(let i = 1; i < p.length; i++) ctx.lineTo(p[i][0], p[i][1]);
+    ctx.closePath();
+    if(fill){ ctx.fillStyle = fill; ctx.fill(); }
+    if(net){ ctx.stroke(); }
+  };
+  v.nen.forEach(f => ve(f.p, f.fill));
+  ctx.lineWidth = 1.2 / k; ctx.strokeStyle = '#9aa3ad'; ctx.setLineDash([6 / k, 5 / k]);
+  ctx.beginPath(); v.canh.forEach(([a, b]) => { ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); }); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.lineWidth = 0.7 / k; ctx.strokeStyle = 'rgba(0,0,0,.3)'; ctx.lineJoin = 'round';
+  v.mat.forEach(f => ve(f.p, f.fill, true));
+  ctx.fillStyle = '#5b6470'; ctx.font = `700 ${13 / k}px Verdana, sans-serif`; ctx.textAlign = 'center';
+  ctx.fillText('CỬA', v.cua[0], v.cua[1] + 18 / k);
+}
+
+// Hình nhìn ngang: cửa bên trái, vách trong bên phải
+function dhVeCanh(kq){
+  const { L } = kq.ctx, H = +kq.xe.cao;
+  const lePhai = L * 0.012, leTren = H * 0.24, leDuoi = H * 0.14;
+  const X = x => L - x;                                // cửa ở bên trái
+  let s = `<svg class="dh-svg canh" viewBox="${dhSo(-lePhai)} ${dhSo(-leTren)} ${dhSo(L + 2 * lePhai)} ${dhSo(H + leTren + leDuoi)}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Hình nhìn ngang">`;
+  s += `<rect x="0" y="0" width="${dhSo(L)}" height="${dhSo(H)}" fill="#f1f3f6" stroke="#9aa3ad" stroke-width="${dhSo(L / 900)}"/>`;
+  const da = new Set(), vien = L / 1500;
+  kq.thung.forEach(t => {
+    const k = [t.x, t.z, t.dx, t.dz, t.mh].map(v => Math.round(v * 10)).join(',');
+    if(da.has(k)) return;
+    da.add(k);
+    s += `<rect x="${dhSo(X(t.x + t.dx))}" y="${dhSo(H - t.z - t.dz)}" width="${dhSo(t.dx)}" height="${dhSo(t.dz)}" fill="${dhMau(t.mh)}" fill-opacity=".85" stroke="rgba(0,0,0,.35)" stroke-width="${dhSo(vien)}"/>`;
+  });
+  // Phần dư dưới trần từng vách:
+  //   vàng = còn đủ chỗ thêm 1 tầng nữa (vẽ khung 1 tầng đứt nét trên đầu hàng)
+  //   đỏ   = kịch trần: phần dư không đủ cho 1 thùng (hoặc đã chồng tối đa số tầng cho phép)
+  const fs = H * 0.075, Hh = kq.ctx.H;
+  const du = dhDuTran(kq);
+  if(Hh < H - 0.5) s += `<line x1="0" y1="${dhSo(H - Hh)}" x2="${dhSo(L)}" y2="${dhSo(H - Hh)}" stroke="#9aa3ad" stroke-width="${dhSo(L / 900)}" stroke-dasharray="${dhSo(L / 120)} ${dhSo(L / 200)}"/>`;
+  kq.vach.forEach((v, n) => {
+    const d = du[n];
+    if(!d) return;
+    const x = dhSo(X(v.x0 + v.D)), w = dhSo(v.D), dinh = H - v.cao;
+    if(d.them){
+      s += `<rect x="${x}" y="${dhSo(dinh - d.hMin)}" width="${w}" height="${dhSo(d.hMin)}" fill="#facc15" fill-opacity=".55" stroke="#ca8a04" stroke-width="${dhSo(vien * 1.4)}" stroke-dasharray="${dhSo(vien * 6)} ${dhSo(vien * 4)}"/>`;
+    }else{
+      if(d.du > 0.5) s += `<rect x="${x}" y="${dhSo(dinh - d.du)}" width="${w}" height="${dhSo(d.du)}" fill="#ef4444" fill-opacity=".22"/>`;
+      s += `<rect x="${x}" y="${dhSo(dinh - H * 0.012)}" width="${w}" height="${dhSo(H * 0.024)}" fill="#dc2626"/>`;
+    }
+  });
+  // nhãn: chiều cao + số cm còn dư, gom các vách liền nhau giống nhau
+  const nhom = [];
+  kq.vach.forEach((v, n) => {
+    const d = du[n];
+    if(!d) return;
+    const k = Math.round(v.cao) + '|' + d.them + '|' + Math.round(d.du);
+    const g = nhom[nhom.length - 1];
+    if(g && g.k === k) g.x1 = v.x0 + v.D;
+    else nhom.push({ k, x0: v.x0, x1: v.x0 + v.D, cao: v.cao, d });
+  });
+  // Đặt nhãn từ phía cửa vào trong; nhãn chạm nhãn trước thì đẩy lên dòng trên, vẫn chạm thì
+  // chỉ ghi số dư, không còn chỗ thì bỏ (vách hẹp). Nhãn luôn nằm trong khung hình.
+  const rongChu = (a, b) => fs * 0.62 * a.length + fs * 0.8 * 0.62 * b.length;
+  const phai = [-Infinity, -Infinity], khe = fs * 0.4;
+  nhom.slice().reverse().forEach(g => {
+    const mau = g.d.them ? '#a16207' : '#b91c1c';
+    const yGoc = H - g.cao - (g.d.them ? g.d.hMin : 0) - fs * 0.35;
+    const cachDat = [[String(Math.round(g.cao)), ` · dư ${Math.round(g.d.du)}`], ['', `dư ${Math.round(g.d.du)}`]];
+    for(const [a, b] of cachDat){
+      const w = rongChu(a, b);
+      const cx = Math.min(Math.max(X((g.x0 + g.x1) / 2), w / 2), L - w / 2);
+      const muc = [0, 1].find(m => cx - w / 2 >= phai[m] + khe);
+      if(muc === undefined) continue;
+      phai[muc] = cx + w / 2;
+      const y = Math.max(yGoc - muc * fs * 1.15, -leTren + fs);
+      s += `<text x="${dhSo(cx)}" y="${dhSo(y)}" font-size="${dhSo(fs)}" text-anchor="middle" font-weight="700" paint-order="stroke" stroke="#fff" stroke-width="${dhSo(fs * 0.22)}" stroke-linejoin="round">`
+        + (a ? `<tspan fill="#1c2024">${a}</tspan>` : '') + `<tspan fill="${mau}" font-size="${dhSo(fs * 0.8)}">${b}</tspan></text>`;
+      break;
+    }
+  });
+  s += `<text x="0" y="${dhSo(H + leDuoi * 0.75)}" font-size="${dhSo(fs)}" fill="#5b6470" font-weight="700">◀ CỬA</text>`;
+  s += `<text x="${dhSo(L)}" y="${dhSo(H + leDuoi * 0.75)}" font-size="${dhSo(fs)}" fill="#5b6470" font-weight="700" text-anchor="end">VÁCH TRONG ▶</text>`;
+  return s + '</svg>';
+}
+
+</script>
+<script>/* js/modules/donghang/dh-ui.js */
+// Tab "Đóng hàng" (chỉ kho thành phẩm): lập sơ đồ xếp thùng vào container / xe tải
+//   - Cài đặt: danh mục mã hàng (kích thước thùng, kiểu xếp) + danh sách xe tải (số xe, lòng thùng)
+//     -> lưu trên máy chủ, khoá appwh-donghang-v1, chỉ người được sửa kho thành phẩm sửa được
+//   - Lập sơ đồ: chọn xe, chọn mã hàng theo thứ tự xếp + số thùng (hoặc nhập packing list) -> Tính sơ đồ
+//     -> phần đang nhập chỉ nhớ trên máy này
+//   - Lưu sơ đồ theo lô (gắn với 1 dòng ở tab Xuất hàng) -> lưu máy chủ cùng khoá trên, mảng `lo`
+// =====================================================================
+const KEY_DH = 'appwh-donghang-v1';
+const KEY_DH_NHAP = 'appwh-donghang-nhap';            // localStorage: phần đang nhập dở
+let DH = { sp: [], xe: [], lo: [] }, DH_RAW = null, DH_LUC = 0, DH_LOI = '';
+let DH_KQ = null, DH_BUOC = null, DH_CAIDAT = false, DH_XEM_LO = false;
+let DH_LO = null;                     // lô đang làm: { id?, ten, ngay, xh: {ngay, id, customer, cont} }
+let DH_CAM = { ...DH_CAM_CHUAN }, DH_ZOOM = 1;
+let DH_NHAP = (() => {
+  try{
+    const v = JSON.parse(lsGet(KEY_DH_NHAP) || 'null');
+    if(v && Array.isArray(v.dong)){ v.dong = v.dong.filter(d => d && (d.spId || d.spTam)); return v; }
+  }catch(e){}
+  return { xeId: 'c40hc', loai: 'cont', dong: [] };
+})();
+function dhNhoNhap(){ lsSet(KEY_DH_NHAP, JSON.stringify(DH_NHAP)); }
+const dhId = p => p + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+const dhCoSua = () => coSuaKho('thanhpham');
+function dhSp(id){ return DH.sp.find(s => s.id === id); }
+// Mã hàng của 1 dòng: trong danh mục, hoặc mã dùng tạm (nhập từ packing list, chưa lưu danh mục)
+function dhSpDong(d){ return d.spTam || dhSp(d.spId); }
+// Mã hàng dùng để tính: kiểu xếp chỉnh riêng ở dòng (nếu có) đè lên kiểu trong Cài đặt
+function dhSpTinh(d){ const sp = dhSpDong(d); return sp && d.kieu ? { ...sp, kieu: d.kieu } : sp; }
+const DH_KIEU_NGAN = { auto: 'tự động', doc1ngang: 'toàn dọc quay 1 ngang', doc2ngang: 'toàn dọc quay 2 ngang', tuchon: 'tự chọn' };
+const dhDocDH = p => ({ sp: Array.isArray(p.sp) ? p.sp : [], xe: Array.isArray(p.xe) ? p.xe : [], lo: Array.isArray(p.lo) ? p.lo : [] });
+function dhDsXe(){ return [...DH_CONT, ...DH.xe.map(x => ({ ...x, loai: 'xe' }))]; }
+// Xe đang chọn; xe của sơ đồ cũ đã bị xoá khỏi danh sách thì dùng bản chụp lưu kèm sơ đồ
+function dhXe(id){ return dhDsXe().find(x => x.id === id) || (DH_NHAP.xeTam && DH_NHAP.xeTam.id === id ? DH_NHAP.xeTam : DH_CONT[2]); }
+const dhCm = v => (Math.round(+v * 10) / 10).toLocaleString('vi-VN');
+const dhKichThuoc = o => `${dhCm(o.dai)} × ${dhCm(o.rong)} × ${dhCm(o.cao)}`;
+
+// ---- Tải / lưu danh mục ----
+let DH_DANG_CHO = false;             // tab đang hiện "Đang tải…" chờ lần tải đầu
+async function dhTai(){
+  DH_LUC = Date.now();
+  const cu = DH_RAW, loiCu = DH_LOI;
+  try{
+    const raw = await sbGet(KEY_DH);
+    DH_RAW = raw; DH_LOI = '';
+    if(raw){ DH = dhDocDH(JSON.parse(raw)); lsSet(KEY_DH, raw); }
+  }catch(e){
+    DH_LOI = 'Không tải được danh mục từ máy chủ — đang dùng bản lưu trên máy này';
+    try{ const p = JSON.parse(lsGet(KEY_DH) || 'null'); if(p) DH = dhDocDH(p); }catch(e2){}
+  }
+  // Chỉ vẽ lại khi dữ liệu thật sự đổi (hoặc đang chờ lần tải đầu), và đợi người dùng gõ xong
+  // để không làm mất chữ đang gõ trong ô tìm xe / tìm mã
+  if(DH_DANG_CHO || DH_RAW !== cu || DH_LOI !== loiCu) dhVeKhiRanh();
+}
+function dhVeKhiRanh(){
+  if(!(activeTab === 'donghang' && VIEW === 'kho')) return;
+  if(!DH_DANG_CHO && isUserTyping()){ setTimeout(dhVeKhiRanh, 1500); return; }
+  DH_DANG_CHO = false;
+  renderDongHang();
+}
+async function dhLuu(){
+  if(!dhCoSua()){ toast('👁 Chỉ xem — tài khoản không có quyền sửa kho thành phẩm'); return false; }
+  try{
+    DH_RAW = await ghiCoGop(KEY_DH, DH, DH_RAW);
+    lsSet(KEY_DH, DH_RAW);
+    return true;
+  }catch(e){ toast('⚠ Chưa lưu được — ' + e.message); return false; }
+}
+
+// ---- Vẽ tab ----
+const dhLaCont = id => DH_CONT.some(c => c.id === id);
+function dhLoaiXe(){ return DH_NHAP.loai || (dhLaCont(DH_NHAP.xeId) ? 'cont' : 'xe'); }
+let DH_TIM_XE = '';                 // ô tìm xe tải
+let DH_FOCUS = null;                // ô cần đặt con trỏ sau khi vẽ lại: 'sl:<dòng>' | 'timsp' | 'timxe'
+
+// Chọn phương tiện: Container (20GP / 40DC / 40HC) hoặc Xe tải (danh sách đã cài, có tìm kiếm)
+function dhHtmlChonXe(){
+  const loai = dhLoaiXe();
+  const seg = `<div class="dh-seg">
+      <button data-loai="cont" class="${loai === 'cont' ? 'on' : ''}">📦 Container</button>
+      <button data-loai="xe" class="${loai === 'xe' ? 'on' : ''}">🚚 Xe tải</button></div>`;
+  if(loai === 'cont'){
+    return seg + `<div class="dh-the-ds">${DH_CONT.map(c => `
+      <button class="dh-the${c.id === DH_NHAP.xeId ? ' on' : ''}" data-cont="${c.id}"><b>${esc(c.ma)}</b><small>${dhKichThuoc(c)} cm</small></button>`).join('')}</div>`;
+  }
+  return seg + `
+    <div class="dh-xe-tim">
+      <input type="text" id="dhTimXe" placeholder="🔍 Tìm số xe…" value="${esc(DH_TIM_XE)}" autocomplete="off">
+      ${dhCoSua() ? '<button class="sm" id="dhXeMoi">＋ Thêm xe mới</button>' : ''}
+    </div>
+    <div class="dh-the-ds dh-xe-ds" id="dhXeDs">${dhHtmlDsXe()}</div>`;
+}
+function dhDsXeLoc(){ const t = normName(DH_TIM_XE); return DH.xe.filter(x => !t || normName(x.ten).includes(t)); }
+function dhHtmlDsXe(){
+  const ds = dhDsXeLoc();
+  return `${ds.map(x => `
+      <button class="dh-the${x.id === DH_NHAP.xeId ? ' on' : ''}" data-xe="${esc(x.id)}"><b>${esc(x.ten)}</b>
+        <small>${dhKichThuoc(x)} cm</small></button>`).join('')
+      || `<p class="cd-mo">${DH.xe.length ? `Không thấy xe nào khớp "${esc(DH_TIM_XE)}".` : 'Chưa có xe tải nào.'}
+          ${dhCoSua() ? ' Bấm <b>＋ Thêm xe mới</b> để khai số xe và kích thước lòng thùng.' : ''}</p>`}`;
+}
+
+function renderDongHang(){
+  const page = $('tab-donghang');
+  if(!page) return;
+  if(Date.now() - DH_LUC > 60000) { dhTai(); if(!DH_RAW && !DH.sp.length){ DH_DANG_CHO = true; page.innerHTML = '<div class="panel"><p class="cd-mo">Đang tải…</p></div>'; return; } }
+  const loai = dhLoaiXe(), chuaChonXe = loai === 'xe' && dhLaCont(DH_NHAP.xeId);
+  const xe = dhXe(DH_NHAP.xeId);
+  const opt = (v, t, cur) => `<option value="${esc(v)}"${v === cur ? ' selected' : ''}>${esc(t)}</option>`;
+  const spOpts = cur => DH.sp.map(s => opt(s.id, `${s.ma}${s.ten ? ' · ' + s.ten : ''}`, cur)).join('');
+  page.innerHTML = `
+    <div class="panel">
+      <h2>🚛 Lập sơ đồ đóng hàng <span class="h2spacer"></span>
+        <button class="sm ${DH_CAIDAT ? '' : 'ghost'}" id="dhNutCaiDat">⚙ Cài đặt mã hàng & xe</button></h2>
+      ${DH_LOI ? `<p class="lg-err">${esc(DH_LOI)}</p>` : ''}
+      ${DH_LO ? `<div class="dh-lo">📦 Đang làm sơ đồ cho lô <b>${esc(DH_LO.ten)}</b>${DH_LO.xh ? ` · Xuất hàng ngày ${fmtVN(fromKey(DH_LO.xh.ngay))}` : ''}${DH_LO.id ? ' · đã lưu' : ''}
+        <button class="sm ghost" id="dhBoLo">Bỏ gắn lô</button></div>` : ''}
+      <div class="dh-buoc-nhap"><span class="so">1</span> Chọn phương tiện</div>
+      ${dhHtmlChonXe()}
+      <div class="dh-xe-tt"><span>${chuaChonXe ? '<span class="lg-err">Chưa chọn xe tải — chọn 1 xe trong danh sách</span>'
+        : `Đang chọn <b>${esc(xe.ten)}</b> · lòng thùng <b>${dhKichThuoc(xe)}</b> cm`}</span></div>
+
+      <div class="dh-buoc-nhap"><span class="so">2</span> Chọn mã hàng theo thứ tự xếp (dòng 1 vào trong cùng) và nhập số thùng</div>
+      <div class="dh-them-ma">
+        <input type="text" id="dhTimSp" placeholder="🔍 Gõ mã hàng rồi Enter để thêm…" autocomplete="off">
+        <div class="dh-goi-y-sp" id="dhGoiYSp" hidden></div>
+        <button class="sm ghost" id="dhNhapPL">📥 Nhập packing list</button>
+      </div>
+      <div class="tblwrap"><table class="dh-bang">
+        <thead><tr><th>#</th><th>Mã hàng</th><th>Thùng (D×R×C cm)</th><th>Số thùng</th><th>Kiểu xếp mỗi tầng</th><th></th></tr></thead>
+        <tbody>${DH_NHAP.dong.map((d, i) => {
+          const sp = dhSpDong(d);
+          const k = sp && !chuaChonXe ? dhChonKieu(dhSpTinh(d), +xe.rong, +xe.dai) : null;
+          const kieuMa = (sp && sp.kieu) || 'auto';
+          return `<tr>
+            <td><span class="dh-cham" style="background:${dhMau(i)}"></span>${i + 1}</td>
+            <td><select data-dong-sp="${i}" title="Đổi sang mã khác">${d.spTam ? opt('__tam', '(tạm) ' + d.spTam.ma, '__tam') : ''}${!sp ? opt('', '— đã xoá khỏi danh mục —', '') : ''}${spOpts(d.spTam ? '__tam' : d.spId)}</select>${d.spTam ? '<div class="cd-mo">Mã tạm từ packing list — chưa có trong danh mục</div>' : ''}</td>
+            <td>${sp ? dhKichThuoc(sp) + (sp.kg ? ` · ${dhCm(sp.kg)} kg` : '') : '—'}</td>
+            <td><input type="number" min="0" step="1" data-dong-sl="${i}" value="${esc(d.sl)}" class="dh-sl" placeholder="số thùng"></td>
+            <td>${sp ? `<select data-dong-kieu="${i}" class="dh-kieu">
+                ${opt('', 'Theo cài đặt mã (' + DH_KIEU_NGAN[kieuMa] + ')', d.kieu || '')}
+                ${['auto', 'doc1ngang', 'doc2ngang'].map(v => opt(v, DH_KIEU_NGAN[v][0].toUpperCase() + DH_KIEU_NGAN[v].slice(1), d.kieu || '')).join('')}
+              </select>` : ''}
+              <div class="${k && k.loi ? 'lg-err' : 'cd-mo'}">${k ? (k.loi ? esc(k.loi) : '= ' + esc(dhMoTaKieu(k))) : ''}</div></td>
+            <td class="dh-nut">
+              <button class="sm ghost" data-dong-len="${i}" ${i ? '' : 'disabled'} title="Lên">↑</button>
+              <button class="sm ghost" data-dong-xuong="${i}" ${i < DH_NHAP.dong.length - 1 ? '' : 'disabled'} title="Xuống">↓</button>
+              <button class="sm danger" data-dong-xoa="${i}" title="Bỏ dòng">✕</button>
+            </td></tr>`;
+        }).join('') || `<tr><td colspan="6" class="cd-mo">Chưa chọn mã nào — gõ mã ở ô tìm phía trên${DH.sp.length ? '' : ' (danh mục đang trống: bấm ⚙ Cài đặt để khai mã hàng trước)'}.</td></tr>`}</tbody>
+      </table></div>
+      <div class="btnrow" style="margin-top:10px;">
+        <button class="sm ghost" id="dhNutDsLo">📁 Sơ đồ đã lưu (${DH.lo.length})</button>
+        <span class="h2spacer" style="flex:1"></span>
+        <button id="dhTinh">Tính sơ đồ</button>
+      </div>
+    </div>
+    ${DH_XEM_LO ? dhHtmlDsLo() : ''}
+    ${DH_CAIDAT ? dhHtmlCaiDat() : ''}
+    <div id="dhKetQua">${DH_KQ ? dhHtmlKetQua(DH_KQ) : ''}</div>`;
+  dhGanSuKien(page);
+  // đặt con trỏ vào ô vừa thao tác (thêm mã -> ô số thùng của dòng đó)
+  const f = DH_FOCUS; DH_FOCUS = null;
+  const el = !f ? null : f === 'timsp' ? $('dhTimSp') : f === 'timxe' ? $('dhTimXe') : page.querySelector(`[data-dong-sl="${f.slice(3)}"]`);
+  if(el){ el.focus(); if(el.select) el.select(); if(f === 'timxe') el.setSelectionRange(el.value.length, el.value.length); }
+}
+
+// Thêm 1 mã vào danh sách (đã có thì nhảy tới dòng đó), con trỏ vào ô số thùng
+function dhThemMa(spId){
+  let i = DH_NHAP.dong.findIndex(d => d.spId === spId && !d.spTam);
+  if(i < 0){ DH_NHAP.dong.push({ spId, sl: '' }); i = DH_NHAP.dong.length - 1; dhNhoNhap(); DH_KQ = null; }
+  DH_FOCUS = 'sl:' + i;
+  renderDongHang();
+}
+// Ô tìm mã hàng có gợi ý: gõ để lọc, ↑ ↓ để chọn, Enter để thêm, Esc để đóng
+function dhGanTimSp(){
+  const o = $('dhTimSp'), hop = $('dhGoiYSp');
+  if(!o || !hop) return;
+  let ds = [], chon = 0;
+  const ve = () => {
+    const t = normName(o.value);
+    ds = DH.sp.filter(s => !t || normName(s.ma).includes(t) || normName(s.ten || '').includes(t))
+      .sort((a, b) => (normName(a.ma).startsWith(t) ? 0 : 1) - (normName(b.ma).startsWith(t) ? 0 : 1) || a.ma.localeCompare(b.ma, 'vi'))
+      .slice(0, 30);
+    chon = Math.min(chon, Math.max(0, ds.length - 1));
+    const daCo = new Set(DH_NHAP.dong.map(d => d.spId));
+    hop.innerHTML = ds.map((s, i) => `<div class="mo${i === chon ? ' on' : ''}" data-i="${i}">
+        <b>${esc(s.ma)}</b>${s.ten ? ` <span class="cd-mo">${esc(s.ten)}</span>` : ''}<small>${dhKichThuoc(s)} cm${daCo.has(s.id) ? ' · đã có trong danh sách' : ''}</small></div>`).join('')
+      || `<div class="trong">Không có mã "${esc(o.value)}" trong danh mục.${dhCoSua() ? ` <button class="sm" data-them-moi>＋ Thêm mã này vào danh mục</button>` : ''}</div>`;
+    hop.hidden = false;
+    hop.querySelectorAll('[data-i]').forEach(el => el.onmousedown = e => { e.preventDefault(); dhThemMa(ds[+el.dataset.i].id); });
+    const nm = hop.querySelector('[data-them-moi]');
+    if(nm) nm.onmousedown = e => { e.preventDefault(); hop.hidden = true; dhSuaSp(null, { ma: o.value.trim(), them: true }); };
+  };
+  o.oninput = () => { chon = 0; ve(); };
+  o.onfocus = ve;
+  o.onblur = () => setTimeout(() => { hop.hidden = true; }, 150);
+  o.onkeydown = e => {
+    if(e.key === 'ArrowDown'){ e.preventDefault(); if(hop.hidden) ve(); chon = Math.min(chon + 1, ds.length - 1); ve(); }
+    else if(e.key === 'ArrowUp'){ e.preventDefault(); chon = Math.max(chon - 1, 0); ve(); }
+    else if(e.key === 'Enter'){ e.preventDefault(); if(ds[chon]) dhThemMa(ds[chon].id); }
+    else if(e.key === 'Escape'){ hop.hidden = true; }
+  };
+}
+
+function dhGanSuKien(page){
+  const q = s => page.querySelectorAll(s);
+  $('dhNutCaiDat').onclick = () => { DH_CAIDAT = !DH_CAIDAT; renderDongHang(); };
+  // chọn phương tiện
+  q('[data-loai]').forEach(b => b.onclick = () => {
+    const loai = b.dataset.loai;
+    if(loai === dhLoaiXe()) return;
+    DH_NHAP.loai = loai;
+    if(loai === 'cont') DH_NHAP.xeId = DH_NHAP.contId && dhLaCont(DH_NHAP.contId) ? DH_NHAP.contId : 'c40hc';
+    else{ if(dhLaCont(DH_NHAP.xeId)) DH_NHAP.contId = DH_NHAP.xeId; const cu = DH.xe.find(x => x.id === DH_NHAP.xeTruoc); if(cu) DH_NHAP.xeId = cu.id; DH_FOCUS = 'timxe'; }
+    dhNhoNhap(); DH_KQ = null; renderDongHang();
+  });
+  q('[data-cont]').forEach(b => b.onclick = () => { DH_NHAP.xeId = DH_NHAP.contId = b.dataset.cont; DH_NHAP.loai = 'cont'; dhNhoNhap(); DH_KQ = null; renderDongHang(); });
+  const chonXe = id => { DH_NHAP.xeId = DH_NHAP.xeTruoc = id; DH_NHAP.loai = 'xe'; dhNhoNhap(); DH_KQ = null; renderDongHang(); };
+  const ganXe = () => page.querySelectorAll('[data-xe]').forEach(b => b.onclick = () => chonXe(b.dataset.xe));
+  ganXe();
+  const timXe = $('dhTimXe');
+  if(timXe){
+    // chỉ vẽ lại danh sách xe (không vẽ lại cả trang) để không làm hỏng bộ gõ tiếng Việt
+    timXe.oninput = () => { DH_TIM_XE = timXe.value; $('dhXeDs').innerHTML = dhHtmlDsXe(); ganXe(); };
+    timXe.onkeydown = e => { if(e.key === 'Enter'){ const ds = dhDsXeLoc(); if(ds.length === 1) chonXe(ds[0].id); } };
+  }
+  const xeMoi = $('dhXeMoi'); if(xeMoi) xeMoi.onclick = () => dhSuaXe(null, { ten: DH_TIM_XE.trim(), chon: true });
+  // mã hàng
+  dhGanTimSp();
+  q('[data-dong-sp]').forEach(el => el.onchange = () => {
+    if(el.value === '__tam' || !el.value) return;
+    const d = DH_NHAP.dong[+el.dataset.dongSp]; d.spId = el.value; delete d.spTam;
+    dhNhoNhap(); renderDongHang();
+  });
+  q('[data-dong-kieu]').forEach(el => el.onchange = () => {
+    const d = DH_NHAP.dong[+el.dataset.dongKieu];
+    if(el.value) d.kieu = el.value; else delete d.kieu;
+    dhNhoNhap(); DH_KQ = null; renderDongHang();
+  });
+  q('[data-dong-sl]').forEach(el => {
+    el.oninput = () => { DH_NHAP.dong[+el.dataset.dongSl].sl = el.value; dhNhoNhap(); };
+    el.onkeydown = e => { if(e.key === 'Enter'){ e.preventDefault(); const t = $('dhTimSp'); if(t) t.focus(); } };   // nhập xong -> chọn mã tiếp
+  });
+  const doi = (i, j) => { const d = DH_NHAP.dong; [d[i], d[j]] = [d[j], d[i]]; dhNhoNhap(); renderDongHang(); };
+  q('[data-dong-len]').forEach(el => el.onclick = () => doi(+el.dataset.dongLen, +el.dataset.dongLen - 1));
+  q('[data-dong-xuong]').forEach(el => el.onclick = () => doi(+el.dataset.dongXuong, +el.dataset.dongXuong + 1));
+  q('[data-dong-xoa]').forEach(el => el.onclick = () => { DH_NHAP.dong.splice(+el.dataset.dongXoa, 1); dhNhoNhap(); renderDongHang(); });
+  $('dhTinh').onclick = dhBamTinh;
+  $('dhNhapPL').onclick = dhMoNhapPL;
+  $('dhNutDsLo').onclick = () => { DH_XEM_LO = !DH_XEM_LO; renderDongHang(); };
+  const boLo = $('dhBoLo'); if(boLo) boLo.onclick = () => { DH_LO = null; renderDongHang(); };
+  if(DH_XEM_LO) dhGanDsLo(page);
+  if(DH_CAIDAT) dhGanCaiDat(page);
+  if(DH_KQ) dhGanKetQua(page);
+}
+
+function dhBamTinh(){
+  const dong = DH_NHAP.dong.filter(d => (d.spId || d.spTam) && +d.sl > 0).map(d => ({ sp: dhSpTinh(d), sl: +d.sl })).filter(d => d.sp);
+  if(!dong.length){ toast('⚠ Chọn ít nhất 1 mã hàng và nhập số thùng'); return; }
+  if(dhLoaiXe() === 'xe' && dhLaCont(DH_NHAP.xeId)){ toast('⚠ Chọn 1 xe tải trong danh sách trước'); return; }
+  const xe = dhXe(DH_NHAP.xeId);
+  const kq = dhTinh(xe, dong);
+  if(kq.loi){ DH_KQ = null; renderDongHang(); toast('⚠ ' + kq.loi.join(' · ')); return; }
+  DH_KQ = kq; DH_BUOC = null;
+  renderDongHang();
+  const el = $('dhKetQua'); if(el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ---- Kết quả ----
+// Chú thích màu phần dư dưới trần (hình nhìn ngang)
+const DH_CHU_THICH = `<div class="dh-chu-thich">
+  <span><i class="o vang"></i>Vàng: còn đủ chỗ thêm 1 tầng nữa</span>
+  <span><i class="o do"></i>Đỏ: kịch trần — phần dư không đủ cho 1 thùng (hoặc đã chồng đủ số tầng tối đa)</span></div>`;
+// Đếm số vách vàng / đỏ cho ô "Cao các vách"
+function dhDemDu(kq){
+  const ds = dhDuTran(kq).filter(Boolean);
+  const vang = ds.filter(d => d.them).length, doo = ds.length - vang;
+  return `<div class="dh-dem-du">${vang ? `<span class="vang">${vang} vách thêm được 1 tầng</span>` : ''}${doo ? `<span class="do">${doo} vách kịch trần</span>` : ''}</div>`;
+}
+function dhMoTaCao(kq){
+  if(kq.kieuCao === 'khongdu') return `Không đủ chỗ — còn thiếu ${kq.thieu.toLocaleString('vi-VN')} thùng`;
+  if(kq.kieuCao === 'bac') return `Cao đều, hạ 1 tầng từ vách ${kq.buocHa + 1} ra cửa`;
+  if(kq.kieuCao === 'doc') return `Cao đều, hạ dần mỗi vách 1 tầng từ vách ${kq.buocHa + 1}`;
+  return 'Cao đều từ trong ra cửa';
+}
+function dhMoTaBuoc(kq, b){
+  const vach = `Vách ${b.tu + 1}${b.den > b.tu ? '–' + (b.den + 1) : ''}`;
+  const ma = b.ma.map(m => `<b style="color:${dhPha(dhMau(m), -0.25)}">${esc(kq.mh[m].sp.ma)}</b> ${b.dem[m]} thùng`).join(' + ');
+  const soVach = b.den - b.tu + 1;
+  return `${vach} · ${ma}${soVach > 1 ? ` /vách × ${soVach} vách` : ''} · ${b.soTang} tầng`;
+}
+function dhHtmlKetQua(kq){
+  const xe = kq.xe, tong = kq.mh.reduce((s, it) => s + it.sl, 0);
+  const canh = [];
+  if(!kq.ok) canh.push(`<div class="dh-canh bad">⚠ Không đủ chỗ: xếp được ${kq.thung.length.toLocaleString('vi-VN')} / ${tong.toLocaleString('vi-VN')} thùng, còn thiếu ${kq.thieu.toLocaleString('vi-VN')} thùng. Chọn xe lớn hơn hoặc bớt hàng.</div>`);
+  if(kq.ok && kq.bacOk === false) canh.push(`<div class="dh-canh">⚠ Hàng gần đầy thùng xe nên không san đều được hết: có chỗ chênh hơn 1 tầng giữa 2 vách liền nhau (xem hình nhìn ngang).</div>`);
+  const n = DH_BUOC == null ? kq.buoc.length : DH_BUOC;
+  const b = kq.buoc[n - 1];
+  return `
+    <div class="panel">
+      <h2>Kết quả · ${esc(xe.ten)} <span class="h2spacer"></span>
+        ${dhCoSua() ? `<button class="sm secondary" id="dhLuuLo">💾 Lưu sơ đồ${DH_LO && DH_LO.id ? '' : ' cho lô'}</button>` : ''}
+        <button class="sm" id="dhIn">🖨 In sơ đồ</button></h2>
+      ${canh.join('')}
+      <div class="dh-chip">
+        <div><small>Số thùng</small><b>${kq.thung.length.toLocaleString('vi-VN')}${kq.ok ? '' : ' / ' + tong.toLocaleString('vi-VN')}</b></div>
+        <div><small>Thể tích dùng</small><b>${kq.theTichPct.toFixed(1)}%</b></div>
+        <div><small>Dài dùng</small><b>${dhCm(kq.daiDung)} / ${dhCm(kq.ctx.L)} cm</b></div>
+        <div><small>Cao các vách</small><b>${dhCm(kq.caoMin)}–${dhCm(kq.caoMax)} cm</b>${dhDemDu(kq)}</div>
+        <div><small>Tổng cân nặng</small><b>${kq.tongKg.toLocaleString('vi-VN')} kg</b></div>
+        <div><small>Dáng xếp</small><b class="dh-dang">${esc(dhMoTaCao(kq))}</b></div>
+      </div>
+      <div class="dh-ve dh-ve3d">
+        <canvas id="dhCanvas" class="dh-canvas" aria-label="Sơ đồ khối đóng hàng — kéo để xoay"></canvas>
+        <div class="dh-goc">
+          <button class="sm ghost" data-goc="cua" title="Nhìn từ phía cửa">Từ cửa</button>
+          <button class="sm ghost" data-goc="trong" title="Nhìn từ phía vách trong">Từ trong</button>
+          <button class="sm ghost" data-goc="ngang" title="Nhìn ngang hông">Ngang</button>
+          <button class="sm ghost" data-goc="tren" title="Nhìn từ trên xuống">Từ trên</button>
+          <button class="sm ghost" data-zoom="1" title="Phóng to">＋</button>
+          <button class="sm ghost" data-zoom="-1" title="Thu nhỏ">－</button>
+        </div>
+        <div class="dh-goi-y">Kéo chuột / vuốt để xoay · lăn chuột để phóng to</div>
+      </div>
+      <div class="dh-buoc">
+        <label>Xem từng bước <input type="range" id="dhThanhBuoc" min="1" max="${kq.buoc.length}" value="${n}"></label>
+        <div id="dhNhanBuoc">Bước ${n}/${kq.buoc.length}: ${b ? dhMoTaBuoc(kq, b) : ''}</div>
+      </div>
+      <h3 class="dh-h3">Nhìn ngang — số trên đầu: chiều cao · cm còn dư dưới trần</h3>
+      <div class="dh-ve canh">${dhVeCanh(kq)}</div>
+      ${DH_CHU_THICH}
+      <div class="tblwrap"><table class="dh-bang">
+        <thead><tr><th>Mã</th><th>Tên</th><th>Thùng (cm)</th><th>Kg/thùng</th><th>Số thùng</th><th>Kiểu xếp mỗi tầng</th><th>Số vách</th><th>Số tầng</th><th>Thể tích</th></tr></thead>
+        <tbody>${kq.theoMa.map((m, i) => `<tr>
+          <td><span class="dh-cham" style="background:${dhMau(i)}"></span><b>${esc(m.it.sp.ma)}</b></td><td>${esc(m.it.sp.ten || '')}</td>
+          <td>${dhKichThuoc(m.it.sp)}</td><td>${m.it.kg ? dhCm(m.it.kg) : '—'}</td>
+          <td>${m.sl.toLocaleString('vi-VN')}${m.sl < m.it.sl ? ` <span class="lg-err">/ ${m.it.sl}</span>` : ''}</td>
+          <td>${esc(dhMoTaKieu(m.it.kieu))}</td><td>${m.vach}</td><td>${m.tangMax}</td>
+          <td>${(m.sl * m.it.a * m.it.b * m.it.h / (kq.ctx.L * kq.ctx.W * +xe.cao) * 100).toFixed(1)}%</td></tr>`).join('')}
+        </tbody>
+      </table></div>
+      <h3 class="dh-h3">Các bước xếp</h3>
+      <div class="dh-luoi">${kq.buoc.map((bb, i) => `
+        <div class="dh-o"><div class="dh-o-ten">Bước ${i + 1} · ${dhMoTaBuoc(kq, bb)}</div>${dhVe3D(kq, bb.thungDen, true)}</div>`).join('')}
+      </div>
+    </div>`;
+}
+// Khung 3D xoay được trên canvas
+function dhVeKhung(){
+  const cv = $('dhCanvas');
+  if(!cv || !DH_KQ) return;
+  const n = DH_BUOC == null ? DH_KQ.buoc.length : DH_BUOC;
+  const b = DH_KQ.buoc[n - 1];
+  dhVe3DCanvas(cv, DH_KQ, b ? b.thungDen : 0, DH_CAM, DH_ZOOM);
+}
+let DH_VE_CHO = false;
+function dhVeSau(){ if(DH_VE_CHO) return; DH_VE_CHO = true; requestAnimationFrame(() => { DH_VE_CHO = false; dhVeKhung(); }); }
+const DH_GOC = {
+  cua:   { yaw: Math.PI / 4,       pitch: Math.PI / 6 },
+  trong: { yaw: Math.PI * 1.25,    pitch: Math.PI / 6 },
+  ngang: { yaw: Math.PI / 2,       pitch: 0.06 },
+  tren:  { yaw: Math.PI / 2,       pitch: Math.PI / 2 - 0.02 },
+};
+function dhGanKetQua(page){
+  const thanh = $('dhThanhBuoc');
+  if(thanh) thanh.oninput = () => {
+    DH_BUOC = +thanh.value;
+    const b = DH_KQ.buoc[DH_BUOC - 1];
+    dhVeSau();
+    $('dhNhanBuoc').innerHTML = `Bước ${DH_BUOC}/${DH_KQ.buoc.length}: ${dhMoTaBuoc(DH_KQ, b)}`;
+  };
+  const nutIn = $('dhIn'); if(nutIn) nutIn.onclick = dhIn;
+  const nutLuu = $('dhLuuLo'); if(nutLuu) nutLuu.onclick = dhMoLuuLo;
+  const cv = $('dhCanvas');
+  if(!cv) return;
+  let keo = null;
+  cv.onpointerdown = e => { keo = { x: e.clientX, y: e.clientY, cam: { ...DH_CAM } }; cv.setPointerCapture(e.pointerId); };
+  cv.onpointermove = e => {
+    if(!keo) return;
+    DH_CAM.yaw = keo.cam.yaw - (e.clientX - keo.x) * 0.008;
+    DH_CAM.pitch = Math.max(0.02, Math.min(Math.PI / 2 - 0.02, keo.cam.pitch + (e.clientY - keo.y) * 0.006));
+    dhVeSau();
+  };
+  cv.onpointerup = cv.onpointercancel = () => { keo = null; };
+  cv.onwheel = e => { e.preventDefault(); DH_ZOOM = Math.max(0.6, Math.min(5, DH_ZOOM * (e.deltaY < 0 ? 1.12 : 1 / 1.12))); dhVeSau(); };
+  page.querySelectorAll('[data-goc]').forEach(btn => btn.onclick = () => { DH_CAM = { ...DH_GOC[btn.dataset.goc] }; DH_ZOOM = 1; dhVeSau(); });
+  page.querySelectorAll('[data-zoom]').forEach(btn => btn.onclick = () => { DH_ZOOM = Math.max(0.6, Math.min(5, DH_ZOOM * (+btn.dataset.zoom > 0 ? 1.25 : 0.8))); dhVeSau(); });
+  dhVeKhung();
+}
+window.addEventListener('resize', () => { if(activeTab === 'donghang') dhVeSau(); });
+// In: mở cửa sổ riêng chỉ có sơ đồ, dùng lệnh in của trình duyệt (in giấy hoặc lưu PDF)
+function dhIn(){
+  const kq = DH_KQ; if(!kq) return;
+  const w = window.open('', '_blank');
+  if(!w){ toast('⚠ Trình duyệt chặn cửa sổ mới — cho phép popup rồi bấm lại'); return; }
+  const css = `body{font-family:Verdana,Geneva,sans-serif;color:#1c2024;margin:16px;font-size:12px}
+    h1{font-size:18px;margin:0 0 4px} .mo{color:#5b6470} table{border-collapse:collapse;width:100%;margin:10px 0}
+    th,td{border:1px solid #9aa3ad;padding:4px 6px;text-align:left} th{background:#eef1f4}
+    .dh-svg{width:100%;height:auto;display:block} .canh{max-height:220px} .luoi{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .o{border:1px solid #d8dde5;padding:6px;break-inside:avoid} .o .dh-svg{max-height:200px}
+    .canhbao{background:#fbeecb;border:1px solid #e3b356;padding:6px 8px;margin:6px 0}
+    .cham{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:middle}
+    .dh-chu-thich{display:flex;gap:16px;flex-wrap:wrap;margin:4px 0 8px} .dh-chu-thich .o{display:inline-block;width:12px;height:12px;margin-right:5px;vertical-align:-2px;border-radius:2px}
+    .o.vang{background:#facc15;border:1px dashed #ca8a04} .o.do{background:#dc2626}
+    @page{size:A4 landscape;margin:10mm}`;
+  const ten = kq.mh.map(it => it.sp.ma).join(', ');
+  w.document.write(`<!doctype html><html lang="vi"><head><meta charset="utf-8"><title>Sơ đồ đóng hàng · ${esc(kq.xe.ten)}</title><style>${css}</style></head><body>
+    <h1>Sơ đồ đóng hàng · ${esc(kq.xe.ten)}</h1>
+    <div class="mo">${DH_LO ? 'Lô ' + esc(DH_LO.ten) + ' · ' : ''}Lòng thùng ${dhKichThuoc(kq.xe)} cm · ${esc(ten)} · in lúc ${new Date().toLocaleString('vi-VN')}</div>
+    ${!kq.ok ? `<div class="canhbao">Không đủ chỗ — còn thiếu ${kq.thieu} thùng</div>` : ''}
+    <table><tr><th>Số thùng</th><th>Thể tích</th><th>Dài dùng</th><th>Cao các vách</th><th>Tổng kg</th><th>Dáng xếp</th></tr>
+      <tr><td>${kq.thung.length}</td><td>${kq.theTichPct.toFixed(1)}%</td><td>${dhCm(kq.daiDung)} / ${dhCm(kq.ctx.L)} cm</td>
+      <td>${dhCm(kq.caoMin)}–${dhCm(kq.caoMax)} cm</td><td>${kq.tongKg.toLocaleString('vi-VN')}</td><td>${esc(dhMoTaCao(kq))}</td></tr></table>
+    ${dhVe3D(kq)}
+    ${dhVeCanh(kq)}
+    ${DH_CHU_THICH}
+    <table><tr><th>Mã</th><th>Tên</th><th>Thùng (cm)</th><th>Kg/thùng</th><th>Số thùng</th><th>Kiểu xếp mỗi tầng</th><th>Số vách</th><th>Số tầng</th></tr>
+      ${kq.theoMa.map((m, i) => `<tr><td><span class="cham" style="background:${dhMau(i)}"></span>${esc(m.it.sp.ma)}</td><td>${esc(m.it.sp.ten || '')}</td><td>${dhKichThuoc(m.it.sp)}</td>
+      <td>${m.it.kg || ''}</td><td>${m.sl}</td><td>${esc(dhMoTaKieu(m.it.kieu))}</td><td>${m.vach}</td><td>${m.tangMax}</td></tr>`).join('')}</table>
+    <div class="luoi">${kq.buoc.map((b, i) => `<div class="o"><div>Bước ${i + 1} · ${dhMoTaBuoc(kq, b)}</div>${dhVe3D(kq, b.thungDen, true)}</div>`).join('')}</div>
+    <script>setTimeout(function(){ window.print(); }, 300);<\/script>
+    </body></html>`);
+  w.document.close();
+}
+
+// ---- Cài đặt: danh mục mã hàng + xe tải ----
+function dhHtmlCaiDat(){
+  const sua = dhCoSua();
+  return `
+    <div class="panel">
+      <h2>⚙ Danh mục mã hàng <span class="n">${DH.sp.length}</span><span class="h2spacer"></span>
+        <input type="text" class="dh-tim-dm" data-tim-bang="dhBangSp" placeholder="🔍 Tìm mã / tên" autocomplete="off">
+        ${sua ? '<button class="sm" id="dhThemSp">+ Thêm mã hàng</button>' : ''}</h2>
+      ${sua ? '' : '<p class="cd-ghi cd-mo">Chỉ xem — cần quyền sửa kho thành phẩm để thêm / sửa.</p>'}
+      <div class="tblwrap"><table class="dh-bang" id="dhBangSp">
+        <thead><tr><th>Mã</th><th>Tên</th><th>Thùng D×R×C (cm)</th><th>Kg</th><th>Tầng tối đa</th><th>Kiểu xếp (cont rộng 235)</th><th></th></tr></thead>
+        <tbody>${DH.sp.map(s => {
+          const k = dhChonKieu(s, 235, 1203);
+          return `<tr data-tim="${esc(normName(s.ma + ' ' + (s.ten || '')))}"><td><b>${esc(s.ma)}</b></td><td>${esc(s.ten || '')}</td><td>${dhKichThuoc(s)}</td><td>${s.kg ? dhCm(s.kg) : '—'}</td>
+            <td>${+s.tangMax > 0 ? s.tangMax : 'Không giới hạn'}</td>
+            <td>${k.loi ? `<span class="lg-err">${esc(k.loi)}</span>` : esc(dhMoTaKieu(k))} <span class="cd-mo">(${DH_KIEU_NGAN[s.kieu || 'auto'] || 'tự động'})</span></td>
+            <td class="dh-nut">${sua ? `<button class="sm secondary" data-sua-sp="${esc(s.id)}">Sửa</button><button class="sm danger" data-xoa-sp="${esc(s.id)}">Xoá</button>` : ''}</td></tr>`;
+        }).join('') || '<tr><td colspan="7" class="cd-mo">Chưa có mã hàng nào</td></tr>'}</tbody>
+      </table></div>
+    </div>
+    <div class="panel">
+      <h2>🚚 Xe tải <span class="n">${DH.xe.length}</span><span class="h2spacer"></span>
+        <input type="text" class="dh-tim-dm" data-tim-bang="dhBangXe" placeholder="🔍 Tìm số xe" autocomplete="off">
+        ${sua ? '<button class="sm" id="dhThemXe">+ Thêm xe</button>' : ''}</h2>
+      <div class="tblwrap"><table class="dh-bang" id="dhBangXe">
+        <thead><tr><th>Số xe / tên</th><th>Lòng thùng D×R×C (cm)</th><th></th></tr></thead>
+        <tbody>${DH.xe.map(x => `<tr data-tim="${esc(normName(x.ten))}"><td><b>${esc(x.ten)}</b></td><td>${dhKichThuoc(x)}</td>
+          <td class="dh-nut">${sua ? `<button class="sm secondary" data-sua-xe="${esc(x.id)}">Sửa</button><button class="sm danger" data-xoa-xe="${esc(x.id)}">Xoá</button>` : ''}</td></tr>`).join('')
+          || '<tr><td colspan="3" class="cd-mo">Chưa có xe tải nào</td></tr>'}</tbody>
+      </table></div>
+      <p class="cd-ghi cd-mo">Container chuẩn có sẵn: ${DH_CONT.map(c => `${esc(c.ten)} ${dhKichThuoc(c)} cm`).join(' · ')} (kích thước lòng tham khảo).</p>
+    </div>`;
+}
+function dhGanCaiDat(page){
+  const q = s => page.querySelectorAll(s);
+  q('[data-tim-bang]').forEach(o => o.oninput = () => {
+    const t = normName(o.value);
+    page.querySelectorAll('#' + o.dataset.timBang + ' tbody tr[data-tim]').forEach(tr => { tr.style.display = !t || tr.dataset.tim.includes(t) ? '' : 'none'; });
+  });
+  const nutSp = $('dhThemSp'); if(nutSp) nutSp.onclick = () => dhSuaSp(null);
+  const nutXe = $('dhThemXe'); if(nutXe) nutXe.onclick = () => dhSuaXe(null);
+  q('[data-sua-sp]').forEach(b => b.onclick = () => dhSuaSp(dhSp(b.dataset.suaSp)));
+  q('[data-sua-xe]').forEach(b => b.onclick = () => dhSuaXe(DH.xe.find(x => x.id === b.dataset.suaXe)));
+  q('[data-xoa-sp]').forEach(b => b.onclick = async () => {
+    const s = dhSp(b.dataset.xoaSp);
+    if(!s || !await confirmBox(`Xoá mã hàng "${s.ma}" khỏi danh mục?`)) return;
+    DH.sp = DH.sp.filter(x => x.id !== s.id);
+    if(await dhLuu()) toast('✓ Đã xoá ' + s.ma);
+    renderDongHang();
+  });
+  q('[data-xoa-xe]').forEach(b => b.onclick = async () => {
+    const x = DH.xe.find(v => v.id === b.dataset.xoaXe);
+    if(!x || !await confirmBox(`Xoá xe "${x.ten}"?`)) return;
+    DH.xe = DH.xe.filter(v => v.id !== x.id);
+    if(DH_NHAP.xeId === x.id){ DH_NHAP.xeId = 'c40hc'; dhNhoNhap(); }
+    if(await dhLuu()) toast('✓ Đã xoá xe ' + x.ten);
+    renderDongHang();
+  });
+}
+// Ô nhập số: trả về số > 0 hoặc null
+function dhSoDuong(v){ const n = +String(v).replace(',', '.'); return n > 0 ? n : null; }
+
+// goiY: { ma, them } — mở từ ô tìm mã: điền sẵn mã, lưu xong thêm luôn vào danh sách đang lập
+function dhSuaSp(sp, goiY){
+  const moi = !sp;
+  sp = sp || { ma: (goiY && goiY.ma) || '', ten: '', dai: '', rong: '', cao: '', kg: '', tangMax: '', kieu: 'auto', doc: '', ngang: '' };
+  const m = openModal(moi ? 'Thêm mã hàng' : 'Sửa mã hàng ' + sp.ma, `
+    <div class="row2">
+      <div><label class="field-label">Mã hàng</label><input type="text" data-k="ma" value="${esc(sp.ma)}" placeholder="vd: CHA1"></div>
+      <div><label class="field-label">Tên / ghi chú</label><input type="text" data-k="ten" value="${esc(sp.ten || '')}"></div>
+    </div>
+    <label class="field-label">Kích thước thùng (cm) — dài × rộng × cao (cao = chiều đứng, không lật)</label>
+    <div class="row3">
+      <input type="number" step="0.1" min="0" data-k="dai" value="${esc(sp.dai)}" placeholder="Dài">
+      <input type="number" step="0.1" min="0" data-k="rong" value="${esc(sp.rong)}" placeholder="Rộng">
+      <input type="number" step="0.1" min="0" data-k="cao" value="${esc(sp.cao)}" placeholder="Cao">
+    </div>
+    <div class="row2">
+      <div><label class="field-label">Cân nặng 1 thùng (kg)</label><input type="number" step="0.1" min="0" data-k="kg" value="${esc(sp.kg || '')}"></div>
+      <div><label class="field-label">Chồng tối đa (tầng, để trống = không giới hạn)</label><input type="number" step="1" min="0" data-k="tangMax" value="${esc(sp.tangMax || '')}"></div>
+    </div>
+    <label class="field-label">Kiểu xếp mỗi tầng</label>
+    <select data-k="kieu">${Object.keys(DH_KIEU).map(v => `<option value="${v}"${(sp.kieu || 'auto') === v ? ' selected' : ''}>${esc(DH_KIEU[v])}</option>`).join('')}</select>
+    <div class="row2" data-tuchon>
+      <div><label class="field-label">Số thùng xếp dọc / tầng</label><input type="number" step="1" min="0" data-k="doc" value="${esc(sp.doc || '')}"></div>
+      <div><label class="field-label">Số thùng quay ngang / tầng</label><input type="number" step="1" min="0" data-k="ngang" value="${esc(sp.ngang || '')}"></div>
+    </div>
+    <div class="cd-ghi" data-xemtruoc></div>
+    <div class="lg-err" data-err></div>
+    <div class="row2" style="margin-top:14px;"><button class="ghost" data-no>Huỷ</button><button data-ok>${moi ? 'Thêm' : 'Lưu'}</button></div>`);
+  const g = k => m.body.querySelector(`[data-k="${k}"]`);
+  const doc = () => ({ ma: g('ma').value.trim(), ten: g('ten').value.trim(), dai: dhSoDuong(g('dai').value), rong: dhSoDuong(g('rong').value),
+    cao: dhSoDuong(g('cao').value), kg: dhSoDuong(g('kg').value) || 0, tangMax: Math.floor(dhSoDuong(g('tangMax').value) || 0) || '',
+    kieu: g('kieu').value, doc: Math.floor(+g('doc').value || 0), ngang: Math.floor(+g('ngang').value || 0) });
+  // xem trước kiểu xếp với lòng container rộng 235 cm
+  const xem = () => {
+    m.body.querySelector('[data-tuchon]').style.display = g('kieu').value === 'tuchon' ? '' : 'none';
+    const s = doc(), el = m.body.querySelector('[data-xemtruoc]');
+    if(!s.dai || !s.rong){ el.textContent = ''; return; }
+    const k = dhChonKieu(s, 235, 1203);
+    el.innerHTML = k.loi ? `<span class="lg-err">${esc(k.loi)}</span>`
+      : `Với container rộng 235 cm: <b>${esc(dhMoTaKieu(k))}</b> = ${k.n} thùng mỗi tầng, hở ${dhCm(k.hoNgang)} cm bề ngang, vách sâu ${dhCm(k.D)} cm.`;
+  };
+  m.body.querySelectorAll('[data-k]').forEach(el => el.addEventListener('input', xem));
+  g('kieu').onchange = xem;
+  xem();
+  m.body.querySelector('[data-no]').onclick = m.close;
+  m.body.querySelector('[data-ok]').onclick = async () => {
+    const s = doc(), err = m.body.querySelector('[data-err]');
+    if(!s.ma){ err.textContent = 'Nhập mã hàng'; return; }
+    if(!s.dai || !s.rong || !s.cao){ err.textContent = 'Nhập đủ dài, rộng, cao (cm)'; return; }
+    if(DH.sp.some(x => x.id !== sp.id && normName(x.ma) === normName(s.ma))){ err.textContent = 'Mã hàng này đã có trong danh mục'; return; }
+    if(s.kieu === 'tuchon'){
+      if(!s.doc && !s.ngang){ err.textContent = 'Nhập số thùng dọc hoặc ngang'; return; }
+      const k = dhChonKieu(s, 235, 1203);
+      if(k.loi){ err.textContent = k.loi; return; }
+    }
+    const id = moi ? dhId('sp') : sp.id;
+    if(moi) DH.sp.push({ id, ...s });
+    else Object.assign(dhSp(sp.id), s);
+    if(await dhLuu()){
+      m.close(); toast(moi ? '✓ Đã thêm ' + s.ma : '✓ Đã lưu ' + s.ma); DH_KQ = null;
+      if(moi && goiY && goiY.them) dhThemMa(id); else renderDongHang();
+    }
+  };
+}
+// goiY: { ten, chon } — mở từ ô tìm xe: điền sẵn số xe, lưu xong chọn luôn xe đó
+function dhSuaXe(xe, goiY){
+  const moi = !xe;
+  xe = xe || { ten: (goiY && goiY.ten) || '', dai: '', rong: '', cao: '' };
+  const m = openModal(moi ? 'Thêm xe tải' : 'Sửa xe ' + xe.ten, `
+    <label class="field-label">Số xe / tên xe</label><input type="text" data-k="ten" value="${esc(xe.ten)}" placeholder="vd: 51C-123.45 (8 tấn)">
+    <label class="field-label">Lòng thùng (cm) — dài × rộng × cao</label>
+    <div class="row3">
+      <input type="number" step="1" min="0" data-k="dai" value="${esc(xe.dai)}" placeholder="Dài">
+      <input type="number" step="1" min="0" data-k="rong" value="${esc(xe.rong)}" placeholder="Rộng">
+      <input type="number" step="1" min="0" data-k="cao" value="${esc(xe.cao)}" placeholder="Cao">
+    </div>
+    <div class="lg-err" data-err></div>
+    <div class="row2" style="margin-top:14px;"><button class="ghost" data-no>Huỷ</button><button data-ok>${moi ? 'Thêm' : 'Lưu'}</button></div>`);
+  const g = k => m.body.querySelector(`[data-k="${k}"]`);
+  m.body.querySelector('[data-no]').onclick = m.close;
+  m.body.querySelector('[data-ok]').onclick = async () => {
+    const v = { ten: g('ten').value.trim(), dai: dhSoDuong(g('dai').value), rong: dhSoDuong(g('rong').value), cao: dhSoDuong(g('cao').value) };
+    const err = m.body.querySelector('[data-err]');
+    if(!v.ten){ err.textContent = 'Nhập số xe hoặc tên xe'; return; }
+    if(!v.dai || !v.rong || !v.cao){ err.textContent = 'Nhập đủ dài, rộng, cao lòng thùng (cm)'; return; }
+    if(DH.xe.some(x => x.id !== xe.id && normName(x.ten) === normName(v.ten))){ err.textContent = 'Số xe này đã có trong danh sách'; return; }
+    const id = moi ? dhId('xe') : xe.id;
+    if(moi) DH.xe.push({ id, ...v });
+    else{ const x = DH.xe.find(x => x.id === xe.id); ['tai', 'trucTruoc', 'trucSau', 'taiTruoc', 'taiSau', 'tuTrongTruoc', 'tuTrongSau'].forEach(k => delete x[k]); Object.assign(x, v); }
+    if(await dhLuu()){
+      m.close(); toast(moi ? '✓ Đã thêm xe ' + v.ten : '✓ Đã lưu xe ' + v.ten); DH_KQ = null;
+      if(moi && goiY && goiY.chon){ DH_NHAP.xeId = DH_NHAP.xeTruoc = id; DH_NHAP.loai = 'xe'; DH_TIM_XE = ''; dhNhoNhap(); }
+      renderDongHang();
+    }
+  };
+}
+
+// ---- Sơ đồ đã lưu theo lô (gắn với dòng ở tab Xuất hàng) ----
+function dhHangXuat(ngay){
+  const st = (KHO.thanhpham && KHO.thanhpham.xuathang) || {};
+  return Array.isArray(st[ngay]) ? st[ngay] : [];
+}
+const dhMoTaDongXH = (r, i) => [`${i + 1}.`, r.customer, r.id, r.ctn ? r.ctn + ' CTN' : '', r.type, r.cont].filter(Boolean).join(' · ');
+// Tìm lại dòng xuất hàng của lô (dòng có thể đã đổi thứ tự): theo mã sơ đồ, rồi theo id / cont / khách
+function dhTimDongXH(xh, loId){
+  if(!xh) return -1;
+  const ds = dhHangXuat(xh.ngay);
+  let i = loId ? ds.findIndex(r => r.dh === loId) : -1;
+  if(i < 0) i = ds.findIndex(r => (xh.id && r.id === xh.id) || (xh.cont && r.cont === xh.cont && r.customer === xh.customer));
+  return i;
+}
+function dhHtmlDsLo(){
+  const ds = DH.lo.slice().sort((a, b) => String(b.ngay).localeCompare(String(a.ngay)) || String(b.luc).localeCompare(String(a.luc)));
+  const sua = dhCoSua();
+  return `
+    <div class="panel">
+      <h2>📁 Sơ đồ đã lưu <span class="n">${ds.length}</span><span class="h2spacer"></span>
+        <input type="text" id="dhTimLo" placeholder="Tìm tên lô / khách / số cont" style="max-width:260px;"></h2>
+      <div class="tblwrap"><table class="dh-bang" id="dhBangLo">
+        <thead><tr><th>Ngày</th><th>Lô</th><th>Xe</th><th>Số thùng</th><th>Thể tích</th><th>Xuất hàng</th><th>Lưu bởi</th><th></th></tr></thead>
+        <tbody>${ds.map(l => `<tr data-tim="${esc(normName([l.ten, l.xh && l.xh.customer, l.xh && l.xh.cont, l.xh && l.xh.id].filter(Boolean).join(' ')))}">
+          <td>${l.ngay ? fmtVN(fromKey(l.ngay)) : '—'}</td><td><b>${esc(l.ten)}</b></td><td>${esc((l.xe && l.xe.ten) || '')}</td>
+          <td>${((l.tomTat && l.tomTat.soThung) || 0).toLocaleString('vi-VN')}${l.tomTat && !l.tomTat.ok ? ' <span class="lg-err">thiếu chỗ</span>' : ''}</td>
+          <td>${l.tomTat ? l.tomTat.theTich.toFixed(1) + '%' : '—'}</td>
+          <td>${l.xh ? (dhTimDongXH(l.xh, l.id) >= 0 ? '<span class="chip ok">Đã gắn</span>' : '<span class="chip warn">Không thấy dòng</span>') : '<span class="cd-mo">—</span>'}</td>
+          <td>${esc(l.nguoi || '')}<div class="cd-mo">${l.luc ? new Date(l.luc).toLocaleString('vi-VN') : ''}</div></td>
+          <td class="dh-nut"><button class="sm secondary" data-mo-lo="${esc(l.id)}">Mở</button>${sua ? `<button class="sm danger" data-xoa-lo="${esc(l.id)}">Xoá</button>` : ''}</td></tr>`).join('')
+          || '<tr><td colspan="8" class="cd-mo">Chưa có sơ đồ nào được lưu. Tính sơ đồ xong bấm 💾 Lưu sơ đồ.</td></tr>'}</tbody>
+      </table></div>
+    </div>`;
+}
+function dhGanDsLo(page){
+  const tim = $('dhTimLo');
+  if(tim) tim.oninput = () => {
+    const t = normName(tim.value);
+    page.querySelectorAll('#dhBangLo tbody tr[data-tim]').forEach(tr => { tr.style.display = !t || tr.dataset.tim.includes(t) ? '' : 'none'; });
+  };
+  page.querySelectorAll('[data-mo-lo]').forEach(b => b.onclick = () => dhMoLo(b.dataset.moLo));
+  page.querySelectorAll('[data-xoa-lo]').forEach(b => b.onclick = () => dhXoaLo(b.dataset.xoaLo));
+}
+// Mở lại 1 sơ đồ đã lưu: nạp xe + mã hàng + số thùng rồi tính lại
+function dhMoLo(id){
+  const l = DH.lo.find(x => x.id === id);
+  if(!l) return;
+  const coXe = dhDsXe().some(x => x.id === l.xeId);
+  DH_NHAP = {
+    xeId: l.xeId, loai: dhLaCont(l.xeId) ? 'cont' : 'xe', xeTam: coXe ? null : { ...l.xe, id: l.xeId },
+    dong: l.dong.map(d => ({ ...(dhSp(d.spId) ? { spId: d.spId } : { spTam: d.sp }), sl: d.sl, ...(d.kieu ? { kieu: d.kieu } : {}) })),
+  };
+  dhNhoNhap();
+  DH_LO = { id: l.id, ten: l.ten, ngay: l.ngay, xh: l.xh || null };
+  DH_XEM_LO = false;
+  dhBamTinh();
+}
+async function dhXoaLo(id){
+  const l = DH.lo.find(x => x.id === id);
+  if(!l || !await confirmBox(`Xoá sơ đồ "${l.ten}"?`)) return;
+  DH.lo = DH.lo.filter(x => x.id !== id);
+  if(!await dhLuu()) return;
+  // bỏ dấu sơ đồ ở dòng xuất hàng
+  const ds = l.xh ? dhHangXuat(l.xh.ngay) : [], i = dhTimDongXH(l.xh, l.id);
+  if(i >= 0 && ds[i].dh === id){ delete ds[i].dh; await saveKho(); }
+  if(DH_LO && DH_LO.id === id) DH_LO = null;
+  toast('✓ Đã xoá sơ đồ ' + l.ten);
+  renderDongHang();
+}
+function dhMoLuuLo(){
+  const kq = DH_KQ;
+  if(!kq) return;
+  const lo = DH_LO || {};
+  const tong = kq.thung.length;
+  let ngay = lo.ngay || (lo.xh && lo.xh.ngay) || todayKey();
+  const m = openModal(lo.id ? 'Lưu sơ đồ ' + lo.ten : 'Lưu sơ đồ cho lô', `
+    <label class="field-label">Tên lô</label><input type="text" data-k="ten" value="${esc(lo.ten || '')}" placeholder="vd: CHARLE · 7-TEHV02780">
+    <label class="field-label">Ngày xuất</label><input type="date" data-k="ngay" value="${esc(ngay)}">
+    <label class="field-label">Gắn với dòng ở tab Xuất hàng (không bắt buộc)</label>
+    <select data-k="dong"></select>
+    <div class="cd-ghi" data-ctn></div>
+    <div class="lg-err" data-err></div>
+    <div class="row2" style="margin-top:14px;"><button class="ghost" data-no>Huỷ</button><button data-ok>💾 Lưu</button></div>`);
+  const g = k => m.body.querySelector(`[data-k="${k}"]`);
+  const soCTN = () => {
+    const r = dhHangXuat(ngay)[g('dong').value];
+    const el = m.body.querySelector('[data-ctn]');
+    if(!r){ el.textContent = ''; return; }
+    if(!g('ten').value.trim()) g('ten').value = [r.customer, r.id].filter(Boolean).join(' · ');
+    const ctn = Math.round(+String(r.ctn || '').replace(/[^\d.]/g, ''));
+    el.innerHTML = !ctn ? '' : ctn === tong ? `✓ Dòng xuất hàng ghi ${ctn} CTN, khớp với sơ đồ.`
+      : `<span class="lg-err">⚠ Dòng xuất hàng ghi ${ctn} CTN nhưng sơ đồ có ${tong} thùng.</span>`;
+  };
+  const veDong = () => {
+    const ds = dhHangXuat(ngay);
+    const chon = lo.xh && lo.xh.ngay === ngay ? dhTimDongXH(lo.xh, lo.id) : -1;
+    g('dong').innerHTML = '<option value="">— không gắn —</option>' + ds.map((r, i) => xhRowEmpty(r) ? '' :
+      `<option value="${i}"${i === chon ? ' selected' : ''}>${esc(dhMoTaDongXH(r, i))}${r.dh && r.dh !== lo.id ? ' (đã có sơ đồ khác)' : ''}</option>`).join('');
+    soCTN();
+  };
+  g('ngay').onchange = () => { ngay = g('ngay').value || todayKey(); veDong(); };
+  g('dong').onchange = soCTN;
+  veDong();
+  m.body.querySelector('[data-no]').onclick = m.close;
+  m.body.querySelector('[data-ok]').onclick = async () => {
+    const ten = g('ten').value.trim(), err = m.body.querySelector('[data-err]');
+    if(!ten){ err.textContent = 'Nhập tên lô'; return; }
+    const id = lo.id || dhId('lo');
+    const ds = dhHangXuat(ngay), di = g('dong').value === '' ? -1 : +g('dong').value, r = di >= 0 ? ds[di] : null;
+    const xe = dhXe(DH_NHAP.xeId);
+    const ban = {
+      id, ten, ngay, xeId: DH_NHAP.xeId,
+      xe: { ten: xe.ten, loai: xe.loai, dai: xe.dai, rong: xe.rong, cao: xe.cao },
+      dong: DH_NHAP.dong.filter(d => dhSpDong(d) && +d.sl > 0).map(d => {
+        const sp = dhSpDong(d);
+        return { spId: d.spId || '', sl: +d.sl, ...(d.kieu ? { kieu: d.kieu } : {}), sp: { ma: sp.ma, ten: sp.ten || '', dai: sp.dai, rong: sp.rong, cao: sp.cao, kg: sp.kg || 0,
+          tangMax: sp.tangMax || '', kieu: sp.kieu || 'auto', doc: sp.doc || 0, ngang: sp.ngang || 0 } };
+      }),
+      tomTat: { soThung: kq.thung.length, theTich: kq.theTichPct, ok: kq.ok },
+      xh: r ? { ngay, id: r.id || '', customer: r.customer || '', cont: r.cont || '', ctn: r.ctn || '' } : null,
+      nguoi: AUTH.user ? AUTH.user.username : '', luc: new Date().toISOString(),
+    };
+    const cu = DH.lo.findIndex(x => x.id === id);
+    if(cu >= 0) DH.lo[cu] = ban; else DH.lo.push(ban);
+    if(!await dhLuu()) return;
+    // gắn mã sơ đồ vào dòng xuất hàng (bỏ ở dòng cũ nếu đổi dòng)
+    let doiKho = false;
+    Object.values((KHO.thanhpham && KHO.thanhpham.xuathang) || {}).forEach(arr => (Array.isArray(arr) ? arr : []).forEach(x => {
+      if(x.dh === id && x !== r){ delete x.dh; doiKho = true; }
+    }));
+    if(r && r.dh !== id){ r.dh = id; doiKho = true; }
+    if(doiKho) await saveKho();
+    DH_LO = { id, ten, ngay, xh: ban.xh };
+    m.close();
+    toast('✓ Đã lưu sơ đồ ' + ten);
+    renderDongHang();
+  };
+}
+// Bấm 🚛 ở 1 dòng tab Xuất hàng: mở sơ đồ đã lưu của lô đó, hoặc bắt đầu sơ đồ mới cho lô
+async function dhMoTuXuatHang(ngay, i){
+  const r = dhHangXuat(ngay)[i];
+  if(!r || xhRowEmpty(r)) return;
+  if(!DH_LUC) await dhTai();                // chưa tải danh mục / sơ đồ đã lưu thì tải trước
+  const daLuu = r.dh && DH.lo.find(l => l.id === r.dh);
+  setView('kho', 'thanhpham');
+  switchTab('donghang');
+  if(daLuu){ dhMoLo(daLuu.id); return; }
+  // lô mới: đoán loại xe theo cột type (40HC / 40 / 20 / tên xe tải)
+  const t = normName(r.type || '');
+  let xeId = DH_NHAP.xeId;
+  if(/40\s*h/.test(t)) xeId = 'c40hc';
+  else if(/40/.test(t)) xeId = 'c40';
+  else if(/20/.test(t)) xeId = 'c20';
+  else { const x = DH.xe.find(v => t && normName(v.ten).includes(t)); if(x) xeId = x.id; }
+  DH_NHAP = { xeId, loai: dhLaCont(xeId) ? 'cont' : 'xe', dong: [] };
+  dhNhoNhap();
+  DH_LO = { ten: [r.customer, r.id].filter(Boolean).join(' · ') || 'Lô ' + fmtVN(fromKey(ngay)), ngay,
+    xh: { ngay, id: r.id || '', customer: r.customer || '', cont: r.cont || '', ctn: r.ctn || '' } };
+  DH_KQ = null; DH_XEM_LO = false;
+  renderDongHang();
+  toast(`Lô ${DH_LO.ten}${r.ctn ? ` — ${r.ctn} CTN` : ''}: nhập mã hàng hoặc 📥 packing list rồi bấm Tính sơ đồ`);
+}
+
+</script>
+<script>/* js/modules/donghang/dh-import.js */
+// Đóng hàng — nhập packing list (file Excel / CSV hoặc dán từ Excel)
+// Tự đoán dòng tiêu đề và các cột (mã, kích thước, số thùng, cân nặng); người dùng chỉnh lại
+// nếu đoán sai. Các dòng cùng mã + cùng kích thước gộp lại, giữ thứ tự xuất hiện trong file
+// (= thứ tự xếp vào xe). Mã chưa có trong danh mục: lưu luôn vào danh mục hoặc dùng tạm.
+// =====================================================================
+const DH_COT_NHAP = [
+  { k: 'ma',   ten: 'Mã hàng',            mau: /^m(ã|a)(\s|$|\.)|mã hàng|ma hang|style|item|sku|article|model|carton code|code/i },
+  { k: 'kt',   ten: 'Kích thước (1 cột)', mau: /kích thước|kich thuoc|dimension|meas|carton size|ctn size|size.*(cm|mm)/i },
+  { k: 'dai',  ten: 'Dài',                mau: /^(l|length|dài|dai|chiều dài|chieu dai)\b/i },
+  { k: 'rong', ten: 'Rộng',               mau: /^(w|width|rộng|rong|chiều rộng|chieu rong)\b/i },
+  { k: 'cao',  ten: 'Cao',                mau: /^(h|height|cao|chiều cao|chieu cao)\b/i },
+  { k: 'sl',   ten: 'Số thùng',           mau: /ctns?\b|cartons?|số thùng|so thung|^thùng|no\.? of c|qty.*ctn|total ctn/i,
+    tru: /(ctn|carton|thùng|thung)\s*(no\b|no\.|number|#)|^stt|số thứ tự/i },   // 'CTN NO. 1-10' là số thứ tự thùng, không phải số thùng
+  { k: 'kg',   ten: 'Cân nặng',           mau: /g\.?\s?w|gross|kg|trọng lượng|trong luong|weight/i },
+];
+const DH_DON_VI = { cm: 1, mm: 0.1, inch: 2.54 };
+
+const dhSoNhap = v => { const n = parseFloat(String(v == null ? '' : v).replace(/\s/g, '').replace(',', '.')); return isFinite(n) ? n : NaN; };
+// "68x35.5x33", "68 * 35,5 * 33 cm", "68X35.5X33"
+function dhTachKichThuoc(v){
+  const m = String(v || '').replace(/,/g, '.').match(/(\d+(?:\.\d+)?)\s*[x×*]\s*(\d+(?:\.\d+)?)\s*[x×*]\s*(\d+(?:\.\d+)?)/i);
+  return m ? [+m[1], +m[2], +m[3]] : null;
+}
+// Bảng 2 chiều -> dòng tiêu đề + gợi ý cột
+function dhDoanCot(bang){
+  let tot = { dong: 0, diem: -1, cot: {} };
+  for(let r = 0; r < Math.min(bang.length, 40); r++){
+    const cot = {};
+    let diem = 0;
+    (bang[r] || []).forEach((o, c) => {
+      const t = String(o == null ? '' : o).trim();
+      if(!t || t.length > 40) return;
+      for(const d of DH_COT_NHAP){
+        if(cot[d.k] == null && d.mau.test(t) && !(d.tru && d.tru.test(t))){ cot[d.k] = c; diem++; break; }
+      }
+    });
+    if(diem > tot.diem){ tot = { dong: r, diem, cot }; }
+  }
+  return tot;
+}
+// Gom các dòng thành danh sách mã hàng
+function dhGomDong(bang, cfg){
+  const he = DH_DON_VI[cfg.donVi] || 1;
+  const nhom = [], theoKhoa = new Map(), boQua = [];
+  for(let r = cfg.dong + 1; r < bang.length; r++){
+    const o = bang[r] || [];
+    const lay = k => cfg.cot[k] == null || cfg.cot[k] === '' ? '' : o[+cfg.cot[k]];
+    const ma = String(lay('ma') || '').trim();
+    let kt = null;
+    if(cfg.cot.kt != null && cfg.cot.kt !== '') kt = dhTachKichThuoc(lay('kt'));
+    if(!kt){ const a = dhSoNhap(lay('dai')), b = dhSoNhap(lay('rong')), c = dhSoNhap(lay('cao')); if(a > 0 && b > 0 && c > 0) kt = [a, b, c]; }
+    const sl = Math.round(dhSoNhap(lay('sl')));
+    const dongTrong = o.every(x => x == null || String(x).trim() === '');
+    if(dongTrong) continue;
+    if(/total|tổng|tong cong|grand/i.test(o.join(' ')) && !ma){ continue; }
+    if(!kt || !(sl > 0)){ boQua.push(r + 1); continue; }
+    kt = kt.map(v => Math.round(v * he * 10) / 10);
+    let kg = dhSoNhap(lay('kg'));
+    kg = kg > 0 ? (cfg.kgCaDong ? kg / sl : kg) : 0;
+    const khoa = normName(ma) + '|' + kt.join('x');
+    let g = theoKhoa.get(khoa);
+    if(!g){ g = { ma: ma || `Thùng ${kt.join('×')}`, dai: kt[0], rong: kt[1], cao: kt[2], sl: 0, kgTong: 0, kgSl: 0 }; theoKhoa.set(khoa, g); nhom.push(g); }
+    g.sl += sl;
+    if(kg){ g.kgTong += kg * sl; g.kgSl += sl; }
+  }
+  nhom.forEach(g => { g.kg = g.kgSl ? Math.round(g.kgTong / g.kgSl * 100) / 100 : 0; });
+  return { nhom, boQua };
+}
+// Đối chiếu với danh mục: trùng mã + trùng kích thước = dùng mã có sẵn
+function dhDoiChieu(g){
+  const sp = DH.sp.find(s => normName(s.ma) === normName(g.ma));
+  if(!sp) return { loai: 'moi' };
+  const giong = ['dai', 'rong', 'cao'].every(k => Math.abs(+sp[k] - g[k]) < 0.15);
+  return { loai: giong ? 'co' : 'khac', sp };
+}
+
+// Đọc file Excel / CSV bằng thư viện XLSX (đã nạp sẵn ở đầu trang)
+async function dhDocFile(file){
+  if(typeof XLSX === 'undefined') throw new Error('Chưa tải được thư viện đọc Excel — kiểm tra mạng rồi mở lại trang');
+  const buf = await file.arrayBuffer();
+  const wb = XLSX.read(buf, { type: 'array' });
+  return wb.SheetNames.map(ten => ({ ten, bang: XLSX.utils.sheet_to_json(wb.Sheets[ten], { header: 1, raw: false, defval: '' }) }));
+}
+
+function dhMoNhapPL(){
+  let sheets = null, bang = null, cfg = null;
+  const m = openModal('📥 Nhập packing list', `
+    <div class="dh-nhap-nguon">
+      <label class="field-label">Chọn file Excel / CSV</label>
+      <input type="file" data-file accept=".xlsx,.xls,.xlsm,.csv">
+      <label class="field-label">…hoặc copy các dòng trong Excel rồi dán vào đây (gồm cả dòng tiêu đề)</label>
+      <textarea data-dan rows="4" placeholder="Mã hàng	Dài	Rộng	Cao	Số thùng	Kg"></textarea>
+      <button class="sm secondary" data-dandoc style="margin-top:6px;">Đọc phần đã dán</button>
+    </div>
+    <div data-cauhinh></div>
+    <div class="lg-err" data-err></div>`);
+  m.el.querySelector('.modal-card').classList.add('dh-modal-rong');
+  const q = s => m.body.querySelector(s);
+  const err = t => { q('[data-err]').textContent = t || ''; };
+
+  const dungBang = b => {
+    bang = b;
+    const d = dhDoanCot(bang);
+    cfg = { dong: d.dong, cot: { ...d.cot }, donVi: 'cm', kgCaDong: false };
+    // đoán đơn vị: số kích thước > 200 thì nhiều khả năng là mm
+    const g0 = dhGomDong(bang, cfg).nhom[0];
+    if(g0 && Math.max(g0.dai, g0.rong, g0.cao) > 200) cfg.donVi = 'mm';
+    veCauHinh();
+  };
+  const veCauHinh = () => {
+    const tieuDe = (bang[cfg.dong] || []).map((t, i) => `${i + 1}. ${String(t || '').trim() || '(trống)'}`);
+    const chon = k => `<select data-cot="${k}"><option value="">— không có —</option>${tieuDe.map((t, i) =>
+      `<option value="${i}"${+cfg.cot[k] === i && cfg.cot[k] !== '' && cfg.cot[k] != null ? ' selected' : ''}>${esc(t.slice(0, 40))}</option>`).join('')}</select>`;
+    const { nhom, boQua } = dhGomDong(bang, cfg);
+    const sua = dhCoSua();
+    q('[data-cauhinh]').innerHTML = `
+      ${sheets && sheets.length > 1 ? `<label class="field-label">Sheet</label><select data-sheet>${sheets.map((s, i) => `<option value="${i}">${esc(s.ten)}</option>`).join('')}</select>` : ''}
+      <div class="dh-nhap-cot">
+        <label>Dòng tiêu đề <input type="number" min="1" data-dongtd value="${cfg.dong + 1}"></label>
+        ${DH_COT_NHAP.map(d => `<label>${esc(d.ten)} ${chon(d.k)}</label>`).join('')}
+        <label>Đơn vị kích thước <select data-donvi>${Object.keys(DH_DON_VI).map(k => `<option${k === cfg.donVi ? ' selected' : ''}>${k}</option>`).join('')}</select></label>
+        <label>Cân nặng là <select data-kgkieu><option value="1"${cfg.kgCaDong ? '' : ' selected'}>của 1 thùng</option><option value="2"${cfg.kgCaDong ? ' selected' : ''}>tổng cả dòng</option></select></label>
+      </div>
+      <div class="tblwrap"><table class="dh-bang">
+        <thead><tr><th>#</th><th>Mã</th><th>Thùng D×R×C (cm)</th><th>Số thùng</th><th>Kg/thùng</th><th>Danh mục</th></tr></thead>
+        <tbody>${nhom.map((g, i) => {
+          const dc = dhDoiChieu(g);
+          return `<tr><td>${i + 1}</td><td><b>${esc(g.ma)}</b></td><td>${dhKichThuoc(g)}</td><td>${g.sl.toLocaleString('vi-VN')}</td><td>${g.kg || '—'}</td>
+            <td>${dc.loai === 'co' ? '<span class="chip ok">Đã có</span>'
+              : dc.loai === 'khac' ? `<span class="chip warn">Đã có nhưng khác kích thước (${dhKichThuoc(dc.sp)})</span>`
+              : '<span class="chip info">Mã mới</span>'}</td></tr>`;
+        }).join('') || '<tr><td colspan="6" class="cd-mo">Chưa đọc được dòng nào — kiểm tra lại dòng tiêu đề và các cột</td></tr>'}</tbody>
+      </table></div>
+      ${boQua.length ? `<p class="cd-ghi cd-mo">Bỏ qua ${boQua.length} dòng thiếu kích thước hoặc số thùng (dòng ${boQua.slice(0, 12).join(', ')}${boQua.length > 12 ? '…' : ''}).</p>` : ''}
+      <label class="cd-active"><input type="checkbox" data-luusp${sua ? ' checked' : ' disabled'}> Lưu mã mới vào danh mục${sua ? ' (mã đã có nhưng khác kích thước: dùng kích thước trong file cho lần này)' : ' — cần quyền sửa kho thành phẩm, mã mới sẽ chỉ dùng tạm'}</label>
+      <div class="row2" style="margin-top:14px;"><button class="ghost" data-no>Huỷ</button><button data-ok${nhom.length ? '' : ' disabled'}>Đưa ${nhom.length} mã vào sơ đồ</button></div>`;
+    const sh = q('[data-sheet]');
+    if(sh){ sh.value = String(sheets.findIndex(s => s.bang === bang)); sh.onchange = () => dungBang(sheets[+sh.value].bang); }
+    q('[data-dongtd]').onchange = e => { cfg.dong = Math.max(0, (+e.target.value || 1) - 1); veCauHinh(); };
+    m.body.querySelectorAll('[data-cot]').forEach(el => el.onchange = () => { cfg.cot[el.dataset.cot] = el.value === '' ? null : +el.value; veCauHinh(); });
+    q('[data-donvi]').onchange = e => { cfg.donVi = e.target.value; veCauHinh(); };
+    q('[data-kgkieu]').onchange = e => { cfg.kgCaDong = e.target.value === '2'; veCauHinh(); };
+    q('[data-no]').onclick = m.close;
+    q('[data-ok]').onclick = async () => {
+      const luu = q('[data-luusp]').checked && sua;
+      let themMoi = 0;
+      const dong = nhom.map(g => {
+        const dc = dhDoiChieu(g);
+        if(dc.loai === 'co') return { spId: dc.sp.id, sl: g.sl };
+        const sp = { ma: g.ma, ten: '', dai: g.dai, rong: g.rong, cao: g.cao, kg: g.kg, tangMax: '', kieu: 'auto', doc: 0, ngang: 0 };
+        if(dc.loai === 'moi' && luu){ const id = dhId('sp'); DH.sp.push({ id, ...sp }); themMoi++; return { spId: id, sl: g.sl }; }
+        return { spTam: sp, sl: g.sl };                  // dùng tạm cho lần này, không lưu danh mục
+      });
+      if(themMoi && !await dhLuu()) return;
+      DH_NHAP.dong = dong;
+      dhNhoNhap(); DH_KQ = null;
+      m.close();
+      toast(`✓ Đã nhập ${nhom.length} mã${themMoi ? `, thêm ${themMoi} mã mới vào danh mục` : ''}`);
+      renderDongHang();
+    };
+  };
+
+  q('[data-file]').onchange = async e => {
+    const f = e.target.files[0]; if(!f) return;
+    err('');
+    try{
+      sheets = await dhDocFile(f);
+      if(!sheets.length) throw new Error('File không có sheet nào');
+      dungBang(sheets[0].bang);
+    }catch(ex){ err('Không đọc được file — ' + ex.message); }
+  };
+  q('[data-dandoc]').onclick = () => {
+    const t = q('[data-dan]').value;
+    if(!t.trim()){ err('Chưa dán gì'); return; }
+    err(''); sheets = null;
+    dungBang(t.replace(/\r/g, '').split('\n').map(d => d.split('\t')));
+  };
+}
+
+</script>
 <script>/* js/modules/caidat/caidat.js */
 // Cài đặt tài khoản — chỉ chủ trang
 // Tạo / sửa / khoá / xoá tài khoản, đặt lại mật khẩu, giao kho cho giám sát,
@@ -14053,6 +15577,7 @@ function lsTenKhoa(key){
   if(/^appwh-wi/.test(key)) return 'WI';
   const t = /^appwh-training-(\w+)/.exec(key); if(t) return 'Training ' + khoName(t[1]).toLowerCase();
   if(/^appwh-checkct/.test(key)) return 'CHECK CT';
+  if(/^appwh-donghang/.test(key)) return 'Đóng hàng (danh mục mã hàng / xe)';
   if(/^appwh-scanos/.test(key)) return 'SCAN OS';
   if(/^appwh-scan/.test(key)) return 'SCAN';
   return key;
