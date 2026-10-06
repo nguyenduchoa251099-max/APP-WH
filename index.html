@@ -991,6 +991,29 @@
   .otc-tbl summary{cursor:pointer; font-size:13px; font-weight:700; color:var(--blue-dark);}
   .otc-tbl tr.tong td{border-top:2px solid var(--line);}
 
+  /* ===== NGHỈ VIỆC (Quản lý nhân sự) — nền đen chữ trắng để nhận ra ngay ===== */
+  button.nv-btn{background:#fff; color:#111827; border-color:#111827;}
+  button.nv-btn:hover{background:#111827; color:#fff; opacity:1;}
+  button.nv-btn.dac{background:#111827; color:#fff;}
+  button.nv-btn.dac:hover{background:#000;}
+  .nv-hd{display:flex; align-items:center; gap:8px; margin:18px 0 4px; font-size:12.5px; font-weight:800; letter-spacing:.06em; color:#111827;}
+  .nv-hd span{background:#111827; color:#fff; border-radius:999px; padding:0 8px; font-size:11.5px;}
+  .nv-ghi{font-size:12px; color:var(--ink-soft); margin-bottom:6px;}
+  .rowline.nv-row{background:#111827; color:#fff; border-radius:8px; padding:9px 10px; margin-bottom:6px; border-bottom:0;}
+  .rowline.nv-row b{color:#fff;}
+  .nv-row .nv-sub{font-size:11px; color:#c7cdd6;}
+  .nv-row button{white-space:nowrap;}
+  .nv-row button.nv-undo{background:transparent; color:#fff; border-color:#6b7280;}
+  .nv-row button.nv-undo:hover{background:#374151; opacity:1;}
+  .nv-cu{margin-top:12px;}
+  .nv-cu summary{cursor:pointer; font-size:12.5px; font-weight:700; color:var(--ink-soft); margin-bottom:6px;}
+  .nv-xn-ten{display:flex; flex-direction:column; gap:2px; padding:10px 12px; background:#111827; color:#fff; border-radius:9px;}
+  .nv-xn-ten b{font-size:16px;}
+  .nv-xn-ten span{font-size:12.5px; color:#c7cdd6;}
+  .nv-xn-ds{margin:12px 0 0; padding-left:18px; font-size:13px; line-height:1.55; color:var(--ink-soft);}
+  .nv-xn-ds li{margin-bottom:4px;}
+  .nv-row .nv-5s{color:#fde68a; margin-top:2px;}
+
 </style>
 <style>/* css/modal.css */
 /* Modal
@@ -4097,8 +4120,11 @@ function empRank(e){
   if(e.position === 'Giám sát') return 0;                 // Giám sát luôn ở trên cùng
   return SHIFT_ORDER[e.shift] || 9;
 }
+// NGHỈ VIỆC: e.nghiViec = 'YYYY-MM-DD' (ngày làm việc cuối cùng).
+// Người đã nghỉ bị cắt khỏi mọi danh sách kho (khoEmployees), nhưng hồ sơ và bản ghi
+// tăng ca / nghỉ phép vẫn giữ: bảng công vẫn có họ tới hết tháng nghỉ (khoNghiTrongThang).
 function khoEmployees(id){
-  return HR.employees.filter(e=>e.warehouseId===id)
+  return HR.employees.filter(e=>e.warehouseId===id && !e.nghiViec)
     .slice().sort((a,b)=>{
       const ra = empRank(a), rb = empRank(b);
       if(ra !== rb) return ra - rb;
@@ -4106,6 +4132,11 @@ function khoEmployees(id){
       if(pa !== pb) return pa.localeCompare(pb,'vi');
       return a.name.localeCompare(b.name,'vi');
     });
+}
+// Người đã nghỉ việc của 1 kho mà tháng ym ('YYYY-MM') vẫn phải tính công (nghỉ trong tháng đó hoặc sau)
+function khoNghiTrongThang(id, ym){
+  return HR.employees.filter(e=>e.warehouseId===id && e.nghiViec && e.nghiViec.slice(0,7) >= ym)
+    .sort((a,b)=>a.name.localeCompare(b.name,'vi'));
 }
 // Người tham gia luân chuyển vị trí (bỏ Giám sát)
 function rotEmployees(id){ return khoEmployees(id).filter(e=>e.position !== 'Giám sát'); }
@@ -6481,6 +6512,74 @@ function applyRotation(khoId){
   });
   return changed;
 }
+// ---------------------------------------------------------------------
+// NGHỈ VIỆC / NGƯỜI MỚI -> tự cập nhật các nhóm đổi ca
+// ---------------------------------------------------------------------
+// Nhóm luân phiên: thêm / bớt người mà KHÔNG xáo lượt — người đang trực vẫn trực,
+// thứ tự các lượt sau giữ nguyên. sua(ds) nhận danh sách theo thứ tự lượt,
+// bắt đầu từ người đang trực, trả về danh sách mới (phần tử đầu = người trực tuần này).
+function rotSuaVong(g, step, sua){
+  const pool = g.pool || [], n0 = pool.length;
+  const cur = n0 ? ((step % n0) + n0) % n0 : 0;
+  const moi = sua(n0 ? pool.slice(cur).concat(pool.slice(0, cur)) : []);
+  const n = moi.length;
+  if(!n){ g.pool = []; return; }
+  const k = ((step % n) + n) % n;                  // chỗ của người trực trong mảng mới
+  g.pool = moi.slice(n - k).concat(moi.slice(0, n - k));
+}
+// Người nghỉ việc: bỏ khỏi mọi đội / nhóm cố định / vòng luân phiên và cặp đổi 5S.
+// Đang tới lượt trực thì người kế tiếp trực thay. Trả về các dòng mô tả đã đổi gì.
+function rotBoNguoi(khoId, id){
+  const K = KHO[khoId];
+  if(!K || !K.rotation) return [];
+  const ghi = [];
+  rotationPlan(K).forEach(p=>{
+    const g = p.g;
+    if(g.type === 'swap'){
+      (g.teams || []).forEach((t, i)=>{
+        if((t || []).includes(id)){ g.teams[i] = t.filter(x=>x !== id); ghi.push(`${g.name}: bỏ khỏi đội ${i + 1} (để trống)`); }
+      });
+      return;
+    }
+    if((g.fixedIds || []).includes(id)){ g.fixedIds = g.fixedIds.filter(x=>x !== id); ghi.push(`${g.name}: bỏ khỏi người cố định`); }
+    if((g.pool || []).includes(id)){
+      const dangTruc = p.turnId === id;
+      rotSuaVong(g, p.step, ds=>ds.filter(x=>x !== id));
+      const thay = dangTruc && (rotationPlan(K).find(x=>x.g.id === g.id) || {}).turnId;
+      ghi.push(dangTruc ? `${g.name}: ${thay ? empName(thay) + ' trực thay' : 'không còn ai trong vòng'}` : `${g.name}: bỏ khỏi vòng luân phiên`);
+    }
+  });
+  if(Array.isArray(K.rotation.swap5s)) K.rotation.swap5s = K.rotation.swap5s.filter(c=>c.a !== id && c.b !== id);
+  return ghi;
+}
+// Người mới (hoặc người được hoàn tác nghỉ việc): tự xếp vào nhóm đổi ca hợp với ca + vị trí.
+//   · Nhóm đổi ca giữa các đội: vị trí đúng việc của nhóm -> vào đội đang cầm đúng ca của người đó
+//   · Nhóm luân phiên: vị trí đúng chỗ "hết lượt thì về" của nhóm -> xếp cuối vòng
+//     (đi sau tất cả mọi người, không làm đổi người đang trực)
+function rotThemNguoi(khoId, e){
+  const K = KHO[khoId];
+  if(!K || !K.rotation || !e || e.nghiViec || e.position === 'Giám sát') return [];
+  const ghi = [];
+  rotationPlan(K).forEach(p=>{
+    const g = p.g;
+    if(g.type === 'swap'){
+      if((g.teams || []).some(t=>(t || []).includes(e.id))) return;
+      const dungViec = g.job === e.position || (g.doiViTri && (g.jobs || []).includes(e.position));
+      const c = dungViec && p.cols.find(x=>x.shift === e.shift);
+      if(!c) return;
+      g.teams = g.teams || [];
+      g.teams[c.teamIdx] = (g.teams[c.teamIdx] || []).concat(e.id);
+      ghi.push(`${g.name}: vào đội đang đi ${e.shift}`);
+      return;
+    }
+    if((g.pool || []).includes(e.id) || (g.fixedIds || []).includes(e.id)) return;
+    // vị trí "hết lượt thì về" (VD Xuất), hoặc chính vị trí trực (người đang trực mà nghỉ rồi được hoàn tác)
+    if(!e.position || (e.position !== g.restJob && e.position !== g.job)) return;
+    rotSuaVong(g, p.step, ds=>ds.concat(e.id));
+    ghi.push(`${g.name}: xếp cuối vòng luân phiên`);
+  });
+  return ghi;
+}
 function rotEmpChip(id, extra, ord){
   const e = empById(id);
   return `<span class="rot-chip ${extra || ''}" data-empid="${id}">${ord ? `<i class="ord">${ord}</i>` : ''}${esc(e ? getEmployeeShortName(e) : '?')}
@@ -7352,6 +7451,88 @@ function exportTP(kind){
 
 
 // =====================================================================
+
+</script>
+<script>/* js/modules/so5s/thay-nguoi-5s.js */
+// 5S: người nghỉ việc -> ô trống chờ người mới
+// ---------------------------------------------------------------------
+// Sơ đồ 5S ghi người phụ trách bằng TÊN NGẮN (getEmployeeShortName); 1 ô có thể nhiều người "A + B".
+//   · Cắt nghỉ việc: gỡ tên người đó khỏi mọi ô 5S của kho, ghi các ô đó vào hàng chờ K.cho5s.
+//   · Thêm người mới cùng kho: người mới nhận các ô của người nghỉ SỚM NHẤT còn đang chờ.
+//   · Hoàn tác nghỉ việc: người đó lấy lại đúng các ô của mình (nếu chưa có người mới nhận).
+// Ô nào từ lúc gỡ tên tới giờ đã có ai sửa tay thì để yên, không ghi đè.
+//
+// K.cho5s = [{ id, ten, ngay, o:[{ loai, key, nhan, con }] }]
+//   loai: 'tp' (tpBoard.assign) | 'vai' (board.assign) | 'shelves' | 'ops' | 'equipment' (zones, key = id)
+//   con : giá trị còn lại của ô sau khi gỡ tên (để biết ô có bị sửa tay sau đó không)
+// =====================================================================
+
+// Mọi ô 5S của 1 kho, mỗi ô có get() / set() để đọc ghi chuỗi người phụ trách
+function cacO5s(K){
+  const out = [];
+  if(K.tpBoard && K.tpBoard.assign){
+    const A = K.tpBoard.assign;
+    Object.keys(A).forEach(k=>out.push({ loai:'tp', key:k, nhan: typeof tp5sLabel === 'function' ? tp5sLabel(k) : k,
+      get:()=>A[k] || '', set:v=>{ A[k] = v; } }));
+  }
+  if(K.board && K.board.assign){
+    const A = K.board.assign;
+    Object.keys(A).forEach(k=>out.push({ loai:'vai', key:k, nhan:(typeof B5_LABEL !== 'undefined' && B5_LABEL[k]) || k,
+      get:()=>A[k] || '', set:v=>{ A[k] = v; } }));
+  }
+  ['shelves', 'ops', 'equipment'].forEach(loai=>((K.zones || {})[loai] || []).forEach(z=>out.push({
+    loai, key:z.id, nhan: loai === 'shelves' ? 'Kệ ' + z.code : z.name,
+    get:()=>z.people || '', set:v=>{ z.people = v; } })));
+  return out;
+}
+const cungTen5s = (a, b)=> normName(a) === normName(b);
+
+// Gỡ người nghỉ việc khỏi 5S. Trả về { n: số ô đã gỡ, trung: true nếu không gỡ vì trùng tên ngắn }
+function bo5sNguoiNghi(khoId, e){
+  const K = KHO[khoId];
+  if(!K || !e) return { n:0 };
+  const ten = getEmployeeShortName(e);
+  // sơ đồ chỉ ghi tên ngắn: còn người khác cùng tên ngắn thì không biết ô nào của ai -> để sửa tay
+  if(khoEmployees(khoId).some(x=>x.id !== e.id && cungTen5s(getEmployeeShortName(x), ten))) return { n:0, trung:true };
+  const o = [];
+  cacO5s(K).forEach(c=>{
+    const ds = splitNames(c.get());
+    if(!ds.some(x=>cungTen5s(x, ten))) return;
+    const con = ds.filter(x=>!cungTen5s(x, ten)).join(' + ');
+    c.set(con);
+    o.push({ loai:c.loai, key:c.key, nhan:c.nhan, con });
+  });
+  if(!o.length) return { n:0 };
+  K.cho5s = (K.cho5s || []).filter(x=>x.id !== e.id).concat({ id:e.id, ten, ngay:e.nghiViec || todayKey(), o });
+  return { n:o.length };
+}
+
+// Người mới (hoặc người được hoàn tác) nhận các ô 5S đang chờ.
+// idNghi: chỉ nhận chỗ của đúng người này (hoàn tác); bỏ trống = người nghỉ sớm nhất.
+// Trả về null nếu không có gì để nhận, ngược lại { cua: tên người cũ, nhan: [nhãn các ô đã nhận] }
+function nhan5sNguoiMoi(khoId, e, idNghi){
+  const K = KHO[khoId];
+  if(!K || !e || e.nghiViec || e.position === 'Giám sát' || !(K.cho5s || []).length) return null;
+  const hang = K.cho5s.slice().sort((a, b)=>String(a.ngay).localeCompare(String(b.ngay)));
+  const x = idNghi ? hang.find(h=>h.id === idNghi) : hang[0];
+  if(!x) return null;
+  const ten = getEmployeeShortName(e), cs = cacO5s(K), nhan = [];
+  x.o.forEach(s=>{
+    const c = cs.find(c=>c.loai === s.loai && c.key === s.key);
+    if(!c || c.get() !== s.con) return;            // ô không còn / đã có người sửa tay -> để yên
+    c.set(s.con ? s.con + ' + ' + ten : ten);
+    nhan.push(s.nhan);
+  });
+  K.cho5s = K.cho5s.filter(h=>h !== x);
+  return { cua:x.ten, nhan };
+}
+
+// Người nghỉ đang chờ người mới nhận 5S (để hiện trong Quản lý nhân sự)
+function cho5sCua(khoId, id){ return ((KHO[khoId] || {}).cho5s || []).find(h=>h.id === id) || null; }
+function cho5sKeTiep(khoId){
+  const hang = ((KHO[khoId] || {}).cho5s || []).slice().sort((a, b)=>String(a.ngay).localeCompare(String(b.ngay)));
+  return hang[0] || null;
+}
 
 </script>
 <script>/* js/modules/xuathang/xh-state.js */
@@ -9273,20 +9454,105 @@ function nextEmployeeId(){
   const max = HR.employees.reduce((m,e)=>{ const n = parseInt(String(e.id).replace('NV',''),10); return isNaN(n)?m:Math.max(m,n); }, 0);
   return 'NV' + String(max+1).padStart(4,'0');
 }
+// ---- NGHỈ VIỆC ----
+// Xác nhận xong: cắt khỏi danh sách kho (khoEmployees bỏ người có e.nghiViec), giữ nguyên
+// tăng ca / nghỉ phép để bảng công tháng đó vẫn có họ (tới ngày làm việc cuối cùng),
+// bỏ trống chỗ của họ ở bảng phân công, Đổi ca, Hỗ trợ / KK.
+function xacNhanNghiViec(e){
+  return new Promise(res=>{
+    const tp = e.warehouseId === 'thanhpham';
+    const m = openModal('Xác nhận nghỉ việc', `
+      <div class="nv-xn-ten"><b>${esc(e.name)}</b><span>${esc(khoName(e.warehouseId))} · ${esc(e.shift||'')}${e.position?' - '+esc(e.position):''}</span></div>
+      <label class="field-label">Ngày làm việc cuối cùng</label>
+      <input type="date" data-ngay value="${todayKey()}">
+      <ul class="nv-xn-ds">
+        <li>Cắt khỏi danh sách kho, chuyển vào mục <b>Đã cắt nghỉ — chờ hết tháng</b>.</li>
+        <li>Công, tăng ca, nghỉ phép vẫn giữ: bảng công Excel tháng này vẫn có người này, tính tới ngày làm việc cuối cùng.</li>
+        ${tp ? '<li>Đổi ca, Hỗ trợ / KK: tự bỏ trống chỗ của người này; đang tới lượt Stock thì người kế tiếp trực thay, kiểm kê thì đề xuất người khác.</li>' : ''}
+        <li>5S: gỡ tên khỏi các ô đang phụ trách; người mới thêm vào kho sau này sẽ tự nhận các ô đó.</li>
+      </ul>
+      <div class="row2" style="margin-top:16px;"><button class="ghost" data-no>Hủy</button><button class="nv-btn dac" data-yes>Xác nhận</button></div>`);
+    m.body.querySelector('[data-no]').onclick = ()=>{ m.close(); res(null); };
+    m.body.querySelector('[data-yes]').onclick = ()=>{
+      const ngay = m.body.querySelector('[data-ngay]').value;
+      if(!ngay){ toast('⚠ Chọn ngày làm việc cuối cùng'); return; }
+      m.close(); res(ngay);
+    };
+  });
+}
+async function choNghiViec(e, ngay){
+  e.nghiViec = ngay;
+  // bảng phân công vị trí hiện tại: để trống chỗ của người này
+  WAREHOUSES.forEach(w=>{
+    const K = KHO[w.id];
+    if(!K.current) return;
+    Object.keys(K.current.assignments||{}).forEach(pid=>{
+      K.current.assignments[pid] = (K.current.assignments[pid]||[]).map(id=>id===e.id?null:id);
+    });
+    if(K.current.ca2===e.id) K.current.ca2 = null;
+  });
+  const ghi = typeof rotBoNguoi === 'function' ? rotBoNguoi(e.warehouseId, e.id) : [];
+  if(ghi.length) applyRotation(e.warehouseId);          // người trực thay nhận ca / vị trí ngay
+  const hk = (e.warehouseId === 'thanhpham' && typeof hkBoNguoi === 'function') ? hkBoNguoi(e.id, ngay) : 0;
+  // 5S: gỡ tên, các ô vào hàng chờ cho người mới (thay-nguoi-5s.js)
+  const s5 = typeof bo5sNguoiNghi === 'function' ? bo5sNguoiNghi(e.warehouseId, e) : { n:0 };
+  await saveHr(); await saveKho();
+  return ghi.concat(hk ? [`Hỗ trợ / KK: gỡ khỏi ${hk} buổi đã xếp sau ngày nghỉ`] : [])
+    .concat(s5.n ? [`5S: ${s5.n} ô chờ người mới`] : s5.trung ? ['5S: trùng tên ngắn với người khác — sửa sơ đồ 5S bằng tay'] : []);
+}
+async function hoanTacNghiViec(e){
+  delete e.nghiViec;
+  const ghi = typeof rotThemNguoi === 'function' ? rotThemNguoi(e.warehouseId, e) : [];
+  if(ghi.length) applyRotation(e.warehouseId);          // trả ca / vị trí đúng lịch tuần này
+  const s5 = typeof nhan5sNguoiMoi === 'function' ? nhan5sNguoiMoi(e.warehouseId, e, e.id) : null;   // lấy lại ô 5S của mình
+  await saveHr(); if(ghi.length || s5) await saveKho();
+  return ghi.concat(s5 && s5.nhan.length ? [`5S: nhận lại ${s5.nhan.length} ô`] : []);
+}
 function manageEmpModal(){
   let khoId = CUR_KHO;
   const m = openModal('Quản lý nhân sự', `<div id="mEmpBox"></div>`);
   const draw = ()=>{
-    const list = HR.employees.filter(e=>e.warehouseId===khoId);
+    const all = HR.employees.filter(e=>e.warehouseId===khoId);
+    const list = all.filter(e=>!e.nghiViec);
+    const thangNay = todayKey().slice(0,7);
+    // đã cắt nghỉ: tháng nghỉ chưa qua -> chờ hết tháng; tháng đã qua -> lưu trữ
+    const cho = all.filter(e=>e.nghiViec && e.nghiViec.slice(0,7) >= thangNay).sort((a,b)=>b.nghiViec.localeCompare(a.nghiViec));
+    const cu  = all.filter(e=>e.nghiViec && e.nghiViec.slice(0,7) <  thangNay).sort((a,b)=>b.nghiViec.localeCompare(a.nghiViec));
+    const thangCua = k => k.slice(5,7) + '/' + k.slice(0,4);
+    const dongNghi = (e, coXoa)=>`<div class="rowline nv-row"><div><b>${esc(e.name)}</b>
+        <div class="nv-sub">${e.maSo?esc(e.maSo)+' · ':''}Ngày làm cuối ${fmtVN(fromKey(e.nghiViec))} · bảng công ${coXoa ? 'đã chốt' : 'vẫn tính tới hết'} tháng ${thangCua(e.nghiViec)}</div>
+        ${(c5 => c5 ? `<div class="nv-sub nv-5s">5S chờ người mới: ${esc(c5.o.map(s=>s.nhan).join(', '))}</div>` : '')(typeof cho5sCua === 'function' && cho5sCua(e.warehouseId, e.id))}</div>
+        <div style="display:flex;gap:6px"><button class="ghost sm nv-undo" data-hoantac="${e.id}" title="Người này chưa nghỉ — đưa trở lại danh sách kho">↺ Hoàn tác</button>
+        ${coXoa ? `<button class="danger sm" data-de="${e.id}" title="Xoá hẳn cả lịch sử tăng ca / nghỉ phép">✕</button>` : ''}</div></div>`;
     $('mEmpBox').innerHTML = `
       <label class="field-label">Kho</label>
       <select id="mEmpKho">${WAREHOUSES.map(w=>`<option value="${w.id}" ${w.id===khoId?'selected':''}>${w.name}</option>`).join('')}</select>
-      <div style="font-size:12px;color:#888;margin:8px 0">${list.length} nhân sự</div>
+      <div style="font-size:12px;color:#888;margin:8px 0">${list.length} nhân sự${cho.length ? ` · ${cho.length} đã cắt nghỉ chờ hết tháng` : ''}</div>
       ${list.map(e=>`<div class="rowline"><div><b>${esc(e.name)}</b><div style="font-size:11px;color:#888">${e.maSo?esc(e.maSo)+' · ':''}${esc(e.shift||'')}${e.position?' - '+esc(e.position):''} · OT đầu kỳ ${fmtHours(Number(e.otOpeningBalance)||0)}</div></div>
-        <div style="display:flex;gap:6px"><button class="secondary sm" data-ee="${e.id}">Sửa</button><button class="danger sm" data-de="${e.id}">✕</button></div></div>`).join('')}
-      <div class="btnrow" style="margin-top:14px;"><button id="mEmpAdd">+ Thêm nhân viên vào ${esc(khoName(khoId))}</button></div>`;
+        <div style="display:flex;gap:6px;flex:0 0 auto"><button class="nv-btn sm" data-nv="${e.id}" title="Cắt khỏi danh sách kho, giữ công tới hết tháng">Nghỉ việc</button><button class="secondary sm" data-ee="${e.id}">Sửa</button><button class="danger sm" data-de="${e.id}">✕</button></div></div>`).join('')}
+      <div class="btnrow" style="margin-top:14px;"><button id="mEmpAdd">+ Thêm nhân viên vào ${esc(khoName(khoId))}</button></div>
+      ${(k => k ? `<div class="nv-ghi" style="margin-top:6px">Người mới thêm vào sẽ nhận ${k.o.length} ô 5S của <b>${esc(k.ten)}</b>.</div>` : '')(typeof cho5sKeTiep === 'function' && cho5sKeTiep(khoId))}
+      ${cho.length ? `<div class="nv-hd">ĐÃ CẮT NGHỈ — CHỜ HẾT THÁNG <span>${cho.length}</span></div>
+        <div class="nv-ghi">Không còn trong danh sách kho, nhưng công / tăng ca / nghỉ phép vẫn có trong bảng công Excel tới hết tháng nghỉ.</div>
+        ${cho.map(e=>dongNghi(e, false)).join('')}` : ''}
+      ${cu.length ? `<details class="nv-cu"><summary>Đã nghỉ các tháng trước (${cu.length})</summary>${cu.map(e=>dongNghi(e, true)).join('')}</details>` : ''}`;
     $('mEmpKho').onchange = ()=>{ khoId = $('mEmpKho').value; draw(); };
     $('mEmpBox').querySelectorAll('[data-ee]').forEach(b=>b.onclick=()=>{ m.close(); empFormModal(empById(b.dataset.ee), khoId); });
+    $('mEmpBox').querySelectorAll('[data-nv]').forEach(b=>b.onclick=async ()=>{
+      const e = empById(b.dataset.nv);
+      const ngay = await xacNhanNghiViec(e);
+      if(!ngay) return;
+      const ghi = await choNghiViec(e, ngay);
+      draw(); render();
+      toast(`✓ Đã cắt nghỉ ${e.name}` + (ghi.length ? ' · ' + ghi.join('; ') : ''));
+    });
+    $('mEmpBox').querySelectorAll('[data-hoantac]').forEach(b=>b.onclick=async ()=>{
+      const e = empById(b.dataset.hoantac);
+      if(!await confirmBox(`Hoàn tác nghỉ việc của ${e.name}? Người này sẽ trở lại danh sách ${khoName(e.warehouseId).toLowerCase()}.`)) return;
+      const ghi = await hoanTacNghiViec(e);
+      draw(); render();
+      toast(`↺ ${e.name} đã trở lại danh sách kho` + (ghi.length ? ' · Đổi ca: ' + ghi.join('; ') : ''));
+    });
     $('mEmpBox').querySelectorAll('[data-de]').forEach(b=>b.onclick=async ()=>{
       const e = empById(b.dataset.de);
       if(!await confirmBox(`Xoá ${e.name}? Toàn bộ lịch sử tăng ca / nghỉ phép của người này cũng bị xoá.`)) return;
@@ -9331,9 +9597,20 @@ function empFormModal(emp, khoId){
     if(!name){ toast('⚠ Nhập họ tên'); return; }
     const data = { name, warehouseId: $('mEfKho').value, shift, position,
                    maSo: $('mEfMa').value.trim(), otOpeningBalance: Number($('mEfBal').value)||0 };
+    let doi = [], s5 = null;
     if(emp) Object.assign(emp, data);
-    else HR.employees.push({ id: nextEmployeeId(), forklift:false, skills:{}, ...data });
-    await saveHr(); m.close(); render(); toast('✓ Đã lưu nhân viên');
+    else{
+      const moi = { id: nextEmployeeId(), forklift:false, skills:{}, ...data };
+      HR.employees.push(moi);
+      // người mới tự vào nhóm đổi ca / vòng luân phiên hợp với ca + vị trí (Hỗ trợ / KK đọc thẳng danh sách kho)
+      if(typeof rotThemNguoi === 'function') doi = rotThemNguoi(moi.warehouseId, moi);
+      // và nhận các ô 5S của người nghỉ việc sớm nhất đang chờ
+      if(typeof nhan5sNguoiMoi === 'function') s5 = nhan5sNguoiMoi(moi.warehouseId, moi);
+    }
+    await saveHr(); if(doi.length || s5) await saveKho();
+    m.close(); render();
+    toast('✓ Đã lưu nhân viên' + (doi.length ? ' · Đổi ca: ' + doi.join('; ') : '')
+      + (s5 && s5.nhan.length ? ` · 5S: nhận ${s5.nhan.length} ô của ${s5.cua} (${s5.nhan.join(', ')})` : ''));
   };
 }
 
@@ -9572,8 +9849,10 @@ function giaCongCode(g){
   const v = VEHICLE_TYPES.find(x=>x.key===g.vehicleType);
   return 'OS' + (f?f.abbr:'?') + (v?v.abbr:'?');
 }
+// Lịch giữ cả bản ghi cũ của người đã nghỉ việc (họ không còn trong khoEmployees)
+const idsLichKho = ()=> new Set(HR.employees.filter(e=>e.warehouseId===CUR_KHO).map(e=>e.id));
 function renderCalendar(){
-  const ids = new Set(khoEmployees(CUR_KHO).map(e=>e.id));
+  const ids = idsLichKho();
   const y = calCursor.getFullYear(), mo = calCursor.getMonth();
   $('calTitle').textContent = `Tháng ${mo+1} ${y}`;
   const first = new Date(y, mo, 1);
@@ -9607,7 +9886,7 @@ function renderCalendar(){
   $('calGrid').querySelectorAll('[data-day]').forEach(el=>el.onclick=()=>dayDetailModal(el.dataset.day));
 }
 function dayDetailModal(k){
-  const ids = new Set(khoEmployees(CUR_KHO).map(e=>e.id));
+  const ids = idsLichKho();
   const ot = HR.ot.filter(r=>ids.has(r.employeeId) && r.date===k);
   const lv = HR.leave.filter(l=>ids.has(l.employeeId) && l.date===k);
   const ev = HR.events.filter(e=>e.warehouseId===CUR_KHO && e.date===k);
@@ -9779,7 +10058,8 @@ function dungBangCong(khoId, ym){
   const [nam, thang] = ym.split('-').map(Number);
   const ngays = ngayLamViecThang(nam, thang);
   const dsKho = (khoId === 'ALL') ? WAREHOUSES.map(w=>w.id) : [khoId];
-  const nvs = dsKho.flatMap(id => khoEmployees(id).map(e=>({ ...e, _kho: khoName(id) })));
+  // người đang làm + người đã cắt nghỉ trong tháng này (vẫn tính công tới ngày làm việc cuối cùng)
+  const nvs = dsKho.flatMap(id => khoEmployees(id).concat(khoNghiTrongThang(id, ym)).map(e=>({ ...e, _kho: khoName(id) })));
   const { ot, lv } = gomGioTheoNgay();
   const CA = 8;                                        // giờ làm trong ca, mặc định 8
   const lam = x => Math.round(x * 100) / 100;          // làm tròn 2 số lẻ
@@ -9788,6 +10068,7 @@ function dungBangCong(khoId, ym){
   nvs.forEach(e=>{
     const cv = chucVuCong(e);
     ngays.forEach(d=>{
+      if(e.nghiViec && toKey(d) > e.nghiViec) return;      // sau ngày làm việc cuối cùng thì không tính
       const key = e.id + '|' + toKey(d);
       const gioOT = ot.get(key) || 0;
       const l = lv.get(key);
@@ -13090,6 +13371,26 @@ window.renderTraining = taoBoSuuTap({
     if(!bo && i >= 0) a.splice(i, 1);
     if(a.length) d.boqua[key] = a; else delete d.boqua[key];
   }
+  // Người nghỉ việc: gỡ khỏi các buổi kiểm kê / hỗ trợ đã xếp SAU ngày làm việc cuối cùng
+  // (buổi đã qua giữ nguyên để còn đếm lượt). Buổi kiểm kê bị trống chỗ thì ô
+  // "Người tiếp theo đi kiểm kê" tự đề xuất người khác. Trả về số buổi đã gỡ.
+  window.hkBoNguoi = function(id, ngayCuoi){
+    const d = D(); if(!d) return 0;
+    let n = 0;
+    Object.keys(d.kiemke).forEach(k=>{
+      if(k <= ngayCuoi || !d.kiemke[k].includes(id)) return;
+      d.kiemke[k] = d.kiemke[k].filter(x=>x !== id); n++;
+      if(!d.kiemke[k].length) delete d.kiemke[k];
+    });
+    Object.keys(d.hotro).forEach(k=>{
+      if(k <= ngayCuoi) return;
+      d.hotro[k].forEach(b=>{ if((b.ids || []).includes(id)){ b.ids = b.ids.filter(x=>x !== id); n++; } });
+      d.hotro[k] = d.hotro[k].filter(b=>(b.ids || []).length);
+      if(!d.hotro[k].length) delete d.hotro[k];
+    });
+    Object.keys(d.boqua).forEach(k=>{ if(k > ngayCuoi) datBoQua(k, id, false); });
+    return n;
+  };
 
   // ---------- Ca làm việc vào một ngày cụ thể ----------
   // Lấy từ chính lịch của tab Đổi ca: rotationPlan(K, extraWeeks) cho biết
@@ -13642,9 +13943,16 @@ window.renderTraining = taoBoSuuTap({
       if(HR.employees.some(e => e.warehouseId === 'thanhpham' && normName(e.name) === normName(t))){
         if(!await confirmBox(`Kho thành phẩm đã có người tên “${t}”. Vẫn thêm?`)) return;
       }
-      HR.employees.push({ id: nextEmployeeId(), name: t, warehouseId:'thanhpham',
-                          shift:'Ca HC', position:'Xuất', otOpeningBalance:0, forklift:false, skills:{} });
-      await saveHr(); m.close(); render(); toast('✓ Đã thêm ' + t);
+      const e = { id: nextEmployeeId(), name: t, warehouseId:'thanhpham',
+                  shift:'Ca HC', position:'Xuất', otOpeningBalance:0, forklift:false, skills:{} };
+      HR.employees.push(e);
+      // người mới tự vào nhóm đổi ca / vòng luân phiên hợp với ca + vị trí
+      const doi = typeof rotThemNguoi === 'function' ? rotThemNguoi('thanhpham', e) : [];
+      const s5 = typeof nhan5sNguoiMoi === 'function' ? nhan5sNguoiMoi('thanhpham', e) : null;   // nhận ô 5S của người nghỉ
+      await saveHr(); if(doi.length || s5) await saveKho();
+      m.close(); render();
+      toast('✓ Đã thêm ' + t + (doi.length ? ' · Đổi ca: ' + doi.join('; ') : '')
+        + (s5 && s5.nhan.length ? ` · 5S: nhận ${s5.nhan.length} ô của ${s5.cua}` : ''));
     };
   }
 
