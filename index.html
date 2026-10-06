@@ -2081,6 +2081,30 @@
   .cd-chon{display:flex; flex-wrap:wrap; gap:8px 18px;}
   .cd-chon label, .cd-active{display:inline-flex; align-items:center; gap:7px; font-size:14px; cursor:pointer;}
   .cd-active{margin-top:14px;}
+  .cd-cn{font-size:13px; line-height:1.5; margin:2px 0;}
+
+  /* Công nhân: chọn kho, rồi Ẩn / Xem / Sửa cho từng tab */
+  .cn-kho{border:1px solid var(--line); border-radius:10px; margin-top:8px; background:#fff; overflow:hidden;}
+  .cn-kho.on{border-color:#9fd3e3;}
+  .cn-kho-h{display:flex; align-items:center; gap:8px; padding:9px 12px; cursor:pointer; font-size:14px;}
+  .cn-kho.on .cn-kho-h{background:var(--blue-bg);}
+  .cn-kho-h .cn-dem{margin-left:auto; font-size:12px; font-weight:600; color:var(--ink-soft);}
+  .cn-tabs{display:none; padding:4px 12px 10px;}
+  .cn-kho.on .cn-tabs{display:block;}
+  .cn-nhanh{display:flex; align-items:center; gap:6px; justify-content:flex-end; padding:6px 0 8px; font-size:12px; color:var(--ink-soft);}
+  .cn-nhanh button{padding:3px 10px; font-size:12px; font-weight:700; background:#fff; color:var(--ink-soft);
+    border:1px solid var(--line); border-radius:999px;}
+  .cn-nhanh button:hover{opacity:1; border-color:var(--blue); color:var(--blue-dark);}
+  .cn-row{display:flex; align-items:center; gap:10px; padding:5px 0; border-top:1px solid var(--line-soft);}
+  .cn-row .t{flex:1; min-width:0; font-size:13.5px; font-weight:600;}
+  .cn-row .t small{display:block; font-size:11px; font-weight:500; color:var(--ink-soft);}
+  .cn-seg{display:inline-flex; background:#e8edf3; border-radius:8px; padding:2px; gap:2px; flex:0 0 auto;}
+  .cn-seg button{padding:4px 10px; font-size:12px; font-weight:700; color:var(--ink-soft); background:transparent;
+    border:0; border-radius:6px; white-space:nowrap;}
+  .cn-seg button:hover{opacity:1; background:#dde4ec;}
+  .cn-seg button.on[data-q=""]{background:#fff; color:#6b7280; box-shadow:0 1px 2px rgba(16,24,40,.12);}
+  .cn-seg button.on[data-q="xem"]{background:#fff6e5; color:#8a5a00; box-shadow:inset 0 0 0 1.5px #e3b356;}
+  .cn-seg button.on[data-q="sua"]{background:var(--teal); color:#fff;}
   @media(max-width:700px){
     .cd-bang td.cd-nut{white-space:normal;}
     .cd-bang td.cd-nut button{margin:2px 0 2px 4px;}
@@ -3622,7 +3646,29 @@ function setUnsaved(which, err){
 // tự kiểm tra quyền — phần kiểm tra ở đây chỉ để giao diện báo sớm, không phải chốt chặn.
 // =====================================================================
 const KHOA_PHIEN = 'appwh-auth';     // localStorage: { token, user } hoặc { khach: true }
-const VAI_TRO = { chu: 'Chủ trang', giamsat: 'Giám sát', xem: 'Chỉ xem' };
+const VAI_TRO = { chu: 'Chủ trang', giamsat: 'Giám sát', congnhan: 'Công nhân', xem: 'Chỉ xem' };
+// Các tab trong 1 kho — dùng để cấp quyền từng tab cho công nhân.
+// khos: tab chỉ có ở những kho này; cha: (kho thành phẩm) tab nằm bên trong tab khác.
+// Danh sách này phải khớp với appwh__key_tab / appwh__kho_sub_tab trong supabase/appwh-auth.sql.
+const TAB_KHO = [
+  { id:'dashboard', ten:'Tổng quan' },
+  { id:'phancong',  ten:'Năng lực',          cha:'dashboard' },
+  { id:'lichsu',    ten:'Lịch sử',           khos:['vai','phulieu'] },
+  { id:'so5s',      ten:'Phụ trách 5S',      cha:'dashboard' },
+  { id:'doica',     ten:'Đổi ca',            khos:['thanhpham'], cha:'dashboard' },
+  { id:'xuathang',  ten:'Xuất hàng',         khos:['thanhpham'] },
+  { id:'checkct',   ten:'CHECK CT',          khos:['thanhpham'] },
+  { id:'scanos',    ten:'SCAN OS',           khos:['thanhpham'] },
+  { id:'scan',      ten:'SCAN',              khos:['thanhpham'], cha:'scanos' },
+  { id:'donghang',  ten:'Đóng hàng',         khos:['thanhpham'] },
+  { id:'hotrokk',   ten:'Hỗ trợ / KK',       khos:['thanhpham'] },
+  { id:'tangca',    ten:'Tăng ca/Nghỉ phép' },
+  { id:'wi',        ten:'WI',                khos:['thanhpham'], cha:'dashboard' },
+  { id:'training',  ten:'Training',          khos:['vai','phulieu'] },
+  { id:'ghichu',    ten:'Ghi chú',           khos:['vai','phulieu'] },
+];
+const tabCuaKho = khoId => TAB_KHO.filter(t => !t.khos || t.khos.includes(khoId))
+  .map(t => ({ ...t, cha: khoId === 'thanhpham' ? t.cha : undefined }));
 // Các mục sidebar có thể cấp quyền xem
 const MUC_XEM = [
   { id: 'tong3kho', ten: 'Tổng quan 3 kho' },
@@ -3655,14 +3701,34 @@ async function rpc(fn, args){
 
 // ---- Quyền ----
 function laChuTrang(){ return !!(AUTH.user && AUTH.user.role === 'chu'); }
+function laCongNhan(){ return !!(AUTH.user && AUTH.user.role === 'congnhan'); }
+// Sửa được CẢ kho (chủ trang, giám sát được giao). Công nhân không bao giờ sửa cả kho — xem coSuaTab.
 function coSuaKho(khoId){
   const u = AUTH.user;
   if(!u) return false;
   return u.role === 'chu' || (u.role === 'giamsat' && (u.khos || []).includes(khoId));
 }
+// Quyền với 1 tab trong kho: 'sua' | 'xem' | null (không được dùng — ẩn tab)
+function quyenTab(khoId, tab){
+  if(laCongNhan()){
+    const u = AUTH.user;
+    if(!(u.khos || []).includes(khoId)) return null;
+    const q = ((u.tabs || {})[khoId] || {})[tab];
+    return q === 'sua' || q === 'xem' ? q : null;
+  }
+  if(coSuaKho(khoId)) return 'sua';
+  return coXem(khoId) ? 'xem' : null;
+}
+function coSuaTab(khoId, tab){ return quyenTab(khoId, tab) === 'sua'; }
+// Sửa được ít nhất 1 tab trong kho (để biết có gắn 👁 "chỉ xem" cạnh tên kho không)
+function coSuaTrongKho(khoId){
+  if(!laCongNhan()) return coSuaKho(khoId);
+  return tabCuaKho(khoId).some(t => coSuaTab(khoId, t.id));
+}
 // Có sửa được ít nhất một thứ gì không (khách / tài khoản chỉ xem: không)
 function coSuaGi(){
   const u = AUTH.user;
+  if(laCongNhan()) return WAREHOUSES.some(w => coSuaTrongKho(w.id));
   return !!u && (u.role === 'chu' || (u.role === 'giamsat' && (u.khos || []).length > 0));
 }
 // Mục sidebar: 'tong3kho' | 'aiproj' | mã kho | 'lichsusua' | 'caidat'
@@ -3680,21 +3746,37 @@ function khoCuaKhoa(key){
   if(/^appwh-(wi|checkct|scan|donghang)/.test(key)) return 'thanhpham';
   return null;
 }
+// Khoá lưu trữ riêng do tab nào ghi (giống appwh__key_tab trên máy chủ).
+// Tab SCAN ghi cả khoá của SCAN OS khi đổi file / xoá dữ liệu.
+function tabCuaKhoa(key){
+  if(/^appwh-training-/.test(key)) return ['training'];
+  if(/^appwh-wi/.test(key)) return ['wi'];
+  if(/^appwh-checkct/.test(key)) return ['checkct'];
+  if(/^appwh-scanos/.test(key)) return ['scanos', 'scan'];
+  if(/^appwh-scan/.test(key)) return ['scan'];
+  if(/^appwh-donghang/.test(key)) return ['donghang'];
+  return [];
+}
 function coSuaKhoa(key){
   if(laChuTrang()) return true;
   if(!coSuaGi()) return false;
-  if(key === KEY_HR || key === KEY_KHO || key === 'appwh-test-ghi') return true;   // máy chủ tự lọc theo kho
+  if(key === 'appwh-test-ghi') return true;
+  // Công nhân: tab đang mở phải được sửa (máy chủ chỉ biết khoá, không biết đang đứng ở tab nào)
+  if(laCongNhan() && VIEW === 'kho' && !coSuaTab(CUR_KHO, activeTab)) return false;
+  if(key === KEY_HR || key === KEY_KHO) return true;   // máy chủ tự lọc theo kho / tab
   const k = khoCuaKhoa(key);
-  return !!k && coSuaKho(k);
+  if(!k) return false;
+  return laCongNhan() ? tabCuaKhoa(key).some(t => coSuaTab(k, t)) : coSuaKho(k);
 }
 // Trang đang xem có ở chế độ chỉ xem không
 function dangChiXem(){
   if(!coSuaGi()) return true;
-  return VIEW === 'kho' && !coSuaKho(CUR_KHO);
+  return VIEW === 'kho' && !coSuaTab(CUR_KHO, activeTab);
 }
 function moTaQuyen(u){
   if(!u) return 'Khách — chỉ xem';
   if(u.role === 'giamsat') return 'Giám sát · ' + ((u.khos || []).map(k => khoName(k)).join(', ') || 'chưa giao kho');
+  if(u.role === 'congnhan') return 'Công nhân · ' + ((u.khos || []).map(k => khoName(k)).join(', ') || 'chưa giao kho');
   return VAI_TRO[u.role] || u.role;
 }
 
@@ -3884,7 +3966,7 @@ function chiXemHoanTac(which, opt){
   if(!KHOI_DONG_XONG || (opt && opt.tuDong)) return false;   // lưu tự động / lúc khởi động: bỏ qua lặng lẽ
   CHAN_OK_DEN = Date.now() + 1500;
   toast('👁 Chỉ xem — ' + (AUTH.user
-    ? (VIEW === 'kho' ? `bạn không có quyền sửa ${khoName(CUR_KHO).toLowerCase()}` : 'tài khoản không có quyền sửa')
+    ? (VIEW === 'kho' ? (laCongNhan() ? 'tài khoản chỉ được xem tab này' : `bạn không có quyền sửa ${khoName(CUR_KHO).toLowerCase()}`) : 'tài khoản không có quyền sửa')
     : 'đăng nhập để chỉnh sửa') + '. Thay đổi chưa được lưu.');
   try{
     if(which === 'hr' && lastRawHr){ HR = Object.assign(defaultHr(), JSON.parse(lastRawHr)); ensureSkills(); }
@@ -4185,12 +4267,13 @@ function apBanDaLuu(key, data, raw, luu){
 }
 
 // Được ghi không: khách / tài khoản chỉ xem thì không; giám sát đang mở kho không phải
-// của mình thì không. opt.tuDong (đổi ca, nạp phép, gửi lại phần treo) / opt.ghiDe
-// không xét trang đang mở — máy chủ vẫn tự lọc theo kho.
+// của mình thì không; công nhân đang mở tab chỉ được xem thì không.
+// opt.tuDong (đổi ca, nạp phép, gửi lại phần treo) / opt.ghiDe
+// không xét trang đang mở — máy chủ vẫn tự lọc theo kho / tab.
 function duocGhi(opt){
   if(!coSuaGi()) return false;
   if(opt && (opt.tuDong || opt.ghiDe)) return true;
-  return !(VIEW === 'kho' && !coSuaKho(CUR_KHO));
+  return !(VIEW === 'kho' && !coSuaTab(CUR_KHO, activeTab));
 }
 
 // opt.ghiDe = true: cố ý thay hẳn bản trên máy chủ (khôi phục bản cũ, đẩy bản
@@ -4392,7 +4475,8 @@ let FULL_MODE = false;
 try{ FULL_MODE = localStorage.getItem('appwh-fullmode') === '1'; }catch(e){}
 function manHinhHep(){ return window.innerWidth <= PHONE_W; }
 // Tài khoản không được xem kho thành phẩm thì điện thoại cũng hiện bản đầy đủ
-function isPhoneMode(){ return manHinhHep() && !FULL_MODE && coXem('thanhpham'); }
+// (công nhân: chỉ khi được dùng tab Tăng ca/Nghỉ phép của kho thành phẩm)
+function isPhoneMode(){ return manHinhHep() && !FULL_MODE && coXem('thanhpham') && (!laCongNhan() || !!quyenTab('thanhpham', 'tangca')); }
 function applyPhoneMode(){
   const on = isPhoneMode();
   document.body.classList.toggle('phone', on);
@@ -4459,23 +4543,27 @@ const TP_QUAN_LY = [
   { tab:'doica',    ic:'🔁', ten:'Đổi ca',       mo:'Lịch đổi ca tự động, cặp đổi khu vực 5S' },
   { tab:'wi',       ic:'📄', ten:'WI',           mo:'Hướng dẫn công việc theo từng vị trí' },
 ];
-// Tab đang sáng ở menu: đứng ở tab con thì sáng tab cha
-function tabCha(t){ return (CUR_KHO === 'thanhpham' && TP_TAB_CHA[t]) || t; }
+// Tài khoản được dùng tab này ở kho đang mở không (công nhân chỉ dùng các tab được cấp)
+function duocDungTab(t){ return quyenTab(CUR_KHO, t) !== null; }
+// Tab đang sáng ở menu: đứng ở tab con thì sáng tab cha (nếu tab cha được dùng)
+function tabCha(t){ const c = CUR_KHO === 'thanhpham' && TP_TAB_CHA[t]; return (c && duocDungTab(c)) ? c : t; }
 
 // Thanh "← Tổng quan | Năng lực | Phụ trách 5S | Đổi ca | WI" đầu các tab con của Tổng quan (kho thành phẩm)
 function veThanhQuanLy(isTp){
+  const ds = TP_QUAN_LY.filter(x=>duocDungTab(x.tab)), coVe = duocDungTab('dashboard');
   TP_QUAN_LY.forEach(m=>{
     const pg = $('tab-' + m.tab); if(!pg) return;
     let bar = pg.querySelector(':scope > .tp-crumb');
-    if(!isTp){ if(bar) bar.remove(); return; }
+    // công nhân chỉ được 1 tab, không có Tổng quan thì thanh này không cần
+    if(!isTp || (!coVe && ds.length < 2)){ if(bar) bar.remove(); return; }
     if(!bar){
       bar = document.createElement('div');
       bar.className = 'tp-crumb';
       bar.onclick = e =>{ const b = e.target.closest('[data-go]'); if(b) switchTab(b.dataset.go); };
       pg.prepend(bar);
     }
-    bar.innerHTML = `<button class="tp-back" data-go="dashboard" title="Về Tổng quan">← Tổng quan</button>
-      <div class="tp-crumb-tabs">${TP_QUAN_LY.map(x=>
+    bar.innerHTML = (coVe ? `<button class="tp-back" data-go="dashboard" title="Về Tổng quan">← Tổng quan</button>` : '') +
+      `<div class="tp-crumb-tabs">${ds.map(x=>
         `<button data-go="${x.tab}"${x.tab === m.tab ? ' class="on"' : ''}><span>${x.ic}</span>${x.ten}</button>`).join('')}</div>`;
   });
 }
@@ -4513,7 +4601,7 @@ function buildSidebar(){
     (dau ? dau + `<div class="sb-sep"></div>` : '') +
     WAREHOUSES.filter(w=>coXem(w.id)).map(w=>
       `<button class="sb-item" data-view="kho" data-kho="${w.id}">
-         <span>${w.name.toUpperCase()}</span>${coSuaKho(w.id) ? '' : '<span class="sb-ro" title="Chỉ xem">👁</span>'}<span class="sb-caret">▾</span></button>
+         <span>${w.name.toUpperCase()}</span>${coSuaTrongKho(w.id) ? '' : '<span class="sb-ro" title="Chỉ xem">👁</span>'}<span class="sb-caret">▾</span></button>
        <div class="sb-menu" id="sbMenu-${w.id}"></div>`).join('') +
     ((coXem('lichsusua') || laChuTrang()) ? `<div class="sb-sep"></div>` : '') +
     (coXem('lichsusua') ? `<button class="sb-item" data-view="lichsusua"><span>🕘 LỊCH SỬ CHỈNH SỬA</span></button>` : '') +
@@ -4584,6 +4672,8 @@ function applyTabVisibility(){
   const hb0 = $('otHintBar'); if(hb0) hb0.style.display = 'none';
   const isTp = CUR_KHO === 'thanhpham';
   $('tabNav').style.display = TRANG_RIENG[VIEW] ? 'none' : 'flex';
+  // tính lại từ đầu: hiện hết, rồi ẩn dần theo kho và theo quyền tài khoản
+  document.querySelectorAll('#tabNav button[data-tab]').forEach(b=>{ b.style.display = ''; });
   const btnDoica = document.querySelector('#tabNav button[data-tab="doica"]');
   const btnPhancong = document.querySelector('#tabNav button[data-tab="phancong"]');
   if(btnDoica) btnDoica.style.display = isTp ? '' : 'none';
@@ -4617,12 +4707,23 @@ function applyTabVisibility(){
     if(b) b.style.display = isTp ? 'none' : '';
   });
   if(isTp && (activeTab === 'lichsu' || activeTab === 'ghichu')) activeTab = 'dashboard';
-  // Kho thành phẩm: tab con không có dòng riêng (mở từ tab cha); kho khác vẫn có Năng lực + Phụ trách 5S
-  Object.keys(TP_TAB_CHA).forEach(t=>{
-    const b = document.querySelector(`#tabNav button[data-tab="${t}"]`); if(!b) return;
-    if(isTp) b.style.display = 'none';
-    else if(t === 'phancong' || t === 'so5s') b.style.display = '';
+  // Kho thành phẩm: tab con không có dòng riêng (mở từ tab cha).
+  // Công nhân không được dùng tab cha thì tab con hiện thẳng ở menu.
+  if(isTp) Object.keys(TP_TAB_CHA).forEach(t=>{
+    const b = document.querySelector(`#tabNav button[data-tab="${t}"]`);
+    if(b && duocDungTab(TP_TAB_CHA[t])) b.style.display = 'none';
   });
+  // Công nhân: ẩn các tab không được cấp
+  const tabBtn = t => document.querySelector(`#tabNav button[data-tab="${t}"]`);
+  document.querySelectorAll('#tabNav button[data-tab]').forEach(b=>{ if(!duocDungTab(b.dataset.tab)) b.style.display = 'none'; });
+  // Tab đang mở không được dùng -> chuyển sang tab đầu tiên được dùng
+  const moDuoc = t => { const b = tabBtn(t);
+    return !!b && duocDungTab(t) && (b.style.display !== 'none' || (isTp && !!TP_TAB_CHA[t] && duocDungTab(TP_TAB_CHA[t]))); };
+  if(VIEW === 'kho' && !moDuoc(activeTab)){
+    const dau = [...document.querySelectorAll('#tabNav button[data-tab]')].find(b=>b.style.display !== 'none');
+    if(dau) activeTab = dau.dataset.tab;
+  }
+  const nutScan = $('soBtnScan'); if(nutScan) nutScan.hidden = !duocDungTab('scan');
   veThanhQuanLy(isTp);
   // Vẽ menu SAU CÙNG, khi đã chốt xong tab nào hiện tab nào ẩn
   veMenuSidebar(isTp);
@@ -5388,7 +5489,8 @@ function renderDashboard(){
 // Kho thành phẩm: 4 thẻ "Quản lý nhanh" mở tab Năng lực / Phụ trách 5S / Đổi ca / WI (danh sách ở TP_QUAN_LY)
 function renderTpHub(){
   const box = $('tpHub'); if(!box) return;
-  box.hidden = CUR_KHO !== 'thanhpham';
+  const ds = TP_QUAN_LY.filter(m=>duocDungTab(m.tab));     // công nhân chỉ thấy thẻ của tab được cấp
+  box.hidden = CUR_KHO !== 'thanhpham' || !ds.length;
   if(box.hidden){ box.innerHTML = ''; return; }
   const K = curKho();
   // số liệu nhỏ dưới tên thẻ — thiếu dữ liệu thì bỏ trống, không làm hỏng trang
@@ -5400,7 +5502,7 @@ function renderTpHub(){
   }catch(e){}
   try{ so.doica = `${((K.rotation && K.rotation.groups) || []).length} nhóm đổi ca`; }catch(e){}
   box.innerHTML = `<div class="tp-hub-h"><span>QUẢN LÝ NHANH</span><i>Năng lực · 5S · Đổi ca · Tài liệu WI</i></div>
-    <div class="tp-hub-grid">${TP_QUAN_LY.map(m=>`
+    <div class="tp-hub-grid">${ds.map(m=>`
       <button class="tp-card tp-${m.tab}" data-go="${m.tab}">
         <span class="ic">${m.ic}</span>
         <span class="tx"><b>${esc(m.ten)}</b><small>${esc(m.mo)}</small>${so[m.tab] ? `<em>${esc(so[m.tab])}</em>` : ''}</span>
@@ -14546,7 +14648,7 @@ let DH_NHAP = (() => {
 })();
 function dhNhoNhap(){ lsSet(KEY_DH_NHAP, JSON.stringify(DH_NHAP)); }
 const dhId = p => p + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-const dhCoSua = () => coSuaKho('thanhpham');
+const dhCoSua = () => coSuaTab('thanhpham', 'donghang');
 function dhSp(id){ return DH.sp.find(s => s.id === id); }
 // Mã hàng của 1 dòng: trong danh mục, hoặc mã dùng tạm (nhập từ packing list, chưa lưu danh mục)
 function dhSpDong(d){ return d.spTam || dhSp(d.spId); }
@@ -15456,7 +15558,8 @@ function dhMoNhapPL(){
 <script>/* js/modules/caidat/caidat.js */
 // Cài đặt tài khoản — chỉ chủ trang
 // Tạo / sửa / khoá / xoá tài khoản, đặt lại mật khẩu, giao kho cho giám sát,
-// cấp quyền xem từng mục sidebar, và chọn mục khách (không đăng nhập) được xem.
+// cấp quyền xem từng mục sidebar, cấp quyền từng tab cho công nhân (ẩn / xem / sửa),
+// và chọn mục khách (không đăng nhập) được xem.
 // Mọi thao tác gọi hàm appwh_admin_* trên Supabase — máy chủ tự kiểm tra là chủ trang.
 // =====================================================================
 let CD_DS = null;          // { users:[...], guest_views:[...] } — lần tải gần nhất
@@ -15492,26 +15595,36 @@ function renderCaiDat(){
   const users = CD_DS.users || [];
   const guest = CD_DS.guest_views || [];
   const dem = r => users.filter(u => u.role === r).length;
+  // công nhân: tab được sửa / được xem của từng kho
+  const cnTab = (u, k, q) => tabCuaKho(k).filter(t => ((u.tabs || {})[k] || {})[t.id] === q).map(t => t.ten);
   const khoTxt = u => u.role === 'chu' ? '<span class="cd-mo">Tất cả</span>'
     : u.role === 'giamsat' ? ((u.khos || []).map(k => `<span class="chip info">${esc(khoName(k))}</span>`).join(' ') || '<span class="chip warn">Chưa giao kho</span>')
+    : u.role === 'congnhan' ? ((u.khos || []).map(k => {
+        const s = cnTab(u, k, 'sua');
+        return s.length ? `<div class="cd-cn"><span class="chip info">${esc(khoName(k))}</span> ${esc(s.join(', '))}</div>` : '';
+      }).join('') || '<span class="cd-mo">Không sửa tab nào</span>')
     : '<span class="cd-mo">—</span>';
   const xemTxt = u => u.role === 'chu' ? '<span class="cd-mo">Tất cả</span>'
+    : u.role === 'congnhan' ? ((u.khos || []).map(k => {
+        const x = cnTab(u, k, 'xem');
+        return x.length ? `<div class="cd-cn"><b>${esc(khoName(k))}</b>: ${esc(x.join(', '))}</div>` : '';
+      }).join('') || '<span class="cd-mo">—</span>')
     : (MUC_XEM.filter(m => (u.views || []).includes(m.id) || (u.khos || []).includes(m.id)).map(m => esc(m.ten)).join(', ') || '<span class="chip warn">Không mục nào</span>');
 
   page.innerHTML = `
     <div class="panel">
       <h2>Tài khoản <span class="n">${users.length}</span>
-        <span class="cd-dem">${dem('chu')} chủ trang · ${dem('giamsat')} giám sát · ${dem('xem')} chỉ xem</span>
+        <span class="cd-dem">${dem('chu')} chủ trang · ${dem('giamsat')} giám sát · ${dem('congnhan')} công nhân · ${dem('xem')} chỉ xem</span>
         <span class="h2spacer"></span>
         <button class="sm ghost" id="cdTaiLai">↻ Tải lại</button>
         <button class="sm" id="cdThem">+ Tạo tài khoản</button>
       </h2>
       <div class="tblwrap"><table class="cd-bang">
-        <thead><tr><th>Tài khoản</th><th>Vai trò</th><th>Được sửa kho</th><th>Được xem mục</th><th>Trạng thái</th><th></th></tr></thead>
+        <thead><tr><th>Tài khoản</th><th>Vai trò</th><th>Được sửa</th><th>Được xem</th><th>Trạng thái</th><th></th></tr></thead>
         <tbody>${users.map(u => `
           <tr class="${u.active ? '' : 'cd-khoa'}">
             <td><b>${esc(u.display_name || u.username)}</b><div class="cd-mo">${esc(u.username)}${AUTH.user && u.id === AUTH.user.id ? ' · bạn' : ''}</div></td>
-            <td><span class="chip ${u.role === 'chu' ? 'violet' : u.role === 'giamsat' ? 'ok' : ''}">${esc(VAI_TRO[u.role] || u.role)}</span></td>
+            <td><span class="chip ${u.role === 'chu' ? 'violet' : u.role === 'giamsat' ? 'ok' : u.role === 'congnhan' ? 'info' : ''}">${esc(VAI_TRO[u.role] || u.role)}</span></td>
             <td>${khoTxt(u)}</td>
             <td class="cd-xem">${xemTxt(u)}</td>
             <td>${u.active ? '<span class="chip ok">Đang dùng</span>' : '<span class="chip warn">Đã khoá</span>'}
@@ -15554,7 +15667,23 @@ function renderCaiDat(){
 // Hộp tạo / sửa tài khoản. u = null -> tạo mới.
 function cdMoSua(u){
   const moi = !u;
-  u = u || { username: '', display_name: '', role: 'giamsat', khos: [], views: MUC_XEM.map(m => m.id), active: true };
+  u = u || { username: '', display_name: '', role: 'giamsat', khos: [], views: MUC_XEM.map(m => m.id), tabs: {}, active: true };
+  // Quyền từng tab của công nhân: { kho: { tab: 'xem' | 'sua' } } — sửa trên bản sao, bấm Lưu mới gửi
+  const TABS = JSON.parse(JSON.stringify(u.role === 'congnhan' ? (u.tabs || {}) : {}));
+  const NHAN_Q = { '': 'Ẩn', xem: 'Xem', sua: 'Sửa' };
+  const cnKhoHtml = w => {
+    const on = u.role === 'congnhan' && (u.khos || []).includes(w.id);
+    return `<div class="cn-kho${on ? ' on' : ''}" data-cnkho="${w.id}">
+      <label class="cn-kho-h"><input type="checkbox" value="${w.id}"${on ? ' checked' : ''}><b>${esc(w.name)}</b><span class="cn-dem"></span></label>
+      <div class="cn-tabs">
+        <div class="cn-nhanh"><span>Đặt tất cả:</span>${Object.keys(NHAN_Q).map(q => `<button type="button" data-tatca="${q}">${NHAN_Q[q]}</button>`).join('')}</div>
+        ${tabCuaKho(w.id).map(t => `<div class="cn-row">
+          <span class="t">${esc(t.ten)}${t.cha ? `<small>trong ${esc(tabCuaKho(w.id).find(x => x.id === t.cha).ten)}</small>` : ''}</span>
+          <div class="cn-seg" data-tab="${t.id}">${Object.keys(NHAN_Q).map(q => `<button type="button" data-q="${q}">${NHAN_Q[q]}</button>`).join('')}</div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  };
   const m = openModal(moi ? 'Tạo tài khoản' : 'Sửa tài khoản ' + u.username, `
     <div class="row2">
       <div><label class="field-label">Tên đăng nhập</label>
@@ -15576,6 +15705,12 @@ function cdMoSua(u){
       <div class="cd-chon" data-views>${MUC_XEM.map(x => `
         <label><input type="checkbox" value="${x.id}"${(u.views || []).includes(x.id) ? ' checked' : ''}> ${esc(x.ten)}</label>`).join('')}</div>
     </div>
+    <div data-cnkhoi>
+      <label class="field-label">Kho &amp; tab được dùng</label>
+      <div class="cd-ghi cd-mo">Tích kho công nhân được dùng, rồi chọn từng tab:
+        <b>Ẩn</b> — không thấy tab · <b>Xem</b> — chỉ xem, không sửa · <b>Sửa</b> — xem và sửa.</div>
+      ${WAREHOUSES.map(cnKhoHtml).join('')}
+    </div>
     <label class="cd-active"><input type="checkbox" data-k="active"${u.active ? ' checked' : ''}> Cho phép đăng nhập (bỏ chọn = khoá tài khoản)</label>
     <div class="lg-err" data-err></div>
     <div class="row2" style="margin-top:16px;"><button class="ghost" data-no>Huỷ</button><button data-ok>${moi ? 'Tạo tài khoản' : 'Lưu'}</button></div>`);
@@ -15583,13 +15718,43 @@ function cdMoSua(u){
   const doiVaiTro = () => {
     const r = q('[data-k="role"]').value;
     q('[data-khokhoi]').style.display = r === 'giamsat' ? '' : 'none';
-    q('[data-xemkhoi]').style.display = r === 'chu' ? 'none' : '';
+    q('[data-xemkhoi]').style.display = (r === 'chu' || r === 'congnhan') ? 'none' : '';
+    q('[data-cnkhoi]').style.display = r === 'congnhan' ? '' : 'none';
     q('[data-mota]').textContent = r === 'chu' ? 'Chủ trang sửa được mọi thứ, xem mọi mục và quản lý tài khoản.'
       : r === 'giamsat' ? 'Giám sát chỉ sửa được dữ liệu của các kho được giao; các mục khác chỉ xem.'
+      : r === 'congnhan' ? 'Công nhân chỉ thấy kho và tab được cấp; tab nào chọn "Xem" thì không sửa được.'
       : 'Chỉ xem, không sửa được gì.';
   };
   q('[data-k="role"]').onchange = doiVaiTro;
   doiVaiTro();
+
+  // ---- Khối công nhân: tích kho -> hiện danh sách tab; mỗi tab chọn Ẩn / Xem / Sửa ----
+  const veCnKho = box => {
+    const k = box.dataset.cnkho, on = box.querySelector('.cn-kho-h input').checked, t = TABS[k] || {};
+    box.classList.toggle('on', on);
+    box.querySelectorAll('.cn-seg').forEach(s => {
+      const v = t[s.dataset.tab] || '';
+      s.querySelectorAll('[data-q]').forEach(b => b.classList.toggle('on', b.dataset.q === v));
+    });
+    const ds = Object.values(t), sua = ds.filter(x => x === 'sua').length, xem = ds.filter(x => x === 'xem').length;
+    box.querySelector('.cn-dem').textContent = on ? (sua + xem ? `${sua + xem} tab · ${sua} sửa · ${xem} chỉ xem` : 'chưa chọn tab nào') : '';
+  };
+  m.body.querySelectorAll('[data-cnkho]').forEach(box => {
+    const k = box.dataset.cnkho;
+    box.querySelector('.cn-kho-h input').onchange = () => veCnKho(box);
+    box.onclick = e => {
+      const nut = e.target.closest('button'); if(!nut) return;
+      TABS[k] = TABS[k] || {};
+      if(nut.dataset.tatca !== undefined){
+        tabCuaKho(k).forEach(t => { if(nut.dataset.tatca) TABS[k][t.id] = nut.dataset.tatca; else delete TABS[k][t.id]; });
+      }else if(nut.dataset.q !== undefined){
+        const tab = nut.closest('[data-tab]').dataset.tab;
+        if(nut.dataset.q) TABS[k][tab] = nut.dataset.q; else delete TABS[k][tab];
+      }
+      veCnKho(box);
+    };
+    veCnKho(box);
+  });
   // Giao kho nào thì tự cho xem kho đó
   m.body.querySelectorAll('[data-khos] input').forEach(i => i.onchange = () => {
     if(i.checked){ const v = q(`[data-views] input[value="${i.value}"]`); if(v) v.checked = true; }
@@ -15608,6 +15773,17 @@ function cdMoSua(u){
     };
     if(moi) goi.password = q('[data-k="password"]').value;
     if(goi.role === 'giamsat' && !goi.khos.length){ err.textContent = 'Chọn ít nhất 1 kho cho giám sát'; return; }
+    if(goi.role === 'congnhan'){
+      // chỉ giữ kho được tích và có ít nhất 1 tab không ẩn
+      goi.tabs = {};
+      m.body.querySelectorAll('.cn-kho-h input:checked').forEach(i => {
+        const t = TABS[i.value] || {};
+        if(Object.keys(t).length) goi.tabs[i.value] = t;
+      });
+      goi.khos = Object.keys(goi.tabs);
+      goi.views = [];
+      if(!goi.khos.length){ err.textContent = 'Tích ít nhất 1 kho và chọn Xem hoặc Sửa cho ít nhất 1 tab'; return; }
+    }
     btn.disabled = true; err.textContent = '';
     try{
       const kq = await rpc('appwh_admin_save_user', { p_token: AUTH.token, p_user: goi });
