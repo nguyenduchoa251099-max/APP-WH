@@ -1445,6 +1445,9 @@
     font-size:12.5px; max-height:160px; overflow:auto;}
   .so-mfiles b{display:block; margin-bottom:4px;}
   .so-mfiles span{display:block; color:var(--ink-soft); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  /* nút mở màn hình SCAN (SCAN không còn dòng riêng ở sidebar) */
+  #tab-scanos .so-scan{padding:7px 18px; font-size:14px; letter-spacing:.06em; border-radius:9px;
+    background:linear-gradient(135deg,#0f9bb8,#0b6f86);}
   #tab-scanos .so-save{font-size:12px; font-weight:700; white-space:nowrap; color:var(--ink-soft);}
   #tab-scanos .so-save.ok{color:var(--teal);}
   #tab-scanos .so-save.loi{color:var(--red); cursor:help;}
@@ -1580,6 +1583,14 @@
     font-weight:800; text-transform:uppercase; color:var(--ink); outline:none;}
   #tab-scan .sc-vt input::placeholder{font-weight:600; color:#c4a466; text-transform:none; font-family:var(--font); font-size:13px;}
   #tab-scan .sc-vt:focus-within{box-shadow:0 0 0 3px #fcefc9;}
+  /* ô ghi chú: cùng dáng ô vị trí, màu xanh để phân biệt, chữ thường */
+  #tab-scan .sc-gc{border-color:#7fb6d6;}
+  #tab-scan .sc-gc span{color:#1f5f86;}
+  #tab-scan .sc-gc input{width:170px; font-family:var(--font); font-size:14px; font-weight:700; text-transform:none;}
+  #tab-scan .sc-gc input::placeholder{color:#94b8cf;}
+  #tab-scan .sc-gc:focus-within{box-shadow:0 0 0 3px #dcecf6;}
+  #tab-scan .sc-luot .h .gc{display:block; margin-top:2px; font-style:normal; color:#1f5f86; font-weight:700;}
+  #tab-scan .sc-vtbtn.khong b{font-family:var(--font); font-style:italic; font-size:13.5px;}
 
   /* ---------- 3 cột ---------- */
   #tab-scan .sc-main{display:grid; grid-template-columns:minmax(280px,1fr) minmax(330px,1.15fr) minmax(280px,1fr); gap:12px; align-items:start;}
@@ -2188,6 +2199,56 @@
   .dh-bang select.dh-kieu{min-width:250px; font-size:13px; padding:5px 7px;}
 
 </style>
+<style>/* css/modules/tongquan-tp.css */
+/* Kho thành phẩm — Năng lực / Phụ trách 5S / Đổi ca / WI không còn dòng riêng ở sidebar:
+   mở từ 4 thẻ "Quản lý nhanh" ở tab Tổng quan, và đầu mỗi tab đó có thanh chuyển qua lại + nút về Tổng quan */
+
+/* ---------- 4 thẻ ở tab Tổng quan ---------- */
+  .tp-hub{margin-bottom:14px;}
+  .tp-hub-h{display:flex; align-items:baseline; gap:10px; margin:0 2px 8px;}
+  .tp-hub-h span{font-size:12.5px; font-weight:800; letter-spacing:.09em; color:var(--ink-soft);}
+  .tp-hub-h i{font-style:normal; font-size:12px; color:#8a94a1;}
+  .tp-hub-grid{display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:12px;}
+
+  .tp-card{--c:#00789A; --c-bg:#E6F6FA;
+    display:flex; align-items:center; gap:12px; width:100%; text-align:left; padding:14px 14px 14px 16px;
+    background:var(--panel); color:var(--ink); border:1px solid var(--line); border-left:4px solid var(--c); border-radius:12px;
+    box-shadow:var(--bong); transition:transform .12s, box-shadow .12s, border-color .12s;}
+  .tp-card:hover{opacity:1; transform:translateY(-2px); border-color:var(--c); box-shadow:0 6px 16px rgba(16,24,40,.10);}
+  .tp-card:active{transform:none;}
+  .tp-card .ic{flex:0 0 46px; height:46px; display:grid; place-items:center; font-size:22px; border-radius:11px; background:var(--c-bg);}
+  .tp-card .tx{display:flex; flex-direction:column; gap:2px; min-width:0; flex:1;}
+  .tp-card .tx b{font-size:15.5px; font-weight:800; color:var(--c); letter-spacing:.02em;}
+  .tp-card .tx small{font-size:12px; line-height:1.4; color:var(--ink-soft);}
+  .tp-card .tx em{font-style:normal; font-size:11.5px; font-weight:800; color:var(--c); margin-top:3px;
+    align-self:flex-start; background:var(--c-bg); padding:1px 8px; border-radius:999px;}
+  .tp-card .mui{font-size:24px; line-height:1; color:#b3bcc8; transition:transform .12s, color .12s;}
+  .tp-card:hover .mui{color:var(--c); transform:translateX(3px);}
+
+  .tp-card.tp-phancong{--c:#c2410c; --c-bg:#fff0e6;}
+  .tp-card.tp-so5s    {--c:#2f7a4f; --c-bg:#e6f2ea;}
+  .tp-card.tp-doica   {--c:#00789A; --c-bg:#E6F6FA;}
+  .tp-card.tp-wi      {--c:#6d28d9; --c-bg:#f2ecfd;}
+
+/* ---------- Thanh đầu tab con: ← Tổng quan | Năng lực | Phụ trách 5S | Đổi ca | WI ---------- */
+  .tp-crumb{display:flex; align-items:center; flex-wrap:wrap; gap:8px 12px; margin-bottom:12px;}
+  .tp-crumb .tp-back{display:inline-flex; align-items:center; gap:4px; padding:7px 14px; font-size:13px; font-weight:800;
+    color:var(--blue-dark); background:var(--panel); border:1.5px solid #9fd3e3; border-radius:999px;}
+  .tp-crumb .tp-back:hover{opacity:1; background:var(--blue-bg); border-color:var(--blue);}
+  .tp-crumb-tabs{display:inline-flex; flex-wrap:wrap; gap:4px; padding:4px; background:#e8edf3; border-radius:11px;}
+  .tp-crumb-tabs button{display:inline-flex; align-items:center; gap:6px; padding:7px 14px; font-size:13px; font-weight:700;
+    color:var(--ink-soft); background:transparent; border:0; border-radius:8px;}
+  .tp-crumb-tabs button:hover{opacity:1; background:#dde4ec; color:var(--ink);}
+  .tp-crumb-tabs button.on{background:var(--panel); color:var(--blue-dark); font-weight:800; box-shadow:0 1px 3px rgba(16,24,40,.12);}
+
+  @media(max-width:1180px){ .tp-hub-grid{grid-template-columns:repeat(2, minmax(0,1fr));} }
+  @media(max-width:560px){
+    .tp-hub-grid{grid-template-columns:1fr;}
+    .tp-crumb-tabs{width:100%;}
+    .tp-crumb-tabs button{flex:1; justify-content:center; padding:7px 8px;}
+  }
+
+</style>
 </head>
 <body>
 <div id="shell">
@@ -2301,6 +2362,8 @@
   </main>
 
   <main class="tabpage" id="tab-dashboard">
+    <!-- Kho thành phẩm: Năng lực / Phụ trách 5S / Đổi ca / WI mở từ đây (không còn dòng riêng ở sidebar) -->
+    <div class="tp-hub" id="tpHub" hidden></div>
     <div class="grid3">
       <div class="stat s1 stat-multi">
         <small>Nhân sự</small>
@@ -2701,6 +2764,7 @@
     <div class="so-note" id="soNote" hidden></div>
     <div class="so-info">
       <div class="so-info-l" id="soInfoL"></div>
+      <button class="so-btn so-scan" id="soBtnScan" title="Mở màn hình SCAN — quét UCC của file đang đưa sang SCAN">📲 SCAN</button>
       <span class="so-save" id="soSave"></span>
       <button class="ghost sm" id="soBtnSync" title="Tải lại dữ liệu mới nhất từ máy chủ">🔄</button>
     </div>
@@ -2726,7 +2790,10 @@
         <div class="sc-prog"><div class="bar"><i id="scBar"></i></div><span id="scPt">0%</span></div>
       </div>
       <div class="sc-act">
-        <label class="sc-vt" id="scVtBox" title="Vị trí đặt các thùng của phiên này — bắt buộc điền trước khi lưu scan">
+        <label class="sc-vt sc-gc" id="scGcBox" title="Ghi chú cho các thùng của phiên này (không bắt buộc) — có trong file Excel khi xuất">
+          <span>📝 GHI CHÚ</span><input type="text" id="scGc" placeholder="VD: hàng bị bẩn" autocomplete="off" maxlength="200">
+        </label>
+        <label class="sc-vt" id="scVtBox" title="Vị trí đặt các thùng của phiên này (không bắt buộc)">
           <span>📍 VỊ TRÍ</span><input type="text" id="scVt" placeholder="VD: A01A" autocomplete="off" spellcheck="false">
         </label>
         <button class="sc-btn sc-vtl" id="scBtnVtl" title="Xem các vị trí đã lưu và UCC ở từng vị trí">🗂 VỊ TRÍ ĐÃ LƯU</button>
@@ -4382,6 +4449,37 @@ function setView(view, khoId){
   }
   render();
 }
+// Kho thành phẩm: các tab con không có dòng riêng ở menu sidebar, mở từ tab cha
+//   SCAN -> nút "SCAN" trong tab SCAN OS
+//   Năng lực, Phụ trách 5S, Đổi ca, WI -> các thẻ "Quản lý nhanh" ở tab Tổng quan
+const TP_TAB_CHA = { scan:'scanos', phancong:'dashboard', so5s:'dashboard', doica:'dashboard', wi:'dashboard' };
+const TP_QUAN_LY = [
+  { tab:'phancong', ic:'🎯', ten:'Năng lực',     mo:'Năng lực & vị trí sở trường của nhân viên' },
+  { tab:'so5s',     ic:'🗺', ten:'Phụ trách 5S', mo:'Sơ đồ khu vực 5S và người phụ trách' },
+  { tab:'doica',    ic:'🔁', ten:'Đổi ca',       mo:'Lịch đổi ca tự động, cặp đổi khu vực 5S' },
+  { tab:'wi',       ic:'📄', ten:'WI',           mo:'Hướng dẫn công việc theo từng vị trí' },
+];
+// Tab đang sáng ở menu: đứng ở tab con thì sáng tab cha
+function tabCha(t){ return (CUR_KHO === 'thanhpham' && TP_TAB_CHA[t]) || t; }
+
+// Thanh "← Tổng quan | Năng lực | Phụ trách 5S | Đổi ca | WI" đầu các tab con của Tổng quan (kho thành phẩm)
+function veThanhQuanLy(isTp){
+  TP_QUAN_LY.forEach(m=>{
+    const pg = $('tab-' + m.tab); if(!pg) return;
+    let bar = pg.querySelector(':scope > .tp-crumb');
+    if(!isTp){ if(bar) bar.remove(); return; }
+    if(!bar){
+      bar = document.createElement('div');
+      bar.className = 'tp-crumb';
+      bar.onclick = e =>{ const b = e.target.closest('[data-go]'); if(b) switchTab(b.dataset.go); };
+      pg.prepend(bar);
+    }
+    bar.innerHTML = `<button class="tp-back" data-go="dashboard" title="Về Tổng quan">← Tổng quan</button>
+      <div class="tp-crumb-tabs">${TP_QUAN_LY.map(x=>
+        `<button data-go="${x.tab}"${x.tab === m.tab ? ' class="on"' : ''}><span>${x.ic}</span>${x.ten}</button>`).join('')}</div>`;
+  });
+}
+
 function switchTab(name){
   if(typeof flushEmpSave === 'function') flushEmpSave();       // lưu nốt bảng năng lực trước khi rời tab
   if(typeof flushXuatHang === 'function') flushXuatHang();     // lưu nốt bảng xuất hàng trước khi rời tab
@@ -4389,7 +4487,7 @@ function switchTab(name){
   activeTab = name;
   document.querySelectorAll('.tabpage').forEach(el=>el.classList.remove('active'));
   $('tab-' + name).classList.add('active');
-  document.querySelectorAll('#tabNav button[data-tab]').forEach(b=>b.classList.toggle('active', b.dataset.tab===name));
+  document.querySelectorAll('#tabNav button[data-tab]').forEach(b=>b.classList.toggle('active', b.dataset.tab===tabCha(name)));
   render();
 }
 function switchSub(name){
@@ -4460,7 +4558,7 @@ function veMenuSidebar(){
 
     box.innerHTML = [...document.querySelectorAll('#tabNav button[data-tab]')]
       .filter(b => b.style.display !== 'none')
-      .map(b => `<button data-tab="${b.dataset.tab}"${b.dataset.tab === activeTab ? ' class="on"' : ''}>${b.innerHTML}</button>`)
+      .map(b => `<button data-tab="${b.dataset.tab}"${b.dataset.tab === tabCha(activeTab) ? ' class="on"' : ''}>${b.innerHTML}</button>`)
       .join('') + `<div class="sb-tools" id="sbTools"></div>`;
     box.querySelectorAll('button[data-tab]').forEach(b=>{
       b.onclick = e =>{ e.stopPropagation(); switchTab(b.dataset.tab); };
@@ -4519,6 +4617,13 @@ function applyTabVisibility(){
     if(b) b.style.display = isTp ? 'none' : '';
   });
   if(isTp && (activeTab === 'lichsu' || activeTab === 'ghichu')) activeTab = 'dashboard';
+  // Kho thành phẩm: tab con không có dòng riêng (mở từ tab cha); kho khác vẫn có Năng lực + Phụ trách 5S
+  Object.keys(TP_TAB_CHA).forEach(t=>{
+    const b = document.querySelector(`#tabNav button[data-tab="${t}"]`); if(!b) return;
+    if(isTp) b.style.display = 'none';
+    else if(t === 'phancong' || t === 'so5s') b.style.display = '';
+  });
+  veThanhQuanLy(isTp);
   // Vẽ menu SAU CÙNG, khi đã chốt xong tab nào hiện tab nào ẩn
   veMenuSidebar(isTp);
   if(!isTp && activeTab === 'xuathang') activeTab = 'dashboard';
@@ -4531,7 +4636,7 @@ function applyTabVisibility(){
   document.querySelectorAll('.tabpage').forEach(el=>el.classList.remove('active'));
   if(!TRANG_RIENG[VIEW]){ const pg = $('tab-' + activeTab); if(pg) pg.classList.add('active'); }
   else $(TRANG_RIENG[VIEW]).classList.add('active');
-  document.querySelectorAll('#tabNav button[data-tab]').forEach(b=>b.classList.toggle('active', b.dataset.tab===activeTab));
+  document.querySelectorAll('#tabNav button[data-tab]').forEach(b=>b.classList.toggle('active', b.dataset.tab===tabCha(activeTab)));
 }
 function renderSidebar(){
   document.querySelectorAll('#sidebar .sb-item').forEach(b=>{
@@ -5231,6 +5336,7 @@ function renderDashboard(){
   $('dRemGc').textContent = up.filter(x=>x.kind==='giacong').length;
   if($('remGcLine')) $('remGcLine').style.display = (CUR_KHO === 'vai') ? 'none' : '';
   $('dRemNote').textContent = up.filter(x=>x.kind==='note').length;
+  renderTpHub();
   renderPositionBoard();
 
   const alerts = [];
@@ -5277,6 +5383,30 @@ function renderDashboard(){
   }else{
     cycleEl.innerHTML = `<p class="empty-msg">Chưa xếp lịch — sang tab "Vị trí &amp; Năng lực" để bắt đầu.</p>`;
   }
+}
+
+// Kho thành phẩm: 4 thẻ "Quản lý nhanh" mở tab Năng lực / Phụ trách 5S / Đổi ca / WI (danh sách ở TP_QUAN_LY)
+function renderTpHub(){
+  const box = $('tpHub'); if(!box) return;
+  box.hidden = CUR_KHO !== 'thanhpham';
+  if(box.hidden){ box.innerHTML = ''; return; }
+  const K = curKho();
+  // số liệu nhỏ dưới tên thẻ — thiếu dữ liệu thì bỏ trống, không làm hỏng trang
+  const so = {};
+  try{ so.phancong = `${khoEmployees(CUR_KHO).length} nhân viên`; }catch(e){}
+  try{
+    const A = (K.tpBoard && K.tpBoard.assign) || {}, keys = tp5sKeys();
+    so.so5s = `${keys.filter(k=>splitNames(A[k]).length).length}/${keys.length} khu vực`;
+  }catch(e){}
+  try{ so.doica = `${((K.rotation && K.rotation.groups) || []).length} nhóm đổi ca`; }catch(e){}
+  box.innerHTML = `<div class="tp-hub-h"><span>QUẢN LÝ NHANH</span><i>Năng lực · 5S · Đổi ca · Tài liệu WI</i></div>
+    <div class="tp-hub-grid">${TP_QUAN_LY.map(m=>`
+      <button class="tp-card tp-${m.tab}" data-go="${m.tab}">
+        <span class="ic">${m.ic}</span>
+        <span class="tx"><b>${esc(m.ten)}</b><small>${esc(m.mo)}</small>${so[m.tab] ? `<em>${esc(so[m.tab])}</em>` : ''}</span>
+        <span class="mui">›</span>
+      </button>`).join('')}</div>`;
+  box.onclick = e =>{ const b = e.target.closest('[data-go]'); if(b) switchTab(b.dataset.go); };
 }
 
 
@@ -11733,6 +11863,8 @@ $('soBtnSend').onclick = async ()=>{
   if(typeof switchTab === 'function') switchTab('scan');
 };
 $('soBtnSync').onclick = ()=>{ tai(true); };
+// SCAN không còn dòng riêng ở sidebar — mở từ nút này (chưa đưa file nào thì SCAN tự hiện danh sách chọn file)
+$('soBtnScan').onclick = ()=>{ if(typeof switchTab === 'function') switchTab('scan'); };
 
 // ---- Sửa trực tiếp trong bảng ----
 const wrap = $('soWrap');
@@ -11851,7 +11983,8 @@ const gio = t => new Date(t).toLocaleTimeString('vi-VN', {hour:'2-digit', minute
 const ngayGio = t => new Date(t).toLocaleString('vi-VN', {hour:'2-digit', minute:'2-digit', day:'2-digit', month:'2-digit'});
 
 // Tiến độ đã lưu dùng chung trên máy chủ (khoá riêng, nhẹ):
-//   { v:1, f:{ khoáFile: { luot:[ {id, vt, at, u:[ucc...]} ] } } }   — mỗi lượt lưu = 1 pallet
+//   { v:1, f:{ khoáFile: { luot:[ {id, vt, gc, at, u:[ucc...]} ] } } }   — mỗi lượt lưu = 1 pallet
+//   vt = vị trí, gc = ghi chú — cả 2 đều không bắt buộc (để trống = '')
 // Phiên đang quét (chưa lưu) chỉ nằm trên máy này, tải lại trang không mất.
 const KEY = 'appwh-scan-v1';
 const KEY_PHIEN = 'appwh-scan-phien';    // + ':' + khoáFile
@@ -11875,6 +12008,7 @@ const tenMode = m => (TEN_MODE[DATA && DATA.nm] || TEN_MODE.tgv)[m || MODE];
 const giaTri = (r, m) => String(r[m]==null?'':r[m]).trim() || '(trống)';
 const phienSet = () => new Set(PHIEN.map(p=>p.ucc));
 const daLuu = u => SAVED.has(u) && U.has(u);
+const tenVT = vt => vt || '(không vị trí)';
 
 // =====================================================================
 // A. NẠP DỮ LIỆU
@@ -11890,7 +12024,7 @@ function napDuLieu(d){
   });
   // lấy lại phiên đang quét dở của đúng file này
   PHIEN = []; SEL = null; MODE = 'job'; XEM_VT = false; VT_CHON = null; LOI = [];
-  $('scVt').value = '';
+  $('scVt').value = ''; $('scGc').value = '';
   try{
     const p = d && JSON.parse(localStorage.getItem(KEY_PHIEN + ':' + d.key) || 'null');
     if(p && p.k === d.key){
@@ -11898,6 +12032,7 @@ function napDuLieu(d){
       if(['job','po','sty'].includes(p.m)) MODE = p.m;
       SEL = p.s || null;
       $('scVt').value = p.vt || '';
+      $('scGc').value = p.gc || '';
     }
   }catch(e){}
   tinhSaved();
@@ -11905,12 +12040,12 @@ function napDuLieu(d){
 function luuPhien(){
   if(!DATA) return;
   // mỗi file 1 phiên riêng: đổi file qua lại không mất thùng đang quét dở
-  try{ localStorage.setItem(KEY_PHIEN + ':' + DATA.key, JSON.stringify({k:DATA.key, m:MODE, s:SEL, vt:$('scVt').value, u:PHIEN})); }catch(e){}
+  try{ localStorage.setItem(KEY_PHIEN + ':' + DATA.key, JSON.stringify({k:DATA.key, m:MODE, s:SEL, vt:$('scVt').value, gc:$('scGc').value, u:PHIEN})); }catch(e){}
 }
 function tinhSaved(){
   SAVED = new Map();
   const f = DATA && ALL.f && ALL.f[DATA.key];
-  ((f && f.luot) || []).forEach(l=> (l.u||[]).forEach(u=>{ if(!SAVED.has(u)) SAVED.set(u, {vt:l.vt, id:l.id, at:l.at}); }));
+  ((f && f.luot) || []).forEach(l=> (l.u||[]).forEach(u=>{ if(!SAVED.has(u)) SAVED.set(u, {vt:l.vt || '', gc:l.gc || '', id:l.id, at:l.at}); }));
 }
 async function docServer(){
   const raw = await sbGet(KEY);
@@ -11956,11 +12091,13 @@ function vungVT(){
   ((f && f.luot) || []).forEach(l=>{
     const u = (l.u||[]).filter(x=>U.has(x) && SAVED.get(x).id === l.id);
     if(!u.length) return;
-    const o = m.get(l.vt) || { vt:l.vt, thung:0, luot:[] };
+    const vt = l.vt || '';
+    const o = m.get(vt) || { vt, thung:0, luot:[] };
     o.thung += u.length; o.luot.push({...l, u});
-    m.set(l.vt, o);
+    m.set(vt, o);
   });
-  return [...m.values()].sort((a,b)=>soSanh(a.vt, b.vt));
+  // lượt không ghi vị trí xếp cuối
+  return [...m.values()].sort((a,b)=>(!a.vt - !b.vt) || soSanh(a.vt, b.vt));
 }
 
 // =====================================================================
@@ -12049,12 +12186,12 @@ function veGiua(){
   const box = $('scOk');
   if(XEM_VT){
     // Xem vị trí đã lưu: ô giữa hiện các UCC của vị trí đang chọn ở ô bên phải
-    const o = VT_CHON && vungVT().find(x=>x.vt === VT_CHON);
-    $('scOkT').textContent = o ? `UCC Ở VỊ TRÍ ${o.vt}` : 'UCC Ở VỊ TRÍ ĐÃ CHỌN';
+    const o = VT_CHON != null && vungVT().find(x=>x.vt === VT_CHON);
+    $('scOkT').textContent = o ? (o.vt ? `UCC Ở VỊ TRÍ ${o.vt}` : 'UCC KHÔNG GHI VỊ TRÍ') : 'UCC Ở VỊ TRÍ ĐÃ CHỌN';
     $('scOkN').textContent = o ? `${soVN(o.thung)} thùng` : '';
     box.innerHTML = !o ? `<div class="trong">👉 Bấm 1 vị trí ở ô bên phải để xem các UCC đã lưu ở đó</div>`
       : o.luot.map(l=>`<div class="sc-luot">
-          <div class="h"><span>Lượt lưu ${ngayGio(l.at)} · <b>${soVN(l.u.length)} thùng</b></span>
+          <div class="h"><span>Lượt lưu ${ngayGio(l.at)} · <b>${soVN(l.u.length)} thùng</b>${l.gc ? `<i class="gc">📝 ${esc(l.gc)}</i>` : ''}</span>
             <button class="ghost sm" data-xoa="${esc(l.id)}" title="Xoá lượt này — các thùng sẽ về trạng thái chưa scan">🗑 Xoá lượt</button></div>
           ${l.u.slice().sort(soSanh).map(u=>{ const x = U.get(u);
             return `<div class="uc"><span>${esc(u)}</span><i>(${soVN(x.qty)})</i><small>${esc(giaTri(x.rows[0], MODE))}</small></div>`; }).join('')}
@@ -12077,8 +12214,8 @@ function vePhai(){
     $('scChuaT').textContent = 'VỊ TRÍ ĐÃ LƯU';
     $('scChuaN').textContent = `${ds.length} vị trí`;
     box.innerHTML = ds.length
-      ? ds.map(o=>`<button class="sc-vtbtn${o.vt === VT_CHON ? ' on' : ''}" data-vt="${esc(o.vt)}">
-          <b>${esc(o.vt)}</b>: ${soVN(o.thung)} thùng${o.luot.length > 1 ? `<small>${o.luot.length} lượt</small>` : ''}</button>`).join('')
+      ? ds.map(o=>`<button class="sc-vtbtn${o.vt === VT_CHON ? ' on' : ''}${o.vt ? '' : ' khong'}" data-vt="${esc(o.vt)}">
+          <b>${esc(tenVT(o.vt))}</b>: ${soVN(o.thung)} thùng${o.luot.length > 1 ? `<small>${o.luot.length} lượt</small>` : ''}</button>`).join('')
       : `<div class="trong">Chưa lưu vị trí nào</div>`;
     return;
   }
@@ -12150,7 +12287,7 @@ function xuLyMa(raw){
   if(!SEL){ baoLoi('sai', ma, `chưa chọn ${tenMode()} — chọn 1 dòng ở bảng bên trái trước khi scan`); veTatCa(); return; }
   if(!o){ baoLoi('sai', ma, 'không có trong file'); veTatCa(); return; }
   if(phienSet().has(o.ucc)){ baoLoi('trung', o.ucc, 'đã scan trong phiên này'); veTatCa(); return; }
-  if(daLuu(o.ucc)){ baoLoi('trung', o.ucc, `đã lưu ở vị trí ${SAVED.get(o.ucc).vt}`); veTatCa(); return; }
+  if(daLuu(o.ucc)){ baoLoi('trung', o.ucc, `đã lưu ở vị trí ${tenVT(SAVED.get(o.ucc).vt)}`); veTatCa(); return; }
   if(!thuocNhom(o, MODE, SEL)){
     const thuoc = [...new Set(o.rows.map(r=>giaTri(r, MODE)))].join(', ');
     baoLoi('sai', o.ucc, `thuộc ${tenMode()} ${thuoc} — không phải ${SEL}`); veTatCa(); return;
@@ -12168,13 +12305,9 @@ function xuLyMa(raw){
 async function luuScan(){
   if(!DATA) return;
   if(!PHIEN.length){ toast('Phiên này chưa scan thùng nào'); $('scIn').focus(); return; }
+  // vị trí và ghi chú đều không bắt buộc
   const vt = $('scVt').value.trim().toUpperCase();
-  if(!vt){
-    nhayO('scVtBox', 'f-sai');
-    toast('⚠ Phải điền VỊ TRÍ trước khi lưu scan');
-    $('scVt').focus();
-    return;
-  }
+  const gc = $('scGc').value.trim().slice(0, 200);
   const btn = $('scBtnLuu');
   btn.disabled = true; btn.textContent = '⏳ Đang lưu…';
   const k = DATA.key, phien = PHIEN.slice();
@@ -12186,20 +12319,20 @@ async function luuScan(){
       const da = new Set(); o.f[k].luot.forEach(l=>(l.u||[]).forEach(u=>da.add(u)));
       luu = phien.filter(p=>!da.has(p.ucc)).map(p=>p.ucc);
       boQua = phien.filter(p=>da.has(p.ucc)).map(p=>p.ucc);
-      if(luu.length) o.f[k].luot.push({ id:'l' + Date.now().toString(36) + Math.random().toString(36).slice(2,6), vt, at:new Date().toISOString(), u:luu });
+      if(luu.length) o.f[k].luot.push({ id:'l' + Date.now().toString(36) + Math.random().toString(36).slice(2,6), vt, gc, at:new Date().toISOString(), u:luu });
     });
   }catch(e){
     btn.disabled = false; btn.textContent = '💾 LƯU SCAN';
     toast('⚠ Chưa lưu được lên máy chủ: ' + (e.message || e) + ' — phiên quét vẫn giữ nguyên, thử lại sau');
     return;
   }
-  boQua.forEach(u=>LOI.unshift({ loai:'trung', ucc:u, msg:`máy khác đã lưu ở vị trí ${(SAVED.get(u)||{}).vt || '?'} — bỏ khỏi lượt này`, at:Date.now() }));
-  // Lưu xong: xoá phiên, xoá vị trí, quay lại ô quét để quét tiếp
-  PHIEN = []; $('scVt').value = '';
+  boQua.forEach(u=>LOI.unshift({ loai:'trung', ucc:u, msg:`máy khác đã lưu ở vị trí ${SAVED.has(u) ? tenVT(SAVED.get(u).vt) : '?'} — bỏ khỏi lượt này`, at:Date.now() }));
+  // Lưu xong: xoá phiên, xoá vị trí + ghi chú, quay lại ô quét để quét lượt mới
+  PHIEN = []; $('scVt').value = ''; $('scGc').value = '';
   luuPhien();
   btn.disabled = false; btn.textContent = '💾 LƯU SCAN';
   veTatCa();
-  toast(luu.length ? `✓ Đã lưu ${luu.length} thùng vào vị trí ${vt}` : '⚠ Không có thùng nào mới để lưu');
+  toast(luu.length ? `✓ Đã lưu ${luu.length} thùng${vt ? ' vào vị trí ' + vt : ''}${gc ? ' · ghi chú: ' + gc : ''}` : '⚠ Không có thùng nào mới để lưu');
   $('scIn').focus();
 }
 function xuatFile(){
@@ -12209,12 +12342,12 @@ function xuatFile(){
     for(const k of ['job','po','sty','ucc']){ const d = soSanh(a[k]||'', b[k]||''); if(d) return d; }
     return 0;
   });
-  // Vị trí trống = chưa scan (thùng trong phiên chưa lưu cũng tính là chưa scan)
-  const aoa = [['JOB NO','BUYER PO','STYLE NO','VỊ TRÍ','UCC','QTY']]
-    .concat(rows.map(r=>{ const u = String(r.ucc||'').trim();
-      return [r.job, r.po, r.sty, daLuu(u) ? SAVED.get(u).vt : '', u, Number(r.qty)||0]; }));
+  // Vị trí trống = chưa scan, hoặc lúc lưu không điền vị trí (thùng trong phiên chưa lưu tính là chưa scan)
+  const aoa = [['JOB NO','BUYER PO','STYLE NO','VỊ TRÍ','GHI CHÚ','UCC','QTY']]
+    .concat(rows.map(r=>{ const u = String(r.ucc||'').trim(), s = daLuu(u) ? SAVED.get(u) : null;
+      return [r.job, r.po, r.sty, s ? s.vt : '', s ? s.gc : '', u, Number(r.qty)||0]; }));
   const ws = XLSX.utils.aoa_to_sheet(aoa);     // mã đều là chữ -> Excel không đổi sang dạng 7.2224E+12
-  ws['!cols'] = [{wch:18},{wch:16},{wch:16},{wch:10},{wch:22},{wch:8}];
+  ws['!cols'] = [{wch:18},{wch:16},{wch:16},{wch:10},{wch:28},{wch:22},{wch:8}];
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'SCAN');
   const ten = String(DATA.name).replace(/\.(xlsx|xlsm|xls|csv)$/i,'').replace(/[\\/:*?"<>|]+/g,'_');
@@ -12300,8 +12433,10 @@ inp.addEventListener('focus', ()=>$('scInBox').classList.add('san'));
 inp.addEventListener('blur', ()=>$('scInBox').classList.remove('san'));
 $('scInBox').addEventListener('click', ()=>inp.focus());
 
-$('scVt').addEventListener('input', ()=>{ luuPhien(); });
-$('scVt').addEventListener('keydown', e=>{ if(e.key === 'Enter'){ e.preventDefault(); PHIEN.length ? luuScan() : inp.focus(); } });
+['scVt','scGc'].forEach(id=>{
+  $(id).addEventListener('input', ()=>{ luuPhien(); });
+  $(id).addEventListener('keydown', e=>{ if(e.key === 'Enter'){ e.preventDefault(); PHIEN.length ? luuScan() : inp.focus(); } });
+});
 
 $('scDoi').onchange = ()=>{ const k = $('scDoi').value; $('scDoi').value = ''; $('scDoi').blur(); doiFile(k); };
 $('scBtnXoa').onclick = ()=>xoaDuLieu();
