@@ -9224,7 +9224,10 @@ async function xhBcGuiMail(nut, veLai){
     });
     let j = null;
     try{ j = await res.json(); }catch(e){}
-    if(!res.ok || !j || !j.ok) loi = (j && (j.loi || j.message)) || ('n8n trả lỗi HTTP ' + res.status);
+    // Workflow lỗi giữa chừng (VD node Gửi mail) thì n8n vẫn có thể trả 200 nhưng không có nội dung
+    if(!res.ok || !j || !j.ok) loi = (j && (j.loi || j.message))
+      || (res.ok ? 'workflow n8n bị lỗi giữa chừng — mở n8n → tab Executions, xem lần chạy mới nhất (node màu đỏ)'
+                 : 'n8n trả lỗi HTTP ' + res.status);
   }catch(e){
     loi = 'Không kết nối được n8n — kiểm tra mạng công ty và workflow đã bật (Active) chưa';
   }
