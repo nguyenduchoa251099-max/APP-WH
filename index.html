@@ -379,7 +379,7 @@
   .xh-bdluoi u.day{background:var(--line);}
   .xh-bdwrap{overflow-x:auto; padding-bottom:4px; position:relative; z-index:2;}
   .xh-bdchart{display:flex; align-items:flex-end; gap:4px; padding-bottom:0;}
-  .xh-bdchart .c{flex:1 0 30px; min-width:30px; display:flex; flex-direction:column;
+  .xh-bdchart .c{flex:1 0 40px; min-width:40px; display:flex; flex-direction:column;
     justify-content:flex-end; align-items:center; gap:4px; cursor:pointer; border-radius:5px 5px 4px 4px; padding:0 1px 3px;}
   .xh-bdchart .c:hover{background:rgba(0,150,190,.10);}
   .xh-bdchart .bar{width:100%; height:150px; display:flex; align-items:flex-end; justify-content:center;}
@@ -399,7 +399,7 @@
   .xh-bd .trong{text-align:center; color:var(--ink-soft); font-weight:700; font-size:13px; padding:40px 0;}
   @media(max-width:700px){
     .xh-bdplot{padding-left:44px;} .xh-bdy{width:40px;} .xh-bdluoi{left:44px;}
-    .xh-bdchart .c{flex:1 0 26px; min-width:26px;}
+    .xh-bdchart .c{flex:1 0 36px; min-width:36px;}
     .xh-bdchart .bar, .xh-bdy, .xh-bdluoi{height:120px;}
   }
 
@@ -774,6 +774,24 @@
   .xh-pick button:hover{background:var(--blue-bg); color:var(--blue-dark);}
   .xh-pick button.on{background:var(--blue); color:#fff; font-weight:800;}
   .xh-pick button.xoa{color:var(--ink-soft); border-top:1px solid var(--line-soft); border-radius:0 0 7px 7px; margin-top:3px;}
+
+  /* Xem trước mail Daily Shipment */
+  .xh-bcbar{display:flex; flex-wrap:wrap; align-items:center; gap:8px 14px; margin-bottom:10px;}
+  .xh-bcbar .s{font-size:13px; color:var(--ink-soft);}
+  .xh-bcmeta{font-size:14px; line-height:2; margin:6px 0 12px;}
+  .xh-bcmeta b{display:inline-block; width:84px; color:var(--ink-soft);}
+  .xh-bcfile{display:inline-flex; align-items:center; gap:7px; border:1px solid var(--line); border-radius:6px; padding:2px 9px; margin-right:8px; font-size:13px;}
+  .xh-bcfile i{background:#1d6f42; color:#fff; font-style:normal; font-weight:800; border-radius:3px; padding:0 5px; font-size:11px;}
+  .xh-bch{font-size:12.5px; font-weight:800; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.03em; margin:14px 0 6px;}
+  .xh-bcmail{display:block; width:100%; min-height:420px; border:1px solid var(--line); border-radius:8px; background:#fff;}
+  .xh-bcxl{overflow:auto; max-height:320px; border:1px solid var(--line); border-radius:8px;}
+  .xh-bcxl table{border-collapse:collapse; font-size:12.5px; white-space:nowrap; width:100%;}
+  .xh-bcxl th{position:sticky; top:0; background:#1f4e78; color:#fff; padding:6px 8px; text-align:left;}
+  .xh-bcxl td{padding:4px 8px; border-top:1px solid var(--line-soft);}
+  .xh-bcxl td.n{text-align:right; font-variant-numeric:tabular-nums;}
+  .xh-bcbar .xh-bcgui{margin-left:auto; padding:7px 16px; font-size:14px;}
+  .xh-bcbar .xh-bcgui:disabled{opacity:.45; cursor:not-allowed;}
+  .note.ok{background:var(--teal-bg); border-left-color:var(--teal); color:#1f5c3a;}
 
 </style>
 <style>/* css/modules/nhansu.css */
@@ -2637,7 +2655,7 @@
         Giữ <b>Ctrl</b> rồi bấm nếu chỉ muốn copy lại mà không đổi trạng thái.
         Mã lấy từ dữ liệu import, nên lệnh gõ tay hoặc import từ trước khi có tính năng này sẽ thiếu REQUEST_ID.<br>
         <b>Import:</b> lưu trang <b>SHIPMENT REQUEST DETAILS</b> thành file (.html hoặc .mhtml) rồi bấm <b>⬆ Import</b> — chọn được nhiều file một lúc.
-        App tự lấy <b>BUYER → customer</b>, <b>4 số cuối REQUEST_ID → id</b>, <b>TYPE → type</b>, <b>CTNS → CTN (… THÙNG)</b>;
+        App tự lấy <b>BUYER → customer</b>, <b>4 số cuối REQUEST_ID → id</b>, <b>TYPE → type</b>, <b>CTNS → CTN (… THÙNG)</b>, <b>PCS → PCS</b> (số áo — biểu đồ và dashboard tính theo cột này);
         trùng customer + id thì cập nhật đè lên dòng cũ, chưa có thì điền vào dòng trống đầu tiên. Điền xong vẫn sửa tay tự do.
       </div>
       <div class="xh-wrap" id="xhWrapBox">
@@ -2689,6 +2707,7 @@
       <div class="btnrow" style="margin-top:12px;">
         <button class="ghost sm" id="xhClean">🧹 Dọn dòng trống</button>
         <button class="secondary sm" id="xhXlsx">⬇ Xuất Excel</button>
+        <button class="secondary sm" id="xhMail" title="Xem đúng nội dung mail Daily Shipment mà n8n sẽ gửi">✉ Xem trước mail</button>
       </div>
     </div>
 
@@ -3131,6 +3150,8 @@ window.APP_CONFIG = Object.assign({
 const SUPABASE_URL = "https://aabafalbpflaqoslopwt.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFhYmFmYWxicGZsYXFvc2xvcHd0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc4Mzc3OTAsImV4cCI6MjEwMzQxMzc5MH0.W4OczQuL-LmKL6HcTDqSzTs-jzBTm7iX1FsBPd1HEcg";
 const TABLE = "appwh_storage";
+// Nút "📨 Gửi mail" (tab Xuất hàng) gọi workflow n8n này — xem tools/n8n/build-workflow.js
+const N8N_MAIL_URL = "https://n8n.prd.alillb.esquel.com/webhook/appwh-daily-shipment";
 const SB_HEADERS = { apikey: SUPABASE_ANON_KEY, Authorization: "Bearer " + SUPABASE_ANON_KEY };
 // Có API_BASE (khai trong js/env.js) thì mọi đọc/ghi đi qua backend thay vì gọi thẳng Supabase
 const API_BASE = ((window.APP_CONFIG && window.APP_CONFIG.API_BASE) || '').replace(/\/+$/, '');
@@ -3199,6 +3220,7 @@ const XH_COLS = [
   { key:'customer', label:'customer',    w:160 },
   { key:'id',       label:'id',          w:85  },
   { key:'ctn',      label:'CTN',         w:70  },
+  { key:'pcs',      label:'PCS',         w:80  },
   { key:'type',     label:'type',        w:80  },
   { key:'cont',     label:'cont',        w:140 },
   { key:'seal',     label:'seal',        w:140 },
@@ -4080,7 +4102,7 @@ function defaultKhoConfig(id){
     zones: { shelves: [], pairs: [], ops: [], equipment: [] },
     board: isVai ? { assign: {...B5_DEFAULT_ASSIGN}, note: B5_DEFAULT_NOTE, labels: {...B5_DEFAULT_LABELS} } : null,
     tpBoard: isTp ? defaultTpBoard() : null,
-    xuathang: isTp ? {} : null,        // { 'YYYY-MM-DD': [ {customer,id,ctn,...}, ... ] }
+    xuathang: isTp ? {} : null,        // { 'YYYY-MM-DD': [ {customer,id,ctn,pcs,...}, ... ] }
     // Hỗ trợ / Kiểm kê kho vải — chỉ kho thành phẩm, xem mục 20
     hotroKK: isTp ? { hotro:{}, kiemke:{}, boqua:{}, viec:['Kiểm cont','Load cont','Nhập hàng','Xuất hàng','Dọn kho / 5S','Đóng gói lại'] } : null,
     current: null, history: [], ca2Log: [], notes: [],
@@ -7819,44 +7841,34 @@ async function xhCopyMa(r){
 <script>/* js/modules/xuathang/xh-charts.js */
 // Xuất hàng: biểu đồ, tỷ trọng khách, loại xe, dashboard
 // (tách từ index.html dòng 5724-6064)
+// Mọi số liệu ở đây tính theo PCS (số áo, cột pcs), không dùng CTN nữa.
+// Lệnh chưa có PCS (gõ tay / import trước khi có cột PCS) vẫn được đếm lệnh, xe
+// nhưng góp 0 pcs — biểu đồ sản lượng báo số lệnh thiếu để import lại.
 // ---- Biểu đồ sản lượng xuất hàng ----
-// Cột đơn: tổng CTN mỗi ngày, CHỈ vẽ ngày thực sự có hàng cho khỏi loãng.
+// Cột đơn: tổng PCS mỗi ngày, CHỈ vẽ ngày thực sự có hàng cho khỏi loãng.
 // Bấm vào cột là nhảy thẳng sang ngày đó trong bảng.
 let XH_BD = 'thang';
 const XH_THU = ['CN','T2','T3','T4','T5','T6','T7'];
-// Mốc trục dọc: 2000 · 3000 · 4000 · 4500 · 5000 · 5500 theo yêu cầu.
-// Vượt 5500 thì nối tiếp mỗi 500 (6000, 6500…). Nếu số quá lớn — ví dụ xem
-// cả năm — thì chuyển sang bước tròn để lưới khỏi dày đặc.
-const XH_MOC_GOC = [2000, 3000, 4000, 4500, 5000, 5500];
+// Mốc trục dọc: bước tròn 1 · 2 · 2,5 · 5 × 10ⁿ, tối đa khoảng 6 vạch lưới.
 function xhMocTruc(max){
   max = Math.max(1, max || 0);
-  if(max <= 5500){
-    const tran = Math.max(2000, Math.ceil(max / 500) * 500);
-    const ds = XH_MOC_GOC.filter(v => v <= tran);
-    if(!ds.length) ds.push(2000);
-    return { ds, tran: ds[ds.length - 1] };
-  }
-  if(max <= 8000){
-    const ds = XH_MOC_GOC.slice();
-    let t = 5500;
-    while(t < max){ t += 500; ds.push(t); }
-    return { ds, tran: t };
-  }
-  const b = Math.pow(10, Math.floor(Math.log10(max / 5)));
-  const step = [1, 2, 2.5, 5, 10].map(x => x * b).find(x => max / x <= 6) || b * 10;
+  const b = Math.max(1, Math.pow(10, Math.floor(Math.log10(max / 5))));
+  const step = [1, 2, 2.5, 5, 10].map(x => x * b).filter(x => Number.isInteger(x)).find(x => max / x <= 6) || b * 10;
   const tran = Math.ceil(max / step) * step, ds = [];
   for(let v = step; v <= tran + 1e-6; v += step) ds.push(Math.round(v));
   return { ds, tran };
 }
-function xhCtnCuaNgay(key){
+function xhPcsCuaNgay(key){
   const ds = (curKho().xuathang || {})[key] || [];
-  let ctn = 0, lenh = 0, xong = 0;
+  let pcs = 0, lenh = 0, xong = 0, thieu = 0;
   ds.forEach(r=>{
     if(!r || xhRowEmpty(r)) return;
-    lenh++; ctn += xhSoCtn(r.ctn);
+    const n = xhSoPcs(r.pcs);
+    lenh++; pcs += n;
+    if(!n) thieu++;
     if(r.xong) xong++;
   });
-  return { ctn, lenh, xong };
+  return { pcs, lenh, xong, thieu };
 }
 function xhVeBieuDo(){
   const chart = $('xhBdChart');
@@ -7870,26 +7882,28 @@ function xhVeBieuDo(){
   if(XH_BD === 'thang'){
     const pre = key.slice(0, 7) + '-';
     Object.keys(all).filter(k=>k.startsWith(pre)).sort().forEach(k=>{
-      const o = xhCtnCuaNgay(k);
+      const o = xhPcsCuaNgay(k);
       if(!o.lenh) return;
       const d = fromKey(k);
       cot.push({ k, ...o, l: pad(d.getDate()) + '/' + pad(d.getMonth()+1), phu: XH_THU[d.getDay()],
-                 nay: k === key, tip: `${XH_THU[d.getDay()]} ${fmtVN(d)} · ${o.ctn.toLocaleString('vi-VN')} CTN · ${o.lenh} lệnh · đã xong ${o.xong}/${o.lenh}` });
+                 nay: k === key, tip: `${XH_THU[d.getDay()]} ${fmtVN(d)} · ${o.pcs.toLocaleString('vi-VN')} PCS · ${o.lenh} lệnh · đã xong ${o.xong}/${o.lenh}`
+                   + (o.thieu ? ` · ${o.thieu} lệnh chưa có PCS` : '') });
     });
   }else{
     for(let m = 0; m < 12; m++){
       const pre = `${nam}-${pad(m+1)}-`;
-      let ctn = 0, lenh = 0, xong = 0, dau = '';
+      let pcs = 0, lenh = 0, xong = 0, thieu = 0, dau = '';
       Object.keys(all).filter(k=>k.startsWith(pre)).sort().forEach(k=>{
-        const o = xhCtnCuaNgay(k);
+        const o = xhPcsCuaNgay(k);
         if(!o.lenh) return;
         if(!dau) dau = k;
-        ctn += o.ctn; lenh += o.lenh; xong += o.xong;
+        pcs += o.pcs; lenh += o.lenh; xong += o.xong; thieu += o.thieu;
       });
       if(!lenh) continue;
-      cot.push({ k: dau, ctn, lenh, xong, l: 'T' + (m+1), phu: '',
+      cot.push({ k: dau, pcs, lenh, xong, thieu, l: 'T' + (m+1), phu: '',
                  nay: key.slice(0,7) === `${nam}-${pad(m+1)}`,
-                 tip: `Tháng ${m+1}/${nam} · ${ctn.toLocaleString('vi-VN')} CTN · ${lenh} lệnh · đã xong ${xong}/${lenh}` });
+                 tip: `Tháng ${m+1}/${nam} · ${pcs.toLocaleString('vi-VN')} PCS · ${lenh} lệnh · đã xong ${xong}/${lenh}`
+                   + (thieu ? ` · ${thieu} lệnh chưa có PCS` : '') });
     }
   }
 
@@ -7901,17 +7915,19 @@ function xhVeBieuDo(){
     return;
   }
 
-  const max = Math.max(...cot.map(c=>c.ctn), 1);
+  const max = Math.max(...cot.map(c=>c.pcs), 1);
   const truc = xhMocTruc(max), tran = truc.tran;
-  const tong = cot.reduce((s,c)=>s + c.ctn, 0);
-  const cao = cot.reduce((a,b)=> b.ctn > a.ctn ? b : a, cot[0]);
+  const tong = cot.reduce((s,c)=>s + c.pcs, 0);
+  const thieu = cot.reduce((s,c)=>s + c.thieu, 0);
+  const cao = cot.reduce((a,b)=> b.pcs > a.pcs ? b : a, cot[0]);
   const so = n => n.toLocaleString('vi-VN');
   const donVi = XH_BD === 'thang' ? 'ngày' : 'tháng';
 
-  $('xhBdSo').innerHTML = `Tổng <b>${so(tong)}</b> CTN<i>·</i>`
+  $('xhBdSo').innerHTML = `Tổng <b>${so(tong)}</b> PCS<i>·</i>`
     + `TB <b>${so(Math.round(tong / cot.length))}</b>/${donVi}<i>·</i>`
-    + `Cao nhất <b>${esc(cao.l)}</b> — <b>${so(cao.ctn)}</b> CTN<i>·</i>`
-    + `<b>${cot.length}</b> ${donVi} có hàng`;
+    + `Cao nhất <b>${esc(cao.l)}</b> — <b>${so(cao.pcs)}</b> PCS<i>·</i>`
+    + `<b>${cot.length}</b> ${donVi} có hàng`
+    + (thieu ? `<i>·</i><b style="color:#c8102e">⚠ ${thieu} lệnh chưa có PCS</b>` : '');
 
   // Trục dọc và lưới ngang — đứng yên khi dải cột cuộn ngang
   const yBox = $('xhBdY'), luoi = $('xhBdLuoi');
@@ -7924,20 +7940,21 @@ function xhVeBieuDo(){
 
   chart.innerHTML = cot.map(c=>`<div class="c ${c.nay ? 'nay' : ''} ${(c.xong === c.lenh && c.lenh) ? 'xong' : ''}"
       data-bdk="${c.k}" title="${esc(c.tip)}">
-      <div class="bar"><em style="height:${Math.max(2, c.ctn / tran * 100).toFixed(1)}%"><b>${so(c.ctn)}</b></em></div>
+      <div class="bar"><em style="height:${Math.max(2, c.pcs / tran * 100).toFixed(1)}%"><b>${so(c.pcs)}</b></em></div>
       <div class="l">${esc(c.l)}${c.phu ? `<i>${esc(c.phu)}</i>` : ''}</div>
     </div>`).join('');
 
   $('xhBdGhi').innerHTML = `<i style="background:linear-gradient(180deg,#4bb17a,#2f7a4f)"></i>đã tích xong hết lệnh`
     + ` &nbsp; <i style="background:linear-gradient(180deg,#f0b429,#d97a06)"></i>${XH_BD === 'thang' ? 'ngày' : 'tháng'} đang mở`
-    + ` &nbsp; · Bấm vào cột để nhảy tới ${XH_BD === 'thang' ? 'ngày' : 'tháng'} đó.`;
+    + ` &nbsp; · Bấm vào cột để nhảy tới ${XH_BD === 'thang' ? 'ngày' : 'tháng'} đó.`
+    + (thieu ? ` Lệnh chưa có PCS: import lại trang SHIPMENT REQUEST hoặc gõ số vào cột PCS.` : '');
 
   chart.querySelectorAll('[data-bdk]').forEach(el=>{
     el.onclick = ()=>{ if(XH_BD === 'nam') XH_BD = 'thang'; xhGoDay(el.dataset.bdk); };
   });
 }
 
-// ---- Tỷ trọng CTN theo khách hàng (biểu đồ tròn) ----
+// ---- Tỷ trọng PCS theo khách hàng (biểu đồ tròn) ----
 // Gộp tên: mọi dòng ghi CT, CT 1, CT 6 - BK00… đều là CHARLES TYRWHITT.
 // Ưu tiên BUYER gốc lấy lúc import, không có mới dùng ô customer trong bảng.
 const XH_MAU_KH = ['#2f6ea8','#0e9f6e','#e08a1e','#8b5cf6','#c8102e',
@@ -7958,11 +7975,11 @@ function xhTheoKhach(){
       if(!r || xhRowEmpty(r)) return;
       const ten = xhTenKhach(r);
       if(!ten) return;
-      const o = gom[ten] || (gom[ten] = { ten, ctn:0, lenh:0 });
-      o.ctn += xhSoCtn(r.ctn); o.lenh++;
+      const o = gom[ten] || (gom[ten] = { ten, pcs:0, lenh:0 });
+      o.pcs += xhSoPcs(r.pcs); o.lenh++;
     });
   });
-  return Object.values(gom).sort((a, b)=> b.ctn - a.ctn || b.lenh - a.lenh);
+  return Object.values(gom).sort((a, b)=> b.pcs - a.pcs || b.lenh - a.lenh);
 }
 function xhVeTronKhach(){
   const box = $('xhKhTron'), ds = $('xhKhDs');
@@ -7973,15 +7990,15 @@ function xhVeTronKhach(){
     : 'tháng ' + key.slice(5, 7) + '/' + key.slice(0, 4);
 
   let rows = xhTheoKhach();
-  const tong = rows.reduce((s, r)=> s + r.ctn, 0);
+  const tong = rows.reduce((s, r)=> s + r.pcs, 0);
   if(!rows.length || !tong){
-    box.innerHTML = ''; ds.innerHTML = '<p class="empty-msg">Chưa có dữ liệu khách hàng.</p>';
+    box.innerHTML = ''; ds.innerHTML = `<p class="empty-msg">${rows.length ? 'Các lệnh trong kỳ chưa có số PCS.' : 'Chưa có dữ liệu khách hàng.'}</p>`;
     return;
   }
   // Nhiều khách quá thì giữ 8 cái lớn nhất, phần còn lại gộp thành "Khác"
   if(rows.length > 9){
     const giu = rows.slice(0, 8), con = rows.slice(8);
-    giu.push({ ten:'Khác (' + con.length + ' khách)', ctn:con.reduce((s,r)=>s+r.ctn,0),
+    giu.push({ ten:'Khác (' + con.length + ' khách)', pcs:con.reduce((s,r)=>s+r.pcs,0),
                lenh:con.reduce((s,r)=>s+r.lenh,0), khac:true });
     rows = giu;
   }
@@ -7989,11 +8006,11 @@ function xhVeTronKhach(){
   const R = 62, W = 26, C = 2 * Math.PI * R, S = (R + W/2 + 4) * 2;
   let goc = 0;
   const lat = rows.map((r, i)=>{
-    const p = r.ctn / tong, len = C * p;
+    const p = r.pcs / tong, len = C * p;
     const el = `<circle class="lat" cx="${S/2}" cy="${S/2}" r="${R}" fill="none"
         stroke="${XH_MAU_KH[i % XH_MAU_KH.length]}" stroke-width="${W}"
         stroke-dasharray="${len.toFixed(2)} ${(C - len).toFixed(2)}"
-        stroke-dashoffset="${(-goc).toFixed(2)}"><title>${esc(r.ten)} — ${so(r.ctn)} CTN (${(p*100).toFixed(1)}%)</title></circle>`;
+        stroke-dashoffset="${(-goc).toFixed(2)}"><title>${esc(r.ten)} — ${so(r.pcs)} PCS (${(p*100).toFixed(1)}%)</title></circle>`;
     goc += len;
     return el;
   }).join('');
@@ -8001,21 +8018,20 @@ function xhVeTronKhach(){
   box.innerHTML = `<svg width="${S}" height="${S}" viewBox="0 0 ${S} ${S}">
     <g transform="rotate(-90 ${S/2} ${S/2})">${lat}</g>
     <text class="tam" x="${S/2}" y="${S/2 + 2}">${so(tong)}</text>
-    <text class="tam2" x="${S/2}" y="${S/2 + 18}">CTN</text>
+    <text class="tam2" x="${S/2}" y="${S/2 + 18}">PCS</text>
   </svg>`;
 
-  ds.innerHTML = `<div class="xh-khr hd"><span></span><span>Khách hàng</span><span class="v">CTN</span><span class="p">%</span></div>`
+  ds.innerHTML = `<div class="xh-khr hd"><span></span><span>Khách hàng</span><span class="v">PCS</span><span class="p">%</span></div>`
     + rows.map((r, i)=>`<div class="xh-khr" title="${esc(r.ten)} · ${r.lenh} lệnh">
         <i style="background:${XH_MAU_KH[i % XH_MAU_KH.length]}"></i>
         <span class="nm">${esc(r.ten)}<small> · ${r.lenh} lệnh</small></span>
-        <span class="v">${so(r.ctn)}</span>
-        <span class="p">${(r.ctn / tong * 100).toFixed(1)}%</span></div>`).join('');
+        <span class="v">${so(r.pcs)}</span>
+        <span class="p">${(r.pcs / tong * 100).toFixed(1)}%</span></div>`).join('');
 }
 
 // ---- Loại xe đóng hàng ----
 // Chỉ ba loại nên dùng một dải ngang xếp chồng 100%: nhìn một cái là ra tỷ
-// lệ. Ba ô bên dưới cho biết số xe, tổng CTN và trung bình CTN mỗi xe —
-// con số dùng để ước lượng cần mấy xe cho lô hàng tới.
+// lệ. Ba ô bên dưới cho biết số xe, tổng PCS và trung bình PCS mỗi xe.
 const XH_LOAI_XE = [
   { key:'CONT40', ten:'Cont 40',  mau:'#2563eb' },
   { key:'CONT20', ten:'Cont 20',  mau:'#0e9f6e' },
@@ -8040,17 +8056,17 @@ function xhVeLoaiXe(){
     : 'tháng ' + key.slice(5, 7) + '/' + key.slice(0, 4);
 
   const gom = {}, tenLa = {};
-  XH_LOAI_XE.forEach(x=> gom[x.key] = { xe:0, ctn:0 });
+  XH_LOAI_XE.forEach(x=> gom[x.key] = { xe:0, pcs:0 });
   Object.keys(all).filter(k=>k.startsWith(loc)).forEach(k=>{
     (all[k] || []).forEach(r=>{
       if(!r || xhRowEmpty(r)) return;
       const t = xhChuanLoaiXe(r.type);
       if(!t) return;
-      gom[t].xe++; gom[t].ctn += xhSoCtn(r.ctn);
+      gom[t].xe++; gom[t].pcs += xhSoPcs(r.pcs);
       if(t === 'KHAC'){ const v = String(r.type).trim().toUpperCase(); tenLa[v] = (tenLa[v] || 0) + 1; }
     });
   });
-  const tongCtn = XH_LOAI_XE.reduce((s,x)=> s + gom[x.key].ctn, 0);
+  const tongPcs = XH_LOAI_XE.reduce((s,x)=> s + gom[x.key].pcs, 0);
   const tongXe  = XH_LOAI_XE.reduce((s,x)=> s + gom[x.key].xe, 0);
   const so = n => n.toLocaleString('vi-VN');
 
@@ -8061,21 +8077,21 @@ function xhVeLoaiXe(){
   // Loại khác chỉ hiện khi thật sự có
   const ds = XH_LOAI_XE.filter(x=> x.key !== 'KHAC' || gom.KHAC.xe > 0);
 
-  dai.innerHTML = ds.filter(x=>gom[x.key].ctn > 0).map(x=>{
-    const g = gom[x.key], p = g.ctn / tongCtn * 100;
+  dai.innerHTML = ds.filter(x=>gom[x.key].pcs > 0).map(x=>{
+    const g = gom[x.key], p = g.pcs / tongPcs * 100;
     return `<span style="flex:0 0 ${p.toFixed(2)}%; background:${x.mau}"
-      title="${x.ten}: ${so(g.ctn)} CTN · ${g.xe} xe · ${p.toFixed(1)}%">${
+      title="${x.ten}: ${so(g.pcs)} PCS · ${g.xe} xe · ${p.toFixed(1)}%">${
       p >= 9 ? esc(x.ten) + `<small>${p.toFixed(0)}%</small>` : (p >= 4 ? p.toFixed(0) + '%' : '')}</span>`;
   }).join('');
 
   the.innerHTML = ds.map(x=>{
     const g = gom[x.key];
-    const tb = g.xe ? Math.round(g.ctn / g.xe) : 0;
+    const tb = g.xe ? Math.round(g.pcs / g.xe) : 0;
     return `<div class="${g.xe ? '' : 'mo'}" style="border-left-color:${x.mau}">
       <div class="k">${esc(x.ten)}</div>
       <div class="v" style="color:${g.xe ? x.mau : 'var(--ink-soft)'}">${g.xe}<small>xe</small></div>
-      <div class="s"><b>${so(g.ctn)}</b> CTN · TB <b>${so(tb)}</b> CTN/xe
-        · <b>${tongCtn ? (g.ctn / tongCtn * 100).toFixed(1) : '0.0'}%</b>${
+      <div class="s"><b>${so(g.pcs)}</b> PCS · TB <b>${so(tb)}</b> PCS/xe
+        · <b>${tongPcs ? (g.pcs / tongPcs * 100).toFixed(1) : '0.0'}%</b>${
         x.key === 'KHAC' && g.xe ? '<br>ghi là: ' + esc(Object.keys(tenLa).map(v=>v + ' (' + tenLa[v] + ')').join(', ')) : ''}</div>
     </div>`;
   }).join('');
@@ -8086,7 +8102,8 @@ function xhVeLoaiXe(){
 // Kỳ "Ngày" = ngày đang mở; kỳ "Tháng" = gộp mọi ngày trong tháng đó.
 let XH_KY = 'ngay';
 const XH_MAU_XE = { 'CONT40':'#2563eb', 'CONT20':'#0e9f6e', 'TRUCK':'#e08a1e' };
-function xhSoCtn(v){
+// "1.222" / "1,222" / "1222 pcs" -> 1222
+function xhSoPcs(v){
   const n = Number(String(v || '').replace(/[^\d]/g, ''));
   return isFinite(n) ? n : 0;
 }
@@ -8112,10 +8129,11 @@ function xhVeDash(){
     return;
   }
 
-  const tong = ds.reduce((s, r)=> s + xhSoCtn(r.ctn), 0);
+  const tong = ds.reduce((s, r)=> s + xhSoPcs(r.pcs), 0);
   const dsXong = ds.filter(r=>r.xong);
-  const ctnXong = dsXong.reduce((s, r)=> s + xhSoCtn(r.ctn), 0);
-  const conCtn = tong - ctnXong, conLenh = ds.length - dsXong.length;
+  const pcsXong = dsXong.reduce((s, r)=> s + xhSoPcs(r.pcs), 0);
+  const conPcs = tong - pcsXong, conLenh = ds.length - dsXong.length;
+  const thieu = ds.filter(r=>!xhSoPcs(r.pcs)).length;
   const pc = n => tong ? (n / tong * 100) : 0;
   const so = n => n.toLocaleString('vi-VN');
 
@@ -8133,24 +8151,24 @@ function xhVeDash(){
 
   cards.innerHTML = `
     <div class="xh-card">
-      <div class="ic">🗃</div>
-      <div class="k">Tổng CTN kế hoạch</div>
+      <div class="ic">👕</div>
+      <div class="k">Tổng PCS kế hoạch</div>
       <div class="v">${so(tong)}</div>
-      <div class="s">Từ ${ds.length} lệnh trong ${esc(tenKy)}</div>
+      <div class="s">Từ ${ds.length} lệnh trong ${esc(tenKy)}${thieu ? ` · <b style="color:#c8102e">⚠ ${thieu} lệnh chưa có PCS</b>` : ''}</div>
     </div>
     <div class="xh-card xong">
       <div class="ic">✓</div>
-      <div class="k">Tổng CTN đã xong</div>
-      <div class="v">${so(ctnXong)}<small>(${pc(ctnXong).toFixed(1)}%)</small></div>
+      <div class="k">Tổng PCS đã xong</div>
+      <div class="v">${so(pcsXong)}<small>(${pc(pcsXong).toFixed(1)}%)</small></div>
       <div class="s">${dsXong.length}/${ds.length} lệnh đã tích xong</div>
-      <div class="bar"><em style="width:${pc(ctnXong).toFixed(1)}%"></em></div>
+      <div class="bar"><em style="width:${pc(pcsXong).toFixed(1)}%"></em></div>
     </div>
     <div class="xh-card ${conLenh ? 'cam' : 'xanh'}">
       <div class="ic">${conLenh ? '⏳' : '🏁'}</div>
       <div class="k">Còn lại</div>
-      <div class="v">${so(conCtn)}<small>(${pc(conCtn).toFixed(1)}%)</small></div>
+      <div class="v">${so(conPcs)}<small>(${pc(conPcs).toFixed(1)}%)</small></div>
       <div class="s">${conLenh ? `⚠ Còn ${conLenh} lệnh chưa xong` : 'Đã xong toàn bộ lệnh'}</div>
-      <div class="bar"><em style="width:${pc(conCtn).toFixed(1)}%"></em></div>
+      <div class="bar"><em style="width:${pc(conPcs).toFixed(1)}%"></em></div>
     </div>
     <div class="xh-card xe">
       <div class="ic">🚚</div>
@@ -8705,6 +8723,7 @@ async function xhXoaNoiDungVung(){
 // IMPORT: đọc trang HTML "SHIPMENT REQUEST DETAILS" -> điền vào bảng
 //   Customer <- BUYER · id <- 4 số cuối REQUEST_ID · type <- TYPE
 //   CTN      <- CTNS (bảng PO/JO SUMMARY, thiếu thì lấy từ QTY/UNIT_ID)
+//   PCS      <- PCS  (bảng PO/JO SUMMARY, thiếu thì lấy từ QTY/UNIT_ID)
 //   Trùng Customer + id  -> cập nhật đúng dòng cũ (thường chỉ đổi số lượng)
 //   Chưa có           -> điền vào DÒNG TRỐNG đầu tiên
 // =====================================================================
@@ -8745,6 +8764,14 @@ function xhBangTrongTrang(doc){
   }).filter(Boolean);
 }
 function xhCot(headers, ten){ return headers.findIndex(h=>h === ten || h.startsWith(ten)); }
+// DESTINATION cho báo cáo: COUNTRY + BY + SEA/AIR (lấy từ SHIP_MODE)
+//   HK + SEA FREIGHT -> HK BY SEA · USA + AIR COLLECT -> USA BY AIR
+//   SHIP_MODE không có SEA/AIR thì lấy chữ đầu của nó (TRUCK -> BY TRUCK)
+function xhDich(country, shipMode){
+  const c = xhChuan(country).toUpperCase(), m = xhChuan(shipMode).toUpperCase();
+  const cach = /\bSEA\b/.test(m) ? 'SEA' : /\bAIR\b/.test(m) ? 'AIR' : (m.split(' ')[0] || '');
+  return c && cach ? `${c} BY ${cach}` : (c || '');
+}
 
 // Bóc dữ liệu cần dùng từ 1 trang
 function xhBocTrang(html, tenFile){
@@ -8755,25 +8782,46 @@ function xhBocTrang(html, tenFile){
   const bReq = bangs.find(b=>xhCot(b.headers,'REQUEST_ID') >= 0 && xhCot(b.headers,'BUYER') >= 0);
   if(!bReq) return { loi: `${tenFile}: không tìm thấy bảng SHIPMENT REQUEST DETAILS` };
   const iId = xhCot(bReq.headers,'REQUEST_ID'), iBuyer = xhCot(bReq.headers,'BUYER'), iType = xhCot(bReq.headers,'TYPE');
+  const iPort = xhCot(bReq.headers,'PORT'), iCountry = xhCot(bReq.headers,'COUNTRY'), iMode = xhCot(bReq.headers,'SHIP_MODE');
 
-  // 2) số thùng: ưu tiên cột CTNS ở bảng PO/JO SUMMARY
-  let ctns = '';
-  const bSum = bangs.find(b=>xhCot(b.headers,'CTNS') >= 0 && /UNIT_SUMMARY|ĐƠN VỊ TÍNH/i.test(b.headers[0] || ''));
-  if(bSum){
-    const j = xhCot(bSum.headers,'CTNS');
-    for(const r of bSum.rows){ const v = xhChuan(r[j]); if(v && /\d/.test(v)){ ctns = v; break; } }
-  }
-  if(!ctns){                                   // dự phòng: cộng QTY có đơn vị CTNS ở bảng job order
-    const bJo = bangs.find(b=>xhCot(b.headers,'UNIT_ID') >= 0 && xhCot(b.headers,'QTY') >= 0);
-    if(bJo){
-      let tong = 0;
-      const cap = [['QTY','UNIT_ID'], ['QTY2','UNIT_ID2']];
-      bJo.rows.forEach(r=>cap.forEach(([q, u])=>{
-        const iq = xhCot(bJo.headers, q), iu = xhCot(bJo.headers, u);
-        if(iq >= 0 && iu >= 0 && /^CTNS?$/i.test(xhChuan(r[iu]))) tong += Number(String(r[iq]).replace(/[^\d.]/g, '')) || 0;
-      }));
-      if(tong) ctns = String(tong);
+  // 2) số thùng (CTNS) và số áo (PCS): ưu tiên cột cùng tên ở bảng PO/JO SUMMARY,
+  //    thiếu thì cộng QTY / QTY2 có đúng đơn vị ở bảng job order
+  const bSum = bangs.find(b=>/UNIT_SUMMARY|ĐƠN VỊ TÍNH/i.test(b.headers[0] || ''));
+  const bJo  = bangs.find(b=>xhCot(b.headers,'UNIT_ID') >= 0 && xhCot(b.headers,'QTY') >= 0);
+  const cap = [['QTY','UNIT_ID'], ['QTY2','UNIT_ID2']];
+  const soDong = (r, donVi)=>{                 // 1 dòng job order: cộng QTY / QTY2 có đơn vị khớp
+    let tong = 0;
+    cap.forEach(([q, u])=>{
+      const iq = xhCot(bJo.headers, q), iu = xhCot(bJo.headers, u);
+      if(iq >= 0 && iu >= 0 && donVi.test(xhChuan(r[iu]))) tong += Number(String(r[iq]).replace(/[^\d.]/g, '')) || 0;
+    });
+    return tong;
+  };
+  const laySo = (cot, donVi)=>{
+    if(bSum){
+      const j = xhCot(bSum.headers, cot);
+      if(j >= 0) for(const r of bSum.rows){ const v = xhChuan(r[j]); if(v && /\d/.test(v)) return v; }
     }
+    if(!bJo) return '';
+    const tong = bJo.rows.reduce((s, r)=> s + soDong(r, donVi), 0);
+    return tong ? String(tong) : '';
+  };
+  const ctns = laySo('CTNS', /^CTNS?$/i);
+  const pcs  = laySo('PCS',  /^PCS$/i);
+
+  // Chi tiết từng dòng job order — dùng cho báo cáo DAILY SHIPMENT gửi mail
+  //   REFERENCE NO <- JOB_ORDER_NO · BUYER PO <- PO_NO · STYLE · CARTONS / ISSUE QTY <- QTY theo đơn vị
+  const dsJo = [];
+  if(bJo){
+    const o = t => xhCot(bJo.headers, t);
+    const iRef = o('JOB_ORDER_NO'), iPo = o('PO_NO'), iStyle = o('STYLE');
+    const chu = (r, i)=>{ const v = i >= 0 ? xhChuan(r[i]) : ''; return /^(NULL|N\/A|-)$/i.test(v) ? '' : v; };
+    bJo.rows.forEach(r=>{
+      const ref = chu(r, iRef);
+      if(!ref) return;
+      dsJo.push({ ref, po: chu(r, iPo), style: chu(r, iStyle),
+                  ctn: soDong(r, /^CTNS?$/i), pcs: Math.round(soDong(r, /^PCS$/i)) });
+    });
   }
 
   // 3) REMARK ở bảng JOB_ORDER — lấy các giá trị KHÁC NHAU, giữ nguyên thứ tự.
@@ -8802,16 +8850,23 @@ function xhBocTrang(html, tenFile){
     const type  = iType  >= 0 ? xhChuan(r[iType])  : '';
     const idNgan = idFull.includes('-') ? idFull.split('-').pop() : idFull.slice(-4);
     const so = String(ctns).replace(/[^\d.]/g, '');
+    const soPcs = Math.round(parseFloat(String(pcs).replace(/[^\d.]/g, ''))) || 0;   // "1,222.00" -> 1222
     ra.push({
       customer: buyer,
       id: idNgan,
       type: type,
       ctn: so ? `${so} THÙNG` : '',
-      // Ba trường ẩn: không hiện ra bảng, chỉ dùng khi copy mã shipment.
+      pcs: soPcs ? String(soPcs) : '',
+      // Các trường ẩn: không hiện ra bảng, dùng khi copy mã shipment và làm báo cáo.
       // Lấy nguyên văn từ file import nên sửa tay trong bảng không ảnh hưởng.
       buyer: buyer,
       reqId: idFull,
       remarks: dsRemark.slice(),
+      jo: dsJo.map(x=>({ ...x })),
+      port:     iPort    >= 0 ? xhChuan(r[iPort])    : '',
+      country:  iCountry >= 0 ? xhChuan(r[iCountry]) : '',
+      shipMode: iMode    >= 0 ? xhChuan(r[iMode])    : '',
+      dest: xhDich(iCountry >= 0 ? r[iCountry] : '', iMode >= 0 ? r[iMode] : ''),
       idFull, tenFile,
     });
   });
@@ -8857,9 +8912,9 @@ async function xhImportFiles(files){
     <div class="note">Đọc được <b>${items.length}</b> yêu cầu. Xem trước rồi bấm <b>Áp dụng</b>.</div>
     <div class="tblwrap" style="max-height:340px; overflow:auto;">
       <table class="hist-table" style="width:100%">
-        <thead><tr><th>Customer</th><th>id</th><th>type</th><th>CTN</th><th>Sẽ ghi vào</th></tr></thead>
+        <thead><tr><th>Customer</th><th>id</th><th>type</th><th>CTN</th><th>PCS</th><th>Sẽ ghi vào</th></tr></thead>
         <tbody>${items.map(it=>`<tr>
-          <td><b>${esc(it.customer)}</b></td><td>${esc(it.id)}</td><td>${esc(it.type)}</td><td>${esc(it.ctn)}</td>
+          <td><b>${esc(it.customer)}</b></td><td>${esc(it.id)}</td><td>${esc(it.type)}</td><td>${esc(it.ctn)}</td><td>${esc(it.pcs)}</td>
           <td>${it.moi ? `<span class="chip ok">Dòng ${it.dong + 1} (mới)</span>` : `<span class="chip warn">Cập nhật dòng ${it.dong + 1}</span>`}</td>
         </tr>`).join('')}</tbody>
       </table>
@@ -8873,9 +8928,13 @@ async function xhImportFiles(files){
       r.id = it.id;
       r.type = it.type;
       r.ctn = it.ctn;
+      r.pcs = it.pcs;
       r.buyer = it.buyer || '';                 // BUYER nguyên văn (ẩn)
       r.reqId = it.reqId || '';                 // REQUEST_ID đầy đủ (ẩn)
       r.remarks = (it.remarks || []).slice();   // các số TEHV khác nhau (ẩn)
+      r.jo = (it.jo || []).map(x=>({ ...x }));  // từng dòng job order (ẩn)
+      r.port = it.port || ''; r.country = it.country || ''; r.shipMode = it.shipMode || '';
+      r.dest = it.dest || '';                   // DESTINATION cho báo cáo (ẩn)
     });
     if(!xhRowEmpty(rows[rows.length - 1])) rows.push(xhEmptyRow());
     await saveKho();
@@ -8940,6 +8999,253 @@ function xhExportXlsx(){
 // =====================================================================
 
 // ===== Tăng ca / nghỉ phép, đăng ký nhanh, lịch tháng, xuất báo cáo =====
+
+</script>
+<script>/* js/modules/xuathang/xh-baocao.js */
+// Xuất hàng: báo cáo DAILY SHIPMENT gửi mail
+// =====================================================================
+// File DÙNG CHUNG cho 2 nơi — sửa ở đây là cả hai cùng đổi:
+//   · App: nút "✉ Xem trước mail" ở tab Xuất hàng (xh-baocao-ui.js)
+//   · n8n: tools/n8n/build-workflow.js chép nguyên file này vào node Code
+// Vì chạy cả trong n8n nên KHÔNG được dùng DOM hay biến chung của app
+// ($, KHO, pad, esc...). Mọi tên ở cấp ngoài cùng đều mang tiền tố xhBc.
+//
+// Kỳ báo cáo: từ ngày 1 tới ngày `den` ('YYYY-MM-DD', mặc định hôm qua),
+// tức mùng 1 sẽ gửi trọn tháng trước. Mỗi dòng file = 1 dòng JOB ORDER.
+// =====================================================================
+const XH_BC = {
+  chiLayDaXong: true,                 // true = chỉ tính lệnh đã tích ✓ ở tab Xuất hàng
+  tz: 'Asia/Ho_Chi_Minh',
+  cot: ['DATE','REFERENCE NO','CUSTOMER','BUYER PO','STYLE','CARTONS','ISSUE QTY','DESTINATION','REMARKS'],
+  thang: ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'],
+  mau: '#2e75b6', mauChu: '#1f3864',
+};
+
+function xhBcPad(n){ return String(n).padStart(2, '0'); }
+// Ngày theo giờ Việt Nam, lệch `lech` ngày so với hôm nay -> 'YYYY-MM-DD'
+function xhBcNgay(lech){
+  const d = new Date(new Date().toLocaleString('en-US', { timeZone: XH_BC.tz }));
+  d.setDate(d.getDate() + (lech || 0));
+  return `${d.getFullYear()}-${xhBcPad(d.getMonth() + 1)}-${xhBcPad(d.getDate())}`;
+}
+function xhBcSo(v){ return Number(String(v || '').replace(/[^\d]/g, '')) || 0; }
+function xhBcRong(r){ return ['customer','id','ctn','pcs','type','cont','seal','dock','note'].every(k=>!String(r[k] || '').trim()); }
+// Giống xhMaShipment ở xh-table.js: SHIPMENT/GIORDA_20261006-0010/TEHV02812
+function xhBcMa(r){
+  const bo = v => String(v == null ? '' : v).replace(/\s+/g, '');
+  const req = bo(r.reqId);
+  if(!req) return '';
+  const ds = Array.isArray(r.remarks) ? r.remarks : (r.remark ? [r.remark] : []);
+  const rm = [...new Set(ds.map(bo).filter(Boolean))];
+  return 'SHIPMENT/' + bo(r.buyer || r.customer).slice(0, 6) + '_' + req + (rm.length ? '/' + rm.join('/') : '');
+}
+
+// Các dòng của file đính kèm. Trả { dong, thieu } — thieu = số lệnh import
+// trước khi có chi tiết job order (dòng ra thiếu REFERENCE NO / PO / STYLE...).
+function xhBcLapDong(xuathang, den){
+  const thang = den.slice(0, 8), dong = [];
+  let thieu = 0;
+  Object.keys(xuathang || {}).filter(k=>k.startsWith(thang) && k <= den).sort().forEach(k=>{
+    const [y, m, d] = k.split('-');
+    const ngay = `${+m}/${+d}/${y}`;
+    (xuathang[k] || []).forEach(r=>{
+      if(!r || xhBcRong(r)) return;
+      if(XH_BC.chiLayDaXong && !r.xong) return;
+      const coJo = Array.isArray(r.jo) && r.jo.length;
+      if(!coJo) thieu++;
+      const jo = coJo ? r.jo : [{ ref:'', po:'', style:'', ctn: xhBcSo(r.ctn), pcs: xhBcSo(r.pcs) }];
+      jo.forEach(j=> dong.push({
+        'DATE': ngay, 'REFERENCE NO': j.ref || '', 'CUSTOMER': r.buyer || r.customer || '',
+        'BUYER PO': j.po || '', 'STYLE': j.style || '', 'CARTONS': Number(j.ctn) || 0,
+        'ISSUE QTY': Number(j.pcs) || 0, 'DESTINATION': r.dest || '', 'REMARKS': xhBcMa(r),
+      }));
+    });
+  });
+  return { dong, thieu };
+}
+
+// Biểu đồ cột dựng bằng bảng HTML — hiện đúng trên Outlook / Gmail / điện thoại,
+// không cần ảnh hay dịch vụ ngoài. Outlook không xoay chữ nên ngày nằm ngang.
+function xhBcBieuDo(ngay, tieuDe){
+  const CAO = 200;
+  const max = Math.max(1, ...ngay.map(x=>x.pcs));
+  const nhieu = ngay.length > 12;
+  const rong = Math.max(nhieu ? 34 : 60, Math.min(110, Math.floor(700 / ngay.length)));
+  const f = 'font-family:Calibri,Arial,sans-serif;';
+  const nhan = v => nhieu && v >= 1000 ? (v / 1000).toFixed(1) + 'k' : v.toLocaleString('en-US');
+  const cot = ngay.map(x=>{
+    const h = x.pcs ? Math.max(2, Math.round(x.pcs / max * CAO)) : 0;
+    return `<td valign="bottom" align="center" width="${rong}" style="width:${rong}px;height:${CAO + 24}px;padding:0 4px;border-bottom:1px solid #bfbfbf;">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="${nhieu ? '80%' : '72%'}" align="center"><tr>
+        <td align="center" style="${f}font-size:${nhieu ? 10 : 12}px;font-weight:bold;color:${XH_BC.mauChu};padding-bottom:4px;white-space:nowrap;">${nhan(x.pcs)}</td></tr>
+        ${h ? `<tr><td height="${h}" bgcolor="${XH_BC.mau}" style="height:${h}px;background:${XH_BC.mau};font-size:0;line-height:0;">&nbsp;</td></tr>` : ''}
+      </table></td>`;
+  }).join('');
+  const nhanNgay = ngay.map(x=>{
+    const [y, m, d] = x.k.split('-');
+    return `<td align="center" style="${f}font-size:${nhieu ? 10 : 12}px;color:#595959;padding-top:6px;white-space:nowrap;">${nhieu ? `${m}/${d}` : `${m}/${d}/${y}`}</td>`;
+  }).join('');
+  return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #d9d9d9;margin-top:18px;">
+  <tr><td style="padding:14px 18px 10px;">
+    <div style="${f}font-size:18px;font-weight:bold;color:${XH_BC.mauChu};text-align:center;padding-bottom:12px;">${tieuDe}</div>
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center">
+      <tr>${cot}</tr>
+      <tr>${nhanNgay}</tr>
+    </table>
+    <div style="${f}font-size:11px;color:#7f7f7f;text-align:center;padding-top:8px;">Quantity (pcs)</div>
+  </td></tr></table>`;
+}
+
+// Nội dung mail: lời chào + bảng gộp theo ngày (Row Labels / Sum of ISSUE QTY) + biểu đồ
+function xhBcSoanMail(dong){
+  const tong = new Map();
+  dong.forEach(r=>{
+    const [m, d, y] = String(r['DATE']).split('/');
+    const k = `${y}-${xhBcPad(m)}-${xhBcPad(d)}`;
+    tong.set(k, (tong.get(k) || 0) + (Number(r['ISSUE QTY']) || 0));
+  });
+  const ngay = [...tong.keys()].sort().map(k=>({ k, pcs: tong.get(k) }));
+  const grand = ngay.reduce((s, x)=> s + x.pcs, 0);
+  const cuoi = ngay.length ? ngay[ngay.length - 1].k : xhBcNgay(-1);
+  const [y, m] = cuoi.split('-');
+  const thang = XH_BC.thang[+m - 1];
+
+  const td = 'padding:2px 10px;font-family:Calibri,Arial,sans-serif;font-size:11pt;';
+  const html = `<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 12px;"><b>Dear All,</b><br>
+I would like to send the report Daily Shipment. Pls check at the attached file.</p>
+<table cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+  <tr style="background:#ddebf7;font-weight:bold;"><td style="${td}border-bottom:1px solid #9bc2e6;">Row Labels</td><td style="${td}border-bottom:1px solid #9bc2e6;text-align:right;">Sum of ISSUE QTY</td></tr>
+  ${ngay.map(x=>{ const [yy, mm, dd] = x.k.split('-');
+    return `<tr><td style="${td}">${mm}/${dd}/${yy}</td><td style="${td}text-align:right;">${x.pcs}</td></tr>`; }).join('\n  ')}
+  <tr style="background:#ddebf7;font-weight:bold;"><td style="${td}border-top:1px solid #9bc2e6;">Grand Total</td><td style="${td}border-top:1px solid #9bc2e6;text-align:right;">${grand}</td></tr>
+</table>
+${ngay.length ? xhBcBieuDo(ngay, `DAILY SHIPMENT – ISSUE QTY (PCS) – ${thang} ${y}`) : ''}`;
+
+  return { subject: `DAILY SHIPMENT REPORT - ${thang}.${y}`, html, grand,
+           tenFile: `${+m}.DAILY-SHIPMENT-${thang}.${y}.xlsx`, soNgay: ngay.length };
+}
+
+</script>
+<script>/* js/modules/xuathang/xh-baocao-ui.js */
+// Xuất hàng: "✉ Xem trước mail" và nút "📨 Gửi mail" Daily Shipment
+// Dữ liệu và cách soạn lấy từ xh-baocao.js (file dùng chung với n8n).
+// Không gửi tự động: kiểm tra xong mới bấm Gửi -> app gọi webhook n8n
+// (N8N_MAIL_URL, core/config.js) kèm token đăng nhập + kỳ báo cáo; n8n tự kiểm
+// tra quyền, đọc dữ liệu ĐÃ LƯU trên Supabase, soạn bằng cùng file rồi gửi.
+//   "Đến hôm qua" / "Đến hôm nay" = ngày cuối của kỳ (từ mùng 1 của tháng đó)
+let XH_BC_DEN = -1;
+function xhBcDuLieu(){
+  const xh = (KHO.thanhpham && KHO.thanhpham.xuathang) || {};
+  const den = xhBcNgay(XH_BC_DEN);
+  const { dong, thieu } = xhBcLapDong(xh, den);
+  return { den, dong, thieu, mail: xhBcSoanMail(dong) };
+}
+// Chủ trang và giám sát kho thành phẩm — n8n kiểm tra lại đúng điều kiện này
+function xhBcDuocGui(){ return coSuaKho('thanhpham'); }
+
+function xhXemTruocMail(){
+  const m = openModal('Xem trước mail Daily Shipment', '<div id="xhBcHost"></div>');
+  m.el.querySelector('.modal-card').style.maxWidth = '1040px';
+  let daGui = '';                               // dòng báo "đã gửi" giữ lại khi vẽ lại
+  const ve = ()=>{
+    const { den, dong, thieu, mail } = xhBcDuLieu();
+    const tuNgay = den.slice(0, 8) + '01';
+    const thieuPcs = dong.filter(r=>!r['ISSUE QTY']).length;
+    m.body.querySelector('#xhBcHost').innerHTML = `
+      <div class="xh-bcbar">
+        <span class="xh-bdseg">
+          <button data-bcden="-1" class="${XH_BC_DEN === -1 ? 'on' : ''}">Đến hôm qua</button>
+          <button data-bcden="0" class="${XH_BC_DEN === 0 ? 'on' : ''}">Đến hôm nay</button>
+        </span>
+        <span class="s">Tính từ <b>${fmtVN(fromKey(tuNgay))}</b> đến <b>${fmtVN(fromKey(den))}</b>
+          · ${XH_BC.chiLayDaXong ? 'chỉ lệnh đã tích ✓' : 'mọi lệnh'}</span>
+        ${xhBcDuocGui() ? `<button id="xhBcGui" class="xh-bcgui" ${dong.length ? '' : 'disabled'}
+          title="Gửi đúng nội dung đang xem qua n8n">📨 Gửi mail</button>` : ''}
+      </div>
+      ${daGui}
+      ${thieu ? `<div class="note warn">⚠ ${thieu} lệnh import trước khi có chi tiết job order — dòng của lệnh đó thiếu REFERENCE NO, BUYER PO, STYLE, DESTINATION.
+        Mở đúng ngày rồi <b>⬆ Import</b> lại trang SHIPMENT REQUEST để bổ sung.</div>` : ''}
+      ${thieuPcs ? `<div class="note warn">⚠ ${thieuPcs} dòng có ISSUE QTY = 0 (chưa có số PCS).</div>` : ''}
+      ${!dong.length ? `<div class="note">Chưa có lệnh nào trong kỳ này nên không có gì để gửi.</div>` : `
+      <div class="xh-bcmeta">
+        <div><b>Tiêu đề</b>${esc(mail.subject)}</div>
+        <div><b>Đính kèm</b><span class="xh-bcfile"><i>X</i>${esc(mail.tenFile)}</span>
+          <button class="ghost sm" id="xhBcTai">⬇ Tải file này</button></div>
+      </div>
+      <div class="xh-bch">Nội dung mail</div>
+      <iframe class="xh-bcmail" id="xhBcMail" title="Nội dung mail"></iframe>
+      <div class="xh-bch">File đính kèm — ${dong.length} dòng</div>
+      <div class="xh-bcxl"><table>
+        <tr>${XH_BC.cot.map(c=>`<th>${esc(c)}</th>`).join('')}</tr>
+        ${dong.map(r=>`<tr>${XH_BC.cot.map(c=>`<td class="${typeof r[c] === 'number' ? 'n' : ''}">${esc(r[c])}</td>`).join('')}</tr>`).join('')}
+      </table></div>`}`;
+
+    m.body.querySelectorAll('[data-bcden]').forEach(b=>{
+      b.onclick = ()=>{ XH_BC_DEN = Number(b.dataset.bcden); daGui = ''; ve(); };
+    });
+    const fr = m.body.querySelector('#xhBcMail');
+    if(fr){
+      // iframe để CSS của app không lẫn vào — thấy y như trong hộp thư
+      fr.srcdoc = `<!doctype html><html><head><meta charset="utf-8"></head><body style="margin:12px;background:#fff;">${mail.html}</body></html>`;
+      fr.onload = ()=>{ try{ fr.style.height = (fr.contentDocument.body.scrollHeight + 28) + 'px'; }catch(e){} };
+    }
+    const tai = m.body.querySelector('#xhBcTai');
+    if(tai) tai.onclick = ()=> xhBcTaiFile(dong, mail.tenFile);
+    const gui = m.body.querySelector('#xhBcGui');
+    if(gui) gui.onclick = async ()=>{
+      const kq = await xhBcGuiMail(gui, ve);
+      if(kq){ daGui = kq; ve(); }
+    };
+  };
+  ve();
+}
+
+// Lưu nốt phần đang sửa -> hỏi lại -> gọi n8n. Trả về HTML dòng báo kết quả (hoặc '' nếu huỷ).
+async function xhBcGuiMail(nut, veLai){
+  const chu = nut.textContent;
+  const ban = (t)=>{ nut.disabled = true; nut.textContent = t; };
+  const tra = ()=>{ nut.disabled = false; nut.textContent = chu; };
+  // n8n đọc dữ liệu ĐÃ LƯU — lưu xong rồi vẽ lại để thứ đang xem đúng với thứ sẽ gửi
+  ban('Đang lưu…');
+  flushXuatHang();
+  if(!(await saveKho())){ tra(); toast('⚠ Chưa lưu được dữ liệu lên máy chủ nên chưa gửi'); return ''; }
+  veLai();
+  const { den, dong, mail } = xhBcDuLieu();
+  if(!dong.length){ toast('Kỳ này không có lệnh nào để gửi'); return ''; }
+  if(!(await confirmBox(`Gửi mail "${mail.subject}" — ${dong.length} dòng, tổng ${mail.grand.toLocaleString('en-US')} pcs?`))) return '';
+
+  const nutMoi = document.getElementById('xhBcGui') || nut;   // nút sau khi vẽ lại
+  nutMoi.disabled = true; nutMoi.textContent = 'Đang gửi…';
+  let loi = '';
+  try{
+    const res = await fetch(N8N_MAIL_URL, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: AUTH.token, den }),
+    });
+    let j = null;
+    try{ j = await res.json(); }catch(e){}
+    if(!res.ok || !j || !j.ok) loi = (j && (j.loi || j.message)) || ('n8n trả lỗi HTTP ' + res.status);
+  }catch(e){
+    loi = 'Không kết nối được n8n — kiểm tra mạng công ty và workflow đã bật (Active) chưa';
+  }
+  nutMoi.disabled = false; nutMoi.textContent = '📨 Gửi mail';
+  if(loi){
+    toast('⚠ Chưa gửi được mail');
+    return `<div class="note warn">⚠ Chưa gửi được: ${esc(loi)}</div>`;
+  }
+  const gio = new Date().toLocaleTimeString('vi-VN', { hour:'2-digit', minute:'2-digit' });
+  toast('✓ Đã gửi mail ' + mail.subject);
+  return `<div class="note ok">✓ Đã gửi lúc ${gio} — ${esc(mail.subject)} · ${dong.length} dòng · ${mail.grand.toLocaleString('en-US')} pcs</div>`;
+}
+
+// Cùng cột, cùng thứ tự với file n8n đính kèm (sheet DAILY SHIPMENT)
+function xhBcTaiFile(dong, tenFile){
+  if(typeof XLSX === 'undefined'){ toast('⚠ Chưa tải được thư viện Excel — kiểm tra mạng rồi tải lại trang'); return; }
+  const ws = XLSX.utils.json_to_sheet(dong, { header: XH_BC.cot });
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'DAILY SHIPMENT');
+  XLSX.writeFile(wb, tenFile);
+}
 
 </script>
 <script>/* js/modules/tangca/ot-list.js */
@@ -10275,6 +10581,7 @@ document.querySelectorAll('#xhBdSeg [data-bd]').forEach(b=>{
 $('xhAddRow').onclick = async ()=>{ xhRows().push(xhEmptyRow()); await saveKho(); renderXuatHang(); };
 $('xhClean').onclick  = ()=>xhClean();
 $('xhXlsx').onclick   = ()=>xhExportXlsx();
+$('xhMail').onclick   = ()=>xhXemTruocMail();
 $('xhBold').onclick   = ()=>xhToggleFmt('b');
 $('xhHl').onclick     = ()=>xhToggleFmt('h');
 $('xhCenter').onclick = ()=>xhToggleFmt('c');
