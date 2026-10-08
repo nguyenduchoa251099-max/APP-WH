@@ -1343,6 +1343,69 @@
                 padding:8px 11px; border-radius:2px; margin-bottom:10px;}
   .tp-nv .bar:hover{background:#fff3f5; border-color:#c8102e;}
 
+  /* Việc 5S thêm (kho thành phẩm) — danh sách dưới sơ đồ */
+  .tpv{margin-top:14px; border-top:1px solid var(--line-soft); padding-top:12px;}
+  .tpv-hd{display:flex; flex-wrap:wrap; align-items:center; gap:6px 12px; margin-bottom:10px;}
+  .tpv-hd b{font-size:15px;}
+  .tpv-hd span{font-size:12.5px; color:var(--ink-soft);}
+  .tpv-hd em{font-style:normal; color:#b45309; font-weight:700;}
+  .tpv-hd button{margin-left:auto;}
+  .tpv-luoi{display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:8px;}
+  .tpv-o{display:flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:9px; padding:7px 10px; background:#fff;}
+  .tpv-o.trong{border-style:dashed; background:#fffbeb;}
+  .tpv-ten{flex:1; font-size:12.5px; font-weight:800; color:var(--ink);}
+  .tpv-nguoi{font-size:13.5px; font-weight:700; color:#c8102e; cursor:pointer; border:1px dashed transparent; border-radius:6px; padding:1px 7px; white-space:nowrap;}
+  .tpv-nguoi:hover{border-color:#c8102e; background:#fff3f5;}
+  .tpv-o.trong .tpv-nguoi{color:var(--ink-soft); font-weight:600;}
+  .tpv-nut{display:flex; gap:2px; opacity:.45;}
+  .tpv-o:hover .tpv-nut{opacity:1;}
+  .tpv-nut button{padding:2px 6px; font-size:12px;}
+  .tpv-theo{margin-top:12px; font-size:12.5px; color:var(--ink-soft); line-height:1.7;}
+  .tpv-theo > b{display:block; color:var(--ink); font-size:13px;}
+  .tpv-theo div b{color:var(--ink);}
+  .tpv-theo div span{color:#b45309; font-weight:600;}
+
+  /* Bảng phân công 5S (tóm tắt theo người) — kho thành phẩm */
+  .tptt{margin-top:18px; border-top:1px solid var(--line-soft); padding-top:12px;}
+  .tptt-cong{display:flex; justify-content:flex-end; gap:8px; margin-bottom:8px;}
+  .tptt-wrap{overflow-x:auto;}
+  .tptt-bang{width:100%; min-width:760px; border-collapse:collapse; font-size:14px;}
+  .tptt-bang th, .tptt-bang td{border:1px solid #9aa9c2; padding:6px 10px;}
+  .tptt-bang .tieude{background:#1f3864; color:#fff; font-size:18px; letter-spacing:.04em; padding:10px;}
+  .tptt-bang tr.phu th{background:#1f3864; color:#fff; font-size:16px;}
+  .tptt-bang tr.phu td.gio{background:#1f3864; color:#fff; font-weight:700; white-space:nowrap;}
+  .tptt-bang tr.phu td.khau{background:#1f3864; color:#fde68a; font-weight:800; text-align:center; letter-spacing:.03em;}
+  .tptt-bang .ghichu{background:#2f4f86; color:#fff; font-size:15px;}
+  .tptt-bang tr.cot th{background:#dbe5f4; color:#1f3864; font-size:14px;}
+  .tptt-bang td.stt{text-align:center; width:48px; color:var(--ink-soft);}
+  .tptt-bang td.ma{white-space:nowrap; font-variant-numeric:tabular-nums; width:120px;}
+  .tptt-bang td.ten{font-weight:600; white-space:nowrap;}
+  .tptt-bang td.ten small{font-weight:600; color:var(--ink-soft); font-size:11px;}
+  .tptt-bang td.vt{color:#c8102e; font-weight:800; text-align:center;}
+  .tptt-bang td.vt i{color:#b45309; font-weight:600;}
+  .tptt-bang td.viec{font-size:13px; font-weight:600; color:#1f3864;}
+  .tptt-bang tr.chua td.ten, .tptt-bang tr.chua td.ma{background:#fef08a;}
+  .tptt-bang tr:not(.cot):not(.phu):hover td{background-color:#f5f8fd;}
+  .tptt-ghi{font-size:12.5px; color:var(--ink-soft); margin-top:8px;}
+  .tptt-ghi b{color:#b45309;}
+  /* Việc giao theo vai trò cố định / nhiều người */
+  .tpv-o.vaitro{background:#f0f7ff; border-color:#bcd3f0;}
+  .tpv-vt{font-size:12.5px; font-weight:700; color:#1f3864; font-style:italic; white-space:nowrap;}
+  .tpv-ten small{display:block; font-size:10.5px; font-weight:600; color:var(--ink-soft);}
+  .tptt-bang tr.vaitro td.ten{font-style:italic; color:#1f3864;}
+  .tptt-bang tr.vaitro td{background:#f5f8fd;}
+  /* Ô việc 2 tầng: tên việc + nút ở trên, người / vai trò ở dưới — đỡ chật khi 2 người hoặc vai trò dài */
+  .tpv-o{display:grid; grid-template-columns:1fr auto; grid-template-areas:"ten nut" "ng ng"; align-items:center; row-gap:3px;}
+  .tpv-o .tpv-ten{grid-area:ten;}
+  .tpv-o .tpv-nut{grid-area:nut;}
+  .tpv-o .tpv-nguoi, .tpv-o .tpv-vt{grid-area:ng; justify-self:start; white-space:normal;}
+  .tpv-o .tpv-nguoi{margin-left:-7px;}
+  .tpv-ten small{display:inline; margin-left:6px;}
+  /* Sơ đồ tự phóng vừa bề ngang khung (không còn thanh thu phóng): hiện trọn, không cuộn trong khung */
+  #so5sTpWrap .tp-wrap{max-height:none; overflow:hidden;}
+  /* Bảng phân công 5S: tiêu đề và ghi chú ra giữa */
+  .tptt-bang th.tieude, .tptt-bang th.ghichu{text-align:center;}
+
 </style>
 <style>/* css/modules/checkct.css */
 /* Tab CHECK CT
@@ -2648,11 +2711,12 @@
         <button class="ghost sm" id="tpResetSize">↺ Về mặc định</button>
         <button class="secondary sm" id="tpPng">⬇ Ảnh PNG</button>
         <button class="secondary sm" id="tpPdf">⬇ PDF</button>
-        <span class="b5-zoom"><label for="tpZoom">Thu phóng</label><input type="range" id="tpZoom" min="50" max="130" value="100"><span id="tpZoomVal">100%</span></span>
       </h2>
       <div class="hintbar" id="tpAlertBar" style="display:none;"><button class="hint-btn" data-hint="tpAlert" title="Xem cảnh báo phân công 5S">!</button></div>
       <div id="tpAlert" class="hint-box" hidden></div>
       <div class="tp-wrap"><div class="tp-plan" id="tpPlan"></div></div>
+      <div id="tpViec"></div>
+      <div id="tpTomTat"></div>
     </div>
 
     <div id="so5sGeneric">
@@ -4151,11 +4215,58 @@ function tp5sKeys(){
   TP5S_ZONES.forEach(z=>ks.push(z.id));
   return ks;
 }
+// VIỆC 5S THÊM (thiết bị / khu vực phụ) — danh sách dưới sơ đồ, KHÔNG vẽ trên sơ đồ.
+// Người phụ trách lưu chung tpBoard.assign với khoá 'v_' + id, nên nghỉ việc / đi hỗ trợ
+// (thay-nguoi-5s.js) và đổi ca đổi 5S (swapTp5s) tự xử lý như ô kệ. Không tính vào tp5sKeys()
+// nên không ảnh hưởng cảnh báo của sơ đồ. Danh sách sửa được: tpBoard.viec = [{ id, ten, toiDa?, vaiTro? }]
+//   toiDa  = số người tối đa (mặc định 1; VD xe nâng 2 người, lưu "Luận + Tuấn")
+//   vaiTro = giao cho 1 vai trò cố định thay vì chọn người (VD "Người nhập hàng") — không lưu ở assign
+const TP5S_VIEC_MD = [
+  {id:'scan1', ten:'BÀN SCAN 1'}, {id:'scan2', ten:'BÀN SCAN 2'},
+  {id:'bannhap', ten:'BÀN NHẬP', vaiTro:'Người nhập hàng'}, {id:'banstock', ten:'BÀN STOCK'},
+  {id:'tunhap', ten:'TỦ SAU ĐỘI NHẬP', vaiTro:'Người nhập hàng'},
+  {id:'xk1', ten:'XE KÍCH SỐ 1'}, {id:'xk2', ten:'XE KÍCH SỐ 2'}, {id:'xk3', ten:'XE KÍCH SỐ 3'},
+  {id:'xk5', ten:'XE KÍCH SỐ 5'}, {id:'xk7', ten:'XE KÍCH SỐ 7'}, {id:'xk8', ten:'XE KÍCH SỐ 8'},
+  {id:'xk9', ten:'XE KÍCH SỐ 9'}, {id:'xk11', ten:'XE KÍCH SỐ 11'},
+  {id:'xkdien', ten:'XE KÍCH ĐIỆN TAY'}, {id:'xndau', ten:'XE NÂNG DẦU', toiDa:2},
+  {id:'xndien', ten:'XE NÂNG ĐIỆN (XUẤT)', toiDa:2}, {id:'xndiennhap', ten:'XE NÂNG ĐIỆN (NHẬP)', toiDa:4},
+];
+// Phiên bản danh sách mặc định: tăng lên khi thêm việc mặc định mới, để bổ sung vào danh sách
+// đã lưu (không ghi đè việc người dùng đã sửa / xoá trước đó).
+const TP5S_VIEC_BAN = 3;
+const TP5S_VIEC_BO_SUNG = {
+  2: { them: ['bannhap','banstock','tunhap','xndiennhap'], toiDa2: ['xndau','xndien'] },
+  // xe nâng điện (nhập): từ vai trò "Người lái xe ca 1" -> chọn tối đa 4 người
+  3: { sua: v => { if(v.id === 'xndiennhap' && v.vaiTro === 'Người lái xe ca 1'){ delete v.vaiTro; v.toiDa = 4; return true; } } },
+};
+function tpViecCapNhat(B){
+  if(!B || !Array.isArray(B.viec)) return false;
+  let doi = false;
+  for(let b = (B.viecBan || 1) + 1; b <= TP5S_VIEC_BAN; b++){
+    const bs = TP5S_VIEC_BO_SUNG[b] || {};
+    (bs.them || []).forEach(id=>{
+      if(B.viec.some(v=>v.id === id)) return;
+      const md = TP5S_VIEC_MD.find(v=>v.id === id);
+      if(md){ B.viec.push({ ...md }); doi = true; }
+    });
+    (bs.toiDa2 || []).forEach(id=>{ const v = B.viec.find(x=>x.id === id); if(v && !v.toiDa){ v.toiDa = 2; doi = true; } });
+    if(bs.sua) B.viec.forEach(v=>{ if(bs.sua(v)) doi = true; });
+  }
+  if((B.viecBan || 1) < TP5S_VIEC_BAN){ B.viecBan = TP5S_VIEC_BAN; doi = true; }
+  return doi;
+}
+const laTpViec = k => /^v_/.test(k);
+function tpViecDs(K){
+  K = K || (typeof KHO !== 'undefined' && KHO.thanhpham) || {};
+  return (K.tpBoard && Array.isArray(K.tpBoard.viec)) ? K.tpBoard.viec : TP5S_VIEC_MD;
+}
+function tpViecCua(k){ return laTpViec(k) ? tpViecDs().find(v=>'v_' + v.id === k) || null : null; }
 function tp5sLabel(k){
+  if(laTpViec(k)){ const v = tpViecDs().find(x=>'v_' + x.id === k); return v ? v.ten : 'Việc 5S đã xoá'; }
   const z = TP5S_ZONES.find(x=>x.id === k);
   return z ? z.name : ('Dãy ' + k);
 }
-function defaultTpBoard(){ return { assign: {}, sizes: {}, pos: {} }; }
+function defaultTpBoard(){ return { assign: {}, sizes: {}, pos: {}, viec: TP5S_VIEC_MD.map(v=>({ ...v })), viecBan: TP5S_VIEC_BAN }; }
 
 </script>
 <script>/* js/core/state.js */
@@ -4568,6 +4679,11 @@ async function loadAll(){
   if(!KHO.thanhpham.xuathang || typeof KHO.thanhpham.xuathang !== 'object') KHO.thanhpham.xuathang = {};
   if(!KHO.thanhpham.tpBoard.assign) KHO.thanhpham.tpBoard.assign = {};
   if(!KHO.thanhpham.tpBoard.sizes) KHO.thanhpham.tpBoard.sizes = {};
+  // Việc 5S thêm (bàn scan, xe kích, xe nâng…): chưa có thì lấy danh sách mặc định
+  if(!Array.isArray(KHO.thanhpham.tpBoard.viec)){
+    KHO.thanhpham.tpBoard.viec = TP5S_VIEC_MD.map(v=>({ ...v })); KHO.thanhpham.tpBoard.viecBan = TP5S_VIEC_BAN;
+  }
+  tpViecCapNhat(KHO.thanhpham.tpBoard);   // bổ sung việc mặc định mới (bàn nhập, bàn stock, xe nâng điện nhập…)
   if(KHO.thanhpham.ca2) KHO.thanhpham.ca2.enabled = false;   // kho thành phẩm không dùng dòng Ca 2 riêng
   KHO.vai.board.labels = Object.assign({...B5_DEFAULT_LABELS}, KHO.vai.board.labels || {});
   if(!HR.factories || !HR.factories.length) HR.factories = DEFAULT_FACTORIES.map(f=>({...f}));
@@ -6521,9 +6637,11 @@ function swapTp5s(K, idA, idB){
   if(!na || !nb || na === nb) return 0;
   let n = 0;
   Object.keys(A).forEach(k=>{
-    const v = (A[k] || '').trim();
-    if(v === na){ A[k] = nb; n++; }
-    else if(v === nb){ A[k] = na; n++; }
+    const ds = splitNames(A[k]);
+    if(!ds.includes(na) && !ds.includes(nb)) return;
+    // ô có nhiều người (VD xe nâng "Luận + Tuấn"): chỉ đổi đúng tên của 2 người này
+    A[k] = ds.length === 1 ? (ds[0] === na ? nb : na) : ds.map(x=>x === na ? nb : x === nb ? na : x).join(' + ');
+    n++;
   });
   return n;
 }
@@ -6918,7 +7036,7 @@ function renderSwap5s(){
   const khu = (id)=>{
     const e = empById(id); if(!e) return '—';
     const nm = getEmployeeShortName(e);
-    const ks = Object.keys(A).filter(k=>(A[k]||'').trim() === nm);
+    const ks = Object.keys(A).filter(k=>splitNames(A[k]).includes(nm));
     return ks.length ? ks.map(k=>esc(tp5sLabel(k))).join(', ') : '<i style="color:var(--ink-soft)">chưa có khu vực 5S</i>';
   };
   const ca = (id)=>{ const e = empById(id); return e ? esc(e.shift || '—') : '—'; };
@@ -7268,21 +7386,228 @@ function renderBoardTP(){
     tpPickModal(el.dataset.tp5s);
   });
 
-  tpFitPlan();   // co khung tường vừa khít phần đã sắp xếp
+  tpFitPlan();   // co khung tường vừa khít phần đã sắp xếp + tự phóng cho vừa bề ngang khung
 
-  // Lần đầu mở: mặc định thu phóng 50% để thấy trọn bố cục trong 1 màn hình
-  // (vẫn kéo thanh trượt lên tối đa 130% khi cần nhìn kỹ từng kệ)
-  if(!renderBoardTP._fitted){
-    const z = 50;
-    $('tpPlan').style.zoom = z + '%';
-    $('tpZoom').value = z; $('tpZoomVal').textContent = z + '%';
-    renderBoardTP._fitted = true;
-    tpFitPlan();     // tính lại bề ngang theo tỉ lệ mới, nếu không kho chỉ rộng một nửa màn hình
-  }
+  renderTpViec();
+  renderTpTomTat();
 
   // Ghi lại toạ độ vừa sinh ra, để lần mở sau các ô đứng đúng chỗ cũ
   // (chỉ chạy lần đầu, hoặc sau khi bấm "Về mặc định")
   if(daThemToaDo) saveKho();
+}
+
+// ---- Bảng phân công 5S (tóm tắt theo người) ----
+// Tự lấy từ sơ đồ + Việc 5S thêm: mỗi nhân viên kho thành phẩm 1 dòng (bỏ Giám sát), xếp theo
+// vị trí 5S đầu tiên trên sơ đồ; tên ghi trên sơ đồ mà không khớp nhân viên nào thì thêm dòng riêng.
+// Phần đầu bảng (giờ 5S, ghi chú) sửa được: tpBoard.tomTat = { gioHC, gioCa2, ghiChu }.
+const TP_TT_MD = { gioHC: '8h00 - 8h15', gioCa2: '16h45 - 17h00', ghiChu: 'Xe kích để ở dãy A' };
+function tpTomTatDong(){
+  const A = tpAssign(), keys = tp5sKeys();
+  const nhanO = k => { const z = TP5S_ZONES.find(x=>x.id === k); return z ? z.name.toUpperCase() : k; };
+  const cua = {};                                   // tên ngắn -> { o: [ô sơ đồ], viec: [việc thêm] }
+  Object.keys(A).forEach(k=>splitNames(A[k]).forEach(n=>{
+    const c = cua[normName(n)] || (cua[normName(n)] = { ten: n, o: [], viec: [] });
+    if(laTpViec(k)) c.viec.push(tp5sLabel(k)); else c.o.push(k);
+  }));
+  const thuTu = k => { const i = keys.indexOf(k); return i < 0 ? 999 : i; };
+  const xep = c => c && c.o.length ? Math.min(...c.o.map(thuTu)) : 9999;
+  const dong = khoEmployees('thanhpham').filter(e=>e.position !== 'Giám sát').map(e=>{
+    const c = cua[normName(getEmployeeShortName(e))];
+    if(c) c.daDung = true;
+    return { maSo: e.maSo || '', ten: e.name, o: c ? c.o.slice().sort((a, b)=>thuTu(a) - thuTu(b)).map(nhanO) : [], viec: c ? c.viec : [], xep: xep(c) };
+  });
+  Object.values(cua).filter(c=>!c.daDung).forEach(c=>dong.push({ maSo: '', ten: c.ten, ngoai: true,
+    o: c.o.slice().sort((a, b)=>thuTu(a) - thuTu(b)).map(nhanO), viec: c.viec, xep: xep(c) }));
+  // Việc giao theo vai trò (VD "Người nhập hàng"): mỗi vai trò 1 dòng ở cuối bảng
+  const vaiTro = {};
+  tpViecDs().filter(v=>v.vaiTro).forEach(v=>(vaiTro[v.vaiTro] = vaiTro[v.vaiTro] || []).push(v.ten));
+  Object.keys(vaiTro).forEach(t=>dong.push({ maSo: '', ten: t, vaiTro: true, o: [], viec: vaiTro[t], xep: 99999 }));
+  return dong.sort((a, b)=>a.xep - b.xep || a.ten.localeCompare(b.ten, 'vi'));
+}
+function renderTpTomTat(){
+  const box = $('tpTomTat');
+  if(!box) return;
+  const K = curKho(), tt = Object.assign({}, TP_TT_MD, K.tpBoard.tomTat || {});
+  const sua = coSuaTab('thanhpham', 'so5s');
+  const dong = tpTomTatDong();
+  const chuaCo = dong.filter(d=>!d.ngoai && !d.vaiTro && !d.o.length).length;
+  box.innerHTML = `<div class="tptt">
+    <div class="tptt-cong">
+      ${sua ? '<button class="ghost sm" id="tpttSua">✎ Sửa thông tin</button>' : ''}
+      <button class="secondary sm" id="tpttXlsx">⬇ Excel</button>
+      <button class="secondary sm" id="tpttPdf">⬇ PDF</button></div>
+    <div class="tptt-wrap"><table class="tptt-bang">
+      <tr><th colspan="5" class="tieude">BẢNG PHÂN CÔNG KHU VỰC 5S</th></tr>
+      <tr class="phu"><th colspan="2" rowspan="2">Thời gian 5S</th><td class="gio">HC: ${esc(tt.gioHC)}</td>
+        <td colspan="2" rowspan="2" class="khau">SÀNG LỌC · SẮP XẾP · SẠCH SẼ · SĂN SÓC · SẴN SÀNG</td></tr>
+      <tr class="phu"><td class="gio">Ca 2: ${esc(tt.gioCa2)}</td></tr>
+      ${tt.ghiChu ? `<tr><th colspan="5" class="ghichu">${esc(tt.ghiChu)}</th></tr>` : ''}
+      <tr class="cot"><th>STT</th><th>MSNV</th><th>Họ tên</th><th>Vị trí 5S</th><th>Quản lý thêm</th></tr>
+      ${dong.map((d, i)=>`<tr class="${d.o.length || d.vaiTro ? '' : 'chua'}${d.ngoai ? ' ngoai' : ''}${d.vaiTro ? ' vaitro' : ''}">
+        <td class="stt">${i + 1}</td><td class="ma">${esc(d.maSo || '—')}</td>
+        <td class="ten">${esc(d.ten)}${d.ngoai ? ' <small title="Tên ghi trên sơ đồ, không khớp nhân viên nào trong kho">ngoài danh sách</small>' : ''}${d.vaiTro ? ' <small>vai trò</small>' : ''}</td>
+        <td class="vt">${d.o.length ? esc(d.o.join(' / ')) : (d.vaiTro ? '—' : '<i>chưa có vị trí</i>')}</td>
+        <td class="viec">${d.viec.map(esc).join('<br>')}</td></tr>`).join('')}
+    </table></div>
+    <div class="tptt-ghi">${dong.filter(d=>!d.vaiTro).length} người${chuaCo ? ` · <b>${chuaCo} người chưa có vị trí 5S</b> (tô vàng)` : ''} · bảng tự cập nhật theo sơ đồ và danh sách Việc 5S thêm.</div>
+  </div>`;
+  $('tpttXlsx').onclick = ()=>tpTomTatXlsx(dong, tt);
+  $('tpttPdf').onclick = ()=>tpTomTatPdf();
+  if(sua) $('tpttSua').onclick = async ()=>{
+    const r = await promptBox('Thông tin bảng phân công 5S', [
+      { key:'gioHC', label:'Giờ 5S ca HC', value: tt.gioHC },
+      { key:'gioCa2', label:'Giờ 5S ca 2', value: tt.gioCa2 },
+      { key:'ghiChu', label:'Ghi chú (để trống = ẩn dòng này)', value: tt.ghiChu },
+    ]);
+    if(!r) return;
+    K.tpBoard.tomTat = { gioHC: r.gioHC.trim(), gioCa2: r.gioCa2.trim(), ghiChu: r.ghiChu.trim() };
+    await saveKho(); render(); toast('✓ Đã lưu thông tin bảng phân công');
+  };
+}
+function tpTomTatXlsx(dong, tt){
+  if(typeof XLSX === 'undefined'){ toast('⚠ Chưa tải được thư viện Excel — kiểm tra mạng rồi tải lại trang'); return; }
+  const aoa = [
+    ['BẢNG PHÂN CÔNG KHU VỰC 5S'],
+    ['Thời gian 5S', '', 'HC: ' + tt.gioHC, 'SÀNG LỌC - SẮP XẾP - SẠCH SẼ - SĂN SÓC - SẴN SÀNG'],
+    ['', '', 'Ca 2: ' + tt.gioCa2],
+    ...(tt.ghiChu ? [[tt.ghiChu]] : []),
+    ['STT', 'MSNV', 'Họ tên', 'Vị trí 5S', 'Quản lý thêm'],
+    ...dong.map((d, i)=>[i + 1, d.maSo, d.ten, d.o.join(' / '), d.viec.join('\n')]),
+  ];
+  const ws = XLSX.utils.aoa_to_sheet(aoa);
+  ws['!cols'] = [{ wch:5 }, { wch:13 }, { wch:24 }, { wch:34 }, { wch:30 }];
+  const g = tt.ghiChu ? 1 : 0;
+  ws['!merges'] = [{ s:{r:0,c:0}, e:{r:0,c:4} }, { s:{r:1,c:0}, e:{r:2,c:1} }, { s:{r:1,c:3}, e:{r:2,c:4} }]
+    .concat(g ? [{ s:{r:3,c:0}, e:{r:3,c:4} }] : []);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Phan cong 5S');
+  XLSX.writeFile(wb, `phan-cong-5s-kho-thanh-pham-${todayKey()}.xlsx`);
+  toast('✓ Đã xuất Excel bảng phân công 5S');
+}
+// Xuất PDF: chụp nguyên bảng (html2canvas) rồi đặt vào trang A4 dọc, vừa bề ngang; bảng dài thì sang trang
+function tpTomTatPdf(){
+  const bang = document.querySelector('#tpTomTat .tptt-bang');
+  if(!bang){ toast('Chưa có bảng để xuất'); return; }
+  if(typeof html2canvas === 'undefined' || !(window.jspdf && window.jspdf.jsPDF)){
+    toast('⚠ Chưa tải được thư viện xuất PDF — kiểm tra mạng rồi tải lại trang'); return;
+  }
+  html2canvas(bang, { backgroundColor:'#ffffff', scale:2 }).then(canvas=>{
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation:'portrait', unit:'pt', format:'a4' });
+    const LE = 28, pw = pdf.internal.pageSize.getWidth() - LE * 2, ph = pdf.internal.pageSize.getHeight() - LE * 2;
+    const tiLe = pw / canvas.width;                       // pt cho 1 px ảnh
+    const cao1Trang = Math.floor(ph / tiLe);              // số px ảnh vừa 1 trang
+    for(let y = 0, trang = 0; y < canvas.height; y += cao1Trang, trang++){
+      const h = Math.min(cao1Trang, canvas.height - y);
+      const c = document.createElement('canvas');
+      c.width = canvas.width; c.height = h;
+      c.getContext('2d').drawImage(canvas, 0, y, canvas.width, h, 0, 0, canvas.width, h);
+      if(trang) pdf.addPage();
+      pdf.addImage(c.toDataURL('image/png'), 'PNG', LE, LE, pw, h * tiLe);
+    }
+    pdf.save(`phan-cong-5s-kho-thanh-pham-${todayKey()}.pdf`);
+    toast('✓ Đã xuất PDF bảng phân công 5S');
+  }).catch(()=>toast('⚠ Không xuất được PDF — thử tải lại trang'));
+}
+
+// Hộp thêm / sửa 1 việc 5S: tên + cách giao (1 người · tối đa 2 người · vai trò cố định)
+// Trả về { ten, toiDa, vaiTro } hoặc null nếu huỷ
+function tpViecForm(v){
+  return new Promise(res=>{
+    const kieu0 = v && v.vaiTro ? 'vaitro' : String(v && +v.toiDa > 1 ? Math.min(4, +v.toiDa) : 1);
+    const m = openModal(v ? 'Sửa việc 5S' : 'Thêm việc 5S', `
+      <label class="field-label">Tên việc / thiết bị</label>
+      <input type="text" data-ten value="${esc(v ? v.ten : '')}" placeholder="VD: XE KÍCH SỐ 12">
+      <label class="field-label">Giao cho</label>
+      <select data-kieu>
+        <option value="1"${kieu0 === '1' ? ' selected' : ''}>1 người — chọn người trong kho</option>
+        ${[2, 3, 4].map(n=>`<option value="${n}"${kieu0 === String(n) ? ' selected' : ''}>Tối đa ${n} người — chọn người trong kho</option>`).join('')}
+        <option value="vaitro"${kieu0 === 'vaitro' ? ' selected' : ''}>Vai trò cố định — không chọn người</option>
+      </select>
+      <div data-hopvt><label class="field-label">Tên vai trò</label>
+        <input type="text" data-vt value="${esc(v && v.vaiTro || '')}" placeholder="VD: Người nhập hàng, Người lái xe ca 1"></div>
+      <div class="lg-err" data-err></div>
+      <div class="row2" style="margin-top:14px;"><button class="ghost" data-no>Huỷ</button><button data-ok>${v ? 'Lưu' : 'Thêm'}</button></div>`);
+    const q = s => m.body.querySelector(s);
+    const hien = ()=>{ q('[data-hopvt]').style.display = q('[data-kieu]').value === 'vaitro' ? '' : 'none'; };
+    q('[data-kieu]').onchange = hien; hien();
+    q('[data-no]').onclick = ()=>{ m.close(); res(null); };
+    q('[data-ok]').onclick = ()=>{
+      const ten = q('[data-ten]').value.trim().toUpperCase(), kieu = q('[data-kieu]').value, vt = q('[data-vt]').value.trim();
+      if(!ten){ q('[data-err]').textContent = 'Nhập tên việc / thiết bị'; return; }
+      if(curKho().tpBoard.viec.some(x=>x !== v && normName(x.ten) === normName(ten))){ q('[data-err]').textContent = `Đã có "${ten}"`; return; }
+      if(kieu === 'vaitro' && !vt){ q('[data-err]').textContent = 'Nhập tên vai trò'; return; }
+      m.close();
+      res(kieu === 'vaitro' ? { ten, vaiTro: vt } : { ten, toiDa: +kieu || 1 });
+    };
+  });
+}
+// ---- Việc 5S thêm: bàn scan, xe kích, xe nâng… (danh sách dưới sơ đồ) ----
+// 1 người vừa giữ kệ / khu vực trên sơ đồ vừa nhận thêm việc ở đây — không tính là trùng.
+function renderTpViec(){
+  const box = $('tpViec');
+  if(!box) return;
+  const K = curKho(), A = tpAssign();
+  if(!Array.isArray(K.tpBoard.viec)){ K.tpBoard.viec = TP5S_VIEC_MD.map(v=>({ ...v })); K.tpBoard.viecBan = TP5S_VIEC_BAN; }
+  tpViecCapNhat(K.tpBoard);
+  const sua = coSuaTab('thanhpham', 'so5s');
+  const ds = K.tpBoard.viec.slice().sort((a, b)=>a.ten.localeCompare(b.ten, 'vi', { numeric: true }));
+  const trong = ds.filter(v=>!v.vaiTro && !splitNames(A['v_' + v.id]).length).length;
+  // Theo người: vị trí trên sơ đồ + việc thêm
+  const theoNguoi = {};
+  Object.keys(A).forEach(k=>splitNames(A[k]).forEach(n=>{
+    const o = theoNguoi[n] || (theoNguoi[n] = { so: [], viec: [] });
+    (laTpViec(k) ? o.viec : o.so).push(tp5sLabel(k));
+  }));
+  const nguoiViec = Object.keys(theoNguoi).filter(n=>theoNguoi[n].viec.length).sort((a, b)=>a.localeCompare(b, 'vi'));
+  box.innerHTML = `<div class="tpv">
+    <div class="tpv-hd"><b>🧰 Việc 5S thêm</b><span>${ds.length} việc${trong ? ` · <em>${trong} chưa có người</em>` : ''} · không tính vào cảnh báo sơ đồ</span>
+      ${sua ? '<button class="secondary sm" id="tpvThem">+ Thêm việc</button>' : ''}</div>
+    <div class="tpv-luoi">${ds.map(v=>{
+      const nut = sua ? `<span class="tpv-nut"><button class="ghost sm" data-tpvsua="${esc(v.id)}" title="Sửa tên / cách giao">✎</button><button class="ghost sm" data-tpvxoa="${esc(v.id)}" title="Xoá việc này">✕</button></span>` : '';
+      // Giao cho vai trò cố định: không chọn người
+      if(v.vaiTro) return `<div class="tpv-o vaitro"><span class="tpv-ten">${esc(v.ten)}</span>
+        <span class="tpv-vt" title="Giao theo vai trò — không chọn người">${esc(v.vaiTro)}</span>${nut}</div>`;
+      const ng = splitNames(A['v_' + v.id]), toiDa = +v.toiDa > 1 ? +v.toiDa : 1;
+      return `<div class="tpv-o${ng.length ? '' : ' trong'}">
+        <span class="tpv-ten">${esc(v.ten)}${toiDa > 1 ? `<small>${ng.length}/${toiDa} người</small>` : ''}</span>
+        <span class="tpv-nguoi" data-tp5s="v_${esc(v.id)}" title="Bấm để chọn người">${ng.length ? esc(ng.join(' + ')) : '＋ chọn'}</span>
+        ${nut}
+      </div>`;
+    }).join('')}</div>
+    ${nguoiViec.length ? `<div class="tpv-theo"><b>Theo người</b>${nguoiViec.map(n=>`<div><b>${esc(n)}</b>: ${theoNguoi[n].so.length ? esc(theoNguoi[n].so.join(', ')) + ' · ' : ''}<span>${esc(theoNguoi[n].viec.join(', '))}</span></div>`).join('')}</div>` : ''}
+  </div>`;
+  box.querySelectorAll('[data-tp5s]').forEach(el=>el.onclick = ()=>tpPickModal(el.dataset.tp5s));
+  if(!sua) return;
+  $('tpvThem').onclick = async ()=>{
+    const v = await tpViecForm(null);
+    if(!v) return;
+    v.id = 'v' + Date.now().toString(36);
+    K.tpBoard.viec.push(v);
+    await saveKho(); render(); toast('✓ Đã thêm ' + v.ten);
+  };
+  box.querySelectorAll('[data-tpvsua]').forEach(b=>b.onclick = async ()=>{
+    const v = K.tpBoard.viec.find(x=>x.id === b.dataset.tpvsua);
+    const moi = v && await tpViecForm(v);
+    if(!moi) return;
+    const k = 'v_' + v.id;
+    v.ten = moi.ten;
+    if(moi.vaiTro){ v.vaiTro = moi.vaiTro; delete v.toiDa; delete A[k]; }   // giao vai trò: bỏ người đã chọn
+    else{
+      delete v.vaiTro;
+      if(moi.toiDa > 1) v.toiDa = moi.toiDa; else delete v.toiDa;
+      const ng = splitNames(A[k]);
+      if(ng.length > (moi.toiDa || 1)) A[k] = ng.slice(0, moi.toiDa || 1).join(' + ');   // bớt về đúng số người
+    }
+    await saveKho(); render(); toast('✓ Đã lưu ' + v.ten);
+  });
+  box.querySelectorAll('[data-tpvxoa]').forEach(b=>b.onclick = async ()=>{
+    const v = K.tpBoard.viec.find(x=>x.id === b.dataset.tpvxoa);
+    if(!v || !await confirmBox(`Xoá việc "${v.ten}" khỏi danh sách 5S?`)) return;
+    K.tpBoard.viec = K.tpBoard.viec.filter(x=>x !== v);
+    delete A['v_' + v.id];
+    await saveKho(); render(); toast('✓ Đã xoá ' + v.ten);
+  });
 }
 // =====================================================================
 // 11d-ter. "ĐÓNG BĂNG" SƠ ĐỒ — mỗi ô một toạ độ riêng
@@ -7374,6 +7699,17 @@ function tpFitPlan(){
   // Keo 1 ke ra xa hon me tuong -> kho tu noi rong. Keo thu vao -> kho tu co lai.
   const w = Math.ceil(right + PAD);
   if(w > 0) plan.style.width = w + 'px';
+
+  // TỰ PHÓNG CHO VỪA BỀ NGANG KHUNG (bỏ thanh "Thu phóng"): cả sơ đồ phóng đều 1 tỉ lệ nên
+  // chiều dài và bề rộng các cột tăng / giảm theo đúng tỉ lệ. Đang kéo khối thì giữ tỉ lệ cũ
+  // (đổi tỉ lệ giữa chừng sẽ làm lệch khoảng cách chuột) — thả tay ra mới tính lại.
+  if(wrap0 && w > 0 && !TP_DRAG){
+    const rong = wrap0.clientWidth - 2;
+    if(rong > 100){
+      const z = Math.min(2.5, Math.max(0.25, rong / w));
+      plan.style.zoom = (z * 100).toFixed(2) + '%';
+    }
+  }
 
   // Giữ nguyên chỗ đang xem — không để trang tự nhảy đi đâu
   if(wrap0){ wrap0.scrollTop = cuonDoc; wrap0.scrollLeft = cuonNgang; }
@@ -7488,31 +7824,47 @@ document.addEventListener('mouseup', async ()=>{
 window.addEventListener('blur', ()=>{ if(TP_DRAG){ TP_DRAG.mvEl.classList.remove('tp-moving'); TP_DRAG = null; } });
 
 // Chọn người phụ trách cho 1 vị trí trên sơ đồ kho thành phẩm
+// Việc 5S thêm cho phép nhiều người (toiDa > 1): bấm tên để tích / bỏ tích, rồi Lưu ("Luận + Tuấn")
 function tpPickModal(code){
   const A = tpAssign(), cur = A[code] || '';
+  const viec = tpViecCua(code), toiDa = viec && +viec.toiDa > 1 ? +viec.toiDa : 1;
+  let chon = splitNames(cur);
   const names = [...new Set([
     ...khoEmployees('thanhpham').map(getEmployeeShortName),
-    ...Object.values(A).filter(Boolean),
+    ...Object.values(A).flatMap(splitNames),
   ])].sort((a,b)=>a.localeCompare(b,'vi'));
-  const m = openModal('Chọn người — ' + tp5sLabel(code), `
+  const m = openModal('Chọn người — ' + tp5sLabel(code) + (toiDa > 1 ? ` (tối đa ${toiDa} người)` : ''), `
     <input type="text" id="tpSearch" placeholder="🔍 Tìm tên, hoặc gõ tên mới rồi bấm dòng ➕">
     <div class="checklist" id="tpOpts" style="margin-top:10px"></div>
-    <div class="btnrow" style="margin-top:14px;"><button class="ghost" id="tpClear">— Bỏ trống vị trí này —</button></div>`);
+    <div class="btnrow" style="margin-top:14px;"><button class="ghost" id="tpClear">— Bỏ trống vị trí này —</button>
+      ${toiDa > 1 ? '<button id="tpLuuNhieu">Lưu</button>' : ''}</div>`);
+  const luu = async (gt, tb)=>{ A[code] = gt; await saveKho(); m.close(); render(); toast(tb); };
   const draw = (q)=>{
     const qq = (q||'').toLowerCase().trim();
+    // Ghi chú bên cạnh tên: vị trí trên sơ đồ và việc thêm tính riêng (giữ cả 2 là bình thường)
     let html = names.filter(n=>n.toLowerCase().includes(qq)).map(n=>{
-      const busy = Object.keys(A).some(k=>k!==code && A[k]===n);
-      return `<label data-pick="${esc(n)}" style="cursor:pointer"><span style="flex:1">${n===cur?'● ':''}${esc(n)}</span>${busy?'<span class="chip forklift" style="font-size:11px">đã có vị trí</span>':''}</label>`;
+      const cua = Object.keys(A).filter(k=>k!==code && splitNames(A[k]).includes(n));
+      const viTri = cua.filter(k=>!laTpViec(k)).length, viecKhac = cua.filter(laTpViec).length;
+      const chip = (laTpViec(code) ? viecKhac : viTri) ? `<span class="chip forklift" style="font-size:11px">${laTpViec(code) ? `đã có ${viecKhac} việc` : 'đã có vị trí'}</span>` : '';
+      const dau = toiDa > 1 ? (chon.includes(n) ? '☑ ' : '☐ ') : (n === cur ? '● ' : '');
+      return `<label data-pick="${esc(n)}" style="cursor:pointer"><span style="flex:1">${dau}${esc(n)}</span>${chip}</label>`;
     }).join('');
     if(qq && !names.some(n=>n.toLowerCase()===qq)) html += `<label data-pick="${esc(q.trim())}" style="cursor:pointer"><span style="flex:1">➕ Thêm “${esc(q.trim())}”</span></label>`;
     $('tpOpts').innerHTML = html || '<p class="empty-msg">Không tìm thấy tên nào.</p>';
+    if(toiDa > 1) $('tpLuuNhieu').textContent = `Lưu (${chon.length}/${toiDa} người)`;
     $('tpOpts').querySelectorAll('[data-pick]').forEach(el=>el.onclick=async ()=>{
-      A[code] = el.dataset.pick;
-      await saveKho(); m.close(); render(); toast('✓ Đã cập nhật người phụ trách');
+      const n = el.dataset.pick;
+      if(toiDa === 1) return luu(n, '✓ Đã cập nhật người phụ trách');
+      if(chon.includes(n)) chon = chon.filter(x=>x !== n);
+      else if(chon.length >= toiDa){ toast(`⚠ Tối đa ${toiDa} người — bỏ tích 1 người trước`); return; }
+      else chon.push(n);
+      if(!names.includes(n)) names.push(n);
+      draw($('tpSearch').value);
     });
   };
   $('tpSearch').addEventListener('input', e=>draw(e.target.value));
-  $('tpClear').onclick = async ()=>{ A[code] = ''; await saveKho(); m.close(); render(); toast('✓ Đã bỏ trống vị trí'); };
+  $('tpClear').onclick = ()=>luu('', '✓ Đã bỏ trống vị trí');
+  if(toiDa > 1) $('tpLuuNhieu').onclick = ()=>luu(chon.join(' + '), '✓ Đã cập nhật người phụ trách');
   draw('');
 }
 // Xuất sơ đồ kho thành phẩm ra ảnh / PDF
@@ -11257,12 +11609,6 @@ $('tpResetSize').onclick = async ()=>{
 };
 $('tpPng').onclick = ()=>exportTP('png');
 $('tpPdf').onclick = ()=>exportTP('pdf');
-$('tpZoom').addEventListener('input', (e)=>{
-  const v = e.target.value;
-  $('tpPlan').style.zoom = v + '%';
-  $('tpZoomVal').textContent = v + '%';
-  tpFitPlan();     // doi ty le thi be ngang kho phai tinh lai moi phu het man hinh
-});
 
 $('b5Png').onclick = ()=>export5S('png');
 $('b5Pdf').onclick = ()=>export5S('pdf');
