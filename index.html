@@ -1360,10 +1360,6 @@
   .tpv-nut{display:flex; gap:2px; opacity:.45;}
   .tpv-o:hover .tpv-nut{opacity:1;}
   .tpv-nut button{padding:2px 6px; font-size:12px;}
-  .tpv-theo{margin-top:12px; font-size:12.5px; color:var(--ink-soft); line-height:1.7;}
-  .tpv-theo > b{display:block; color:var(--ink); font-size:13px;}
-  .tpv-theo div b{color:var(--ink);}
-  .tpv-theo div span{color:#b45309; font-weight:600;}
 
   /* Bảng phân công 5S (tóm tắt theo người) — kho thành phẩm */
   .tptt{margin-top:18px; border-top:1px solid var(--line-soft); padding-top:12px;}
@@ -7424,6 +7420,13 @@ function tpTomTatDong(){
   Object.keys(vaiTro).forEach(t=>dong.push({ maSo: '', ten: t, vaiTro: true, o: [], viec: vaiTro[t], xep: 99999 }));
   return dong.sort((a, b)=>a.xep - b.xep || a.ten.localeCompare(b.ten, 'vi'));
 }
+// Cột "Quản lý thêm": việc CHECKLIST (VD checklist xe nâng điện nhập / xuất) mỗi việc 1 dòng riêng;
+// các việc còn lại nối bằng " + " trên 1 dòng cho gọn. Trả về mảng các dòng.
+function tpTomTatViec(ds){
+  const laCheck = t => /CHECKLIST/i.test(t);
+  const conLai = ds.filter(t=>!laCheck(t));
+  return ds.filter(laCheck).concat(conLai.length ? [conLai.join(' + ')] : []);
+}
 function renderTpTomTat(){
   const box = $('tpTomTat');
   if(!box) return;
@@ -7447,7 +7450,7 @@ function renderTpTomTat(){
         <td class="stt">${i + 1}</td><td class="ma">${esc(d.maSo || '—')}</td>
         <td class="ten">${esc(d.ten)}${d.ngoai ? ' <small title="Tên ghi trên sơ đồ, không khớp nhân viên nào trong kho">ngoài danh sách</small>' : ''}${d.vaiTro ? ' <small>vai trò</small>' : ''}</td>
         <td class="vt">${d.o.length ? esc(d.o.join(' / ')) : (d.vaiTro ? '—' : '<i>chưa có vị trí</i>')}</td>
-        <td class="viec">${d.viec.map(esc).join('<br>')}</td></tr>`).join('')}
+        <td class="viec">${tpTomTatViec(d.viec).map(esc).join('<br>')}</td></tr>`).join('')}
     </table></div>
     <div class="tptt-ghi">${dong.filter(d=>!d.vaiTro).length} người${chuaCo ? ` · <b>${chuaCo} người chưa có vị trí 5S</b> (tô vàng)` : ''} · bảng tự cập nhật theo sơ đồ và danh sách Việc 5S thêm.</div>
   </div>`;
@@ -7472,7 +7475,7 @@ function tpTomTatXlsx(dong, tt){
     ['', '', 'Ca 2: ' + tt.gioCa2],
     ...(tt.ghiChu ? [[tt.ghiChu]] : []),
     ['STT', 'MSNV', 'Họ tên', 'Vị trí 5S', 'Quản lý thêm'],
-    ...dong.map((d, i)=>[i + 1, d.maSo, d.ten, d.o.join(' / '), d.viec.join('\n')]),
+    ...dong.map((d, i)=>[i + 1, d.maSo, d.ten, d.o.join(' / '), tpTomTatViec(d.viec).join('\n')]),
   ];
   const ws = XLSX.utils.aoa_to_sheet(aoa);
   ws['!cols'] = [{ wch:5 }, { wch:13 }, { wch:24 }, { wch:34 }, { wch:30 }];
@@ -7553,13 +7556,7 @@ function renderTpViec(){
   const sua = coSuaTab('thanhpham', 'so5s');
   const ds = K.tpBoard.viec.slice().sort((a, b)=>a.ten.localeCompare(b.ten, 'vi', { numeric: true }));
   const trong = ds.filter(v=>!v.vaiTro && !splitNames(A['v_' + v.id]).length).length;
-  // Theo người: vị trí trên sơ đồ + việc thêm
-  const theoNguoi = {};
-  Object.keys(A).forEach(k=>splitNames(A[k]).forEach(n=>{
-    const o = theoNguoi[n] || (theoNguoi[n] = { so: [], viec: [] });
-    (laTpViec(k) ? o.viec : o.so).push(tp5sLabel(k));
-  }));
-  const nguoiViec = Object.keys(theoNguoi).filter(n=>theoNguoi[n].viec.length).sort((a, b)=>a.localeCompare(b, 'vi'));
+  // (Phần "Theo người" đã bỏ — Bảng phân công khu vực 5S bên dưới đã tóm tắt theo từng người)
   box.innerHTML = `<div class="tpv">
     <div class="tpv-hd"><b>🧰 Việc 5S thêm</b><span>${ds.length} việc${trong ? ` · <em>${trong} chưa có người</em>` : ''} · không tính vào cảnh báo sơ đồ</span>
       ${sua ? '<button class="secondary sm" id="tpvThem">+ Thêm việc</button>' : ''}</div>
@@ -7575,7 +7572,6 @@ function renderTpViec(){
         ${nut}
       </div>`;
     }).join('')}</div>
-    ${nguoiViec.length ? `<div class="tpv-theo"><b>Theo người</b>${nguoiViec.map(n=>`<div><b>${esc(n)}</b>: ${theoNguoi[n].so.length ? esc(theoNguoi[n].so.join(', ')) + ' · ' : ''}<span>${esc(theoNguoi[n].viec.join(', '))}</span></div>`).join('')}</div>` : ''}
   </div>`;
   box.querySelectorAll('[data-tp5s]').forEach(el=>el.onclick = ()=>tpPickModal(el.dataset.tp5s));
   if(!sua) return;
