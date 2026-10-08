@@ -2331,6 +2331,37 @@
   }
 
 </style>
+<style>/* css/modules/hopkho.css */
+/* Họp kho — lịch luân phiên 3 kho chủ trì họp hàng tháng */
+  #page-hopkho{padding-top:16px;}
+  .hop-wrap{max-width:900px;}
+  .hop-tieude{display:flex; flex-wrap:wrap; align-items:center; gap:6px 14px; margin-bottom:14px;}
+  .hop-tieude h2{margin:0; font-size:20px;}
+  .hop-tieude span{font-size:13px; color:var(--ink-soft);}
+  .hop-tieude .hop-nut{margin-left:auto; display:flex; gap:8px; flex-wrap:wrap;}
+
+
+  .hop-luot{display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin-bottom:14px; font-size:13px;}
+  .hop-luot span{border:1px solid var(--line); border-radius:999px; padding:3px 11px; font-weight:700; color:var(--ink-soft); background:#fff;}
+  .hop-luot span.on{background:#0e7490; border-color:#0e7490; color:#fff;}
+  .hop-luot i{font-style:normal; color:var(--ink-soft);}
+
+  .hop-bang{overflow-x:auto; border:1px solid var(--line); border-radius:10px; background:#fff;}
+  .hop-bang table{width:100%; border-collapse:collapse; font-size:14px;}
+  .hop-bang th{background:var(--blue-bg); color:var(--ink-soft); font-size:12px; text-transform:uppercase; letter-spacing:.04em; text-align:left; padding:8px 10px;}
+  .hop-bang td{padding:8px 10px; border-top:1px solid var(--line-soft); white-space:nowrap;}
+  .hop-bang td.gc{white-space:normal; color:var(--ink-soft); font-size:13px;}
+  .hop-bang tr.toi td{background:#ecfeff; font-weight:700;}
+  .hop-bang tr.qua td{color:var(--ink-soft);}
+  .hop-bang tr.huy td{color:var(--ink-soft);}
+  .hop-bang em{font-style:normal; color:#b45309; font-weight:800;}
+  .hop-bang .chip{margin-left:6px; font-size:11.5px; padding:1px 8px;}
+  .hop-xong{margin-left:6px; font-size:11.5px; color:var(--ink-soft); font-weight:600;}
+  .hop-ghi{font-size:12.5px; color:var(--ink-soft); margin-top:10px; line-height:1.55;}
+  .hop-huy{display:flex; align-items:center; gap:8px; margin-top:12px; font-size:14px; font-weight:600;}
+  .hop-huy input{width:auto;}
+
+</style>
 </head>
 <body>
 <div id="shell">
@@ -2432,6 +2463,7 @@
   <main class="tabpage" id="page-caidat"></main>
   <!-- ============ TRANG LỊCH SỬ CHỈNH SỬA ============ -->
   <main class="tabpage" id="page-lichsusua"></main>
+  <main class="tabpage" id="page-hopkho"></main>
 
   <main class="tabpage" id="page-aiproj">
     <div class="aiproj-bar">
@@ -3169,6 +3201,8 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const TABLE = "appwh_storage";
 // Nút "📨 Gửi mail" (tab Xuất hàng) gọi workflow n8n này — xem tools/n8n/build-workflow.js
 const N8N_MAIL_URL = "https://n8n.prd.alillb.esquel.com/webhook/appwh-daily-shipment";
+// Nút "📨 Gửi mail mời họp" (trang Họp kho) — xem tools/n8n/build-hopkho.js
+const N8N_HOP_URL = "https://n8n.prd.alillb.esquel.com/webhook/appwh-hop-kho";
 const SB_HEADERS = { apikey: SUPABASE_ANON_KEY, Authorization: "Bearer " + SUPABASE_ANON_KEY };
 // Có API_BASE (khai trong js/env.js) thì mọi đọc/ghi đi qua backend thay vì gọi thẳng Supabase
 const API_BASE = ((window.APP_CONFIG && window.APP_CONFIG.API_BASE) || '').replace(/\/+$/, '');
@@ -3316,34 +3350,63 @@ const OPS_VAI = [
 ];
 // ===== SƠ ĐỒ 5S KHO VẢI (mặt bằng thật — thay cho danh sách kệ cũ) =====
 // Dãy kệ bên trái: đánh số 12 -> 1 (trái sang phải)
+// Mỗi RACK (1 hàng chữ cái) có người phụ trách riêng: board.assign['r' + chữ], VD rA, rB.
+// Rack trên (rows[0]) ghi tên phía trên, rack dưới (rows[1]) ghi tên phía dưới — 2 rack liền
+// nhau KHÔNG còn dính tên nhau; 1 người giữ 1 hoặc 2 rack ở đâu cũng được.
+// cu = mã dãy đôi cũ (z1…z8, 1 tên cho cả 2 rack) — chỉ để chuyển dữ liệu cũ (b5TachRack).
 const B5_LEFT = [
-  {zone:'z1', rows:['R','Q'], from:12, to:1, topLabel:'lbZ1'},
-  {zone:'z2', rows:['P','N'], from:12, to:1},
-  {zone:'z3', rows:['M','L'], from:12, to:1},
-  {zone:'z4', rows:['K','I'], from:12, to:1, midBefore:'Máy hút ẩm'},
-  {zone:'z5', rows:['H','G'], from:12, to:1},
+  {cu:'z1', rows:['R','Q'], from:12, to:1, topLabel:'lbZ1'},
+  {cu:'z2', rows:['P','N'], from:12, to:1},
+  {cu:'z3', rows:['M','L'], from:12, to:1},
+  {cu:'z4', rows:['K','I'], from:12, to:1, midBefore:'Máy hút ẩm'},
+  {cu:'z5', rows:['H','G'], from:12, to:1},
 ];
 // Dãy kệ bên phải: đánh số 1 -> 13
 const B5_RIGHT = [
-  {zone:'z6', rows:['A','B'], from:1, to:13, midAfter:'Máy hút ẩm'},
-  {zone:'z7', rows:['C','D'], from:1, to:13},
-  {zone:'z8', rows:['E','F'], from:1, to:13},
+  {cu:'z6', rows:['A','B'], from:1, to:13, midAfter:'Máy hút ẩm'},
+  {cu:'z7', rows:['C','D'], from:1, to:13},
+  {cu:'z8', rows:['E','F'], from:1, to:13},
 ];
+const B5_RACKS = [...B5_LEFT, ...B5_RIGHT];
+const b5RackKey = r => 'r' + r;
+const laB5Rack = z => /^r[A-Z]$/.test(z);
 // Nhãn chữ sửa được trên sơ đồ (không phải tên người)
 const B5_DEFAULT_LABELS = { lbZ1: 'Bảng (+ Tủ PCCC)' };
 const B5_LABEL = {
-  z1:'Dãy R/Q', z2:'Dãy P/N', z3:'Dãy M/L', z4:'Dãy K/I', z5:'Dãy H/G',
-  z6:'Dãy A/B', z7:'Dãy C/D', z8:'Dãy E/F',
+  ...Object.fromEntries(B5_RACKS.flatMap(b=>b.rows.map(r=>[b5RackKey(r), 'Rack ' + r]))),
   fl1:'Forklift 1', fl2:'Forklift 2',
   b1:'Màn hình + cửa ra vào', b2:'Bàn xuất', b3:'Bàn cắt + máy cắt',
   b4:'Khu xuất mex + cuốn vải', b5:'Ca 2',
 };
 const B5_DEFAULT_ASSIGN = {
-  z1:'Lương', z2:'Thu', z3:'Thành', z4:'Phúc Đạt', z5:'Thanh',
-  z6:'Khiên', z7:'Hữu Sơn', z8:'Nghĩa',
+  ...Object.fromEntries([['z1','Lương'],['z2','Thu'],['z3','Thành'],['z4','Phúc Đạt'],['z5','Thanh'],
+    ['z6','Khiên'],['z7','Hữu Sơn'],['z8','Nghĩa']]
+    .flatMap(([cu, ten])=>B5_RACKS.find(b=>b.cu === cu).rows.map(r=>[b5RackKey(r), ten]))),
   fl1:'Duy Sơn', fl2:'Hiếu',
   b1:'Niêm', b2:'Niêm', b3:'Duy', b4:'Mẫn', b5:'Trần Đạt',
 };
+// Dữ liệu cũ (1 tên cho cả dãy đôi z1…z8) -> mỗi rack 1 tên: 2 rack nhận đúng tên cũ của dãy.
+// Hàng chờ 5S (người nghỉ việc / đi hỗ trợ) còn giữ mã dãy cũ cũng tách theo.
+// Chạy lại nhiều lần không sao. Trả về true nếu có đổi.
+function b5TachRack(K){
+  const A = K && K.board && K.board.assign;
+  if(!A) return false;
+  let doi = false;
+  B5_RACKS.forEach(b=>{
+    if(!(b.cu in A)) return;
+    b.rows.forEach(r=>{ if(A[b5RackKey(r)] === undefined) A[b5RackKey(r)] = A[b.cu] || ''; });
+    delete A[b.cu]; doi = true;
+  });
+  (K.cho5s || []).forEach(h=>{
+    if(!(h.o || []).some(s=>s.loai === 'vai' && B5_RACKS.some(b=>b.cu === s.key))) return;
+    h.o = h.o.flatMap(s=>{
+      const b = s.loai === 'vai' && B5_RACKS.find(x=>x.cu === s.key);
+      return b ? b.rows.map(r=>({ ...s, key: b5RackKey(r), nhan: B5_LABEL[b5RackKey(r)] })) : [s];
+    });
+    doi = true;
+  });
+  return doi;
+}
 const B5_DEFAULT_NOTE = 'Đội xuất 2, đội nhập 1';
 
 const EQ_VAI = [
@@ -3796,6 +3859,7 @@ function coSuaGi(){
 // Mục sidebar: 'tong3kho' | 'aiproj' | mã kho | 'lichsusua' | 'caidat'
 function coXem(muc){
   if(muc === 'caidat') return laChuTrang();
+  if(muc === 'hopkho') return true;          // Họp kho: mọi tài khoản, kể cả khách, đều xem được
   const u = AUTH.user;
   if(muc === 'lichsusua') return !!u && (u.role === 'chu' || (u.views || []).includes(muc));
   if(u) return u.role === 'chu' || (u.views || []).includes(muc) || (u.khos || []).includes(muc);
@@ -4146,7 +4210,7 @@ let HR = defaultHr();
 let KHO = defaultKhoAll();
 let VIEW = 'tong3kho';       // 'kho' | 'tong3kho' | 'aiproj' | 'caidat' — mở app vào Tổng quan 3 kho
 // Các trang đứng riêng (không thuộc kho nào, không có hàng tab): VIEW -> id trang
-const TRANG_RIENG = { tong3kho:'page-tong3kho', aiproj:'page-aiproj', caidat:'page-caidat', lichsusua:'page-lichsusua' };
+const TRANG_RIENG = { tong3kho:'page-tong3kho', aiproj:'page-aiproj', caidat:'page-caidat', lichsusua:'page-lichsusua', hopkho:'page-hopkho' };
 let CUR_KHO = 'vai';
 let activeTab = 'dashboard';
 let activeSub = 'ds';
@@ -4462,6 +4526,9 @@ async function loadAll(){
     if(netOk) await saveKho({tuDong:true});
   }
   if(!KHO.vai.board.assign) KHO.vai.board.assign = {...B5_DEFAULT_ASSIGN};
+  // 5S kho vải: dãy đôi 1 tên -> mỗi rack 1 tên. Ai sửa được kho vải thì lưu luôn bản đã tách;
+  // người khác chỉ tách trên máy mình (sơ đồ cũng tự tách lại lúc vẽ, xem renderBoard5S).
+  if(b5TachRack(KHO.vai) && netOk && typeof coSuaKho === 'function' && coSuaKho('vai')) await saveKho({tuDong:true});
   if(!KHO.thanhpham.rotation) KHO.thanhpham.rotation = defaultRotation();
   // Nhóm "Xuất hàng": mỗi ca gắn 1 vị trí riêng (VD Ca HC = Xe nâng, Ca 2 = Xuất)
   // -> khi tới kỳ đổi ca thì người ở 2 dòng đó trong Tổng quan tự đổi chỗ cho nhau.
@@ -4604,6 +4671,7 @@ function toggleFullMode(){
 function setView(view, khoId){
   if(view !== 'caidat' && !coXem(view === 'kho' ? (khoId || CUR_KHO) : view)){ toast('⚠ Tài khoản chưa được cấp quyền xem mục này'); return; }
   VIEW = view;
+  if(view === 'hopkho') HOP_TAI = false;         // mở lại trang thì tải lịch họp mới nhất
   if(khoId) CUR_KHO = khoId;
   if(view === 'kho' && khoId) SB_MO = khoId;     // vào kho nào thì sổ menu kho đó
   const sb = $('shell');
@@ -4687,8 +4755,9 @@ function buildSidebar(){
       `<button class="sb-item" data-view="kho" data-kho="${w.id}">
          <span>${w.name.toUpperCase()}</span>${coSuaTrongKho(w.id) ? '' : '<span class="sb-ro" title="Chỉ xem">👁</span>'}<span class="sb-caret">▾</span></button>
        <div class="sb-menu" id="sbMenu-${w.id}"></div>`).join('') +
-    ((coXem('lichsusua') || laChuTrang()) ? `<div class="sb-sep"></div>` : '') +
-    (coXem('lichsusua') ? `<button class="sb-item" data-view="lichsusua"><span>🕘 LỊCH SỬ CHỈNH SỬA</span></button>` : '') +
+    `<div class="sb-sep"></div>` +
+    `<button class="sb-item" data-view="hopkho"><span>📅 HỌP KHO</span></button>` +
+    (coXem('lichsusua') ?`<button class="sb-item" data-view="lichsusua"><span>🕘 LỊCH SỬ CHỈNH SỬA</span></button>` : '') +
     (laChuTrang() ? `<button class="sb-item" data-view="caidat"><span>⚙ CÀI ĐẶT TÀI KHOẢN</span></button>` : '');
 
   document.querySelectorAll('#sidebar .sb-item').forEach(b=>{
@@ -4845,9 +4914,10 @@ function render(){
   $('khoBadge').innerHTML = (VIEW === 'tong3kho') ? `${ICON_ALL} Tổng quan 3 kho`
                          : (VIEW === 'aiproj') ? 'AI Projects'
                          : (VIEW === 'caidat') ? '⚙ Cài đặt tài khoản'
-                         : (VIEW === 'lichsusua') ? '🕘 Lịch sử chỉnh sửa' : `${w.icon} ${esc(w.name)}`;
+                         : (VIEW === 'lichsusua') ? '🕘 Lịch sử chỉnh sửa'
+                         : (VIEW === 'hopkho') ? '📅 Họp kho' : `${w.icon} ${esc(w.name)}`;
   // Đang ở chế độ chỉ xem thì báo rõ ngay dưới tiêu đề
-  const ro = dangChiXem() && !['caidat', 'aiproj', 'lichsusua'].includes(VIEW);
+  const ro = dangChiXem() && !['caidat', 'aiproj', 'lichsusua', 'hopkho'].includes(VIEW);
   document.body.classList.toggle('chi-xem', ro);
   const qb = $('quyenBadge');
   if(qb){ qb.style.display = ro ? '' : 'none'; qb.textContent = AUTH.user ? '👁 Chỉ xem' : '👁 Khách · chỉ xem'; }
@@ -4857,6 +4927,7 @@ function render(){
   if(VIEW === 'aiproj'){ moAiProjects(); return; }
   if(VIEW === 'caidat'){ renderCaiDat(); return; }
   if(VIEW === 'lichsusua'){ renderLichSuSua(); return; }
+  if(VIEW === 'hopkho'){ renderHopKho(); return; }
 
   if(activeTab === 'dashboard') renderDashboard();
   if(activeTab === 'phancong'){ renderStatusLine(); renderCycleTag(); renderAssignTable(); renderEmpTable(); }
@@ -5529,6 +5600,7 @@ function renderDashboard(){
   const dupIds = getDuplicateEmployeeIds();
   if(dupIds.size) alerts.push(`⚠ Trùng người ở nhiều vị trí: ${[...dupIds].map(empName).join(', ')}`);
   if(CUR_KHO === 'vai' && KK.board){
+    b5TachRack(KK);                     // dữ liệu cũ (dãy đôi 1 tên) -> mỗi rack 1 tên
     // Kho vải dùng sơ đồ mặt bằng: cảnh báo lấy đúng từ sơ đồ, không dò theo tên rút gọn
     const A = KK.board.assign || {};
     const multi = Object.keys(B5_LABEL).filter(z=>splitNames(A[z]).length > 1);
@@ -6162,12 +6234,14 @@ function b5Plate(zone, suffix, used){
   const dupe = splitNames(name).length > 1;   // tô sọc khi 1 vị trí có nhiều người
   return `<span class="b5-plate${name?'':' empty'}${dupe?' dupe':''}" data-b5z="${zone}" title="${esc(B5_LABEL[zone])}${dupe?' — vị trí này đang có nhiều người':''}">${name ? esc(name)+esc(suffix||'') : '＋ chọn người'}${dupe?' ⚠':''}</span>`;
 }
+// 1 dãy kệ đôi: tên phía trên = người rack trên (rows[0]), tên phía dưới = người rack dưới (rows[1])
 function b5Block(b, used, side){
   const B = curKho().board;
-  const top = b.topLabel
-    ? `<div class="b5-static"><span class="b5-editlabel" data-b5label="${b.topLabel}" title="Bấm để sửa chữ này">${esc((B.labels||{})[b.topLabel] || '')} ✎</span></div>`
-    : `<div class="b5-line">${b5Plate(b.zone, '', used)}</div>`;
-  const bot = `<div class="b5-line">${b5Plate(b.zone, '', used)}</div>`;
+  const nhan = b.topLabel
+    ? `<span class="b5-editlabel b5-static" data-b5label="${b.topLabel}" title="Bấm để sửa chữ này">${esc((B.labels||{})[b.topLabel] || '')} ✎</span> `
+    : '';
+  const top = `<div class="b5-line">${nhan}${b5Plate(b5RackKey(b.rows[0]), '', used)}</div>`;
+  const bot = `<div class="b5-line">${b5Plate(b5RackKey(b.rows[1]), '', used)}</div>`;
   const rack = `<div class="b5-rack"><div class="b5-row">${b5Cells(b.rows[0], b.from, b.to)}</div><div class="b5-row">${b5Cells(b.rows[1], b.from, b.to)}</div></div>`;
   const mid = t => `<div class="b5-mid ${side || ''}"><div class="b5-sidebox">${esc(t)}</div></div>`;
   return (b.midBefore ? mid(b.midBefore) : '')
@@ -6175,6 +6249,7 @@ function b5Block(b, used, side){
     + (b.midAfter ? mid(b.midAfter) : '');
 }
 function renderBoard5S(){
+  b5TachRack(curKho());                 // dữ liệu cũ (dãy đôi 1 tên) -> mỗi rack 1 tên
   const B = curKho().board, used = b5Used();
   $('b5Board').innerHTML = `
     <div class="b5-grid">
@@ -6259,17 +6334,24 @@ function b5PickModal(zone){
   $('b5Clear').onclick = ()=>{ m.close(); b5Assign(zone, ''); };
   draw('');
 }
+// Rack: 1 người giữ 1 hoặc 2 rack ở đâu cũng được — chỉ hỏi lại khi người đó đã giữ đủ 2 rack.
+// Vị trí khác (forklift, bàn…): hỏi lại khi người đó đã có vị trí khác như trước.
 async function b5Assign(zone, name){
   const B = curKho().board;
   if(!name){ B.assign[zone] = ''; await saveKho(); render(); toast('✓ Đã bỏ trống vị trí'); return; }
-  const conflicts = Object.keys(B.assign).filter(z=>z!==zone && B.assign[z]===name);
-  if(!conflicts.length){ B.assign[zone] = name; await saveKho(); render(); toast('✓ Đã cập nhật người phụ trách'); return; }
+  const conflicts = Object.keys(B.assign).filter(z=>z!==zone && B.assign[z]===name && laB5Rack(z) === laB5Rack(zone));
+  const toiDa = laB5Rack(zone) ? 2 : 1;
+  if(conflicts.length < toiDa){
+    B.assign[zone] = name; await saveKho(); render();
+    toast('✓ Đã cập nhật người phụ trách' + (conflicts.length ? ` — ${name} giữ ${B5_LABEL[conflicts[0]]} + ${B5_LABEL[zone]}` : ''));
+    return;
+  }
   const other = conflicts[0];
   const m = openModal('Tên này đã được phân công', `
-    <div style="font-size:14.5px; margin-bottom:16px;"><b>${esc(name)}</b> đang phụ trách <b>${esc(conflicts.map(z=>B5_LABEL[z]).join(', '))}</b>. Mỗi vị trí chỉ nên có 1 người — chị muốn xử lý thế nào?</div>
+    <div style="font-size:14.5px; margin-bottom:16px;"><b>${esc(name)}</b> đang phụ trách <b>${esc(conflicts.map(z=>B5_LABEL[z]).join(', '))}</b>. ${laB5Rack(zone) ? 'Mỗi người nên giữ tối đa 2 rack' : 'Mỗi vị trí chỉ nên có 1 người'} — chị muốn xử lý thế nào?</div>
     <div class="btnrow" style="flex-direction:column; align-items:stretch;">
       <button id="b5Move">Chuyển sang ${esc(B5_LABEL[zone])} (bỏ ${esc(B5_LABEL[other])})</button>
-      <button class="secondary" id="b5Both">Vẫn gán — ${esc(name)} đứng cả 2 vị trí</button>
+      <button class="secondary" id="b5Both">Vẫn gán — ${esc(name)} giữ cả ${conflicts.length + 1} vị trí</button>
       <button class="ghost" id="b5Cancel">Huỷ</button>
     </div>`);
   $('b5Move').onclick = async ()=>{ const old = B.assign[zone] || ''; B.assign[other] = old; B.assign[zone] = name; m.close(); await saveKho(); render(); toast('✓ Đã chuyển vị trí'); };
@@ -16827,6 +16909,343 @@ function renderLichSuSua(){
   $('lsLoc').onclick = () => lsTai(false);
   $('lsTaiLai').onclick = () => lsTai(false);
   const them = $('lsThem'); if(them) them.onclick = () => lsTai(true);
+}
+
+</script>
+<script>/* js/modules/hopkho/hopkho-mail.js */
+// Họp kho: nội dung thư mời họp gửi qua n8n
+// =====================================================================
+// File DÙNG CHUNG cho 2 nơi — sửa ở đây là cả hai cùng đổi:
+//   · App: nút "📨 Gửi mail mời họp" ở trang Họp kho (xem trước trước khi gửi)
+//   · n8n: tools/n8n/build-hopkho.js chép nguyên file này (kèm xh-baocao.js để lấy chữ ký)
+// Không dùng DOM hay biến chung của app; mọi tên ở cấp ngoài cùng mang tiền tố hkm / HKM.
+// buoi = { thang:'YYYY-MM', ngay:'YYYY-MM-DD', gio:'HH:MM', diaDiem, kho, ghiChu }
+// =====================================================================
+const HKM = {
+  kho: { vai: 'Kho vải', phulieu: 'Kho phụ liệu', thanhpham: 'Kho thành phẩm' },
+  thu: ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'],
+  mau: '#0e7490',
+};
+function hkmEsc(s){ return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+// Kiểm tra dữ liệu buổi họp (n8n gọi trước khi soạn — dữ liệu do app gửi lên). Trả '' nếu hợp lệ.
+function hkmLoi(b){
+  if(!b || typeof b !== 'object') return 'Thiếu thông tin buổi họp';
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(b.ngay || '')) return 'Ngày họp không hợp lệ';
+  if(!HKM.kho[b.kho]) return 'Kho chủ trì không hợp lệ';
+  if(b.gio && !/^\d{2}:\d{2}$/.test(b.gio)) return 'Giờ họp không hợp lệ';
+  if(String(b.diaDiem || '').length > 200 || String(b.ghiChu || '').length > 500) return 'Địa điểm / ghi chú quá dài';
+  return '';
+}
+function hkmSoanMail(b){
+  const [y, m, d] = b.ngay.split('-').map(Number);
+  const thu = HKM.thu[new Date(y, m - 1, d).getDay()];
+  const ngayVN = `${String(d).padStart(2, '0')}/${String(m).padStart(2, '0')}/${y}`;
+  const kho = HKM.kho[b.kho];
+  const f = 'font-family:Arial,sans-serif;';
+  const dong = (nhan, giaTri)=> giaTri ? `<tr>
+      <td style="${f}font-size:10.5pt;color:#555;padding:6px 18px 6px 0;white-space:nowrap;vertical-align:top;">${nhan}</td>
+      <td style="${f}font-size:10.5pt;color:#111;padding:6px 0;font-weight:bold;">${giaTri}</td></tr>` : '';
+  const html = `<p style="${f}font-size:10.5pt;margin:0 0 12px;">Kính gửi các anh/chị,</p>
+<p style="${f}font-size:10.5pt;margin:0 0 14px;"><b>${hkmEsc(kho)}</b> trân trọng kính mời anh/chị tham dự <b>buổi họp kho tháng ${String(m).padStart(2, '0')}/${y}</b>:</p>
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-left:4px solid ${HKM.mau};padding-left:14px;margin:0 0 14px 2px;">
+  <tr><td style="padding-left:14px;"><table role="presentation" cellpadding="0" cellspacing="0" border="0">
+  ${dong('Thời gian', `${b.gio ? hkmEsc(b.gio) + ', ' : ''}${thu}, ${ngayVN}`)}
+  ${dong('Địa điểm', hkmEsc(b.diaDiem))}
+  ${dong('Kho chủ trì', hkmEsc(kho))}
+  ${dong('Ghi chú', hkmEsc(b.ghiChu))}
+  </table></td></tr></table>
+<p style="${f}font-size:10.5pt;margin:0;">Rất mong anh/chị sắp xếp thời gian tham dự đầy đủ và đúng giờ.</p>
+${typeof xhBcChuKy === 'function' ? xhBcChuKy() : ''}`;
+  return {
+    subject: `[Họp kho] Thư mời họp tháng ${String(m).padStart(2, '0')}/${y} — ${thu}, ${ngayVN} — ${kho} chủ trì`,
+    html,
+  };
+}
+
+</script>
+<script>/* js/modules/hopkho/hopkho.js */
+// Họp kho: mỗi tháng 1 buổi, 3 kho lần lượt đứng ra chủ trì
+// =====================================================================
+// Mục sidebar "📅 HỌP KHO" — mọi tài khoản (kể cả khách) đều xem được; chỉ chủ trang sửa
+// (khoá riêng appwh-hopkho-v1: máy chủ chỉ cho chủ trang ghi khoá không thuộc kho nào).
+// Nút "📨 Gửi mail mời họp" (chủ trang, giám sát): xem trước rồi gọi webhook n8n N8N_HOP_URL
+// (core/config.js); nội dung thư ở hopkho-mail.js — file dùng chung với n8n.
+//
+// HOP = { ngayMacDinh: 20, gioMacDinh: 'HH:MM', diaDiemMacDinh, thuTu: ['vai','phulieu','thanhpham'],
+//         moc: { thang: 'YYYY-MM', kho },            // tháng mốc và kho chủ trì tháng đó
+//         doi: { 'YYYY-MM': { ngay?, gio?, diaDiem?, kho?, huy?, ghiChu? } } }   // chỉnh riêng từng tháng
+// Lượt: tính từ tháng mốc, lượt sau = kho kế tiếp (theo thuTu) SAU KHO THỰC SỰ VỪA CHỦ TRÌ.
+//   · Đổi kho chủ trì 1 tháng thì các tháng sau xoay tiếp từ kho đó (không kho nào họp 2 lần liền).
+//   · Huỷ 1 tháng thì tháng đó không họp, lượt giữ nguyên cho tháng sau.
+// Ngày họp: doi[thang].ngay, không có thì ngày ngayMacDinh của tháng (tháng ngắn thì ngày cuối tháng).
+// Giờ / địa điểm: doi[thang] nếu có, không thì giá trị mặc định.
+// =====================================================================
+const KEY_HOP = 'appwh-hopkho-v1';
+let HOP = null, HOP_TAI = false;
+
+const HOP_DIA_DIEM = 'Văn phòng tầng 2 kho phụ liệu';
+function hopMacDinh(){
+  return { ngayMacDinh: 20, gioMacDinh: '', diaDiemMacDinh: HOP_DIA_DIEM, thuTu: WAREHOUSES.map(w=>w.id),
+           moc: { thang: todayKey().slice(0, 7), kho: WAREHOUSES[0].id }, doi: {} };
+}
+function hopChuan(o){
+  const md = hopMacDinh();
+  o = Object.assign(md, o || {});
+  const ids = WAREHOUSES.map(w=>w.id);
+  if(!Array.isArray(o.thuTu) || o.thuTu.length !== ids.length || !ids.every(id=>o.thuTu.includes(id))) o.thuTu = ids;
+  if(!o.moc || !/^\d{4}-\d{2}$/.test(o.moc.thang) || !ids.includes(o.moc.kho)) o.moc = md.moc;
+  o.ngayMacDinh = Math.min(31, Math.max(1, Number(o.ngayMacDinh) || 20));
+  if(!/^\d{2}:\d{2}$/.test(o.gioMacDinh || '')) o.gioMacDinh = '';
+  o.diaDiemMacDinh = String(o.diaDiemMacDinh || '').trim() || HOP_DIA_DIEM;
+  if(!o.doi || typeof o.doi !== 'object') o.doi = {};
+  return o;
+}
+async function hopTai(){
+  let raw = null;
+  try{ raw = await sbGet(KEY_HOP); }catch(e){}
+  if(!raw) raw = lsGet(KEY_HOP);
+  try{ HOP = hopChuan(raw ? JSON.parse(raw) : null); }catch(e){ HOP = hopChuan(null); }
+  HOP_TAI = true;
+}
+async function hopLuu(){
+  const raw = JSON.stringify(HOP);
+  lsSet(KEY_HOP, raw);
+  try{ await sbSetVerified(KEY_HOP, raw); toast('✓ Đã lưu lịch họp kho'); return true; }
+  catch(e){ toast('⚠ Chưa lưu được lên máy chủ: ' + (e.message || e)); return false; }
+}
+
+// ---- Tính lịch ----
+const hopThangSau = (t, n)=>{ const [y, m] = t.split('-').map(Number); const d = new Date(y, m - 1 + n, 1); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}`; };
+const hopCachThang = (a, b)=>{ const [y1, m1] = a.split('-').map(Number), [y2, m2] = b.split('-').map(Number); return (y2 - y1) * 12 + (m2 - m1); };
+// Ngày mặc định của tháng t; rơi vào Chủ nhật thì lùi 1 ngày sang thứ Bảy
+// (riêng trường hợp lùi ra khỏi tháng — Chủ nhật mùng 1 — thì sang thứ Hai mùng 2).
+function hopNgayMacDinh(t){
+  const [y, m] = t.split('-').map(Number);
+  const d = new Date(y, m - 1, Math.min(HOP.ngayMacDinh, new Date(y, m, 0).getDate()));
+  if(d.getDay() === 0) d.setDate(d.getDate() + (d.getDate() > 1 ? -1 : 1));
+  return `${t}-${pad(d.getDate())}`;
+}
+function hopNgay(t){
+  const d = HOP.doi[t];
+  return (d && d.ngay) || hopNgayMacDinh(t);
+}
+// Kho tới lượt của tháng t (trước khi đổi riêng). Trước tháng mốc thì không có lượt.
+function hopKhoTheoLuot(t){
+  const n = hopCachThang(HOP.moc.thang, t);
+  if(n < 0) return null;
+  const sau = id => HOP.thuTu[(HOP.thuTu.indexOf(id) + 1) % HOP.thuTu.length];
+  let luot = HOP.moc.kho;
+  for(let k = 0, th = HOP.moc.thang; k < n; k++, th = hopThangSau(th, 1)){
+    const d = HOP.doi[th] || {};
+    if(!d.huy) luot = sau(d.kho || luot);           // tháng này có họp -> lượt sau là kho kế tiếp kho đã chủ trì
+  }
+  return luot;
+}
+function hopBuoi(t){
+  const d = HOP.doi[t] || {};
+  const luot = hopKhoTheoLuot(t);
+  return { thang: t, ngay: hopNgay(t), luot, kho: d.kho || luot, doiKho: !!(d.kho && d.kho !== luot),
+           gio: d.gio || HOP.gioMacDinh, diaDiem: d.diaDiem || HOP.diaDiemMacDinh,
+           huy: !!d.huy, ghiChu: d.ghiChu || '', doiNgay: !!d.ngay };
+}
+// Buổi tới: tháng đầu tiên (từ tháng này, không trước tháng mốc) chưa huỷ và ngày họp >= hôm nay
+function hopBuoiToi(){
+  const hn = todayKey();
+  let t = hopCachThang(HOP.moc.thang, hn.slice(0, 7)) < 0 ? HOP.moc.thang : hn.slice(0, 7);
+  for(let k = 0; k < 24; k++, t = hopThangSau(t, 1)){
+    const b = hopBuoi(t);
+    if(!b.huy && b.ngay >= hn) return b;
+  }
+  return null;
+}
+
+// ---- Vẽ trang ----
+const hopKho = id => WAREHOUSES.find(w=>w.id === id) || { id, name: id, icon: '' };
+const hopThu = k => DOW_FULL[fromKey(k).getDay()];
+// Gửi mail mời họp: chủ trang + giám sát (n8n kiểm tra lại đúng điều kiện này)
+const hopDuocGui = ()=> laChuTrang() || !!(AUTH.user && AUTH.user.role === 'giamsat');
+async function renderHopKho(){
+  const host = $('page-hopkho');
+  if(!host) return;
+  if(!HOP_TAI){ host.innerHTML = '<div class="hop-wrap"><p class="empty-msg">Đang tải lịch họp kho…</p></div>'; await hopTai(); }
+  const sua = laChuTrang(), gui = hopDuocGui(), hn = todayKey();
+  const toi = hopBuoiToi();
+  // bảng: 3 tháng trước -> 9 tháng sau (không trước tháng mốc)
+  let dau = hopThangSau(hn.slice(0, 7), -3);
+  if(hopCachThang(HOP.moc.thang, dau) < 0) dau = HOP.moc.thang;
+  const ds = Array.from({ length: hopCachThang(dau, hopThangSau(hn.slice(0, 7), 9)) + 1 }, (_, i)=>hopBuoi(hopThangSau(dau, i)));
+
+  host.innerHTML = `<div class="hop-wrap">
+    <div class="hop-tieude"><h2>📅 Họp kho</h2>
+      <span>Mỗi tháng 1 buổi · 3 kho lần lượt đứng ra chủ trì${sua ? '' : ' · chỉ xem'}</span>
+      <span class="hop-nut">
+        ${gui ? '<button class="sm" id="hopGuiMail" title="Xem trước rồi gửi thư mời họp qua n8n">📨 Gửi mail mời họp</button>' : ''}
+        ${sua ? '<button class="secondary sm" id="hopCaiDat">⚙ Cài đặt</button>' : ''}</span></div>
+
+    <div class="hop-luot">${HOP.thuTu.map((id, i)=>`<span class="${toi && toi.luot === id ? 'on' : ''}">${i + 1}. ${esc(hopKho(id).name)}</span>`).join('<i>→</i>')}<i>↺</i></div>
+
+    <div class="hop-bang"><table>
+      <thead><tr><th>Tháng</th><th>Ngày họp</th><th>Giờ · Địa điểm</th><th>Kho chủ trì</th><th>Ghi chú</th>${sua ? '<th></th>' : ''}</tr></thead>
+      <tbody>${ds.map(b=>{
+        const qua = b.ngay < hn, laToi = toi && toi.thang === b.thang;
+        return `<tr class="${laToi ? 'toi' : ''} ${qua ? 'qua' : ''} ${b.huy ? 'huy' : ''}">
+          <td>${b.thang.slice(5)}/${b.thang.slice(0, 4)}</td>
+          <td>${b.huy ? '<s>' : ''}${hopThu(b.ngay)}, ${fmtVN(fromKey(b.ngay))}${b.huy ? '</s>' : ''}${b.doiNgay ? ' <em title="Đã đổi ngày riêng tháng này">✎</em>' : ''}</td>
+          <td class="gc">${b.huy ? '' : esc([b.gio, b.diaDiem].filter(Boolean).join(' · '))}</td>
+          <td>${b.huy ? '<span class="chip warn">Không họp</span>' : esc(hopKho(b.kho).name)}${b.doiKho ? ' <em title="Đã đổi kho chủ trì — các tháng sau xoay tiếp từ kho này">⇄</em>' : ''}
+            ${laToi ? '<span class="chip ok">Lượt tới</span>' : (qua && !b.huy ? '<span class="hop-xong">đã qua</span>' : '')}</td>
+          <td class="gc">${esc(b.ghiChu)}</td>
+          ${sua ? `<td><button class="ghost sm" data-hopsua="${b.thang}">Sửa</button></td>` : ''}</tr>`;
+      }).join('')}</tbody></table></div>
+    <div class="hop-ghi">Mặc định: ngày <b>${HOP.ngayMacDinh}</b> hàng tháng (rơi vào Chủ nhật thì lùi sang thứ Bảy)${HOP.gioMacDinh ? `, lúc <b>${esc(HOP.gioMacDinh)}</b>` : ''}${HOP.diaDiemMacDinh ? `, tại <b>${esc(HOP.diaDiemMacDinh)}</b>` : ''}${sua ? ' — đổi ở ⚙ Cài đặt, hoặc bấm Sửa để đổi riêng từng tháng' : ''}.
+      Lượt sau luôn là kho kế tiếp kho vừa chủ trì: đổi kho chủ trì 1 tháng thì các tháng sau xoay tiếp từ kho đó; huỷ 1 tháng thì lượt giữ nguyên cho tháng sau.</div>
+  </div>`;
+
+  if(gui) $('hopGuiMail').onclick = ()=>hopMoGuiMail(toi ? toi.thang : null);
+  if(sua){
+    $('hopCaiDat').onclick = hopMoCaiDat;
+    host.querySelectorAll('[data-hopsua]').forEach(b=>b.onclick = ()=>hopMoSua(b.dataset.hopsua));
+  }
+}
+
+// ---- Sửa 1 tháng ----
+function hopMoSua(t){
+  const b = hopBuoi(t);
+  const [y, m] = t.split('-').map(Number);
+  const m1 = `${t}-01`, mN = `${t}-${pad(new Date(y, m, 0).getDate())}`;
+  const d0 = HOP.doi[t] || {};
+  const md = openModal(`Họp kho tháng ${t.slice(5)}/${t.slice(0, 4)}`, `
+    <div class="row2">
+      <div><label class="field-label">Ngày họp</label><input type="date" data-ngay value="${b.ngay}" min="${m1}" max="${mN}"></div>
+      <div><label class="field-label">Giờ họp</label><input type="time" data-gio value="${esc(b.gio)}"></div></div>
+    <label class="field-label">Địa điểm${HOP.diaDiemMacDinh ? ` <span style="font-weight:600;color:var(--ink-soft)">— để trống = ${esc(HOP.diaDiemMacDinh)}</span>` : ''}</label>
+    <input type="text" data-dd value="${esc(d0.diaDiem || '')}" placeholder="${esc(HOP.diaDiemMacDinh || 'VD: Phòng họp tầng 2')}">
+    <label class="field-label">Kho chủ trì</label>
+    <select data-kho>${HOP.thuTu.map(id=>`<option value="${id}" ${id === b.kho ? 'selected' : ''}>${esc(hopKho(id).name)}${id === b.luot ? ' (theo lượt)' : ''}</option>`).join('')}</select>
+    <label class="field-label">Ghi chú <span style="font-weight:600;color:var(--ink-soft)">— không bắt buộc, có trong thư mời</span></label>
+    <input type="text" data-gc value="${esc(b.ghiChu)}" placeholder="VD: mỗi kho chuẩn bị báo cáo tháng">
+    <label class="hop-huy"><input type="checkbox" data-huy ${b.huy ? 'checked' : ''}> Tháng này không họp (lượt giữ nguyên cho tháng sau)</label>
+    <div class="row2" style="margin-top:16px;"><button class="ghost" data-macdinh>Về mặc định</button><button data-luu>Lưu</button></div>`);
+  md.body.querySelector('[data-luu]').onclick = async ()=>{
+    const v = s => md.body.querySelector(s).value.trim();
+    const ngay = v('[data-ngay]');
+    if(!ngay || ngay.slice(0, 7) !== t){ toast('⚠ Ngày họp phải nằm trong tháng ' + t.slice(5) + '/' + t.slice(0, 4)); return; }
+    const d = {};
+    if(ngay !== hopNgayMacDinh(t)) d.ngay = ngay;   // trùng mặc định thì không cần lưu riêng
+    if(v('[data-gio]') && v('[data-gio]') !== HOP.gioMacDinh) d.gio = v('[data-gio]');
+    if(v('[data-dd]') && v('[data-dd]') !== HOP.diaDiemMacDinh) d.diaDiem = v('[data-dd]');
+    if(v('[data-kho]') !== b.luot) d.kho = v('[data-kho]');
+    if(md.body.querySelector('[data-huy]').checked) d.huy = true;
+    if(v('[data-gc]')) d.ghiChu = v('[data-gc]');
+    if(Object.keys(d).length) HOP.doi[t] = d; else delete HOP.doi[t];
+    md.close(); await hopLuu(); renderHopKho();
+  };
+  md.body.querySelector('[data-macdinh]').onclick = async ()=>{
+    delete HOP.doi[t];
+    md.close(); await hopLuu(); renderHopKho();
+  };
+}
+
+// ---- Cài đặt chung ----
+function hopMoCaiDat(){
+  const hn = todayKey().slice(0, 7);
+  const toi = hopBuoiToi();
+  const md = openModal('Cài đặt họp kho', `
+    <div class="row2">
+      <div><label class="field-label">Ngày họp mặc định</label><input type="number" min="1" max="31" data-ngaymd value="${HOP.ngayMacDinh}"></div>
+      <div><label class="field-label">Giờ họp mặc định</label><input type="time" data-giomd value="${esc(HOP.gioMacDinh)}"></div></div>
+    <label class="field-label">Địa điểm mặc định</label>
+    <input type="text" data-ddmd value="${esc(HOP.diaDiemMacDinh)}" placeholder="VD: Phòng họp tầng 2 — văn phòng kho">
+    <label class="field-label">Thứ tự luân phiên</label>
+    ${HOP.thuTu.map((id, i)=>`<select data-tt="${i}" style="margin-bottom:6px">${WAREHOUSES.map(w=>`<option value="${w.id}" ${w.id === id ? 'selected' : ''}>${i + 1}. ${esc(w.name)}</option>`).join('')}</select>`).join('')}
+    <label class="field-label">Mốc lượt: tháng nào, kho nào chủ trì</label>
+    <div class="row2"><input type="month" data-mocthang value="${toi ? toi.thang : hn}">
+      <select data-mockho>${WAREHOUSES.map(w=>`<option value="${w.id}" ${toi && w.id === toi.luot ? 'selected' : ''}>${esc(w.name)}</option>`).join('')}</select></div>
+    <div class="nv-ghi" style="margin-top:6px">Các tháng sau mốc tự xoay theo thứ tự trên. Đổi mốc không xoá các chỉnh riêng từng tháng.</div>
+    <div class="btnrow" style="margin-top:16px;"><button data-luu>Lưu cài đặt</button></div>`);
+  md.body.querySelector('[data-luu]').onclick = async ()=>{
+    const ngayMd = Number(md.body.querySelector('[data-ngaymd]').value);
+    if(!(ngayMd >= 1 && ngayMd <= 31)){ toast('⚠ Ngày mặc định từ 1 đến 31'); return; }
+    const tt = [...md.body.querySelectorAll('[data-tt]')].map(s=>s.value);
+    if(new Set(tt).size !== tt.length){ toast('⚠ Thứ tự luân phiên bị trùng kho'); return; }
+    const mt = md.body.querySelector('[data-mocthang]').value;
+    if(!/^\d{4}-\d{2}$/.test(mt)){ toast('⚠ Chọn tháng mốc'); return; }
+    HOP.ngayMacDinh = ngayMd; HOP.thuTu = tt;
+    HOP.gioMacDinh = md.body.querySelector('[data-giomd]').value || '';
+    HOP.diaDiemMacDinh = md.body.querySelector('[data-ddmd]').value.trim();
+    HOP.moc = { thang: mt, kho: md.body.querySelector('[data-mockho]').value };
+    md.close(); await hopLuu(); renderHopKho();
+  };
+}
+
+// ---- Gửi mail mời họp (n8n) ----
+// Chọn buổi -> xem trước đúng thư sẽ gửi -> gửi: app gửi { token, buoi } tới webhook n8n,
+// n8n kiểm tra token (chủ trang / giám sát), soạn lại thư bằng hopkho-mail.js rồi gửi qua Outlook.
+function hopMoGuiMail(thang){
+  const hn = todayKey();
+  // các buổi sắp tới (chưa qua, không huỷ) trong 12 tháng
+  const sapToi = [];
+  for(let k = 0, t = hn.slice(0, 7); k < 12; k++, t = hopThangSau(t, 1)){
+    if(hopCachThang(HOP.moc.thang, t) < 0) continue;
+    const b = hopBuoi(t);
+    if(!b.huy && b.ngay >= hn) sapToi.push(b);
+  }
+  if(!sapToi.length){ toast('Chưa có buổi họp nào sắp tới để gửi thư mời'); return; }
+  let chon = (sapToi.find(b=>b.thang === thang) || sapToi[0]).thang;
+  const m = openModal('Gửi mail mời họp kho', '<div id="hopMailHost"></div>');
+  m.el.querySelector('.modal-card').style.maxWidth = '820px';
+  let ketQua = '';
+  const ve = ()=>{
+    const b = hopBuoi(chon);
+    const buoi = { thang: b.thang, ngay: b.ngay, gio: b.gio, diaDiem: b.diaDiem, kho: b.kho, ghiChu: b.ghiChu };
+    const mail = hkmSoanMail(buoi);
+    const thieu = [!b.gio && 'giờ họp', !b.diaDiem && 'địa điểm'].filter(Boolean);
+    m.body.querySelector('#hopMailHost').innerHTML = `
+      <label class="field-label">Buổi họp</label>
+      <select id="hopMailBuoi">${sapToi.map(x=>`<option value="${x.thang}" ${x.thang === chon ? 'selected' : ''}>Tháng ${x.thang.slice(5)}/${x.thang.slice(0, 4)} — ${hopThu(x.ngay)}, ${fmtVN(fromKey(x.ngay))} — ${esc(hopKho(x.kho).name)}</option>`).join('')}</select>
+      ${ketQua}
+      ${thieu.length ? `<div class="note warn">⚠ Buổi này chưa có ${thieu.join(' và ')} — ${laChuTrang() ? 'bấm Sửa ở dòng tháng đó hoặc ⚙ Cài đặt để điền' : 'nhờ chủ trang điền trước khi gửi'}.</div>` : ''}
+      <div class="xh-bcmeta"><div><b>Tiêu đề</b>${esc(mail.subject)}</div>
+        <div><b>Người nhận</b>danh sách khai trong workflow n8n "APPWH - Họp kho"</div></div>
+      <div class="xh-bch">Nội dung thư mời</div>
+      <iframe class="xh-bcmail" id="hopMailXem" title="Nội dung thư mời" style="min-height:320px"></iframe>
+      <div class="btnrow" style="margin-top:12px;"><button id="hopMailGui">📨 Gửi mail mời họp</button></div>`;
+    $('hopMailBuoi').onchange = ()=>{ chon = $('hopMailBuoi').value; ketQua = ''; ve(); };
+    const fr = $('hopMailXem');
+    fr.srcdoc = `<!doctype html><html><head><meta charset="utf-8"></head><body style="margin:12px;background:#fff;">${mail.html}</body></html>`;
+    fr.onload = ()=>{ try{ fr.style.height = (fr.contentDocument.body.scrollHeight + 28) + 'px'; }catch(e){} };
+    $('hopMailGui').onclick = async ()=>{
+      if(!await confirmBox(`Gửi thư mời họp kho tháng ${b.thang.slice(5)}/${b.thang.slice(0, 4)} (${hopThu(b.ngay)}, ${fmtVN(fromKey(b.ngay))})?`)) return;
+      const nut = $('hopMailGui');
+      if(nut){ nut.disabled = true; nut.textContent = 'Đang gửi…'; }
+      ketQua = await hopGuiN8n(buoi);
+      ve();
+    };
+  };
+  ve();
+}
+// Gọi webhook n8n. Trả về HTML dòng báo kết quả.
+async function hopGuiN8n(buoi){
+  let loi = '';
+  try{
+    const res = await fetch(N8N_HOP_URL, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: AUTH.token, buoi }),
+    });
+    let j = null;
+    try{ j = await res.json(); }catch(e){}
+    if(!res.ok || !j || !j.ok){
+      loi = (j && (j.loi || j.message))
+        || (res.status === 404 ? 'workflow "APPWH - Họp kho" trên n8n chưa được tạo hoặc chưa Publish'
+          : res.ok ? 'workflow n8n bị lỗi giữa chừng — mở n8n → Executions xem lần chạy mới nhất'
+          : 'n8n trả lỗi HTTP ' + res.status);
+    }
+  }catch(e){
+    loi = 'Không kết nối được n8n — kiểm tra mạng công ty và workflow "APPWH - Họp kho" đã Publish chưa';
+  }
+  if(loi){ toast('⚠ Chưa gửi được thư mời'); return `<div class="note warn">⚠ Chưa gửi được: ${esc(loi)}</div>`; }
+  toast('✓ Đã gửi thư mời họp kho');
+  return `<div class="note ok">✓ Đã gửi lúc ${new Date().toLocaleTimeString('vi-VN', { hour:'2-digit', minute:'2-digit' })}</div>`;
 }
 
 </script>
