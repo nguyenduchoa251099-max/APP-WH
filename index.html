@@ -2279,6 +2279,10 @@
   .dh-tim-dm{max-width:200px; font-size:13.5px; padding:6px 9px; text-transform:none; letter-spacing:0;}
   @media(max-width:600px){ .dh-goi-y-sp{right:0;} .dh-the{min-width:0; flex:1 1 140px;} }
   .dh-bang select.dh-kieu{min-width:250px; font-size:13px; padding:5px 7px;}
+  /* Thêm / sửa mã hàng: cùng mã + cùng tên / ghi chú -> tô đỏ ngay khi gõ */
+  input.dh-o-trung{border-color:#dc2626 !important; background:#fef2f2 !important; box-shadow:0 0 0 2px rgba(220,38,38,.15);}
+  [data-trung]:empty{display:none;}
+  [data-trung]{margin-top:6px;}
 
 </style>
 <style>/* css/modules/tongquan-tp.css */
@@ -15118,6 +15122,8 @@ function dhMoTaKieu(k){
   return p.join(' + ');
 }
 
+// Tên hiển thị của 1 mã: mã hàng được trùng nhau (khác tên / ghi chú) nên kèm tên để phân biệt
+function dhNhanSp(sp){ return sp.ma + (sp.ten ? ` (${sp.ten})` : ''); }
 // Chuẩn bị: kiểm tra số liệu, chọn kiểu xếp, dựng danh sách vị trí trong 1 tầng
 function dhChuanBi(xe, dong){
   const L = +xe.dai, W = +xe.rong, H = +xe.cao;
@@ -15125,12 +15131,12 @@ function dhChuanBi(xe, dong){
   if(!(L > 0 && W > 0 && H > 0)) loi.push('Thùng xe chưa có đủ dài / rộng / cao');
   const mh = dong.filter(d => d.sp && +d.sl > 0).map((d, i) => {
     const sp = d.sp, a = +sp.dai, b = +sp.rong, h = +sp.cao;
-    const it = { i, sp, sl: Math.floor(+d.sl), a, b, h, kg: +sp.kg || 0,
-      tangMax: +sp.tangMax > 0 ? Math.floor(+sp.tangMax) : Infinity };
-    if(!(a > 0 && b > 0 && h > 0)){ loi.push(`${sp.ma}: chưa có đủ kích thước thùng`); return it; }
-    if(h > H) loi.push(`${sp.ma}: thùng cao ${h} cm, quá lòng thùng ${H} cm`);
+    // Không giới hạn số tầng chồng theo mã nữa (bỏ ô "Chồng tối đa"): chỉ trần xe giới hạn
+    const it = { i, sp, sl: Math.floor(+d.sl), a, b, h, kg: +sp.kg || 0, tangMax: Infinity };
+    if(!(a > 0 && b > 0 && h > 0)){ loi.push(`${dhNhanSp(sp)}: chưa có đủ kích thước thùng`); return it; }
+    if(h > H) loi.push(`${dhNhanSp(sp)}: thùng cao ${h} cm, quá lòng thùng ${H} cm`);
     it.kieu = dhChonKieu(sp, W, L);
-    if(it.kieu.loi){ loi.push(`${sp.ma}: ${it.kieu.loi}`); return it; }
+    if(it.kieu.loi){ loi.push(`${dhNhanSp(sp)}: ${it.kieu.loi}`); return it; }
     const k = it.kieu, vt = [];
     for(let n = 0; n < k.nd; n++) vt.push({ huong: 'doc', sau: a, rong: b });
     for(let n = 0; n < k.nn; n++) vt.push({ huong: 'ngang', sau: b, rong: a });
@@ -15528,6 +15534,9 @@ function dhNhoNhap(){ lsSet(KEY_DH_NHAP, JSON.stringify(DH_NHAP)); }
 const dhId = p => p + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 const dhCoSua = () => coSuaTab('thanhpham', 'donghang');
 function dhSp(id){ return DH.sp.find(s => s.id === id); }
+// Danh mục mã hàng luôn theo bảng chữ cái (mã, rồi tên / ghi chú); số so đúng thứ tự: CHA2 trước CHA10
+const dhSoSanhChu = (a, b) => String(a || '').localeCompare(String(b || ''), 'vi', { numeric: true, sensitivity: 'base' });
+function dhSapSp(ds){ return ds.slice().sort((a, b) => dhSoSanhChu(a.ma, b.ma) || dhSoSanhChu(a.ten, b.ten)); }
 // Mã hàng của 1 dòng: trong danh mục, hoặc mã dùng tạm (nhập từ packing list, chưa lưu danh mục)
 function dhSpDong(d){ return d.spTam || dhSp(d.spId); }
 // Mã hàng dùng để tính: kiểu xếp chỉnh riêng ở dòng (nếu có) đè lên kiểu trong Cài đặt
@@ -15612,7 +15621,7 @@ function renderDongHang(){
   const loai = dhLoaiXe(), chuaChonXe = loai === 'xe' && dhLaCont(DH_NHAP.xeId);
   const xe = dhXe(DH_NHAP.xeId);
   const opt = (v, t, cur) => `<option value="${esc(v)}"${v === cur ? ' selected' : ''}>${esc(t)}</option>`;
-  const spOpts = cur => DH.sp.map(s => opt(s.id, `${s.ma}${s.ten ? ' · ' + s.ten : ''}`, cur)).join('');
+  const spOpts = cur => dhSapSp(DH.sp).map(s => opt(s.id, `${s.ma}${s.ten ? ' · ' + s.ten : ''}`, cur)).join('');
   page.innerHTML = `
     <div class="panel">
       <h2>🚛 Lập sơ đồ đóng hàng <span class="h2spacer"></span>
@@ -15684,9 +15693,7 @@ function dhGanTimSp(){
   let ds = [], chon = 0;
   const ve = () => {
     const t = normName(o.value);
-    ds = DH.sp.filter(s => !t || normName(s.ma).includes(t) || normName(s.ten || '').includes(t))
-      .sort((a, b) => (normName(a.ma).startsWith(t) ? 0 : 1) - (normName(b.ma).startsWith(t) ? 0 : 1) || a.ma.localeCompare(b.ma, 'vi'))
-      .slice(0, 30);
+    ds = dhSapSp(DH.sp.filter(s => !t || normName(s.ma).includes(t) || normName(s.ten || '').includes(t))).slice(0, 30);
     chon = Math.min(chon, Math.max(0, ds.length - 1));
     const daCo = new Set(DH_NHAP.dong.map(d => d.spId));
     hop.innerHTML = ds.map((s, i) => `<div class="mo${i === chon ? ' on' : ''}" data-i="${i}">
@@ -15776,7 +15783,12 @@ function dhBamTinh(){
 // Chú thích màu phần dư dưới trần (hình nhìn ngang)
 const DH_CHU_THICH = `<div class="dh-chu-thich">
   <span><i class="o vang"></i>Vàng: còn đủ chỗ thêm 1 tầng nữa</span>
-  <span><i class="o do"></i>Đỏ: kịch trần — phần dư không đủ cho 1 thùng (hoặc đã chồng đủ số tầng tối đa)</span></div>`;
+  <span><i class="o do"></i>Đỏ: kịch trần — phần dư không đủ cho 1 thùng</span></div>`;
+// Tên mã trong 1 sơ đồ: chỉ kèm tên / ghi chú khi sơ đồ có 2 mã trùng nhau (mã được trùng, khác tên)
+function dhTenMa(kq, it){
+  const trung = kq.mh.some(x => x !== it && normName(x.sp.ma) === normName(it.sp.ma));
+  return trung ? dhNhanSp(it.sp) : it.sp.ma;
+}
 // Đếm số vách vàng / đỏ cho ô "Cao các vách"
 function dhDemDu(kq){
   const ds = dhDuTran(kq).filter(Boolean);
@@ -15791,7 +15803,7 @@ function dhMoTaCao(kq){
 }
 function dhMoTaBuoc(kq, b){
   const vach = `Vách ${b.tu + 1}${b.den > b.tu ? '–' + (b.den + 1) : ''}`;
-  const ma = b.ma.map(m => `<b style="color:${dhPha(dhMau(m), -0.25)}">${esc(kq.mh[m].sp.ma)}</b> ${b.dem[m]} thùng`).join(' + ');
+  const ma = b.ma.map(m => `<b style="color:${dhPha(dhMau(m), -0.25)}">${esc(dhTenMa(kq, kq.mh[m]))}</b> ${b.dem[m]} thùng`).join(' + ');
   const soVach = b.den - b.tu + 1;
   return `${vach} · ${ma}${soVach > 1 ? ` /vách × ${soVach} vách` : ''} · ${b.soTang} tầng`;
 }
@@ -15813,7 +15825,7 @@ function dhHtmlKetQua(kq){
         <div><small>Thể tích dùng</small><b>${kq.theTichPct.toFixed(1)}%</b></div>
         <div><small>Dài dùng</small><b>${dhCm(kq.daiDung)} / ${dhCm(kq.ctx.L)} cm</b></div>
         <div><small>Cao các vách</small><b>${dhCm(kq.caoMin)}–${dhCm(kq.caoMax)} cm</b>${dhDemDu(kq)}</div>
-        <div><small>Tổng cân nặng</small><b>${kq.tongKg.toLocaleString('vi-VN')} kg</b></div>
+        ${kq.tongKg > 0 ? `<div><small>Tổng cân nặng</small><b>${kq.tongKg.toLocaleString('vi-VN')} kg</b></div>` : ''}
         <div><small>Dáng xếp</small><b class="dh-dang">${esc(dhMoTaCao(kq))}</b></div>
       </div>
       <div class="dh-ve dh-ve3d">
@@ -15836,10 +15848,10 @@ function dhHtmlKetQua(kq){
       <div class="dh-ve canh">${dhVeCanh(kq)}</div>
       ${DH_CHU_THICH}
       <div class="tblwrap"><table class="dh-bang">
-        <thead><tr><th>Mã</th><th>Tên</th><th>Thùng (cm)</th><th>Kg/thùng</th><th>Số thùng</th><th>Kiểu xếp mỗi tầng</th><th>Số vách</th><th>Số tầng</th><th>Thể tích</th></tr></thead>
+        <thead><tr><th>Mã</th><th>Tên / ghi chú</th><th>Thùng (cm)</th>${kq.tongKg > 0 ? '<th>Kg/thùng</th>' : ''}<th>Số thùng</th><th>Kiểu xếp mỗi tầng</th><th>Số vách</th><th>Số tầng</th><th>Thể tích</th></tr></thead>
         <tbody>${kq.theoMa.map((m, i) => `<tr>
           <td><span class="dh-cham" style="background:${dhMau(i)}"></span><b>${esc(m.it.sp.ma)}</b></td><td>${esc(m.it.sp.ten || '')}</td>
-          <td>${dhKichThuoc(m.it.sp)}</td><td>${m.it.kg ? dhCm(m.it.kg) : '—'}</td>
+          <td>${dhKichThuoc(m.it.sp)}</td>${kq.tongKg > 0 ? `<td>${m.it.kg ? dhCm(m.it.kg) : '—'}</td>` : ''}
           <td>${m.sl.toLocaleString('vi-VN')}${m.sl < m.it.sl ? ` <span class="lg-err">/ ${m.it.sl}</span>` : ''}</td>
           <td>${esc(dhMoTaKieu(m.it.kieu))}</td><td>${m.vach}</td><td>${m.tangMax}</td>
           <td>${(m.sl * m.it.a * m.it.b * m.it.h / (kq.ctx.L * kq.ctx.W * +xe.cao) * 100).toFixed(1)}%</td></tr>`).join('')}
@@ -15909,20 +15921,21 @@ function dhIn(){
     .dh-chu-thich{display:flex;gap:16px;flex-wrap:wrap;margin:4px 0 8px} .dh-chu-thich .o{display:inline-block;width:12px;height:12px;margin-right:5px;vertical-align:-2px;border-radius:2px}
     .o.vang{background:#facc15;border:1px dashed #ca8a04} .o.do{background:#dc2626}
     @page{size:A4 landscape;margin:10mm}`;
-  const ten = kq.mh.map(it => it.sp.ma).join(', ');
+  const ten = kq.mh.map(it => dhTenMa(kq, it)).join(', ');
+  const coKg = kq.tongKg > 0;
   w.document.write(`<!doctype html><html lang="vi"><head><meta charset="utf-8"><title>Sơ đồ đóng hàng · ${esc(kq.xe.ten)}</title><style>${css}</style></head><body>
     <h1>Sơ đồ đóng hàng · ${esc(kq.xe.ten)}</h1>
     <div class="mo">${DH_LO ? 'Lô ' + esc(DH_LO.ten) + ' · ' : ''}Lòng thùng ${dhKichThuoc(kq.xe)} cm · ${esc(ten)} · in lúc ${new Date().toLocaleString('vi-VN')}</div>
     ${!kq.ok ? `<div class="canhbao">Không đủ chỗ — còn thiếu ${kq.thieu} thùng</div>` : ''}
-    <table><tr><th>Số thùng</th><th>Thể tích</th><th>Dài dùng</th><th>Cao các vách</th><th>Tổng kg</th><th>Dáng xếp</th></tr>
+    <table><tr><th>Số thùng</th><th>Thể tích</th><th>Dài dùng</th><th>Cao các vách</th>${coKg ? '<th>Tổng kg</th>' : ''}<th>Dáng xếp</th></tr>
       <tr><td>${kq.thung.length}</td><td>${kq.theTichPct.toFixed(1)}%</td><td>${dhCm(kq.daiDung)} / ${dhCm(kq.ctx.L)} cm</td>
-      <td>${dhCm(kq.caoMin)}–${dhCm(kq.caoMax)} cm</td><td>${kq.tongKg.toLocaleString('vi-VN')}</td><td>${esc(dhMoTaCao(kq))}</td></tr></table>
+      <td>${dhCm(kq.caoMin)}–${dhCm(kq.caoMax)} cm</td>${coKg ? `<td>${kq.tongKg.toLocaleString('vi-VN')}</td>` : ''}<td>${esc(dhMoTaCao(kq))}</td></tr></table>
     ${dhVe3D(kq)}
     ${dhVeCanh(kq)}
     ${DH_CHU_THICH}
-    <table><tr><th>Mã</th><th>Tên</th><th>Thùng (cm)</th><th>Kg/thùng</th><th>Số thùng</th><th>Kiểu xếp mỗi tầng</th><th>Số vách</th><th>Số tầng</th></tr>
+    <table><tr><th>Mã</th><th>Tên / ghi chú</th><th>Thùng (cm)</th>${coKg ? '<th>Kg/thùng</th>' : ''}<th>Số thùng</th><th>Kiểu xếp mỗi tầng</th><th>Số vách</th><th>Số tầng</th></tr>
       ${kq.theoMa.map((m, i) => `<tr><td><span class="cham" style="background:${dhMau(i)}"></span>${esc(m.it.sp.ma)}</td><td>${esc(m.it.sp.ten || '')}</td><td>${dhKichThuoc(m.it.sp)}</td>
-      <td>${m.it.kg || ''}</td><td>${m.sl}</td><td>${esc(dhMoTaKieu(m.it.kieu))}</td><td>${m.vach}</td><td>${m.tangMax}</td></tr>`).join('')}</table>
+      ${coKg ? `<td>${m.it.kg || ''}</td>` : ''}<td>${m.sl}</td><td>${esc(dhMoTaKieu(m.it.kieu))}</td><td>${m.vach}</td><td>${m.tangMax}</td></tr>`).join('')}</table>
     <div class="luoi">${kq.buoc.map((b, i) => `<div class="o"><div>Bước ${i + 1} · ${dhMoTaBuoc(kq, b)}</div>${dhVe3D(kq, b.thungDen, true)}</div>`).join('')}</div>
     <script>setTimeout(function(){ window.print(); }, 300);<\/script>
     </body></html>`);
@@ -15939,14 +15952,13 @@ function dhHtmlCaiDat(){
         ${sua ? '<button class="sm" id="dhThemSp">+ Thêm mã hàng</button>' : ''}</h2>
       ${sua ? '' : '<p class="cd-ghi cd-mo">Chỉ xem — cần quyền sửa kho thành phẩm để thêm / sửa.</p>'}
       <div class="tblwrap"><table class="dh-bang" id="dhBangSp">
-        <thead><tr><th>Mã</th><th>Tên</th><th>Thùng D×R×C (cm)</th><th>Kg</th><th>Tầng tối đa</th><th>Kiểu xếp (cont rộng 235)</th><th></th></tr></thead>
-        <tbody>${DH.sp.map(s => {
+        <thead><tr><th>Mã</th><th>Tên / ghi chú</th><th>Thùng D×R×C (cm)</th><th>Kiểu xếp (cont rộng 235)</th><th></th></tr></thead>
+        <tbody>${dhSapSp(DH.sp).map(s => {
           const k = dhChonKieu(s, 235, 1203);
-          return `<tr data-tim="${esc(normName(s.ma + ' ' + (s.ten || '')))}"><td><b>${esc(s.ma)}</b></td><td>${esc(s.ten || '')}</td><td>${dhKichThuoc(s)}</td><td>${s.kg ? dhCm(s.kg) : '—'}</td>
-            <td>${+s.tangMax > 0 ? s.tangMax : 'Không giới hạn'}</td>
+          return `<tr data-tim="${esc(normName(s.ma + ' ' + (s.ten || '')))}"><td><b>${esc(s.ma)}</b></td><td>${esc(s.ten || '')}</td><td>${dhKichThuoc(s)}</td>
             <td>${k.loi ? `<span class="lg-err">${esc(k.loi)}</span>` : esc(dhMoTaKieu(k))} <span class="cd-mo">(${DH_KIEU_NGAN[s.kieu || 'auto'] || 'tự động'})</span></td>
             <td class="dh-nut">${sua ? `<button class="sm secondary" data-sua-sp="${esc(s.id)}">Sửa</button><button class="sm danger" data-xoa-sp="${esc(s.id)}">Xoá</button>` : ''}</td></tr>`;
-        }).join('') || '<tr><td colspan="7" class="cd-mo">Chưa có mã hàng nào</td></tr>'}</tbody>
+        }).join('') || '<tr><td colspan="5" class="cd-mo">Chưa có mã hàng nào</td></tr>'}</tbody>
       </table></div>
     </div>
     <div class="panel">
@@ -15974,9 +15986,9 @@ function dhGanCaiDat(page){
   q('[data-sua-xe]').forEach(b => b.onclick = () => dhSuaXe(DH.xe.find(x => x.id === b.dataset.suaXe)));
   q('[data-xoa-sp]').forEach(b => b.onclick = async () => {
     const s = dhSp(b.dataset.xoaSp);
-    if(!s || !await confirmBox(`Xoá mã hàng "${s.ma}" khỏi danh mục?`)) return;
+    if(!s || !await confirmBox(`Xoá mã hàng "${dhNhanSp(s)}" khỏi danh mục?`)) return;
     DH.sp = DH.sp.filter(x => x.id !== s.id);
-    if(await dhLuu()) toast('✓ Đã xoá ' + s.ma);
+    if(await dhLuu()) toast('✓ Đã xoá ' + dhNhanSp(s));
     renderDongHang();
   });
   q('[data-xoa-xe]').forEach(b => b.onclick = async () => {
@@ -16000,15 +16012,12 @@ function dhSuaSp(sp, goiY){
       <div><label class="field-label">Mã hàng</label><input type="text" data-k="ma" value="${esc(sp.ma)}" placeholder="vd: CHA1"></div>
       <div><label class="field-label">Tên / ghi chú</label><input type="text" data-k="ten" value="${esc(sp.ten || '')}"></div>
     </div>
+    <div class="lg-err" data-trung></div>
     <label class="field-label">Kích thước thùng (cm) — dài × rộng × cao (cao = chiều đứng, không lật)</label>
     <div class="row3">
       <input type="number" step="0.1" min="0" data-k="dai" value="${esc(sp.dai)}" placeholder="Dài">
       <input type="number" step="0.1" min="0" data-k="rong" value="${esc(sp.rong)}" placeholder="Rộng">
       <input type="number" step="0.1" min="0" data-k="cao" value="${esc(sp.cao)}" placeholder="Cao">
-    </div>
-    <div class="row2">
-      <div><label class="field-label">Cân nặng 1 thùng (kg)</label><input type="number" step="0.1" min="0" data-k="kg" value="${esc(sp.kg || '')}"></div>
-      <div><label class="field-label">Chồng tối đa (tầng, để trống = không giới hạn)</label><input type="number" step="1" min="0" data-k="tangMax" value="${esc(sp.tangMax || '')}"></div>
     </div>
     <label class="field-label">Kiểu xếp mỗi tầng</label>
     <select data-k="kieu">${Object.keys(DH_KIEU).map(v => `<option value="${v}"${(sp.kieu || 'auto') === v ? ' selected' : ''}>${esc(DH_KIEU[v])}</option>`).join('')}</select>
@@ -16021,10 +16030,29 @@ function dhSuaSp(sp, goiY){
     <div class="row2" style="margin-top:14px;"><button class="ghost" data-no>Huỷ</button><button data-ok>${moi ? 'Thêm' : 'Lưu'}</button></div>`);
   const g = k => m.body.querySelector(`[data-k="${k}"]`);
   const doc = () => ({ ma: g('ma').value.trim(), ten: g('ten').value.trim(), dai: dhSoDuong(g('dai').value), rong: dhSoDuong(g('rong').value),
-    cao: dhSoDuong(g('cao').value), kg: dhSoDuong(g('kg').value) || 0, tangMax: Math.floor(dhSoDuong(g('tangMax').value) || 0) || '',
+    // không còn ô cân nặng / chồng tối đa: giữ cân nặng cũ (nếu có, VD từ packing list), bỏ chồng tối đa
+    cao: dhSoDuong(g('cao').value), kg: +sp.kg || 0, tangMax: '',
     kieu: g('kieu').value, doc: Math.floor(+g('doc').value || 0), ngang: Math.floor(+g('ngang').value || 0) });
+  // Mã hàng được trùng nhau, nhưng cùng mã thì tên / ghi chú phải khác nhau để phân biệt.
+  // Kiểm tra ngay khi gõ: trùng thì báo đỏ, tô đỏ 2 ô và khoá nút lưu.
+  const trung = s => {
+    if(!s.ma) return '';
+    const cung = DH.sp.filter(x => x.id !== sp.id && normName(x.ma) === normName(s.ma));
+    if(!cung.some(x => normName(x.ten || '') === normName(s.ten))) return '';
+    const daCo = cung.map(x => x.ten ? `"${x.ten}"` : '(trống)').join(', ');
+    return s.ten ? `Mã "${s.ma}" đã có tên / ghi chú "${s.ten}" — đổi tên / ghi chú khác. Mã này đang có: ${daCo}.`
+                 : `Mã "${s.ma}" đã có trong danh mục — nhập tên / ghi chú khác để phân biệt. Mã này đang có: ${daCo}.`;
+  };
+  const baoTrung = () => {
+    const loi = trung(doc());
+    m.body.querySelector('[data-trung]').textContent = loi;
+    ['ma', 'ten'].forEach(k => g(k).classList.toggle('dh-o-trung', !!loi));
+    m.body.querySelector('[data-ok]').disabled = !!loi;
+    return loi;
+  };
   // xem trước kiểu xếp với lòng container rộng 235 cm
   const xem = () => {
+    baoTrung();
     m.body.querySelector('[data-tuchon]').style.display = g('kieu').value === 'tuchon' ? '' : 'none';
     const s = doc(), el = m.body.querySelector('[data-xemtruoc]');
     if(!s.dai || !s.rong){ el.textContent = ''; return; }
@@ -16040,7 +16068,7 @@ function dhSuaSp(sp, goiY){
     const s = doc(), err = m.body.querySelector('[data-err]');
     if(!s.ma){ err.textContent = 'Nhập mã hàng'; return; }
     if(!s.dai || !s.rong || !s.cao){ err.textContent = 'Nhập đủ dài, rộng, cao (cm)'; return; }
-    if(DH.sp.some(x => x.id !== sp.id && normName(x.ma) === normName(s.ma))){ err.textContent = 'Mã hàng này đã có trong danh mục'; return; }
+    if(baoTrung()) return;
     if(s.kieu === 'tuchon'){
       if(!s.doc && !s.ngang){ err.textContent = 'Nhập số thùng dọc hoặc ngang'; return; }
       const k = dhChonKieu(s, 235, 1203);
@@ -16321,12 +16349,13 @@ function dhGomDong(bang, cfg){
   nhom.forEach(g => { g.kg = g.kgSl ? Math.round(g.kgTong / g.kgSl * 100) / 100 : 0; });
   return { nhom, boQua };
 }
-// Đối chiếu với danh mục: trùng mã + trùng kích thước = dùng mã có sẵn
+// Đối chiếu với danh mục: trùng mã + trùng kích thước = dùng mã có sẵn.
+// Mã hàng được trùng nhau (khác tên / ghi chú) nên tìm trong MỌI mã cùng tên mã cái có đúng kích thước.
 function dhDoiChieu(g){
-  const sp = DH.sp.find(s => normName(s.ma) === normName(g.ma));
-  if(!sp) return { loai: 'moi' };
-  const giong = ['dai', 'rong', 'cao'].every(k => Math.abs(+sp[k] - g[k]) < 0.15);
-  return { loai: giong ? 'co' : 'khac', sp };
+  const cung = DH.sp.filter(s => normName(s.ma) === normName(g.ma));
+  if(!cung.length) return { loai: 'moi' };
+  const giong = cung.find(sp => ['dai', 'rong', 'cao'].every(k => Math.abs(+sp[k] - g[k]) < 0.15));
+  return giong ? { loai: 'co', sp: giong } : { loai: 'khac', sp: cung[0] };
 }
 
 // Đọc file Excel / CSV bằng thư viện XLSX (đã nạp sẵn ở đầu trang)
@@ -16945,8 +16974,8 @@ function hkmSoanMail(b){
   const dong = (nhan, giaTri)=> giaTri ? `<tr>
       <td style="${f}font-size:10.5pt;color:#555;padding:6px 18px 6px 0;white-space:nowrap;vertical-align:top;">${nhan}</td>
       <td style="${f}font-size:10.5pt;color:#111;padding:6px 0;font-weight:bold;">${giaTri}</td></tr>` : '';
-  const html = `<p style="${f}font-size:10.5pt;margin:0 0 12px;">Kính gửi các anh/chị,</p>
-<p style="${f}font-size:10.5pt;margin:0 0 14px;"><b>${hkmEsc(kho)}</b> trân trọng kính mời anh/chị tham dự <b>buổi họp kho tháng ${String(m).padStart(2, '0')}/${y}</b>:</p>
+  const html = `<p style="${f}font-size:10.5pt;margin:0 0 12px;">Dear all,</p>
+<p style="${f}font-size:10.5pt;margin:0 0 14px;">mời anh/chị tham dự <b>buổi họp kho tháng ${String(m).padStart(2, '0')}/${y}</b>:</p>
 <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-left:4px solid ${HKM.mau};padding-left:14px;margin:0 0 14px 2px;">
   <tr><td style="padding-left:14px;"><table role="presentation" cellpadding="0" cellspacing="0" border="0">
   ${dong('Thời gian', `${b.gio ? hkmEsc(b.gio) + ', ' : ''}${thu}, ${ngayVN}`)}
