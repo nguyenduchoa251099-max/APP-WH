@@ -1032,6 +1032,23 @@
   .nv-xn-ds li{margin-bottom:4px;}
   .nv-row .nv-5s{color:#fde68a; margin-top:2px;}
 
+  /* ===== ĐI HỖ TRỢ (Quản lý nhân sự) — màu cam, khác nghỉ việc (đen) ===== */
+  .nv-nut{display:flex; gap:6px; flex:0 0 auto; flex-wrap:wrap; justify-content:flex-end;}
+  button.ht-btn{background:#fff; color:#b45309; border-color:#d97706;}
+  button.ht-btn:hover{background:#d97706; color:#fff; opacity:1;}
+  button.ht-btn.dac{background:#d97706; color:#fff;}
+  button.ht-btn.dac:hover{background:#b45309;}
+  .ht-hd{display:flex; align-items:center; gap:8px; margin:18px 0 4px; font-size:12.5px; font-weight:800; letter-spacing:.06em; color:#b45309;}
+  .ht-hd span{background:#d97706; color:#fff; border-radius:999px; padding:0 8px; font-size:11.5px;}
+  .rowline.ht-row{background:#fff7ed; border:1px solid #fdba74; border-radius:8px; padding:9px 10px; margin-bottom:6px;}
+  .ht-row .ht-sub{font-size:11px; color:#9a3412;}
+  .ht-row button{white-space:nowrap;}
+  .ht-row button.ht-undo{background:#fff; color:#b45309; border-color:#d97706;}
+  .ht-row button.ht-undo:hover{background:#d97706; color:#fff; opacity:1;}
+  .nv-xn-ten.ht{background:#d97706;}
+  .nv-xn-ten.ht span{color:#ffedd5;}
+  .ht-row .ht-5s{color:#b45309; margin-top:2px;}
+
 </style>
 <style>/* css/modal.css */
 /* Modal
@@ -4145,8 +4162,12 @@ function empRank(e){
 // NGHỈ VIỆC: e.nghiViec = 'YYYY-MM-DD' (ngày làm việc cuối cùng).
 // Người đã nghỉ bị cắt khỏi mọi danh sách kho (khoEmployees), nhưng hồ sơ và bản ghi
 // tăng ca / nghỉ phép vẫn giữ: bảng công vẫn có họ tới hết tháng nghỉ (khoNghiTrongThang).
+// ĐI HỖ TRỢ: e.diHoTro = 'YYYY-MM-DD' (ngày bắt đầu đi), e.diHoTroNoi = nơi hỗ trợ (tuỳ chọn).
+// Cũng bị cắt khỏi mọi danh sách kho và ô 5S như nghỉ việc (ô 5S giữ chỗ để quay lại lấy lại);
+// bảng công vẫn có tên nhưng những ngày đi hỗ trợ tính 0h. Quay lại thì Hoàn tác (Quản lý
+// nhân sự): đợt vừa đi được ghi vào e.hoTroLs = [{ tu, den }] để bảng công tháng cũ vẫn đúng.
 function khoEmployees(id){
-  return HR.employees.filter(e=>e.warehouseId===id && !e.nghiViec)
+  return HR.employees.filter(e=>e.warehouseId===id && !e.nghiViec && !e.diHoTro)
     .slice().sort((a,b)=>{
       const ra = empRank(a), rb = empRank(b);
       if(ra !== rb) return ra - rb;
@@ -4159,6 +4180,16 @@ function khoEmployees(id){
 function khoNghiTrongThang(id, ym){
   return HR.employees.filter(e=>e.warehouseId===id && e.nghiViec && e.nghiViec.slice(0,7) >= ym)
     .sort((a,b)=>a.name.localeCompare(b.name,'vi'));
+}
+// Người của 1 kho đang đi hỗ trợ nơi khác (chờ quay lại)
+function khoDiHoTro(id){
+  return HR.employees.filter(e=>e.warehouseId===id && e.diHoTro && !e.nghiViec)
+    .sort((a,b)=>a.diHoTro.localeCompare(b.diHoTro) || a.name.localeCompare(b.name,'vi'));
+}
+// Ngày `key` người này có đang đi hỗ trợ không (đợt đang đi hoặc các đợt đã xong)
+function dangDiHoTro(e, key){
+  if(e.diHoTro && key >= e.diHoTro) return true;
+  return (e.hoTroLs || []).some(p=>key >= p.tu && key <= p.den);
 }
 // Người tham gia luân chuyển vị trí (bỏ Giám sát)
 function rotEmployees(id){ return khoEmployees(id).filter(e=>e.position !== 'Giám sát'); }
@@ -6580,7 +6611,7 @@ function rotBoNguoi(khoId, id){
 //     (đi sau tất cả mọi người, không làm đổi người đang trực)
 function rotThemNguoi(khoId, e){
   const K = KHO[khoId];
-  if(!K || !K.rotation || !e || e.nghiViec || e.position === 'Giám sát') return [];
+  if(!K || !K.rotation || !e || e.nghiViec || e.diHoTro || e.position === 'Giám sát') return [];
   const ghi = [];
   rotationPlan(K).forEach(p=>{
     const g = p.g;
@@ -7482,9 +7513,11 @@ function exportTP(kind){
 //   · Cắt nghỉ việc: gỡ tên người đó khỏi mọi ô 5S của kho, ghi các ô đó vào hàng chờ K.cho5s.
 //   · Thêm người mới cùng kho: người mới nhận các ô của người nghỉ SỚM NHẤT còn đang chờ.
 //   · Hoàn tác nghỉ việc: người đó lấy lại đúng các ô của mình (nếu chưa có người mới nhận).
+//   · Đi hỗ trợ (e.diHoTro): cũng gỡ tên, nhưng ô được GIỮ CHỖ cho chính người đó (hoTro: true)
+//     — người mới không nhận; hoàn tác (quay lại) thì lấy lại.
 // Ô nào từ lúc gỡ tên tới giờ đã có ai sửa tay thì để yên, không ghi đè.
 //
-// K.cho5s = [{ id, ten, ngay, o:[{ loai, key, nhan, con }] }]
+// K.cho5s = [{ id, ten, ngay, hoTro?, o:[{ loai, key, nhan, con }] }]
 //   loai: 'tp' (tpBoard.assign) | 'vai' (board.assign) | 'shelves' | 'ops' | 'equipment' (zones, key = id)
 //   con : giá trị còn lại của ô sau khi gỡ tên (để biết ô có bị sửa tay sau đó không)
 // =====================================================================
@@ -7525,7 +7558,9 @@ function bo5sNguoiNghi(khoId, e){
     o.push({ loai:c.loai, key:c.key, nhan:c.nhan, con });
   });
   if(!o.length) return { n:0 };
-  K.cho5s = (K.cho5s || []).filter(x=>x.id !== e.id).concat({ id:e.id, ten, ngay:e.nghiViec || todayKey(), o });
+  const hoTro = !!e.diHoTro && !e.nghiViec;
+  K.cho5s = (K.cho5s || []).filter(x=>x.id !== e.id)
+    .concat(Object.assign({ id:e.id, ten, ngay:e.nghiViec || e.diHoTro || todayKey(), o }, hoTro ? { hoTro:true } : {}));
   return { n:o.length };
 }
 
@@ -7534,9 +7569,10 @@ function bo5sNguoiNghi(khoId, e){
 // Trả về null nếu không có gì để nhận, ngược lại { cua: tên người cũ, nhan: [nhãn các ô đã nhận] }
 function nhan5sNguoiMoi(khoId, e, idNghi){
   const K = KHO[khoId];
-  if(!K || !e || e.nghiViec || e.position === 'Giám sát' || !(K.cho5s || []).length) return null;
+  if(!K || !e || e.nghiViec || e.diHoTro || e.position === 'Giám sát' || !(K.cho5s || []).length) return null;
   const hang = K.cho5s.slice().sort((a, b)=>String(a.ngay).localeCompare(String(b.ngay)));
-  const x = idNghi ? hang.find(h=>h.id === idNghi) : hang[0];
+  // người mới chỉ nhận ô của người NGHỈ VIỆC; ô của người đi hỗ trợ giữ cho chính họ
+  const x = idNghi ? hang.find(h=>h.id === idNghi) : hang.find(h=>!h.hoTro);
   if(!x) return null;
   const ten = getEmployeeShortName(e), cs = cacO5s(K), nhan = [];
   x.o.forEach(s=>{
@@ -7552,7 +7588,7 @@ function nhan5sNguoiMoi(khoId, e, idNghi){
 // Người nghỉ đang chờ người mới nhận 5S (để hiện trong Quản lý nhân sự)
 function cho5sCua(khoId, id){ return ((KHO[khoId] || {}).cho5s || []).find(h=>h.id === id) || null; }
 function cho5sKeTiep(khoId){
-  const hang = ((KHO[khoId] || {}).cho5s || []).slice().sort((a, b)=>String(a.ngay).localeCompare(String(b.ngay)));
+  const hang = ((KHO[khoId] || {}).cho5s || []).filter(h=>!h.hoTro).sort((a, b)=>String(a.ngay).localeCompare(String(b.ngay)));
   return hang[0] || null;
 }
 
@@ -9019,6 +9055,13 @@ const XH_BC = {
   cot: ['DATE','REFERENCE NO','CUSTOMER','BUYER PO','STYLE','CARTONS','ISSUE QTY','DESTINATION','REMARKS'],
   thang: ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'],
   mau: '#2e75b6', mauChu: '#1f3864',
+  // Chữ ký cuối mail — chép theo chữ ký Outlook (n8n gửi qua máy chủ nên Outlook không tự chèn)
+  chuKy: {
+    ten: 'Hoa, Nguyen Duc', chucVu: 'Assistant Supervisor WH',
+    congTy: 'Tessellation Hoa Binh Company Limited',
+    diaChi: 'Lot 20 Street 1, Luong Son industrial Park, Luong Son district, Phu Tho province, Vietnam',
+    phone: '+(84) 88 900 5645', email: 'Hoa.D.Nguyen@esquel.com',
+  },
 };
 
 function xhBcPad(n){ return String(n).padStart(2, '0'); }
@@ -9096,7 +9139,20 @@ function xhBcBieuDo(ngay, tieuDe){
   </td></tr></table>`;
 }
 
-// Nội dung mail: lời chào + bảng gộp theo ngày (Row Labels / Sum of ISSUE QTY) + biểu đồ
+function xhBcChuKy(){
+  const c = XH_BC.chuKy, f = 'font-family:Arial,sans-serif;';
+  return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-top:22px;">
+  <tr><td style="${f}font-size:10pt;color:#000;padding-bottom:4px;">Thanks and Best regards,</td></tr>
+  <tr><td style="${f}font-size:12pt;font-weight:bold;color:#5b9bd5;">${c.ten}</td></tr>
+  <tr><td style="${f}font-size:9pt;color:#000;padding-bottom:14px;">${c.chucVu}</td></tr>
+  <tr><td style="${f}font-size:11pt;font-weight:bold;color:#000;padding-bottom:6px;">${c.congTy}</td></tr>
+  <tr><td style="${f}font-size:9pt;color:#000;padding-bottom:6px;">${c.diaChi}</td></tr>
+  <tr><td style="${f}font-size:9pt;color:#000;"><b style="color:#00a3c4;">Phone:</b>&nbsp; ${c.phone}
+    &nbsp;<b style="color:#00a3c4;">Email:</b> <a href="mailto:${c.email}" style="color:#1f4e79;text-decoration:underline;">${c.email}</a></td></tr>
+</table>`;
+}
+
+// Nội dung mail: lời chào + bảng gộp theo ngày (Row Labels / Sum of ISSUE QTY) + biểu đồ + chữ ký
 function xhBcSoanMail(dong){
   const tong = new Map();
   dong.forEach(r=>{
@@ -9119,7 +9175,8 @@ I would like to send the report Daily Shipment. Pls check at the attached file.<
     return `<tr><td style="${td}">${mm}/${dd}/${yy}</td><td style="${td}text-align:right;">${x.pcs}</td></tr>`; }).join('\n  ')}
   <tr style="background:#ddebf7;font-weight:bold;"><td style="${td}border-top:1px solid #9bc2e6;">Grand Total</td><td style="${td}border-top:1px solid #9bc2e6;text-align:right;">${grand}</td></tr>
 </table>
-${ngay.length ? xhBcBieuDo(ngay, `DAILY SHIPMENT – ISSUE QTY (PCS) – ${thang} ${y}`) : ''}`;
+${ngay.length ? xhBcBieuDo(ngay, `DAILY SHIPMENT – ISSUE QTY (PCS) – ${thang} ${y}`) : ''}
+${xhBcChuKy()}`;
 
   return { subject: `DAILY SHIPMENT REPORT - ${thang}.${y}`, html, grand,
            tenFile: `${+m}.DAILY-SHIPMENT-${thang}.${y}.xlsx`, soNgay: ngay.length };
@@ -9817,12 +9874,108 @@ async function hoanTacNghiViec(e){
   await saveHr(); if(ghi.length || s5) await saveKho();
   return ghi.concat(s5 && s5.nhan.length ? [`5S: nhận lại ${s5.nhan.length} ô`] : []);
 }
+// ---- ĐI HỖ TRỢ (dài hạn, không biết bao lâu, chắc chắn quay lại) ----
+// Giống nghỉ việc: cắt khỏi danh sách / số lượng kho (khoEmployees bỏ người có e.diHoTro), bỏ trống
+// chỗ ở phân công, Đổi ca, Hỗ trợ / KK và gỡ tên khỏi ô 5S. Khác: ô 5S được GIỮ CHỖ cho chính
+// người đó; bảng công vẫn có tên nhưng từ ngày đi tính 0h (dangDiHoTro); Hoàn tác lúc nào cũng
+// được — chọn ngày quay lại làm, đợt vừa đi ghi vào e.hoTroLs để bảng công tháng cũ vẫn đúng.
+function xacNhanDiHoTro(e){
+  return new Promise(res=>{
+    const tp = e.warehouseId === 'thanhpham';
+    const m = openModal('Đi hỗ trợ', `
+      <div class="nv-xn-ten"><b>${esc(e.name)}</b><span>${esc(khoName(e.warehouseId))} · ${esc(e.shift||'')}${e.position?' - '+esc(e.position):''}</span></div>
+      <label class="field-label">Ngày bắt đầu đi hỗ trợ <span style="font-weight:600;color:var(--ink-soft)">— từ ngày này bảng công tính 0h</span></label>
+      <input type="date" data-ngay value="${todayKey()}" max="${todayKey()}">
+      <label class="field-label">Hỗ trợ ở đâu <span style="font-weight:600;color:var(--ink-soft)">— không bắt buộc</span></label>
+      <input type="text" data-noi placeholder="VD: Kho vải, xưởng may 2…">
+      <ul class="nv-xn-ds">
+        <li>Cắt khỏi danh sách và số lượng ${esc(khoName(e.warehouseId).toLowerCase())}, chuyển vào mục <b>Đang đi hỗ trợ — chờ quay lại</b>.</li>
+        <li>Bảng công Excel: từ ngày bắt đầu đi, mỗi ngày tính <b>0h</b> (tới ngày quay lại).</li>
+        <li>Bảng phân công, Đổi ca${tp ? ', Hỗ trợ / KK' : ''}: tự bỏ trống chỗ của người này.</li>
+        <li>5S: gỡ tên khỏi các ô đang phụ trách; các ô đó giữ chỗ, quay lại sẽ nhận lại (người mới không nhận).</li>
+        <li>Khi quay lại: bấm <b>↺ Hoàn tác</b>, chọn ngày quay lại làm — trở lại kho như bình thường.</li>
+      </ul>
+      <div class="row2" style="margin-top:16px;"><button class="ghost" data-no>Hủy</button><button class="ht-btn dac" data-yes>Xác nhận</button></div>`);
+    m.body.querySelector('[data-no]').onclick = ()=>{ m.close(); res(null); };
+    m.body.querySelector('[data-yes]').onclick = ()=>{
+      const ngay = m.body.querySelector('[data-ngay]').value;
+      if(!ngay){ toast('⚠ Chọn ngày bắt đầu đi hỗ trợ'); return; }
+      if(ngay > todayKey()){ toast('⚠ Ngày bắt đầu không được sau hôm nay'); return; }
+      m.close(); res({ ngay, noi: m.body.querySelector('[data-noi]').value.trim() });
+    };
+  });
+}
+function xacNhanQuayLai(e){
+  return new Promise(res=>{
+    const m = openModal('Hỗ trợ xong — quay lại kho', `
+      <div class="nv-xn-ten ht"><b>${esc(e.name)}</b><span>Đi hỗ trợ từ ${fmtVN(fromKey(e.diHoTro))}${e.diHoTroNoi ? ' · ' + esc(e.diHoTroNoi) : ''}</span></div>
+      <label class="field-label">Ngày quay lại làm ở kho <span style="font-weight:600;color:var(--ink-soft)">— từ ngày này bảng công tính bình thường</span></label>
+      <input type="date" data-ngay value="${todayKey()}" min="${e.diHoTro}" max="${todayKey()}">
+      <ul class="nv-xn-ds">
+        <li>Bảng công: các ngày từ ${fmtVN(fromKey(e.diHoTro))} tới trước ngày quay lại vẫn giữ <b>0h</b>.</li>
+        <li>Bấm nhầm "Hỗ trợ"? Chọn ngày quay lại = ngày bắt đầu đi (${fmtVN(fromKey(e.diHoTro))}) — coi như chưa từng đi.</li>
+        <li>Trở lại danh sách kho, Đổi ca; nhận lại các ô 5S cũ (ô nào đã có người sửa tay thì để yên).</li>
+      </ul>
+      <div class="row2" style="margin-top:16px;"><button class="ghost" data-no>Hủy</button><button class="ht-btn dac" data-yes>Quay lại kho</button></div>`);
+    m.body.querySelector('[data-no]').onclick = ()=>{ m.close(); res(null); };
+    m.body.querySelector('[data-yes]').onclick = ()=>{
+      const ngay = m.body.querySelector('[data-ngay]').value;
+      if(!ngay){ toast('⚠ Chọn ngày quay lại làm'); return; }
+      if(ngay < e.diHoTro){ toast('⚠ Ngày quay lại không được trước ngày bắt đầu đi'); return; }
+      if(ngay > todayKey()){ toast('⚠ Ngày quay lại không được sau hôm nay'); return; }
+      m.close(); res(ngay);
+    };
+  });
+}
+async function choDiHoTro(e, ngay, noi){
+  e.diHoTro = ngay;
+  if(noi) e.diHoTroNoi = noi; else delete e.diHoTroNoi;
+  WAREHOUSES.forEach(w=>{
+    const K = KHO[w.id];
+    if(!K.current) return;
+    Object.keys(K.current.assignments||{}).forEach(pid=>{
+      K.current.assignments[pid] = (K.current.assignments[pid]||[]).map(id=>id===e.id?null:id);
+    });
+    if(K.current.ca2===e.id) K.current.ca2 = null;
+  });
+  const ghi = typeof rotBoNguoi === 'function' ? rotBoNguoi(e.warehouseId, e.id) : [];
+  if(ghi.length) applyRotation(e.warehouseId);
+  // Hỗ trợ / KK: gỡ khỏi các buổi từ ngày đi trở đi (hkBoNguoi giữ các buổi <= ngày truyền vào)
+  const truoc = new Date(fromKey(ngay)); truoc.setDate(truoc.getDate() - 1);
+  const hk = (e.warehouseId === 'thanhpham' && typeof hkBoNguoi === 'function') ? hkBoNguoi(e.id, toKey(truoc)) : 0;
+  // 5S: gỡ tên, ô giữ chỗ cho chính người này (thay-nguoi-5s.js)
+  const s5 = typeof bo5sNguoiNghi === 'function' ? bo5sNguoiNghi(e.warehouseId, e) : { n:0 };
+  await saveHr(); await saveKho();
+  return ghi.concat(hk ? [`Hỗ trợ / KK: gỡ khỏi ${hk} buổi đã xếp`] : [])
+    .concat(s5.n ? [`5S: tạm gỡ ${s5.n} ô`] : s5.trung ? ['5S: trùng tên ngắn với người khác — sửa sơ đồ 5S bằng tay'] : []);
+}
+async function hoanTacDiHoTro(e, ngayQuayLai){
+  // đợt vừa đi: từ ngày đi tới hôm trước ngày quay lại (quay lại đúng ngày đi = bấm nhầm, không ghi)
+  if(ngayQuayLai > e.diHoTro){
+    const den = new Date(fromKey(ngayQuayLai)); den.setDate(den.getDate() - 1);
+    e.hoTroLs = (e.hoTroLs || []).concat(Object.assign({ tu: e.diHoTro, den: toKey(den) }, e.diHoTroNoi ? { noi: e.diHoTroNoi } : {}));
+  }
+  delete e.diHoTro; delete e.diHoTroNoi;
+  const ghi = typeof rotThemNguoi === 'function' ? rotThemNguoi(e.warehouseId, e) : [];
+  if(ghi.length) applyRotation(e.warehouseId);          // trả ca / vị trí đúng lịch tuần này
+  const s5 = typeof nhan5sNguoiMoi === 'function' ? nhan5sNguoiMoi(e.warehouseId, e, e.id) : null;   // lấy lại ô 5S của mình
+  await saveHr(); if(ghi.length || s5) await saveKho();
+  return ghi.concat(s5 && s5.nhan.length ? [`5S: nhận lại ${s5.nhan.length} ô`] : []);
+}
+
 function manageEmpModal(){
   let khoId = CUR_KHO;
   const m = openModal('Quản lý nhân sự', `<div id="mEmpBox"></div>`);
   const draw = ()=>{
     const all = HR.employees.filter(e=>e.warehouseId===khoId);
-    const list = all.filter(e=>!e.nghiViec);
+    const list = all.filter(e=>!e.nghiViec && !e.diHoTro);
+    const ht = khoDiHoTro(khoId);
+    const soNgayDi = k => Math.max(0, Math.round((fromKey(todayKey()) - fromKey(k)) / 864e5));
+    const dongHoTro = e=>`<div class="rowline ht-row"><div><b>${esc(e.name)}</b>
+        <div class="ht-sub">${e.maSo?esc(e.maSo)+' · ':''}${esc(e.shift||'')}${e.position?' - '+esc(e.position):''}</div>
+        <div class="ht-sub">Đi từ ${fmtVN(fromKey(e.diHoTro))} · ${soNgayDi(e.diHoTro)} ngày${e.diHoTroNoi ? ' · ' + esc(e.diHoTroNoi) : ''} · bảng công 0h</div>
+        ${(c5 => c5 ? `<div class="ht-sub ht-5s">5S giữ chỗ: ${esc(c5.o.map(s=>s.nhan).join(', '))}</div>` : '')(typeof cho5sCua === 'function' && cho5sCua(e.warehouseId, e.id))}</div>
+        <div style="display:flex;gap:6px"><button class="ghost sm ht-undo" data-veht="${e.id}" title="Người này đã quay lại — đưa trở lại danh sách kho">↺ Hoàn tác</button></div></div>`;
     const thangNay = todayKey().slice(0,7);
     // đã cắt nghỉ: tháng nghỉ chưa qua -> chờ hết tháng; tháng đã qua -> lưu trữ
     const cho = all.filter(e=>e.nghiViec && e.nghiViec.slice(0,7) >= thangNay).sort((a,b)=>b.nghiViec.localeCompare(a.nghiViec));
@@ -9836,11 +9989,14 @@ function manageEmpModal(){
     $('mEmpBox').innerHTML = `
       <label class="field-label">Kho</label>
       <select id="mEmpKho">${WAREHOUSES.map(w=>`<option value="${w.id}" ${w.id===khoId?'selected':''}>${w.name}</option>`).join('')}</select>
-      <div style="font-size:12px;color:#888;margin:8px 0">${list.length} nhân sự${cho.length ? ` · ${cho.length} đã cắt nghỉ chờ hết tháng` : ''}</div>
+      <div style="font-size:12px;color:#888;margin:8px 0">${list.length} nhân sự${ht.length ? ` · ${ht.length} đang đi hỗ trợ` : ''}${cho.length ? ` · ${cho.length} đã cắt nghỉ chờ hết tháng` : ''}</div>
       ${list.map(e=>`<div class="rowline"><div><b>${esc(e.name)}</b><div style="font-size:11px;color:#888">${e.maSo?esc(e.maSo)+' · ':''}${esc(e.shift||'')}${e.position?' - '+esc(e.position):''} · OT đầu kỳ ${fmtHours(Number(e.otOpeningBalance)||0)}</div></div>
-        <div style="display:flex;gap:6px;flex:0 0 auto"><button class="nv-btn sm" data-nv="${e.id}" title="Cắt khỏi danh sách kho, giữ công tới hết tháng">Nghỉ việc</button><button class="secondary sm" data-ee="${e.id}">Sửa</button><button class="danger sm" data-de="${e.id}">✕</button></div></div>`).join('')}
+        <div class="nv-nut"><button class="ht-btn sm" data-ht="${e.id}" title="Đi hỗ trợ nơi khác — cắt khỏi danh sách kho, quay lại thì Hoàn tác">Hỗ trợ</button><button class="nv-btn sm" data-nv="${e.id}" title="Cắt khỏi danh sách kho, giữ công tới hết tháng">Nghỉ việc</button><button class="secondary sm" data-ee="${e.id}">Sửa</button><button class="danger sm" data-de="${e.id}">✕</button></div></div>`).join('')}
       <div class="btnrow" style="margin-top:14px;"><button id="mEmpAdd">+ Thêm nhân viên vào ${esc(khoName(khoId))}</button></div>
       ${(k => k ? `<div class="nv-ghi" style="margin-top:6px">Người mới thêm vào sẽ nhận ${k.o.length} ô 5S của <b>${esc(k.ten)}</b>.</div>` : '')(typeof cho5sKeTiep === 'function' && cho5sKeTiep(khoId))}
+      ${ht.length ? `<div class="ht-hd">ĐANG ĐI HỖ TRỢ — CHỜ QUAY LẠI <span>${ht.length}</span></div>
+        <div class="nv-ghi">Không tính vào danh sách, số lượng kho và 5S; bảng công tính 0h từ ngày đi. Quay lại thì bấm ↺ Hoàn tác.</div>
+        ${ht.map(dongHoTro).join('')}` : ''}
       ${cho.length ? `<div class="nv-hd">ĐÃ CẮT NGHỈ — CHỜ HẾT THÁNG <span>${cho.length}</span></div>
         <div class="nv-ghi">Không còn trong danh sách kho, nhưng công / tăng ca / nghỉ phép vẫn có trong bảng công Excel tới hết tháng nghỉ.</div>
         ${cho.map(e=>dongNghi(e, false)).join('')}` : ''}
@@ -9854,6 +10010,22 @@ function manageEmpModal(){
       const ghi = await choNghiViec(e, ngay);
       draw(); render();
       toast(`✓ Đã cắt nghỉ ${e.name}` + (ghi.length ? ' · ' + ghi.join('; ') : ''));
+    });
+    $('mEmpBox').querySelectorAll('[data-ht]').forEach(b=>b.onclick=async ()=>{
+      const e = empById(b.dataset.ht);
+      const kq = await xacNhanDiHoTro(e);
+      if(!kq) return;
+      const ghi = await choDiHoTro(e, kq.ngay, kq.noi);
+      draw(); render();
+      toast(`✓ ${e.name} đi hỗ trợ — đã cắt khỏi danh sách kho` + (ghi.length ? ' · ' + ghi.join('; ') : ''));
+    });
+    $('mEmpBox').querySelectorAll('[data-veht]').forEach(b=>b.onclick=async ()=>{
+      const e = empById(b.dataset.veht);
+      const ngay = await xacNhanQuayLai(e);
+      if(!ngay) return;
+      const ghi = await hoanTacDiHoTro(e, ngay);
+      draw(); render();
+      toast(`↺ ${e.name} đã trở lại danh sách kho` + (ghi.length ? ' · ' + ghi.join('; ') : ''));
     });
     $('mEmpBox').querySelectorAll('[data-hoantac]').forEach(b=>b.onclick=async ()=>{
       const e = empById(b.dataset.hoantac);
@@ -10367,8 +10539,9 @@ function dungBangCong(khoId, ym){
   const [nam, thang] = ym.split('-').map(Number);
   const ngays = ngayLamViecThang(nam, thang);
   const dsKho = (khoId === 'ALL') ? WAREHOUSES.map(w=>w.id) : [khoId];
-  // người đang làm + người đã cắt nghỉ trong tháng này (vẫn tính công tới ngày làm việc cuối cùng)
-  const nvs = dsKho.flatMap(id => khoEmployees(id).concat(khoNghiTrongThang(id, ym)).map(e=>({ ...e, _kho: khoName(id) })));
+  // người đang làm + người đang đi hỗ trợ (vẫn là người của kho) + người đã cắt nghỉ trong tháng này
+  // (vẫn tính công tới ngày làm việc cuối cùng)
+  const nvs = dsKho.flatMap(id => khoEmployees(id).concat(khoDiHoTro(id), khoNghiTrongThang(id, ym)).map(e=>({ ...e, _kho: khoName(id) })));
   const { ot, lv } = gomGioTheoNgay();
   const CA = 8;                                        // giờ làm trong ca, mặc định 8
   const lam = x => Math.round(x * 100) / 100;          // làm tròn 2 số lẻ
@@ -10378,6 +10551,11 @@ function dungBangCong(khoId, ym){
     const cv = chucVuCong(e);
     ngays.forEach(d=>{
       if(e.nghiViec && toKey(d) > e.nghiViec) return;      // sau ngày làm việc cuối cùng thì không tính
+      if(dangDiHoTro(e, toKey(d))){                         // ngày đi hỗ trợ nơi khác: 0h
+        rows.push({ ngay: new Date(d), maSo: e.maSo || '', ten: e.name, pos: cv.pos, ratio: cv.ratio,
+                    normal: 0, ot: 0, leave: 0, tt: 0, kho: e._kho });
+        return;
+      }
       const key = e.id + '|' + toKey(d);
       const gioOT = ot.get(key) || 0;
       const l = lv.get(key);
