@@ -1049,6 +1049,40 @@
   .nv-xn-ten.ht span{color:#ffedd5;}
   .ht-row .ht-5s{color:#b45309; margin-top:2px;}
 
+  /* ===== CHỜ NGHỈ VIỆC (đã bấm Nghỉ việc, chưa Cắt tên): tên màu đen ở danh sách hằng ngày ===== */
+  .ot-row.cho-nghi .ot-slide{background:#111827;}
+  .ot-row.cho-nghi .ot-name .nm, .ot-row.cho-nghi .ot-name .nm *{color:#fff;}
+  .ot-row.cho-nghi .ot-shift{background:#374151; color:#e5e7eb; border-color:#4b5563;}
+  .cho-nghi-nhan{display:inline-block; margin-left:6px; padding:0 7px; border-radius:999px; background:#fff; color:#111827;
+    font-size:11px; font-weight:800; vertical-align:1px;}
+  .sq.cho-nghi{background:#111827 !important; color:#fff !important;}
+  /* giữ trạng thái hôm nay bằng vạch màu ở đáy ô */
+  .sq.cho-nghi.go{box-shadow:inset 0 -4px 0 #2FAE59;}
+  .sq.cho-nghi.off{box-shadow:inset 0 -4px 0 #FF2020;}
+  .sq.cho-nghi.som{box-shadow:inset 0 -4px 0 #f472b6;}
+  .sq.cho-nghi.muon{box-shadow:inset 0 -4px 0 #F5B400;}
+  .sq.mini.cho-nghi{box-shadow:inset 0 -3px 0 #9ca3af;}
+  .slot-pill.cho-nghi{background:#111827 !important; color:#fff !important; border-color:#111827 !important;}
+  .slot-pill.cho-nghi .edit-ic{color:#d1d5db;}
+  /* nút Cắt tên trong mục Chờ nghỉ việc */
+  .nv-row button.nv-cat{background:#fff; color:#111827; border:1px solid #fff; white-space:nowrap;}
+  .nv-row button.nv-cat:hover{background:#e5e7eb; opacity:1;}
+  .nv-row .nv-qua{color:#fca5a5;}
+  /* Thẻ Nhân sự: 3 dòng biến động (chờ nghỉ việc / đã nghỉ việc / hỗ trợ bộ phận khác) */
+
+  /* Xu hướng số người (trục phải) trên biểu đồ giờ tăng ca 3 kho */
+  .otc-ng-duong{stroke-width:2; stroke-dasharray:5 4; opacity:.9;}
+  .otc-ng-diem{fill:#fff; stroke-width:2;}
+  .otc-ng-so{font-size:10.5px; font-weight:800;}
+  .otc-axn{fill:#6b7280; font-style:italic;}
+  .otc-lg-ng{font-weight:800; letter-spacing:1px;}
+  .stat-lines .bd-ns{display:flex; justify-content:space-between; align-items:baseline; gap:8px;}
+  /* danh sách Tăng ca: số giờ trên thanh (0/4, 3.5/12…) chữ trắng khi nền đen */
+  .ot-row.cho-nghi .otb-top{color:#fff;}
+  .ot-row.cho-nghi .otb-track{background:#4b5563;}
+  /* nhãn "Nghỉ việc từ dd/mm": nền trắng chữ đen (không bị quy tắc chữ trắng của dòng nền đen đè) */
+  .ot-row.cho-nghi .ot-name .nm .cho-nghi-nhan{color:#111827;}
+
 </style>
 <style>/* css/modal.css */
 /* Modal
@@ -2078,6 +2112,13 @@
   #tab-hotrokk .hk-kk .o.khac{background:repeating-linear-gradient(135deg,#f4f4f1 0 5px,#ececea 5px 10px);}
   #tab-hotrokk .hk-kk .o.khac.on{background:#7fc3d8 !important;}
 
+  /* Giờ đi hỗ trợ: cột Giờ trong bảng "Mỗi việc huy động", chữ giờ cạnh số buổi */
+  #tab-hotrokk .hk-snr{grid-template-columns:1fr 46px 52px 46px 64px;}
+  #tab-hotrokk .hk-snr .v.gio{color:#0e7490;}
+  #tab-hotrokk .hk-barw .sl small.gio{color:#0e7490; font-weight:700;}
+  #tab-hotrokk .hk-kpi .k small{font-weight:600; font-size:10.5px;}
+  #tab-hotrokk .hk-nk .sl small{font-weight:600; color:#0e7490;}
+
 </style>
 <style>/* css/modules/tonphep.css */
 /* Tồn phép năm
@@ -2548,6 +2589,7 @@
           <div><span class="k">Tổng số công nhân viên</span><span class="v" id="dTotalCnv">0</span></div>
           <div><span class="k">Đi làm hôm nay</span><span class="v" id="dWorkingToday">0</span></div>
           <div><span class="k">Nghỉ hôm nay</span><span class="v" id="dOffToday">0</span></div>
+          <div id="dBienDongNs" style="display:contents"></div>
         </div>
       </div>
       <div class="stat s2 stat-multi">
@@ -4356,6 +4398,18 @@ function khoNghiTrongThang(id, ym){
   return HR.employees.filter(e=>e.warehouseId===id && e.nghiViec && e.nghiViec.slice(0,7) >= ym)
     .sort((a,b)=>a.name.localeCompare(b.name,'vi'));
 }
+// CHỜ NGHỈ VIỆC: e.choNghiViec = ngày làm cuối, CHƯA cắt tên -> vẫn trong khoEmployees và số lượng,
+// tên hiện màu đen ở danh sách hằng ngày. Bấm "✂ Cắt tên" mới đổi thành e.nghiViec (cắt hẳn).
+function laChoNghi(e){ return !!(e && e.choNghiViec && !e.nghiViec); }
+function khoChoNghi(id){ return HR.employees.filter(e=>e.warehouseId===id && laChoNghi(e)); }
+// Đã cắt tên, ngày làm cuối thuộc tháng ym (vẫn có trong bảng công tháng đó)
+function khoDaNghiThang(id, ym){ return HR.employees.filter(e=>e.warehouseId===id && e.nghiViec && e.nghiViec.slice(0,7)===ym); }
+// Chữ ghi kèm tên người chờ nghỉ: "Nghỉ từ dd/mm" (ngày sau ngày làm cuối)
+function nhanChoNghi(e){
+  if(!laChoNghi(e)) return '';
+  const d = fromKey(e.choNghiViec); d.setDate(d.getDate() + 1);
+  return `Nghỉ việc từ ${pad(d.getDate())}/${pad(d.getMonth()+1)}`;
+}
 // Người của 1 kho đang đi hỗ trợ nơi khác (chờ quay lại)
 function khoDiHoTro(id){
   return HR.employees.filter(e=>e.warehouseId===id && e.diHoTro && !e.nghiViec)
@@ -5100,7 +5154,8 @@ function khoStats(khoId, ref){
   // Đếm theo SỐ NGƯỜI (không đếm số bản ghi) để 1 người đăng ký nhiều lần vẫn chỉ tính là 1
   const uniq = arr => new Set(arr.map(x=>x.employeeId)).size;
   return {
-    khoId, name: khoName(khoId), total: emps.length,
+    // Tổng nhân sự: tính cả người đang đi hỗ trợ bộ phận khác (họ vẫn ẩn khỏi phân công, 5S, tăng ca…)
+    khoId, name: khoName(khoId), total: emps.length + khoDiHoTro(khoId).length,
     nghi: uniq(nghi), som: uniq(som), muon: uniq(muon),
     nghiRecs: nghi.length, somRecs: som.length, muonRecs: muon.length,
     somH: som.reduce((s,l)=>s+(Number(l.hours)||0),0),
@@ -5132,6 +5187,19 @@ function otWarnings(khoId, ref){
     return b.val - a.val;
   });
 }
+// 3 dòng biến động nhân sự của 1 kho — chỉ hiện dòng nào có người:
+//   Chờ nghỉ việc (đã bấm Nghỉ việc, chưa Cắt tên — VẪN tính trong tổng)
+//   Đã nghỉ việc (đã Cắt tên, ngày làm cuối trong tháng này — đã trừ khỏi tổng)
+//   Hỗ trợ bộ phận khác (đang đi hỗ trợ — VẪN tính trong Tổng nhân sự, chỉ ẩn khỏi danh sách hằng ngày)
+function dongBienDongNs(khoId){
+  const ym = todayKey().slice(0, 7);
+  const ds = [
+    { k:'Chờ nghỉ việc', n:khoChoNghi(khoId).length, g:'vẫn tính trong tổng', cls:'den' },
+    { k:'Đã nghỉ việc', n:khoDaNghiThang(khoId, ym).length, g:'tháng này · đã trừ', cls:'xam' },
+    { k:'Hỗ trợ bộ phận khác', n:khoDiHoTro(khoId).length, g:'vẫn tính trong tổng nhân sự', cls:'cam' },
+  ];
+  return ds.filter(x=>x.n > 0).map(x=>`<div class="bd-ns ${x.cls}" title="${x.g}"><span class="k">${x.k}</span><span class="v">${x.n}</span></div>`).join('');
+}
 function renderAll3(){
   const ref = new Date();
   const stats = WAREHOUSES.map(w=>khoStats(w.id, ref));
@@ -5148,6 +5216,7 @@ function renderAll3(){
         <div><span class="k">OT tháng này</span><span class="v">${fmtHours(st.otMonthH)}</span></div>
         <div><span class="k">Phép tồn trên 24h</span><span class="v">${
           (typeof tpDemTonTren === 'function') ? tpDemTonTren(w.id, 24) : 0}</span></div>
+        ${dongBienDongNs(w.id)}
       </div></div>`;
   }).join('');
 
@@ -5263,9 +5332,25 @@ function otcSoLieu(){
     if(tong[k] && m in tong[k]) tong[k][m] += Number(r.hours) || 0;
   });
   const soNguoi = {}; WAREHOUSES.forEach(w=>{ soNguoi[w.id] = khoEmployees(w.id).length || 1; });
-  const giaTri = (k, m) => OTC_MODE === 'bq' ? tong[k][m] / soNguoi[k] : tong[k][m];
   const trangThai = m => m < nay ? 'qua' : (m === nay ? 'nay' : 'toi');
-  return { tong, soNguoi, giaTri, trangThai, nay };
+  // SỐ NGƯỜI từng tháng: đếm tại ngày cuối tháng (tháng đang chạy: hôm nay; tháng chưa tới: bỏ trống).
+  // Bỏ người đã cắt tên trước ngày đó; người chờ nghỉ việc và người đi hỗ trợ bộ phận khác vẫn tính
+  // (khớp Tổng nhân sự). App chưa lưu ngày vào làm nên người mới vào được tính cả các tháng trước.
+  const nguoi = {};
+  WAREHOUSES.forEach(w=>{
+    nguoi[w.id] = {};
+    OTC_THANG.forEach(m=>{
+      const tt = trangThai(m);
+      if(tt === 'toi'){ nguoi[w.id][m] = null; return; }
+      const [y, mm] = m.split('-').map(Number);
+      const D = tt === 'nay' ? todayKey() : toKey(new Date(y, mm, 0));
+      nguoi[w.id][m] = HR.employees.filter(e=>e.warehouseId === w.id
+        && !(e.nghiViec && e.nghiViec < D)).length;
+    });
+  });
+  // Bình quân / người: chia cho số người CỦA THÁNG ĐÓ (không phải số người hiện tại)
+  const giaTri = (k, m) => OTC_MODE === 'bq' ? tong[k][m] / (nguoi[k][m] || soNguoi[k]) : tong[k][m];
+  return { tong, soNguoi, nguoi, giaTri, trangThai, nay };
 }
 function thangKey(d){ return d.getFullYear() + '-' + pad(d.getMonth() + 1); }
 function otcTenThang(m){ const [y, mm] = m.split('-'); return `T${Number(mm)}/${y}`; }
@@ -5307,15 +5392,18 @@ function renderOtChart(){
       <div class="v">${otcFmt(kyHien)}<small>${OTC_MODE === 'bq' ? 'mỗi người · ' : ''}08–12/2026</small></div>
       ${mNay ? `<div class="d">${otcTenThang(mNay)} (đến hôm nay): <b>${otcFmt(S.giaTri(k, mNay))}</b></div>` : ''}
       ${mDu ? `<div class="d">${otcTenThang(mDu)}: <b>${otcFmt(S.giaTri(k, mDu))}</b> ${ss}</div>` : ''}
+      ${(()=>{ const ms = OTC_THANG.filter(m=>S.nguoi[k][m] != null); if(ms.length < 2) return '';
+        const a = S.nguoi[k][ms[ms.length-2]], b = S.nguoi[k][ms[ms.length-1]], d = b - a;
+        return `<div class="d">Số người: ${otcTenThang(ms[ms.length-2])} <b>${a}</b> → ${otcTenThang(ms[ms.length-1])} <b>${b}</b> <span class="ss ${d>0?'len':d<0?'xuong':''}">${d>0?'▲ +'+d:d<0?'▼ '+d:'• không đổi'}</span></div>`; })()}
     </div>`;
   }).join('');
 
   $('otcLegend').innerHTML = khos.map(k=>`<span><i style="background:${KHO_MAU[k]}"></i>${esc(khoName(k))}</span>`).join('')
-    + `<span class="phu">${OTC_MODE === 'bq' ? 'Giờ tăng ca bình quân mỗi người / tháng' : 'Tổng giờ tăng ca / tháng'}</span>`;
+    + `<span class="phu">Cột: ${OTC_MODE === 'bq' ? 'giờ tăng ca bình quân mỗi người / tháng' : 'tổng giờ tăng ca / tháng'} · <span class="otc-lg-ng">◯ - -</span> số người cuối tháng (trục phải)</span>`;
 
   // ---- Vẽ SVG ----
   const W = Math.max(560, wrap.clientWidth || 900), H = 300;
-  const L = 52, R = 16, T = 18, B = 44;
+  const L = 52, R = 46, T = 18, B = 44;
   const pw = W - L - R, ph = H - T - B;
   const maxV = Math.max(0, ...khos.flatMap(k=>OTC_THANG.map(m=>S.giaTri(k, m))));
   const top = otcTronTren(maxV * 1.12);
@@ -5325,12 +5413,16 @@ function renderOtChart(){
   const bw = Math.max(10, Math.min(24, (band * 0.7 - 2 * KHE) / 3)); // cột tối đa 24px
   const gw = bw * 3 + 2 * KHE;
   const SO_VACH = 5;
+  const maxN = Math.max(1, ...khos.flatMap(k=>OTC_THANG.map(m=>S.nguoi[k][m] || 0)));
+  const topN = Math.max(5, Math.ceil(maxN * 1.25 / 5) * 5);     // chia hết cho 5 vạch -> trục người là số nguyên
+  const yN = v => T + ph - (v / topN) * ph;
   let svg = `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" role="img" aria-label="Giờ tăng ca theo tháng của 3 kho, tháng 8 đến tháng 12 năm 2026">`;
   // lưới + nhãn trục
   for(let i = 0; i <= SO_VACH; i++){
     const v = top * i / SO_VACH, y = yOf(v);
     svg += `<line x1="${L}" x2="${W - R}" y1="${y}" y2="${y}" class="${i ? 'otc-grid' : 'otc-base'}"/>`
-         + `<text x="${L - 8}" y="${y + 4}" text-anchor="end" class="otc-ax">${fmtNumShort(v)}h</text>`;
+         + `<text x="${L - 8}" y="${y + 4}" text-anchor="end" class="otc-ax">${fmtNumShort(v)}h</text>`
+         + `<text x="${W - R + 8}" y="${y + 4}" text-anchor="start" class="otc-ax otc-axn">${Math.round(topN * i / SO_VACH)}</text>`;
   }
   OTC_THANG.forEach((m, i)=>{
     const cx = L + band * i + band / 2, tt = S.trangThai(m);
@@ -5349,6 +5441,17 @@ function renderOtChart(){
       svg += `<text x="${x + bw / 2}" y="${y - 6}" text-anchor="middle" class="otc-val${v ? '' : ' khong'}">${otcNhan(v)}</text>`;
     });
   });
+  // ---- Đường xu hướng SỐ NGƯỜI (trục phải): mỗi kho 1 đường nét đứt, số người ghi trong vòng tròn ----
+  khos.forEach((k, j)=>{
+    const diem = OTC_THANG.map((m, i)=>{
+      const n = S.nguoi[k][m]; if(n == null) return null;
+      const cx = L + band * i + band / 2;
+      return { x: cx - gw / 2 + j * (bw + KHE) + bw / 2, y: yN(n), n };
+    }).filter(Boolean);
+    if(diem.length > 1) svg += `<polyline points="${diem.map(p=>p.x + ',' + p.y).join(' ')}" fill="none" stroke="${KHO_MAU[k]}" class="otc-ng-duong"/>`;
+    diem.forEach(p=>{ svg += `<circle cx="${p.x}" cy="${p.y}" r="10" stroke="${KHO_MAU[k]}" class="otc-ng-diem"/><text x="${p.x}" y="${p.y + 3.5}" text-anchor="middle" class="otc-ng-so" fill="${KHO_MAU[k]}">${p.n}</text>`; });
+  });
+  svg += `<text x="${W - R + 8}" y="${T - 7}" text-anchor="start" class="otc-ax otc-axn">người</text>`;
   svg += `</svg><div class="otc-tip" id="otcTip" hidden></div>`;
   wrap.innerHTML = svg;
 
@@ -5360,7 +5463,7 @@ function renderOtChart(){
       wrap.querySelectorAll('.otc-band').forEach(x=>x.classList.toggle('on', x === b));
       const tongThang = khos.reduce((s, k)=>s + S.tong[k][m], 0);
       tip.innerHTML = `<div class="th">${otcTenThang(m)}${tt === 'nay' ? ' · đến hôm nay' : tt === 'toi' ? ' · chưa tới' : ''}</div>`
-        + khos.map(k=>`<div class="r"><i style="background:${KHO_MAU[k]}"></i><span>${esc(khoName(k))}</span><b>${otcFmt(S.giaTri(k, m))}</b></div>`).join('')
+        + khos.map(k=>`<div class="r"><i style="background:${KHO_MAU[k]}"></i><span>${esc(khoName(k))}</span><b>${otcFmt(S.giaTri(k, m))}</b>${S.nguoi[k][m] != null ? `<small> · ${S.nguoi[k][m]} người</small>` : ''}</div>`).join('')
         + `<div class="r tong"><span>Tổng 3 kho</span><b>${fmtHours(tongThang)}</b></div>`;
       tip.hidden = false;
       // Đặt cạnh tháng đang xem (bên phải, hết chỗ thì bên trái) để không che cột
@@ -5377,14 +5480,15 @@ function renderOtChart(){
   wrap.onmouseleave = ()=>{ tip.hidden = true; wrap.querySelectorAll('.otc-band').forEach(x=>x.classList.remove('on')); };
 
   $('otcNote').textContent = OTC_MODE === 'bq'
-    ? 'Bình quân = tổng giờ tăng ca của kho ÷ số người hiện có trong kho. Tháng chưa tới để trống.'
+    ? 'Bình quân = tổng giờ tăng ca của kho ÷ số người của kho trong tháng đó. Tháng chưa tới để trống.'
     : 'Tính theo kho hiện tại của từng người. Tháng chưa tới để trống.';
+  $('otcNote').textContent += ' Số người = người của kho tại ngày cuối tháng (tháng này: hôm nay), đã trừ người đã cắt tên; người chờ nghỉ việc và người đi hỗ trợ bộ phận khác vẫn tính.';
 
   // Bảng số liệu (cho ai cần số chính xác / in ra)
   const tongCot = k => OTC_THANG.reduce((s, m)=>s + S.giaTri(k, m), 0);
   $('otcTable').innerHTML = `<thead><tr><th>Tháng</th>${khos.map(k=>`<th style="text-align:right">${esc(khoName(k))}</th>`).join('')}<th style="text-align:right">Tổng 3 kho</th></tr></thead>
     <tbody>${OTC_THANG.map(m=>`<tr><td>${otcTenThang(m)}${S.trangThai(m) === 'nay' ? ' <small>(đến hôm nay)</small>' : S.trangThai(m) === 'toi' ? ' <small>(chưa tới)</small>' : ''}</td>
-      ${khos.map(k=>`<td style="text-align:right">${otcFmt(S.giaTri(k, m))}</td>`).join('')}
+      ${khos.map(k=>`<td style="text-align:right">${otcFmt(S.giaTri(k, m))}${S.nguoi[k][m] != null ? ` <small>· ${S.nguoi[k][m]} người</small>` : ''}</td>`).join('')}
       <td style="text-align:right"><b>${fmtHours(khos.reduce((s, k)=>s + S.tong[k][m], 0))}</b></td></tr>`).join('')}
     <tr class="tong"><td><b>Cả kỳ</b></td>${khos.map(k=>`<td style="text-align:right"><b>${otcFmt(tongCot(k))}</b></td>`).join('')}
       <td style="text-align:right"><b>${fmtHours(khos.reduce((s, k)=>s + OTC_THANG.reduce((a, m)=>a + S.tong[k][m], 0), 0))}</b></td></tr></tbody>`;
@@ -5464,7 +5568,10 @@ const ST_LABEL_OV = { go:'Đi làm', off:'Nghỉ cả ngày', som:'Về sớm', 
 function renderAll3Boards(){
   const box = $('all3Boards'); if(!box) return;
   box.innerHTML = WAREHOUSES.map(w=>{
-    const rows = ovBoardRows(w.id);
+    let rows = ovBoardRows(w.id);
+    // Giám sát: 1 dòng riêng trên cùng — số người của kho tính đủ cả giám sát
+    const gs = khoEmployees(w.id).filter(e=>e.position === 'Giám sát');
+    if(rows && gs.length) rows = [{ label:'Giám sát', target:null, people: gs.map(e=>({ emp:e, ...todayStatus(e.id, todayKey()) })) }].concat(rows);
     if(!rows) return `<div class="ovkho"><h3>${w.icon}<span>${esc(w.name)}</span></h3>
       <div class="ovempty">Chưa thiết lập nhóm ca &amp; vị trí cho kho này.</div></div>`;
     const all = rows.reduce((a,r)=>a.concat(r.people), []);
@@ -5476,7 +5583,7 @@ function renderAll3Boards(){
       ${rows.map(r=>{
         const sorted = r.people.slice().sort((a,b)=>ST_ORDER[a.st] - ST_ORDER[b.st]);
         const thieu = r.target != null && r.people.length !== r.target;
-        const o = sorted.map(p=>`<span class="sq mini ${p.st}" title="${esc(ST_LABEL_OV[p.st] || '')}${(p.st==='som'||p.st==='muon')?' '+fmtHours(p.hours):''}"></span>`).join('');
+        const o = sorted.map(p=>`<span class="sq mini ${p.st}${laChoNghi(p.emp)?' cho-nghi':''}" title="${esc(p.emp.name)} — ${laChoNghi(p.emp)?esc(nhanChoNghi(p.emp))+' · ':''}${esc(ST_LABEL_OV[p.st] || '')}${(p.st==='som'||p.st==='muon')?' '+fmtHours(p.hours):''}"></span>`).join('');
         // ô viền đứt = suất còn thiếu so với số người dự kiến
         const trong = (r.target != null && r.people.length < r.target)
           ? Array.from({length: r.target - r.people.length}, ()=>`<span class="sq mini slot" title="Chưa có người"></span>`).join('') : '';
@@ -5543,7 +5650,7 @@ function posRowHtml(label, people){
   const sq = people.length ? people.map(p=>{
     const nm = esc(getEmployeeShortName(p.emp));
     const lb = (p.st==='som' || p.st==='muon') ? `${nm} ${fmtHours(p.hours)}` : nm;
-    return `<span class="sq ${p.st}" title="${esc(p.emp.name)}${p.extra?' — '+esc(p.extra):''}">${lb}</span>`;
+    return `<span class="sq ${p.st}${laChoNghi(p.emp)?' cho-nghi':''}" title="${esc(p.emp.name)}${p.extra?' — '+esc(p.extra):''}${laChoNghi(p.emp)?' — '+esc(nhanChoNghi(p.emp)):''}">${lb}</span>`;
   }).join('') : `<span class="sq empty">— chưa xếp —</span>`;
   return `<div class="posrow">
     <div class="poslabel">${esc(label)}<span class="cnt">${people.length} người${off?` · nghỉ ${off}`:''}</span></div>
@@ -5556,8 +5663,8 @@ function posRowHtml2(label, people, posId, canEdit){
   const sq = sorted.length ? sorted.map(p=>{
     const nm = esc(getEmployeeShortName(p.emp));
     const lb = (p.st==='som' || p.st==='muon') ? `${nm} ${fmtHours(p.hours)}` : nm;
-    return `<span class="sq ${p.st}" ${posId?`draggable="true" data-emp="${p.emp.id}" data-from="${posId}"`:''}
-      title="${esc(p.emp.name)}${p.extra?' — '+esc(p.extra):''}">${lb}</span>`;
+    return `<span class="sq ${p.st}${laChoNghi(p.emp)?' cho-nghi':''}" ${posId?`draggable="true" data-emp="${p.emp.id}" data-from="${posId}"`:''}
+      title="${esc(p.emp.name)}${p.extra?' — '+esc(p.extra):''}${laChoNghi(p.emp)?' — '+esc(nhanChoNghi(p.emp)):''}">${lb}</span>`;
   }).join('') : `<span class="sq empty">— chưa xếp —</span>`;
   const canOrder = canEdit && posId && posId !== 'unassigned';
   return `<div class="posrow" ${posId?`data-pos="${posId}"`:''}>
@@ -5690,6 +5797,7 @@ function renderDashboard(){
   const ref = new Date(), tKey = todayKey();
   const s = khoStats(CUR_KHO, ref);
   $('dTotalCnv').textContent = s.total;
+  if($('dBienDongNs')) $('dBienDongNs').innerHTML = dongBienDongNs(CUR_KHO);   // chờ nghỉ / đã nghỉ / hỗ trợ
   $('dWorkingToday').textContent = s.working;
   $('dOffToday').textContent = s.nghi;
   $('dOtToday').textContent = fmtHours(s.otTodayH);
@@ -5970,7 +6078,7 @@ function renderAssignTable(){
     const cells = slots.map((empId, i)=>{
       if(!empId) return `<span class="slot-pill empty" data-action="edit-slot" data-pos="${pos.id}" data-slot="${i}" draggable="false">+ Chưa xếp</span>`;
       const dup = dupIds.has(empId);
-      return `<span class="slot-pill${dup?' dup':''}" data-action="edit-slot" data-pos="${pos.id}" data-slot="${i}" draggable="true" title="${dup?'Người này đang trùng ở nhiều vị trí — ':''}Kéo để đổi chỗ">${pillTen(empId)}${dup?' ⚠':''} <span class="edit-ic">✎⠿</span></span>`;
+      return `<span class="slot-pill${dup?' dup':''}${laChoNghi(empById(empId))?' cho-nghi':''}" data-action="edit-slot" data-pos="${pos.id}" data-slot="${i}" draggable="true" title="${dup?'Người này đang trùng ở nhiều vị trí — ':''}Kéo để đổi chỗ">${pillTen(empId)}${dup?' ⚠':''} <span class="edit-ic">✎⠿</span></span>`;
     }).join('');
     const tr = document.createElement('tr');
     tr.innerHTML = `<td class="pos-name ${pos.forklift?'forklift-req':''}">${esc(pos.name)}${pos.forklift?' <span class="chip forklift">🚜</span>':''}
@@ -9790,14 +9898,14 @@ function renderOtList(){
     const t = otTotals(e.id, ref);
     const ca12 = (e.shift==='Ca 1' || e.shift==='Ca 2');
     // .ot-slide trượt sang trái khi vuốt để lộ 2 nút phía sau (chỉ trên điện thoại)
-    return `<div class="ot-row" data-row="${e.id}">
+    return `<div class="ot-row${laChoNghi(e) ? ' cho-nghi' : ''}" data-row="${e.id}">
       <div class="ot-swipe">
         <button class="sw-ot" data-addot="${e.id}">Tăng ca</button>
         <button class="sw-lv" data-addleave="${e.id}">Nghỉ phép</button>
       </div>
       <div class="ot-slide">
         <div class="ot-name">
-          <div class="nm" data-othist="${e.id}" title="Bấm để xem/sửa lịch sử tăng ca">${esc(displayName(e.name))}${maSoDuoiTen(e)}</div>
+          <div class="nm" data-othist="${e.id}" title="Bấm để xem/sửa lịch sử tăng ca">${esc(displayName(e.name))}${maSoDuoiTen(e)}${laChoNghi(e) ? ` <span class="cho-nghi-nhan">${esc(nhanChoNghi(e))}</span>` : ''}</div>
           ${showShift ? `<button class="ot-shift ${ca12?'ca12':''}" data-shift="${e.id}">${esc(e.shift||'Chưa xếp ca')}${e.position?' - '+esc(e.position):''}</button>` : ''}
         </div>
         <div class="ot-bars">${barsHtml(t)}</div>
@@ -10263,22 +10371,24 @@ function nextEmployeeId(){
   const max = HR.employees.reduce((m,e)=>{ const n = parseInt(String(e.id).replace('NV',''),10); return isNaN(n)?m:Math.max(m,n); }, 0);
   return 'NV' + String(max+1).padStart(4,'0');
 }
-// ---- NGHỈ VIỆC ----
-// Xác nhận xong: cắt khỏi danh sách kho (khoEmployees bỏ người có e.nghiViec), giữ nguyên
-// tăng ca / nghỉ phép để bảng công tháng đó vẫn có họ (tới ngày làm việc cuối cùng),
-// bỏ trống chỗ của họ ở bảng phân công, Đổi ca, Hỗ trợ / KK.
+// ---- NGHỈ VIỆC: 2 bước ----
+// 1. "Nghỉ việc" (chọn ngày làm việc cuối): e.choNghiViec = ngày. CHƯA cắt — người này vẫn trong
+//    danh sách và số lượng kho, hiện MÀU ĐEN ở các danh sách công việc hằng ngày (laChoNghi).
+//    Bảng công Excel không tính các ngày sau ngày làm cuối.
+// 2. "✂ Cắt tên": e.nghiViec = ngày làm cuối (+ e.catTen = ngày bấm). Lúc này mới cắt khỏi danh
+//    sách / số lượng kho (khoEmployees bỏ người có e.nghiViec), bỏ trống chỗ ở bảng phân công,
+//    Đổi ca, Hỗ trợ / KK, gỡ 5S. Bảng công Excel vẫn có người này tới hết tháng nghỉ.
+// Hoàn tác được ở cả 2 bước.
 function xacNhanNghiViec(e){
   return new Promise(res=>{
-    const tp = e.warehouseId === 'thanhpham';
     const m = openModal('Xác nhận nghỉ việc', `
       <div class="nv-xn-ten"><b>${esc(e.name)}</b><span>${esc(khoName(e.warehouseId))} · ${esc(e.shift||'')}${e.position?' - '+esc(e.position):''}</span></div>
       <label class="field-label">Ngày làm việc cuối cùng</label>
       <input type="date" data-ngay value="${todayKey()}">
       <ul class="nv-xn-ds">
-        <li>Cắt khỏi danh sách kho, chuyển vào mục <b>Đã cắt nghỉ — chờ hết tháng</b>.</li>
-        <li>Công, tăng ca, nghỉ phép vẫn giữ: bảng công Excel tháng này vẫn có người này, tính tới ngày làm việc cuối cùng.</li>
-        ${tp ? '<li>Đổi ca, Hỗ trợ / KK: tự bỏ trống chỗ của người này; đang tới lượt Stock thì người kế tiếp trực thay, kiểm kê thì đề xuất người khác.</li>' : ''}
-        <li>5S: gỡ tên khỏi các ô đang phụ trách; người mới thêm vào kho sau này sẽ tự nhận các ô đó.</li>
+        <li>Chuyển vào mục <b>Chờ nghỉ việc</b>: <b>vẫn</b> trong danh sách và số lượng kho, tên hiện <b>màu đen</b> ở các danh sách công việc hằng ngày.</li>
+        <li>Bảng công Excel tính tới ngày làm việc cuối cùng.</li>
+        <li>Khi muốn bỏ hẳn khỏi danh sách: bấm <b>✂ Cắt tên</b> ở mục Chờ nghỉ việc.</li>
       </ul>
       <div class="row2" style="margin-top:16px;"><button class="ghost" data-no>Hủy</button><button class="nv-btn dac" data-yes>Xác nhận</button></div>`);
     m.body.querySelector('[data-no]').onclick = ()=>{ m.close(); res(null); };
@@ -10290,7 +10400,20 @@ function xacNhanNghiViec(e){
   });
 }
 async function choNghiViec(e, ngay){
-  e.nghiViec = ngay;
+  e.choNghiViec = ngay;
+  await saveHr();
+  return [];
+}
+// Bỏ chờ nghỉ việc (chưa cắt tên) — không đụng gì khác vì chưa cắt
+async function boChoNghiViec(e){
+  delete e.choNghiViec;
+  await saveHr();
+}
+// ✂ Cắt tên: cắt khỏi danh sách / số lượng kho ngay, công vẫn tính tới hết tháng nghỉ
+async function catTenNghiViec(e){
+  const ngay = e.choNghiViec || todayKey();
+  e.nghiViec = ngay; e.catTen = todayKey();
+  delete e.choNghiViec;
   // bảng phân công vị trí hiện tại: để trống chỗ của người này
   WAREHOUSES.forEach(w=>{
     const K = KHO[w.id];
@@ -10310,7 +10433,7 @@ async function choNghiViec(e, ngay){
     .concat(s5.n ? [`5S: ${s5.n} ô chờ người mới`] : s5.trung ? ['5S: trùng tên ngắn với người khác — sửa sơ đồ 5S bằng tay'] : []);
 }
 async function hoanTacNghiViec(e){
-  delete e.nghiViec;
+  delete e.nghiViec; delete e.catTen; delete e.choNghiViec;
   const ghi = typeof rotThemNguoi === 'function' ? rotThemNguoi(e.warehouseId, e) : [];
   if(ghi.length) applyRotation(e.warehouseId);          // trả ca / vị trí đúng lịch tuần này
   const s5 = typeof nhan5sNguoiMoi === 'function' ? nhan5sNguoiMoi(e.warehouseId, e, e.id) : null;   // lấy lại ô 5S của mình
@@ -10332,7 +10455,7 @@ function xacNhanDiHoTro(e){
       <label class="field-label">Hỗ trợ ở đâu <span style="font-weight:600;color:var(--ink-soft)">— không bắt buộc</span></label>
       <input type="text" data-noi placeholder="VD: Kho vải, xưởng may 2…">
       <ul class="nv-xn-ds">
-        <li>Cắt khỏi danh sách và số lượng ${esc(khoName(e.warehouseId).toLowerCase())}, chuyển vào mục <b>Đang đi hỗ trợ — chờ quay lại</b>.</li>
+        <li>Ẩn khỏi phân công, 5S, tăng ca / nghỉ phép của ${esc(khoName(e.warehouseId).toLowerCase())} — <b>vẫn tính trong Tổng nhân sự</b>; chuyển vào mục <b>Đang đi hỗ trợ — chờ quay lại</b>.</li>
         <li>Bảng công Excel: từ ngày bắt đầu đi, mỗi ngày tính <b>0h</b> (tới ngày quay lại).</li>
         <li>Bảng phân công, Đổi ca${tp ? ', Hỗ trợ / KK' : ''}: tự bỏ trống chỗ của người này.</li>
         <li>5S: gỡ tên khỏi các ô đang phụ trách; các ô đó giữ chỗ, quay lại sẽ nhận lại (người mới không nhận).</li>
@@ -10411,7 +10534,13 @@ function manageEmpModal(){
   const m = openModal('Quản lý nhân sự', `<div id="mEmpBox"></div>`);
   const draw = ()=>{
     const all = HR.employees.filter(e=>e.warehouseId===khoId);
-    const list = all.filter(e=>!e.nghiViec && !e.diHoTro);
+    const list = all.filter(e=>!e.nghiViec && !e.diHoTro && !e.choNghiViec);
+    // chờ nghỉ việc: chưa cắt tên — vẫn tính vào danh sách / số lượng kho
+    const choNghi = all.filter(e=>e.choNghiViec && !e.nghiViec).sort((a,b)=>a.choNghiViec.localeCompare(b.choNghiViec));
+    const dongChoNghi = e=>`<div class="rowline nv-row"><div><b>${esc(e.name)}</b>
+        <div class="nv-sub">${e.maSo?esc(e.maSo)+' · ':''}${esc(e.shift||'')}${e.position?' - '+esc(e.position):''} · Ngày làm cuối ${fmtVN(fromKey(e.choNghiViec))}${e.choNghiViec < todayKey() ? ' · <b class="nv-qua">đã qua ngày làm cuối — bấm Cắt tên</b>' : ''}</div></div>
+        <div style="display:flex;gap:6px"><button class="ghost sm nv-undo" data-bocho="${e.id}" title="Không nghỉ nữa — bỏ khỏi mục Chờ nghỉ việc">↺ Hoàn tác</button>
+        <button class="sm nv-cat" data-catten="${e.id}" title="Cắt ngay khỏi danh sách và số lượng kho — công vẫn tính tới hết tháng">✂ Cắt tên</button></div></div>`;
     const ht = khoDiHoTro(khoId);
     const soNgayDi = k => Math.max(0, Math.round((fromKey(todayKey()) - fromKey(k)) / 864e5));
     const dongHoTro = e=>`<div class="rowline ht-row"><div><b>${esc(e.name)}</b>
@@ -10432,16 +10561,19 @@ function manageEmpModal(){
     $('mEmpBox').innerHTML = `
       <label class="field-label">Kho</label>
       <select id="mEmpKho">${WAREHOUSES.map(w=>`<option value="${w.id}" ${w.id===khoId?'selected':''}>${w.name}</option>`).join('')}</select>
-      <div style="font-size:12px;color:#888;margin:8px 0">${list.length} nhân sự${ht.length ? ` · ${ht.length} đang đi hỗ trợ` : ''}${cho.length ? ` · ${cho.length} đã cắt nghỉ chờ hết tháng` : ''}</div>
+      <div style="font-size:12px;color:#888;margin:8px 0">${list.length + choNghi.length + ht.length} nhân sự${choNghi.length || ht.length ? ` (gồm ${[choNghi.length ? choNghi.length + ' chờ nghỉ việc' : '', ht.length ? ht.length + ' đang đi hỗ trợ' : ''].filter(Boolean).join(', ')})` : ''}${cho.length ? ` · ${cho.length} đã cắt tên trong tháng` : ''}</div>
       ${list.map(e=>`<div class="rowline"><div><b>${esc(e.name)}</b><div style="font-size:11px;color:#888">${e.maSo?esc(e.maSo)+' · ':''}${esc(e.shift||'')}${e.position?' - '+esc(e.position):''} · OT đầu kỳ ${fmtHours(Number(e.otOpeningBalance)||0)}</div></div>
-        <div class="nv-nut"><button class="ht-btn sm" data-ht="${e.id}" title="Đi hỗ trợ nơi khác — cắt khỏi danh sách kho, quay lại thì Hoàn tác">Hỗ trợ</button><button class="nv-btn sm" data-nv="${e.id}" title="Cắt khỏi danh sách kho, giữ công tới hết tháng">Nghỉ việc</button><button class="secondary sm" data-ee="${e.id}">Sửa</button><button class="danger sm" data-de="${e.id}">✕</button></div></div>`).join('')}
+        <div class="nv-nut"><button class="ht-btn sm" data-ht="${e.id}" title="Đi hỗ trợ nơi khác — cắt khỏi danh sách kho, quay lại thì Hoàn tác">Hỗ trợ</button><button class="nv-btn sm" data-nv="${e.id}" title="Chọn ngày làm cuối — chuyển vào mục Chờ nghỉ việc (vẫn tính số lượng tới khi Cắt tên)">Nghỉ việc</button><button class="secondary sm" data-ee="${e.id}">Sửa</button><button class="danger sm" data-de="${e.id}">✕</button></div></div>`).join('')}
       <div class="btnrow" style="margin-top:14px;"><button id="mEmpAdd">+ Thêm nhân viên vào ${esc(khoName(khoId))}</button></div>
       ${(k => k ? `<div class="nv-ghi" style="margin-top:6px">Người mới thêm vào sẽ nhận ${k.o.length} ô 5S của <b>${esc(k.ten)}</b>.</div>` : '')(typeof cho5sKeTiep === 'function' && cho5sKeTiep(khoId))}
+      ${choNghi.length ? `<div class="nv-hd">CHỜ NGHỈ VIỆC <span>${choNghi.length}</span></div>
+        <div class="nv-ghi">Vẫn trong danh sách và số lượng kho, tên hiện màu đen ở danh sách hằng ngày. Bấm ✂ Cắt tên để bỏ hẳn (công vẫn tính tới hết tháng).</div>
+        ${choNghi.map(dongChoNghi).join('')}` : ''}
       ${ht.length ? `<div class="ht-hd">ĐANG ĐI HỖ TRỢ — CHỜ QUAY LẠI <span>${ht.length}</span></div>
-        <div class="nv-ghi">Không tính vào danh sách, số lượng kho và 5S; bảng công tính 0h từ ngày đi. Quay lại thì bấm ↺ Hoàn tác.</div>
+        <div class="nv-ghi">Vẫn tính trong Tổng nhân sự, nhưng ẩn khỏi phân công, 5S, tăng ca / nghỉ phép; bảng công tính 0h từ ngày đi. Quay lại thì bấm ↺ Hoàn tác.</div>
         ${ht.map(dongHoTro).join('')}` : ''}
-      ${cho.length ? `<div class="nv-hd">ĐÃ CẮT NGHỈ — CHỜ HẾT THÁNG <span>${cho.length}</span></div>
-        <div class="nv-ghi">Không còn trong danh sách kho, nhưng công / tăng ca / nghỉ phép vẫn có trong bảng công Excel tới hết tháng nghỉ.</div>
+      ${cho.length ? `<div class="nv-hd">ĐÃ CẮT TÊN — CÔNG TÍNH TỚI HẾT THÁNG <span>${cho.length}</span></div>
+        <div class="nv-ghi">Không còn trong danh sách và số lượng kho, nhưng công / tăng ca / nghỉ phép vẫn có trong bảng công Excel tới hết tháng nghỉ.</div>
         ${cho.map(e=>dongNghi(e, false)).join('')}` : ''}
       ${cu.length ? `<details class="nv-cu"><summary>Đã nghỉ các tháng trước (${cu.length})</summary>${cu.map(e=>dongNghi(e, true)).join('')}</details>` : ''}`;
     $('mEmpKho').onchange = ()=>{ khoId = $('mEmpKho').value; draw(); };
@@ -10450,9 +10582,22 @@ function manageEmpModal(){
       const e = empById(b.dataset.nv);
       const ngay = await xacNhanNghiViec(e);
       if(!ngay) return;
-      const ghi = await choNghiViec(e, ngay);
+      await choNghiViec(e, ngay);
       draw(); render();
-      toast(`✓ Đã cắt nghỉ ${e.name}` + (ghi.length ? ' · ' + ghi.join('; ') : ''));
+      toast(`✓ ${e.name} chuyển sang Chờ nghỉ việc (làm tới ${fmtVN(fromKey(ngay))})`);
+    });
+    $('mEmpBox').querySelectorAll('[data-bocho]').forEach(b=>b.onclick=async ()=>{
+      const e = empById(b.dataset.bocho);
+      if(!await confirmBox(`${e.name} không nghỉ việc nữa? Bỏ khỏi mục Chờ nghỉ việc.`)) return;
+      await boChoNghiViec(e);
+      draw(); render(); toast(`↺ Đã bỏ chờ nghỉ việc của ${e.name}`);
+    });
+    $('mEmpBox').querySelectorAll('[data-catten]').forEach(b=>b.onclick=async ()=>{
+      const e = empById(b.dataset.catten);
+      if(!await confirmBox(`Cắt tên ${e.name} ngay? Bỏ khỏi danh sách và số lượng ${khoName(e.warehouseId).toLowerCase()}; công vẫn tính tới hết tháng ${e.choNghiViec.slice(5,7)}/${e.choNghiViec.slice(0,4)}.`)) return;
+      const ghi = await catTenNghiViec(e);
+      draw(); render();
+      toast(`✂ Đã cắt tên ${e.name}` + (ghi.length ? ' · ' + ghi.join('; ') : ''));
     });
     $('mEmpBox').querySelectorAll('[data-ht]').forEach(b=>b.onclick=async ()=>{
       const e = empById(b.dataset.ht);
@@ -10994,6 +11139,7 @@ function dungBangCong(khoId, ym){
     const cv = chucVuCong(e);
     ngays.forEach(d=>{
       if(e.nghiViec && toKey(d) > e.nghiViec) return;      // sau ngày làm việc cuối cùng thì không tính
+      if(e.choNghiViec && toKey(d) > e.choNghiViec) return; // chờ nghỉ việc (chưa cắt tên): cũng chỉ tới ngày làm cuối
       if(dangDiHoTro(e, toKey(d))){                         // ngày đi hỗ trợ nơi khác: 0h
         rows.push({ ngay: new Date(d), maSo: e.maSo || '', ten: e.name, pos: cv.pos, ratio: cv.ratio,
                     normal: 0, ot: 0, leave: 0, tt: 0, kho: e._kho });
@@ -14244,7 +14390,8 @@ window.renderTraining = taoBoSuuTap({
 //
 // Dữ liệu nằm trong KHO.thanhpham.hotroKK, rất nhẹ (cả năm vài KB) nên
 // đi chung KEY_KHO, không cần khoá Supabase riêng:
-//   { hotro:  { 'YYYY-MM-DD': [ {viec, gc, ids:[]}, … ] },   // NHIỀU buổi một ngày
+//   { hotro:  { 'YYYY-MM-DD': [ {viec, gc, ids:[], gio}, … ] },   // NHIỀU buổi một ngày
+//            gio = số giờ đi hỗ trợ MỖI NGƯỜI của buổi đó (buổi cũ chưa có -> không tính giờ)
 //     kiemke: { 'YYYY-MM-DD': [ id, … ] },      // luôn là thứ Bảy
 //     boqua:  { 'YYYY-MM-DD': [ id, … ] },      // đã bấm "đổi người khác" cho buổi đó
 //     viec:   [ 'Kiểm cont', … ] }
@@ -14323,6 +14470,10 @@ window.renderTraining = taoBoSuuTap({
     return out;
   }
   function soLuot(list){ return list.reduce((s,o)=> s + o.b.ids.length, 0); }
+  // Giờ hỗ trợ: mỗi lượt người = số giờ của buổi; cả buổi = giờ × số người
+  const gioMoi = b => Number(b && b.gio) || 0;
+  function soGio(list){ return list.reduce((s,o)=> s + gioMoi(o.b) * o.b.ids.length, 0); }
+  function gioCua(id, y, loc){ return buoiList(y, loc).filter(o => o.b.ids.includes(id)).reduce((s,o)=> s + gioMoi(o.b), 0); }
   function htDem(id, y, loc){ return buoiList(y, loc).filter(o => o.b.ids.includes(id)).length; }
   function lanThu(key, i, viec, y){
     return buoiList(y, viec).findIndex(o => o.key === key && o.i === i) + 1;
@@ -14420,7 +14571,7 @@ window.renderTraining = taoBoSuuTap({
     const max = Math.max(1, ...rows.map(r=>r.n));
     return rows.map(r=>`<div class="hk-barw ${r.n===0?'zero':''} ${r.on?'on':''}" ${opt.click?`data-v="${esc(r.key)}"`:''} title="${esc(r.nm)}">
         <div class="hd"><div class="nm">${esc(r.nm)}</div>
-          <div class="sl">${r.n}${opt.donVi?` <small>${esc(opt.donVi)}</small>`:''}</div></div>
+          <div class="sl">${r.n}${opt.donVi?` <small>${esc(opt.donVi)}</small>`:''}${r.phu?` <small class="gio">· ${esc(r.phu)}</small>`:''}</div></div>
         <div class="tr"><div class="fi" style="width:${(r.n/max*100).toFixed(1)}%"></div></div>
       </div>`).join('');
   }
@@ -14447,9 +14598,11 @@ window.renderTraining = taoBoSuuTap({
     const theoNguoi = ng.map(e=>({ l:getEmployeeShortName(e), n:htDem(e.id, y, LOC_VIEC), full:e.name }))
                         .sort((a,b)=> b.n - a.n || a.l.localeCompare(b.l,'vi'))
                         .map(r=>({ ...r, title:`${r.full}: ${r.n} buổi` }));
+    theoNguoi.forEach((r, i)=>{ const e = ng.filter(x=>getEmployeeShortName(x) === r.l && x.name === r.full)[0]; const g = e ? gioCua(e.id, y, LOC_VIEC) : 0; if(g) r.title += ` · ${fmtHours(g)}`; });
     const theoViec = D().viec.map(v=>{
       const ds = buoiList(y, v);
-      return { key:v, nm:v, n:ds.length, luot:soLuot(ds), on: LOC_VIEC === v };
+      const gio = soGio(ds);
+      return { key:v, nm:v, n:ds.length, luot:soLuot(ds), gio, phu: gio ? fmtHours(gio) : '', on: LOC_VIEC === v };
     }).sort((a,b)=> b.n - a.n || b.luot - a.luot);
     const theoThang = THANG.map((t,i)=>{
       const n = soLuot(buoiList(y, LOC_VIEC, i));
@@ -14461,15 +14614,17 @@ window.renderTraining = taoBoSuuTap({
     const tBuoi = coViec.reduce((s,v)=> s + v.n, 0);
     const tNguoi = coViec.reduce((s,v)=> s + v.luot, 0);
     const bangSN = coViec.length ? `<div class="hk-sn">
-        <div class="hk-snr hd"><span>Việc</span><span>Buổi</span><span>Người</span><span>TB</span></div>
+        <div class="hk-snr hd"><span>Việc</span><span>Buổi</span><span>Người</span><span>TB</span><span>Giờ</span></div>
         ${coViec.map(v=>`<div class="hk-snr">
           <div class="nm">${esc(v.nm)}</div>
           <div class="v">${v.n}</div>
           <div class="v ng">${v.luot}</div>
-          <div class="v tb">${(v.luot / v.n).toFixed(1)}</div></div>`).join('')}
+          <div class="v tb">${(v.luot / v.n).toFixed(1)}</div>
+          <div class="v gio">${v.gio ? fmtHours(v.gio) : '—'}</div></div>`).join('')}
         <div class="hk-snr tong"><div class="nm">Tổng cộng</div>
           <div class="v">${tBuoi}</div><div class="v ng">${tNguoi}</div>
-          <div class="v tb">${tBuoi ? (tNguoi / tBuoi).toFixed(1) : '0.0'}</div></div>
+          <div class="v tb">${tBuoi ? (tNguoi / tBuoi).toFixed(1) : '0.0'}</div>
+          <div class="v gio">${fmtHours(coViec.reduce((s,v)=> s + v.gio, 0))}</div></div>
       </div>` : '<p class="empty-msg">Chưa có buổi hỗ trợ nào.</p>';
 
     $('hkDash').className = 'hk-db';
@@ -14479,10 +14634,11 @@ window.renderTraining = taoBoSuuTap({
       <div class="hk-kpi">
         <div><div class="v">${tongLuot}</div><div class="k">Lượt hỗ trợ${LOC_VIEC ? ' (đã lọc)' : ''}</div></div>
         <div><div class="v">${dsBuoi.length}</div><div class="k">Buổi đã đi</div></div>
+        <div><div class="v">${fmtHours(soGio(dsBuoi))}</div><div class="k">Giờ đi hỗ trợ<br><small>(cộng mọi lượt · buổi có ghi giờ)</small></div></div>
       </div>
       <div class="hk-dbgrid">
         <section>
-          <div class="hk-dbt">Những việc đã đi hỗ trợ <span class="g">· bấm để lọc · số buổi trong năm</span></div>
+          <div class="hk-dbt">Những việc đã đi hỗ trợ <span class="g">· bấm để lọc · số buổi · số giờ trong năm</span></div>
           <div id="hkDbViec">${theoViec.length ? barTen(theoViec, { click:true, donVi:'buổi' }) : '<p class="empty-msg">Chưa có loại việc nào.</p>'}</div>
         </section>
         <section>
@@ -14541,13 +14697,13 @@ window.renderTraining = taoBoSuuTap({
     $('hkChinh').innerHTML = `<div class="panel">
       <h2><span class="n">📒</span>Nhật ký hỗ trợ ${y}<span class="h2spacer"></span>
         <span style="font-size:12.5px; font-weight:600; text-transform:none; letter-spacing:0; color:var(--ink-soft);">
-          ${ds.length} buổi · ${soLuot(ds)} lượt người${NK_THANG != null ? ' · ' + THANG[NK_THANG] : ''}</span></h2>
+          ${ds.length} buổi · ${soLuot(ds)} lượt người${soGio(ds) ? ' · ' + fmtHours(soGio(ds)) : ''}${NK_THANG != null ? ' · ' + THANG[NK_THANG] : ''}</span></h2>
       ${chonThang}
       ${Object.keys(nhom).sort().reverse().map(t=>{
         const os = nhom[t].slice().reverse();
         const m = Number(t.slice(5,7)) - 1;
         return `<div class="hk-nkthang">${THANG[m]} / ${t.slice(0,4)}<span class="sp"></span>
-            <span>${os.length} buổi · ${soLuot(os)} lượt</span></div>` +
+            <span>${os.length} buổi · ${soLuot(os)} lượt${soGio(os) ? ' · ' + fmtHours(soGio(os)) : ''}</span></div>` +
           os.map(o=>{
             const b = o.b, d = fromKey(o.key);
             const lan = b.viec ? lanThu(o.key, o.i, b.viec, y) : 0;
@@ -14557,7 +14713,7 @@ window.renderTraining = taoBoSuuTap({
               ${b.viec ? `<div class="lan">lần thứ ${lan} trong năm</div>` : ''}
               <div class="ng">${b.ids.map(id=>`<b>${esc(tenNgan(id))}</b>`).join(', ')}
                 <span style="color:var(--ink-soft); font-weight:600;"> (${esc(b.ids.map(tenCua).join(', '))})</span></div>
-              <div class="sl">${b.ids.length} người</div>
+              <div class="sl">${b.ids.length} người${gioMoi(b) ? `<small> · ${fmtHours(gioMoi(b))}/người · ${fmtHours(gioMoi(b) * b.ids.length)}</small>` : ''}</div>
               <div class="act"><button class="ghost sm" data-hksua="${o.key}" data-hki="${o.i}" title="Sửa">✎</button>
                 <button class="danger sm" data-hkxoa="${o.key}" data-hki="${o.i}" title="Xoá buổi">✕</button></div>
               ${b.gc ? `<div class="gc">Ghi chú: ${esc(b.gc)}</div>` : ''}
@@ -14775,6 +14931,8 @@ window.renderTraining = taoBoSuuTap({
       <div class="btnrow" style="margin-top:7px; display:flex; gap:7px;">
         <button class="ghost sm" id="hkBThemViec">+ Thêm loại việc</button>
         <button class="danger sm" id="hkBXoaViec">✕ Xoá loại việc đang chọn</button></div>
+      <label class="field-label">Số giờ hỗ trợ (mỗi người)</label>
+      <input type="number" id="hkBGio" min="0.5" max="24" step="0.5" placeholder="VD: 2 hoặc 1.5">
       <label class="field-label">Ghi chú (không bắt buộc)</label>
       <input type="text" id="hkBGc" placeholder="VD: hỗ trợ cont 40 gấp cho khách">
       <label class="field-label" style="margin-top:12px;">Chọn người — ai ít buổi nhất nằm trên cùng</label>
@@ -14792,6 +14950,7 @@ window.renderTraining = taoBoSuuTap({
     };
     veViec(cu ? cu.viec : D().viec[0]);
     m.body.querySelector('#hkBGc').value = cu ? (cu.gc || '') : '';
+    m.body.querySelector('#hkBGio').value = cu && cu.gio ? cu.gio : '';
 
     m.body.querySelector('#hkBThemViec').onclick = ()=>{
       const m2 = openModal('Thêm loại việc', `<label class="field-label" style="margin-top:0;">Tên loại việc</label>
@@ -14831,6 +14990,8 @@ window.renderTraining = taoBoSuuTap({
       const k = iNgay.value, viec = iViec.value, gc = m.body.querySelector('#hkBGc').value.trim();
       if(!k){ toast('⚠ Chọn ngày trước'); return; }
       if(!chon.size){ toast('⚠ Chọn ít nhất một người'); return; }
+      const gio = Math.round((Number(m.body.querySelector('#hkBGio').value) || 0) * 2) / 2;
+      if(!(gio > 0 && gio <= 24)){ toast('⚠ Nhập số giờ hỗ trợ (0.5 – 24 giờ)'); return; }
       const ids = dsNguoi().filter(e => chon.has(e.id)).map(e => e.id);
 
       if(key != null && h[key]){                 // đang sửa một buổi sẵn có
@@ -14840,20 +15001,22 @@ window.renderTraining = taoBoSuuTap({
       h[k] = h[k] || [];
       // Cùng ngày mà khác việc thì thành một buổi riêng, không đè lên nhau.
       // Cùng ngày cùng việc thì cộng dồn người vào buổi đã có.
-      const j = h[k].findIndex(b => (b.viec || '') === viec);
+      // (khác số giờ thì tách thành buổi riêng để tính giờ cho đúng từng lượt)
+      const j = h[k].findIndex(b => (b.viec || '') === viec && (!gioMoi(b) || gioMoi(b) === gio));
       let loiNhan;
       if(j >= 0){
         const themMoi = ids.filter(id => !h[k][j].ids.includes(id)).length;
         const gop = new Set(h[k][j].ids.concat(ids));
         h[k][j].ids = dsNguoi().filter(e => gop.has(e.id)).map(e => e.id);
+        h[k][j].gio = gio;
         if(gc && gc !== h[k][j].gc) h[k][j].gc = h[k][j].gc ? h[k][j].gc + ' · ' + gc : gc;
         loiNhan = themMoi
           ? `✓ Cộng dồn vào buổi “${viec}” cùng ngày — thêm ${themMoi} người, tổng ${h[k][j].ids.length}`
           : `✓ Đã cập nhật buổi “${viec}” ngày ${k.split('-').reverse().join('/')}`;
       }else{
-        h[k].push({ viec, gc, ids });
+        h[k].push({ viec, gc, ids, gio });
         h[k].sort((a,b)=> (a.viec||'').localeCompare(b.viec||'','vi'));
-        loiNhan = `✓ Đã ghi ${ids.length} người · ${viec} · ${k.split('-').reverse().join('/')}`;
+        loiNhan = `✓ Đã ghi ${ids.length} người · ${viec} · ${fmtHours(gio)}/người · ${k.split('-').reverse().join('/')}`;
       }
       const d = fromKey(k);
       CUR = new Date(d.getFullYear(), d.getMonth(), 1);
