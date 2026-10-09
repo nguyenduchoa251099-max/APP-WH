@@ -9491,6 +9491,8 @@ const XH_BC = {
   mau: '#2e75b6', mauChu: '#1f3864',
   // Chữ ký cuối mail — chép theo chữ ký Outlook (n8n gửi qua máy chủ nên Outlook không tự chèn)
   chuKy: {
+    // dòng nhỏ màu xám ngay trên "Thanks and Best regards," — để trống '' nếu không muốn hiện
+    tuDong: '(Mail được gửi tự động từ bảng appwh_storage trên Supabase)',
     ten: 'Hoa, Nguyen Duc', chucVu: 'Assistant Supervisor WH',
     congTy: 'Tessellation Hoa Binh Company Limited',
     diaChi: 'Lot 20 Street 1, Luong Son industrial Park, Luong Son district, Phu Tho province, Vietnam',
@@ -9573,17 +9575,24 @@ function xhBcBieuDo(ngay, tieuDe){
   </td></tr></table>`;
 }
 
+// Chữ ký: các dòng nối bằng <br> trong 2 đoạn <p margin:0> — KHÔNG dùng bảng mỗi dòng 1 ô,
+// vì Outlook thêm khoảng trống sau mỗi ô nên các dòng bị cách nhau 1 dòng trống.
+// Bố cục: (dòng tự động) · lời chào · tên · chức vụ  |  cách 1 khoảng nhỏ  |  công ty · địa chỉ · phone/email
 function xhBcChuKy(){
-  const c = XH_BC.chuKy, f = 'font-family:Arial,sans-serif;';
-  return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-top:22px;">
-  <tr><td style="${f}font-size:10pt;color:#000;padding-bottom:4px;">Thanks and Best regards,</td></tr>
-  <tr><td style="${f}font-size:12pt;font-weight:bold;color:#5b9bd5;">${c.ten}</td></tr>
-  <tr><td style="${f}font-size:9pt;color:#000;padding-bottom:14px;">${c.chucVu}</td></tr>
-  <tr><td style="${f}font-size:11pt;font-weight:bold;color:#000;padding-bottom:6px;">${c.congTy}</td></tr>
-  <tr><td style="${f}font-size:9pt;color:#000;padding-bottom:6px;">${c.diaChi}</td></tr>
-  <tr><td style="${f}font-size:9pt;color:#000;"><b style="color:#00a3c4;">Phone:</b>&nbsp; ${c.phone}
-    &nbsp;<b style="color:#00a3c4;">Email:</b> <a href="mailto:${c.email}" style="color:#1f4e79;text-decoration:underline;">${c.email}</a></td></tr>
-</table>`;
+  const c = XH_BC.chuKy;
+  const p = 'margin:0;font-family:Arial,sans-serif;font-size:9pt;line-height:1.35;color:#000;mso-line-height-rule:at-least;';
+  const s = (st, t) => `<span style="${st}">${t}</span>`;
+  return `<p style="${p}margin-top:22px;">${[
+      c.tuDong ? s('color:#7f7f7f;', c.tuDong) : '',
+      s('font-size:10pt;', 'Thanks and Best regards,'),
+      s('font-size:12pt;font-weight:bold;color:#5b9bd5;', c.ten),
+      s('', c.chucVu),
+    ].filter(Boolean).join('<br>')}</p>
+<p style="${p}margin-top:8px;">${[
+      s('font-size:11pt;font-weight:bold;', c.congTy),
+      s('', c.diaChi),
+      `${s('font-weight:bold;color:#00a3c4;', 'Phone:')}&nbsp; ${c.phone}&nbsp;&nbsp;${s('font-weight:bold;color:#00a3c4;', 'Email:')} <a href="mailto:${c.email}" style="color:#1f4e79;text-decoration:underline;">${c.email}</a>`,
+    ].join('<br>')}</p>`;
 }
 
 // Nội dung mail: lời chào + bảng gộp theo ngày (Row Labels / Sum of ISSUE QTY) + biểu đồ + chữ ký
@@ -13215,8 +13224,67 @@ card.addEventListener('drop', e=>{ if(e.dataTransfer && e.dataTransfer.files.len
 
 let P_TAI = null;                 // lần tải đầu tiên (tab SCAN chờ cái này xong mới lấy dữ liệu)
 const damBaoDaTai = () => P_TAI || (P_TAI = tai(false));
+
+// =====================================================================
+// H. FILE TỪ MAIL (n8n, xem tools/n8n/build-scanos.js) — "hộp thư đến" KEY_HOP
+//   n8n: mail của chị Giang có file "Hàng xuất…" -> ghi NGUYÊN FILE (base64) vào KEY_HOP:
+//        { v:1, ds:[{ id, ten, b64, at, tu }] }
+//   App: khi mở tab SCAN OS / SCAN (cách nhau ít nhất 1 phút), người sửa được SCAN OS
+//        -> nạp từng file bằng đúng docFile() của nút Import (mẫu TGV/TDV), file mới nhất
+//        tự "Đưa sang SCAN", rồi xoá các file đã nạp khỏi hộp thư.
+//   Không có quyền sửa thì để yên trong hộp thư cho người có quyền mở app nạp.
+// =====================================================================
+const KEY_HOP = 'appwh-scanos-hop';
+let HOP_LUC = 0, HOP_DANG = null;
+function kiemHop(){
+  if(HOP_DANG) return HOP_DANG;
+  if(Date.now() - HOP_LUC < 60000) return Promise.resolve();
+  HOP_LUC = Date.now();
+  HOP_DANG = napTuHop().catch(e=>console.warn('[SCAN OS] hộp thư file từ mail:', e)).finally(()=>{ HOP_DANG = null; });
+  return HOP_DANG;
+}
+async function napTuHop(){
+  if(!window.XLSX || (typeof coSuaKhoa === 'function' && !coSuaKhoa(KEY))) return;
+  let raw = null;
+  try{ raw = await sbGet(KEY_HOP); }catch(e){ return; }
+  const hop = raw ? JSON.parse(raw) : null;
+  const ds = (hop && Array.isArray(hop.ds) ? hop.ds : []).slice().sort((a, b)=>String(a.at).localeCompare(String(b.at)));
+  if(!ds.length) return;
+  await damBaoDaTai();
+  await chuanBiGhi();
+  const xong = [], ok = [], loi = [], canhBao = [];
+  let cuoi = null;
+  for(const m of ds){
+    try{
+      const bytes = Uint8Array.from(atob(m.b64 || ''), c=>c.charCodeAt(0));
+      const file = new File([bytes], m.ten || 'file-tu-mail.xlsx');
+      const kq = await docFile(file, 'tgv');
+      if(!kq.rows.length) throw new Error('không có dòng dữ liệu nào dưới hàng tiêu đề (hàng ' + kq.hang + ')');
+      const k = khoaFile(file.name), cu = STORE.files[k], luc = new Date().toISOString();
+      STORE.files[k] = { name:file.name, nm:'tgv', src:[], nap:luc, at:luc, rows:kq.rows };
+      ok.push(`<b>${esc(file.name)}</b>: ${cu ? `cập nhật ${soVN(cu.rows.length)} → ${soVN(kq.rows.length)} dòng` : `thêm mới ${soVN(kq.rows.length)} dòng`}`);
+      canhBaoFile(file, kq, canhBao);
+      cuoi = k;
+    }catch(e){ loi.push(`<b>${esc(m.ten || '?')}</b> (từ mail): ${esc(e.message || e)}`); }
+    xong.push(m.id);                       // file lỗi cũng bỏ khỏi hộp thư — đã báo lỗi, không thử lại mãi
+  }
+  if(cuoi) STORE.scan = banScan(cuoi);     // file mới nhất tự "Đưa sang SCAN"
+  veLai();
+  await luuNgay();
+  if(!LUU_OK) return;                      // chưa lưu được: giữ hộp thư, lần sau thử lại
+  // Xoá các file đã nạp — đọc lại để không mất file n8n vừa thêm trong lúc đang nạp
+  try{
+    const sv = await sbGet(KEY_HOP);
+    const o = sv ? JSON.parse(sv) : { v:1, ds:[] };
+    o.ds = (o.ds || []).filter(x=>!xong.includes(x.id));
+    await sbSetVerified(KEY_HOP, JSON.stringify(o));
+  }catch(e){ console.warn('[SCAN OS] chưa xoá được file đã nạp khỏi hộp thư:', e); }
+  if($('soWrap')) baoKetQua(ok.length ? `📨 Tự nạp từ mail: ${ok.join(' · ')} — đã đưa sang SCAN` : '', canhBao, loi);
+  toast(ok.length ? `📨 Đã tự nạp ${ok.length} file từ mail và đưa sang SCAN` : '⚠ File từ mail không nạp được — xem tab SCAN OS');
+}
+
 window.soRender = function(){
-  damBaoDaTai();                  // lần đầu mở tab: lấy dữ liệu đang có trên máy chủ
+  damBaoDaTai().then(kiemHop);    // lần đầu mở tab: lấy dữ liệu đang có trên máy chủ, rồi nạp file mới từ mail (nếu có)
   // render() tổng chạy lại định kỳ khi đồng bộ — đang gõ dở trong 1 ô thì không vẽ lại kẻo mất chữ
   if(document.activeElement && document.activeElement.closest && document.activeElement.closest('#soWrap')) return;
   veLai();
@@ -13258,6 +13326,8 @@ window.SCAN_OS = {
   // nm = nhà máy ('tgv' | 'dl'); cus của Đô Lương là Brand CD, job là JO NO
   layDuLieuScan: ()=> STORE.scan ? JSON.parse(JSON.stringify(STORE.scan)) : null,
   damBaoDaTai,
+  kiemHop,                                // nạp file mới từ mail (n8n) nếu có — tab SCAN gọi khi mở
+
 };
 })();
 
@@ -13782,6 +13852,7 @@ $('scOk').addEventListener('click', async e=>{
 
 window.scanRender = async function(){
   if(window.SCAN_OS && SCAN_OS.damBaoDaTai) await SCAN_OS.damBaoDaTai();
+  if(window.SCAN_OS && SCAN_OS.kiemHop) await SCAN_OS.kiemHop();      // file "Hàng xuất…" mới từ mail (n8n)
   const d = window.SCAN_OS ? SCAN_OS.layDuLieuScan() : null;
   const sig = d ? d.key + '|' + d.at : '';
   const khacFile = sig !== SIG;
