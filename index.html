@@ -5762,29 +5762,45 @@ function ovBoardRows(khoId){
   }
   return rows;
 }
-const ST_LABEL_OV = { go:'Đi làm', off:'Nghỉ cả ngày', som:'Về sớm', muon:'Đi muộn', ts:'Nghỉ thai sản' };
+const ST_LABEL_OV = { go:'Đi làm', off:'Nghỉ cả ngày', som:'Về sớm', muon:'Đi muộn', ts:'Nghỉ thai sản', ht:'Hỗ trợ bộ phận khác' };
 function renderAll3Boards(){
   const box = $('all3Boards'); if(!box) return;
-  const tg = { tong:0, go:0, muon:0, som:0, off:0, nv:0, ts:0 };
+  const tg = { tong:0, go:0, muon:0, som:0, off:0, ht:0, nv:0, ts:0 };
   box.innerHTML = WAREHOUSES.map(w=>{
     let rows = ovBoardRows(w.id);
-    // Giám sát: 1 dòng riêng trên cùng — số người của kho tính đủ cả giám sát
-    const gs = khoEmployees(w.id).filter(e=>e.position === 'Giám sát');
-    if(rows && gs.length) rows = [{ label:'Giám sát', target:null, people: gs.map(e=>({ emp:e, ...todayStatus(e.id, todayKey()) })) }].concat(rows);
     if(!rows) return `<div class="ovkho"><h3>${w.icon}<span>${esc(w.name)}</span></h3>
       <div class="ovempty">Chưa thiết lập nhóm ca &amp; vị trí cho kho này.</div></div>`;
+    // Hiện ĐỦ thành viên của kho (trừ người đã cắt tên): đang làm + chờ nghỉ việc + thai sản + đi hỗ trợ
+    const tKey = todayKey();
+    const tsIds = new Set(khoThaiSan(w.id).map(e=>e.id));
+    const ttHomNay = e => tsIds.has(e.id) ? { st:'ts', extra:'Nghỉ thai sản', hours:0 } : todayStatus(e.id, tKey);
+    const thanhVien = khoEmployees(w.id).concat(khoThaiSan(w.id));
+    // Giám sát: 1 dòng riêng trên cùng (kể cả giám sát đang nghỉ thai sản)
+    const gs = thanhVien.filter(e=>e.position === 'Giám sát');
+    if(gs.length) rows = [{ label:'Giám sát', target:null, people: gs.map(e=>({ emp:e, ...ttHomNay(e) })) }].concat(rows);
+    // Người chưa có trên bảng (VD kho vải: chưa được phân công) -> dòng "Chưa phân công"
+    const daHien = new Set(rows.reduce((a,r)=>a.concat(r.people.map(p=>p.emp.id)), []));
+    const conLai = thanhVien.filter(e=>!daHien.has(e.id));
+    if(conLai.length) rows.push({ label:'Chưa phân công', target:null, people: conLai.map(e=>({ emp:e, ...ttHomNay(e) })) });
+    // Đi hỗ trợ bộ phận khác -> dòng "Hỗ trợ", ô đỏ giống nghỉ làm
+    const ht = khoDiHoTro(w.id).filter(e=>!daHien.has(e.id) && !tsIds.has(e.id));
+    if(ht.length) rows.push({ label:'Hỗ trợ', target:null, people: ht.map(e=>{
+      const d = fromKey(e.diHoTro);
+      return { emp:e, st:'ht', extra:`Hỗ trợ bộ phận khác từ ${pad(d.getDate())}/${pad(d.getMonth()+1)}`, hours:0 };
+    }) });
     const all = rows.reduce((a,r)=>a.concat(r.people), []);
     const dem = st => all.filter(p=>p.st === st).length;
     tg.tong += all.length;
     all.forEach(p=>{ if(laChoNghi(p.emp)) tg.nv++; else if(tg[p.st] != null) tg[p.st]++; });
     return `<div class="ovkho">
       <h3>${w.icon}<span>${esc(w.name)}</span>
-        <span class="sub">${all.length} người · đi làm ${dem('go')}${dem('ts')?` · thai sản ${dem('ts')}`:''}${dem('muon')?` · muộn ${dem('muon')}`:''}${dem('som')?` · về sớm ${dem('som')}`:''}${dem('off')?` · nghỉ ${dem('off')}`:''}</span>
+        <span class="sub">${all.length} người · đi làm ${dem('go')}${dem('ts')?` · thai sản ${dem('ts')}`:''}${dem('muon')?` · muộn ${dem('muon')}`:''}${dem('som')?` · về sớm ${dem('som')}`:''}${dem('off')?` · nghỉ ${dem('off')}`:''}${dem('ht')?` · hỗ trợ ${dem('ht')}`:''}</span>
       </h3>
       ${rows.map(r=>{
         const sorted = r.people.slice().sort((a,b)=>ST_ORDER[a.st] - ST_ORDER[b.st]);
         const thieu = r.target != null && r.people.length !== r.target;
-        const o = sorted.map(p=>`<span class="sq mini ${p.st}${laChoNghi(p.emp)?' cho-nghi':''}" title="${esc(p.emp.name)} — ${laChoNghi(p.emp)?esc(nhanChoNghi(p.emp))+' · ':''}${esc(ST_LABEL_OV[p.st] || '')}${(p.st==='som'||p.st==='muon')?' '+fmtHours(p.hours):''}"></span>`).join('');
+        // hỗ trợ (ht) dùng ô màu đỏ như nghỉ làm
+        const o = sorted.map(p=>`<span class="sq mini ${p.st === 'ht' ? 'off' : p.st}${laChoNghi(p.emp)?' cho-nghi':''}" title="${esc(p.emp.name)} — ${laChoNghi(p.emp)?esc(nhanChoNghi(p.emp))+' · ':''}${esc(p.st === 'ht' ? p.extra : (ST_LABEL_OV[p.st] || ''))}${(p.st==='som'||p.st==='muon')?' '+fmtHours(p.hours):''}"></span>`).join('');
         // ô viền đứt = suất còn thiếu so với số người dự kiến
         const trong = (r.target != null && r.people.length < r.target)
           ? Array.from({length: r.target - r.people.length}, ()=>`<span class="sq mini slot" title="Chưa có người"></span>`).join('') : '';
@@ -5797,8 +5813,8 @@ function renderAll3Boards(){
     </div>`;
   }).join('');
   // tóm tắt bằng ô màu + số người (thấy được cả khi khối đang đóng)
-  const O = [['go','Đi làm'],['muon','Đi muộn'],['som','Về sớm'],['off','Nghỉ làm'],['nv','Nghỉ việc'],['ts','Thai sản']];
-  tgTom('tgTomNs', `${tg.tong} người` + O.filter(([k])=>tg[k]).map(([k, t])=>`<span class="tg-o" title="${t}: ${tg[k]}"><i style="background:var(--st-${k})"></i>${tg[k]}</span>`).join(''));
+  const O = [['go','Đi làm'],['muon','Đi muộn'],['som','Về sớm'],['off','Nghỉ làm'],['ht','Hỗ trợ bộ phận khác'],['nv','Nghỉ việc'],['ts','Thai sản']];
+  tgTom('tgTomNs', `${tg.tong} người` + O.filter(([k])=>tg[k]).map(([k, t])=>`<span class="tg-o" title="${t}: ${tg[k]}"><i style="background:var(--st-${k === 'ht' ? 'off' : k})"></i>${tg[k]}</span>`).join(''));
 }
 
 // Việc sắp tới của 1 kho: lịch họp/sự kiện + chuyến gia công + ghi chú nhắc việc
@@ -5860,7 +5876,7 @@ function posRowHtml(label, people){
     <div class="poslabel">${esc(label)}<span class="cnt">${people.length} người${off?` · nghỉ ${off}`:''}</span></div>
     <div class="sqwrap">${sq}</div></div>`;
 }
-const ST_ORDER = { go:0, muon:1, som:2, off:3, ts:4 };   // xanh lá -> vàng nhạt -> cam nhạt -> đỏ -> hồng (thai sản)
+const ST_ORDER = { go:0, muon:1, som:2, off:3, ht:3, ts:4 };   // xanh lá -> vàng nhạt -> cam nhạt -> đỏ -> hồng (thai sản)
 function posRowHtml2(label, people, posId, canEdit){
   const off = people.filter(p=>p.st==='off').length;
   const sorted = people.slice().sort((a,b)=>(ST_ORDER[a.st]-ST_ORDER[b.st]) || a.emp.name.localeCompare(b.emp.name,'vi'));
