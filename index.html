@@ -2552,6 +2552,51 @@
   .hop-huy input{width:auto;}
 
 </style>
+<style>/* css/modules/taisan.css */
+/* Tài sản WH — 1 bảng tài sản chung 3 kho */
+  #page-taisan{padding-top:16px;}
+  .tsw-wrap{max-width:1250px;}
+  .tsw-tieude{display:flex; flex-wrap:wrap; align-items:center; gap:6px 14px; margin-bottom:12px;}
+  .tsw-tieude h2{margin:0; font-size:20px;}
+  .tsw-tieude > span{font-size:13px; color:var(--ink-soft);}
+  .tsw-tieude .tsw-nut{margin-left:auto; display:flex; gap:8px; flex-wrap:wrap;}
+
+  .tsw-loc{display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; margin-bottom:12px;}
+  .tsw-loc input[type=search]{width:280px; max-width:100%; margin:0;}
+  .tsw-chip{display:flex; flex-wrap:wrap; gap:6px;}
+  .tsw-chip button{border:1px solid var(--line); background:#fff; color:var(--ink-soft); border-radius:999px; padding:4px 12px; font-size:13px; font-weight:700;}
+  .tsw-chip button i{font-style:normal; font-weight:600; opacity:.7; margin-left:2px;}
+  .tsw-chip button.on{background:#0e7490; border-color:#0e7490; color:#fff;}
+  .tsw-chip button.chua:not(.on){border-color:#f0cf8a; background:#fff8e6; color:#8a5a00;}
+
+  .tsw-bang{overflow-x:auto; border:1px solid var(--line); border-radius:10px; background:#fff;}
+  .tsw-bang table{width:100%; border-collapse:collapse; font-size:13.5px;}
+  .tsw-bang th{background:var(--blue-bg); color:var(--ink-soft); font-size:12px; letter-spacing:.03em; text-align:left; padding:8px 10px; white-space:nowrap; position:sticky; top:0;}
+  .tsw-bang td{padding:6px 10px; border-top:1px solid var(--line-soft); white-space:nowrap;}
+  .tsw-bang td.so{text-align:right; color:var(--ink-soft); width:40px;}
+  .tsw-bang td.m{font-family:var(--mono); font-size:13px;}
+  .tsw-bang td.mt{white-space:normal; min-width:260px;}
+  .tsw-bang td.nut{text-align:right;}
+  .tsw-bang td.nut button{margin-left:4px;}
+  .tsw-bang select{margin:0; padding:4px 8px; font-size:13px; min-width:150px;}
+  .tsw-bang select.chua{border-color:#f0cf8a; background:#fff8e6; color:#8a5a00;}
+  .tsw-bang tr.tsw-nhom td{background:#eef4f8; font-weight:800; font-size:12.5px; letter-spacing:.04em; text-transform:uppercase; color:#173b57; padding:7px 10px;}
+  .tsw-bang tr.tsw-nhom.chua td{background:#fff6e0; color:#8a5a00;}
+  .tsw-bang tr.tsw-nhom i{font-style:normal; font-weight:700; opacity:.65; margin-left:4px;}
+  .tsw-trong{padding:28px; text-align:center; color:var(--ink-soft); margin:0;}
+
+  /* hộp xác nhận up file (trong modal chung) */
+  .tsw-up{display:flex; flex-direction:column; gap:4px; padding:10px 12px; background:var(--paper); border:1px solid var(--line-soft); border-radius:10px; font-size:13.5px;}
+  .tsw-up > b{font-size:15px; word-break:break-all;}
+  .tsw-up .moi{color:#1d7a46;}
+  .tsw-up .canh{color:#8a5a00;}
+
+  @media(max-width:760px){
+    .tsw-tieude .tsw-nut{margin-left:0;}
+    .tsw-loc input[type=search]{width:100%;}
+  }
+
+</style>
 </head>
 <body>
 <div id="shell">
@@ -2656,6 +2701,7 @@
   <!-- ============ TRANG LỊCH SỬ CHỈNH SỬA ============ -->
   <main class="tabpage" id="page-lichsusua"></main>
   <main class="tabpage" id="page-hopkho"></main>
+  <main class="tabpage" id="page-taisan"></main>
 
   <main class="tabpage" id="page-aiproj">
     <div class="aiproj-bar">
@@ -4056,7 +4102,7 @@ function coSuaGi(){
 // Mục sidebar: 'tong3kho' | 'aiproj' | mã kho | 'lichsusua' | 'caidat'
 function coXem(muc){
   if(muc === 'caidat') return laChuTrang();
-  if(muc === 'hopkho') return true;          // Họp kho: mọi tài khoản, kể cả khách, đều xem được
+  if(muc === 'hopkho' || muc === 'taisan') return true;   // Họp kho, Tài sản WH: mọi tài khoản, kể cả khách, đều xem được
   const u = AUTH.user;
   if(muc === 'lichsusua') return !!u && (u.role === 'chu' || (u.views || []).includes(muc));
   if(u) return u.role === 'chu' || (u.views || []).includes(muc) || (u.khos || []).includes(muc);
@@ -4087,6 +4133,7 @@ function coSuaKhoa(key){
   // Công nhân: tab đang mở phải được sửa (máy chủ chỉ biết khoá, không biết đang đứng ở tab nào)
   if(laCongNhan() && VIEW === 'kho' && !coSuaTab(CUR_KHO, activeTab)) return false;
   if(key === KEY_HR || key === KEY_KHO) return true;   // máy chủ tự lọc theo kho / tab
+  if(key === 'appwh-taisan-v1') return typeof taiSanDuocSua === 'function' && taiSanDuocSua();   // Tài sản WH: giám sát đã giao kho
   const k = khoCuaKhoa(key);
   if(!k) return false;
   return laCongNhan() ? tabCuaKhoa(key).some(t => coSuaTab(k, t)) : coSuaKho(k);
@@ -4454,7 +4501,7 @@ let HR = defaultHr();
 let KHO = defaultKhoAll();
 let VIEW = 'tong3kho';       // 'kho' | 'tong3kho' | 'aiproj' | 'caidat' — mở app vào Tổng quan 3 kho
 // Các trang đứng riêng (không thuộc kho nào, không có hàng tab): VIEW -> id trang
-const TRANG_RIENG = { tong3kho:'page-tong3kho', aiproj:'page-aiproj', caidat:'page-caidat', lichsusua:'page-lichsusua', hopkho:'page-hopkho' };
+const TRANG_RIENG = { tong3kho:'page-tong3kho', aiproj:'page-aiproj', caidat:'page-caidat', lichsusua:'page-lichsusua', hopkho:'page-hopkho', taisan:'page-taisan' };
 let CUR_KHO = 'vai';
 let activeTab = 'dashboard';
 let activeSub = 'ds';
@@ -4943,6 +4990,7 @@ function setView(view, khoId){
   if(view !== 'caidat' && !coXem(view === 'kho' ? (khoId || CUR_KHO) : view)){ toast('⚠ Tài khoản chưa được cấp quyền xem mục này'); return; }
   VIEW = view;
   if(view === 'hopkho') HOP_TAI = false;         // mở lại trang thì tải lịch họp mới nhất
+  if(view === 'taisan' && window.taiSanTaiLai) taiSanTaiLai();   // và danh sách tài sản mới nhất
   if(khoId) CUR_KHO = khoId;
   if(view === 'kho' && khoId) SB_MO = khoId;     // vào kho nào thì sổ menu kho đó
   const sb = $('shell');
@@ -5028,6 +5076,7 @@ function buildSidebar(){
        <div class="sb-menu" id="sbMenu-${w.id}"></div>`).join('') +
     `<div class="sb-sep"></div>` +
     `<button class="sb-item" data-view="hopkho"><span>📅 HỌP KHO</span></button>` +
+    `<button class="sb-item" data-view="taisan"><span>🏷 TÀI SẢN WH</span></button>` +
     (coXem('lichsusua') ?`<button class="sb-item" data-view="lichsusua"><span>🕘 LỊCH SỬ CHỈNH SỬA</span></button>` : '') +
     (laChuTrang() ? `<button class="sb-item" data-view="caidat"><span>⚙ CÀI ĐẶT TÀI KHOẢN</span></button>` : '');
 
@@ -5186,9 +5235,10 @@ function render(){
                          : (VIEW === 'aiproj') ? 'AI Projects'
                          : (VIEW === 'caidat') ? '⚙ Cài đặt tài khoản'
                          : (VIEW === 'lichsusua') ? '🕘 Lịch sử chỉnh sửa'
-                         : (VIEW === 'hopkho') ? '📅 Họp kho' : `${w.icon} ${esc(w.name)}`;
+                         : (VIEW === 'hopkho') ? '📅 Họp kho'
+                         : (VIEW === 'taisan') ? '🏷 Tài sản WH' : `${w.icon} ${esc(w.name)}`;
   // Đang ở chế độ chỉ xem thì báo rõ ngay dưới tiêu đề
-  const ro = dangChiXem() && !['caidat', 'aiproj', 'lichsusua', 'hopkho'].includes(VIEW);
+  const ro = dangChiXem() && !['caidat', 'aiproj', 'lichsusua', 'hopkho', 'taisan'].includes(VIEW);
   document.body.classList.toggle('chi-xem', ro);
   const qb = $('quyenBadge');
   if(qb){ qb.style.display = ro ? '' : 'none'; qb.textContent = AUTH.user ? '👁 Chỉ xem' : '👁 Khách · chỉ xem'; }
@@ -5201,6 +5251,7 @@ function render(){
   if(VIEW === 'caidat'){ renderCaiDat(); return; }
   if(VIEW === 'lichsusua'){ renderLichSuSua(); return; }
   if(VIEW === 'hopkho'){ renderHopKho(); return; }
+  if(VIEW === 'taisan'){ renderTaiSan(); return; }
 
   if(activeTab === 'dashboard') renderDashboard();
   if(activeTab === 'phancong'){ renderStatusLine(); renderCycleTag(); renderAssignTable(); renderEmpTable(); }
@@ -18129,6 +18180,291 @@ async function hopGuiN8n(buoi){
   toast('✓ Đã gửi thư mời họp kho');
   return `<div class="note ok">✓ Đã gửi lúc ${new Date().toLocaleTimeString('vi-VN', { hour:'2-digit', minute:'2-digit' })}</div>`;
 }
+
+</script>
+<script>/* js/modules/taisan/taisan.js */
+// TÀI SẢN WH — 1 bảng tài sản chung của 3 kho
+// =====================================================================
+// Mục sidebar "🏷 TÀI SẢN WH" — mọi tài khoản (kể cả khách) đều xem được; chủ trang + giám sát
+// (đã được giao kho) thêm / sửa / xoá / up file Excel. Khoá riêng appwh-taisan-v1 (máy chủ cho giám
+// sát ghi khoá này — xem supabase/appwh-taisan.sql).
+//
+// TSWH = { v:1, ds:[ { id, so, mota, coa, model, serial, kho } ] }
+//   so = Asset Number (duy nhất) · kho = 'vai' | 'phulieu' | 'thanhpham' | '' (chưa chọn kho = DEPT)
+// Bảng xếp theo kho: chưa chọn kho trên cùng -> kho vải -> kho phụ liệu -> kho thành phẩm;
+// trong 1 kho xếp theo Asset Number. Cột No đánh lại theo thứ tự đang hiện.
+// Mỗi lần ghi: đọc bản mới nhất trên máy chủ -> sửa -> ghi (2 người cùng sửa không mất của nhau).
+// =====================================================================
+(function(){
+'use strict';
+
+const KEY = 'appwh-taisan-v1';
+const THU_TU = ['', 'vai', 'phulieu', 'thanhpham'];
+const COT = ['No', 'Asset Number', 'Asset Description', 'COA', 'Model number', 'Serial number', 'DEPT'];
+let TS = null, TAI = false, LOC = '*', TIM = '';
+
+const tenKho = k => k ? khoName(k) : 'Chưa chọn kho';
+const soSanh = (a, b) => String(a).localeCompare(String(b), 'vi', { numeric:true, sensitivity:'base' });
+const chuan = o => ({ v:1, ds: Array.isArray(o && o.ds) ? o.ds.filter(x=>x && x.so) : [] });
+const moiId = () => 't' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+const soVN = n => Number(n || 0).toLocaleString('vi-VN');
+
+// Ai được sửa: chủ trang, giám sát đã được giao kho (giống máy chủ)
+function duocSua(){
+  const u = AUTH.user;
+  return laChuTrang() || !!(u && u.role === 'giamsat' && (u.khos || []).length);
+}
+window.taiSanDuocSua = duocSua;
+
+async function docServer(){
+  const raw = await sbGet(KEY);
+  return chuan(raw ? JSON.parse(raw) : null);
+}
+async function tai(){
+  try{ TS = await docServer(); lsSet(KEY, JSON.stringify(TS)); }
+  catch(e){ try{ TS = chuan(JSON.parse(lsGet(KEY) || 'null')); }catch(_){ TS = chuan(null); } }
+  TAI = true;
+}
+// sua(o) chỉnh trực tiếp bản mới nhất trên máy chủ
+async function ghi(sua){
+  try{
+    const o = await docServer();
+    const kq = sua(o);
+    const raw = JSON.stringify(o);
+    await sbSetVerified(KEY, raw);
+    lsSet(KEY, raw); TS = o;
+    return kq === undefined ? true : kq;
+  }catch(e){
+    toast('⚠ Chưa lưu được lên máy chủ: ' + (e.message || e));
+    return false;
+  }
+}
+
+// ---- Sắp xếp / lọc ----
+function xep(ds){
+  return ds.slice().sort((a, b)=>(THU_TU.indexOf(a.kho || '') - THU_TU.indexOf(b.kho || '')) || soSanh(a.so, b.so));
+}
+function khop(x){
+  if(LOC !== '*' && (x.kho || '') !== LOC) return false;
+  if(!TIM) return true;
+  const t = normName(TIM);
+  return [x.so, x.mota, x.coa, x.model, x.serial].some(v=>normName(v || '').includes(t));
+}
+
+// ---- Vẽ ----
+async function renderTaiSan(){
+  const host = $('page-taisan');
+  if(!host) return;
+  if(!TAI){ host.innerHTML = '<div class="tsw-wrap"><p class="empty-msg">Đang tải danh sách tài sản…</p></div>'; await tai(); }
+  // đang gõ tìm kiếm thì chỉ vẽ lại bảng, không vẽ lại ô tìm (khỏi mất chỗ gõ)
+  const sua = duocSua();
+  if(host.querySelector('.tsw-wrap #tswTim') && host.dataset.sua === String(sua)){ veBang(); return; }
+  host.dataset.sua = String(sua);           // đăng nhập / đăng xuất thì vẽ lại cả trang (hiện / ẩn nút sửa)
+  host.innerHTML = `<div class="tsw-wrap">
+    <div class="tsw-tieude"><h2>🏷 Tài sản WH</h2>
+      <span>Tài sản của 3 kho${sua ? '' : ' · chỉ xem'}</span>
+      <span class="tsw-nut">
+        ${sua ? '<button class="sm" id="tswThem">＋ Thêm tài sản</button><button class="secondary sm" id="tswUp" title="Cột: Asset Number · Asset Description · COA · Model number · Serial number · DEPT">⬆ Up file Excel</button>' : ''}
+        <button class="ghost sm" id="tswXuat">⬇ Xuất Excel</button></span></div>
+    <div class="tsw-loc">
+      <input type="search" id="tswTim" placeholder="🔍 Tìm mã / tên / model / serial…" autocomplete="off" value="${esc(TIM)}">
+      <div class="tsw-chip" id="tswChip"></div>
+    </div>
+    <div class="tsw-bang" id="tswBang"></div>
+    <input type="file" id="tswFile" accept=".xlsx,.xls,.csv" hidden>
+  </div>`;
+  $('tswTim').oninput = ()=>{ TIM = $('tswTim').value.trim(); veBang(); };
+  $('tswChip').onclick = e=>{ const b = e.target.closest('[data-loc]'); if(b){ LOC = b.dataset.loc; veBang(); } };
+  $('tswXuat').onclick = xuatExcel;
+  if(sua){
+    $('tswThem').onclick = ()=>moForm(null);
+    $('tswUp').onclick = ()=>{ $('tswFile').value = ''; $('tswFile').click(); };
+    $('tswFile').onchange = ()=>{ const f = $('tswFile').files[0]; if(f) upExcel(f); };
+    $('tswBang').addEventListener('click', onBangClick);
+    $('tswBang').addEventListener('change', onBangChange);
+  }
+  veBang();
+}
+window.renderTaiSan = renderTaiSan;
+window.taiSanTaiLai = ()=>{ TAI = false; };
+
+function veBang(){
+  const tat = TS.ds, dem = k => tat.filter(x=>(x.kho || '') === k).length;
+  $('tswChip').innerHTML = [['*', 'Tất cả', tat.length]].concat(THU_TU.map(k=>[k, tenKho(k), dem(k)]))
+    .filter(([k, , n])=>k === '*' || k !== '' || n)          // "Chưa chọn kho" chỉ hiện khi có
+    .map(([k, t, n])=>`<button class="${LOC === k ? 'on' : ''}${k === '' ? ' chua' : ''}" data-loc="${esc(k)}">${esc(t)} <i>${soVN(n)}</i></button>`).join('');
+  const ds = xep(tat.filter(khop)), sua = duocSua();
+  if(!ds.length){
+    $('tswBang').innerHTML = `<p class="tsw-trong">${tat.length ? 'Không có tài sản nào khớp bộ lọc' : 'Chưa có tài sản nào' + (sua ? ' — bấm ＋ Thêm tài sản hoặc ⬆ Up file Excel' : '')}</p>`;
+    return;
+  }
+  let nhom = null;
+  const dong = ds.map((x, i)=>{
+    const k = x.kho || '';
+    const dau = k !== nhom ? `<tr class="tsw-nhom${k ? '' : ' chua'}"><td colspan="${sua ? 8 : 7}">${esc(tenKho(k))} <i>${soVN(ds.filter(y=>(y.kho || '') === k).length)}</i></td></tr>` : '';
+    nhom = k;
+    return dau + `<tr>
+      <td class="so">${i + 1}</td>
+      <td class="m">${esc(x.so)}</td>
+      <td class="mt">${esc(x.mota)}</td>
+      <td>${esc(x.coa)}</td>
+      <td>${esc(x.model)}</td>
+      <td class="m">${esc(x.serial)}</td>
+      <td>${sua
+        ? `<select data-kho="${esc(x.id)}" class="${k ? '' : 'chua'}">${THU_TU.map(v=>`<option value="${v}"${v === k ? ' selected' : ''}>${v ? esc(khoName(v)) : '— Chọn kho —'}</option>`).join('')}</select>`
+        : esc(k ? khoName(k) : '')}</td>
+      ${sua ? `<td class="nut"><button class="secondary sm" data-sua="${esc(x.id)}">Sửa</button><button class="danger sm" data-xoa="${esc(x.id)}">✕</button></td>` : ''}
+    </tr>`;
+  }).join('');
+  $('tswBang').innerHTML = `<table>
+    <thead><tr>${COT.map(c=>`<th>${c}</th>`).join('')}${sua ? '<th></th>' : ''}</tr></thead>
+    <tbody>${dong}</tbody></table>`;
+}
+
+// ---- Sửa ngay ở bảng ----
+async function onBangChange(e){
+  const s = e.target.closest('[data-kho]'); if(!s) return;
+  const id = s.dataset.kho, kho = s.value;
+  const ok = await ghi(o=>{ const x = o.ds.find(y=>y.id === id); if(x) x.kho = kho; });
+  if(ok) toast(`✓ Đã chuyển sang ${tenKho(kho)}`);
+  veBang();
+}
+async function onBangClick(e){
+  const s = e.target.closest('[data-sua]');
+  if(s){ moForm(TS.ds.find(x=>x.id === s.dataset.sua)); return; }
+  const d = e.target.closest('[data-xoa]'); if(!d) return;
+  const x = TS.ds.find(y=>y.id === d.dataset.xoa); if(!x) return;
+  if(!await confirmBox(`Xoá tài sản ${x.so} — ${x.mota || ''}?`)) return;
+  if(await ghi(o=>{ o.ds = o.ds.filter(y=>y.id !== x.id); })) toast('✓ Đã xoá tài sản');
+  veBang();
+}
+
+// ---- Thêm / sửa 1 tài sản ----
+function moForm(x){
+  const o = x || { so:'', mota:'', coa:'', model:'', serial:'', kho: LOC !== '*' ? LOC : '' };
+  const o5 = [['so', 'Asset Number', 'VD: 1002472'], ['mota', 'Asset Description', 'VD: BARCODE PRINTER /MAY IN MA VACH'],
+              ['coa', 'COA', 'VD: 2003'], ['model', 'Model number', 'VD: SLP TX403'], ['serial', 'Serial number', 'VD: TANVZKA22060372']];
+  const m = openModal(x ? 'Sửa tài sản' : 'Thêm tài sản', `
+    ${o5.map(([k, t, g])=>`<label class="field-label">${t}${k === 'so' ? ' <span style="color:var(--red)">*</span>' : ''}</label>
+      <input type="text" data-f="${k}" value="${esc(o[k] || '')}" placeholder="${esc(g)}" autocomplete="off">`).join('')}
+    <label class="field-label">DEPT — tài sản của kho nào</label>
+    <select data-f="kho">${THU_TU.map(v=>`<option value="${v}"${v === (o.kho || '') ? ' selected' : ''}>${v ? esc(khoName(v)) : '— Chưa chọn kho —'}</option>`).join('')}</select>
+    <div class="row2" style="margin-top:16px;"><button class="ghost" data-no>Huỷ</button><button data-yes>${x ? 'Lưu thay đổi' : 'Thêm tài sản'}</button></div>`);
+  const f = k => m.body.querySelector(`[data-f="${k}"]`).value.trim();
+  m.body.querySelector('[data-no]').onclick = m.close;
+  m.body.querySelector('[data-yes]').onclick = async ()=>{
+    const moi = { so:f('so'), mota:f('mota'), coa:f('coa'), model:f('model'), serial:f('serial'), kho:f('kho') };
+    if(!moi.so){ toast('⚠ Nhập Asset Number'); return; }
+    const kq = await ghi(d=>{
+      if(d.ds.some(y=>normName(y.so) === normName(moi.so) && (!x || y.id !== x.id))) return 'trung';
+      if(x){ const y = d.ds.find(z=>z.id === x.id); if(y) Object.assign(y, moi); else d.ds.push({ id:x.id, ...moi }); }
+      else d.ds.push({ id:moiId(), ...moi });
+    });
+    if(kq === 'trung'){ toast(`⚠ Asset Number ${moi.so} đã có trong bảng`); return; }
+    if(!kq) return;
+    m.close(); veBang();
+    toast(x ? '✓ Đã lưu tài sản' : `✓ Đã thêm tài sản ${moi.so}`);
+  };
+  m.body.querySelector('[data-f="so"]').focus();
+}
+
+// ---- Up file Excel ----
+// Tìm dòng tiêu đề trong 15 dòng đầu (dòng có "Asset" + "Number"); tiêu đề có thể xuống dòng ("Asset\nNumber").
+const KHOA_COT = { so:/^assetn(umber|o)$|^ma(taisan)?$/, mota:/^assetdesc|^description$|^mota|^tentaisan/, coa:/^coa$/,
+                   model:/^model/, serial:/^serial/, dept:/^dept|^department|^kho$|^bophan/ };
+const gonTieuDe = v => normName(String(v == null ? '' : v)).replace(/[^a-z0-9]/g, '');
+function khoTuDept(v){
+  const t = normName(String(v || ''));
+  if(!t) return '';
+  if(/vai|fabric/.test(t)) return 'vai';
+  if(/phu ?lieu|trim|access/.test(t)) return 'phulieu';
+  if(/thanh ?pham|finish|\bfg\b/.test(t)) return 'thanhpham';
+  return null;                              // có ghi nhưng không nhận ra
+}
+function docFile(file){
+  return new Promise((res, rej)=>{
+    const r = new FileReader();
+    r.onload = ()=>{ try{ const wb = XLSX.read(new Uint8Array(r.result), { type:'array' }); res(wb); }catch(e){ rej(e); } };
+    r.onerror = ()=>rej(r.error);
+    r.readAsArrayBuffer(file);
+  });
+}
+async function upExcel(file){
+  if(!window.XLSX){ toast('⚠ Chưa tải được thư viện Excel — kiểm tra mạng rồi tải lại trang'); return; }
+  let wb;
+  try{ wb = await docFile(file); }catch(e){ toast('⚠ Không đọc được file: ' + (e.message || e)); return; }
+  // lấy sheet đầu tiên có dòng tiêu đề hợp lệ
+  let ds = null;
+  for(const ten of wb.SheetNames){
+    const aoa = XLSX.utils.sheet_to_json(wb.Sheets[ten], { header:1, defval:'', raw:false });
+    for(let i = 0; i < Math.min(15, aoa.length); i++){
+      const vt = {};
+      aoa[i].forEach((v, j)=>{ const g = gonTieuDe(v); Object.keys(KHOA_COT).forEach(k=>{ if(vt[k] == null && KHOA_COT[k].test(g)) vt[k] = j; }); });
+      if(vt.so == null) continue;
+      ds = aoa.slice(i + 1).map(r=>{
+        const lay = k => vt[k] == null ? '' : String(r[vt[k]] == null ? '' : r[vt[k]]).replace(/\s+/g, ' ').trim();
+        return { so:lay('so'), mota:lay('mota'), coa:lay('coa'), model:lay('model'), serial:lay('serial'), dept:lay('dept') };
+      });
+      break;
+    }
+    if(ds) break;
+  }
+  if(!ds){ toast('⚠ Không thấy cột "Asset Number" trong file'); return; }
+  const boTrong = ds.filter(r=>!r.so && (r.mota || r.model || r.serial)).length;
+  ds = ds.filter(r=>r.so);
+  // trùng mã trong chính file: lấy dòng cuối
+  const theoMa = new Map(); ds.forEach(r=>theoMa.set(normName(r.so), r)); ds = [...theoMa.values()];
+  const daCo = new Map(TS.ds.map(x=>[normName(x.so), x]));
+  const them = ds.filter(r=>!daCo.has(normName(r.so))).length, capNhat = ds.length - them;
+  const laDept = [...new Set(ds.filter(r=>khoTuDept(r.dept) === null).map(r=>r.dept))];
+  if(!ds.length){ toast('⚠ File không có dòng nào có Asset Number'); return; }
+  const m = openModal('Up file tài sản', `
+    <div class="tsw-up"><b>📄 ${esc(file.name)}</b>
+      <span><b>${soVN(ds.length)}</b> tài sản trong file: <b class="moi">${soVN(them)} thêm mới</b> · <b>${soVN(capNhat)} cập nhật</b> (đã có Asset Number)</span>
+      ${boTrong ? `<span class="canh">${soVN(boTrong)} dòng không có Asset Number — bỏ qua</span>` : ''}
+      ${laDept.length ? `<span class="canh">DEPT không nhận ra (để "Chưa chọn kho"): ${esc(laDept.slice(0, 5).join(', '))}${laDept.length > 5 ? '…' : ''}</span>` : ''}
+    </div>
+    <ul class="nv-xn-ds">
+      <li>Tài sản đã có: cập nhật mô tả / COA / model / serial theo file; DEPT trong file trống thì giữ kho đang chọn.</li>
+      <li>DEPT nhận chữ: kho vải / fabric, phụ liệu / trim, thành phẩm / finished goods.</li>
+    </ul>
+    <div class="row2" style="margin-top:16px;"><button class="ghost" data-no>Huỷ</button><button data-yes>⬆ Cập nhật ${soVN(ds.length)} tài sản</button></div>`);
+  m.body.querySelector('[data-no]').onclick = m.close;
+  m.body.querySelector('[data-yes]').onclick = async ()=>{
+    m.body.querySelectorAll('button').forEach(b=>b.disabled = true);
+    const ok = await ghi(o=>{
+      const map = new Map(o.ds.map(x=>[normName(x.so), x]));
+      ds.forEach(r=>{
+        const kho = khoTuDept(r.dept);
+        const x = map.get(normName(r.so));
+        if(x){
+          Object.assign(x, { mota:r.mota || x.mota, coa:r.coa || x.coa, model:r.model || x.model, serial:r.serial || x.serial });
+          if(kho) x.kho = kho;
+        }else{
+          const y = { id:moiId(), so:r.so, mota:r.mota, coa:r.coa, model:r.model, serial:r.serial, kho:kho || '' };
+          o.ds.push(y); map.set(normName(r.so), y);
+        }
+      });
+    });
+    m.close();
+    if(ok){ veBang(); toast(`✓ Đã thêm ${soVN(them)} · cập nhật ${soVN(capNhat)} tài sản`); }
+  };
+}
+
+// ---- Xuất Excel (đúng thứ tự + bộ lọc đang hiện) ----
+function xuatExcel(){
+  if(!window.XLSX){ toast('⚠ Chưa tải được thư viện Excel — kiểm tra mạng rồi tải lại trang'); return; }
+  const ds = xep(TS.ds.filter(khop));
+  if(!ds.length){ toast('Không có tài sản nào để xuất'); return; }
+  const aoa = [COT].concat(ds.map((x, i)=>[i + 1, x.so, x.mota, x.coa, x.model, x.serial, x.kho ? khoName(x.kho) : '']));
+  const ws = XLSX.utils.aoa_to_sheet(aoa);
+  ws['!cols'] = [{wch:5}, {wch:14}, {wch:52}, {wch:8}, {wch:26}, {wch:22}, {wch:18}];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'TAI SAN WH');
+  XLSX.writeFile(wb, `TAI_SAN_WH_${todayKey()}.xlsx`);
+  toast(`✓ Đã xuất ${soVN(ds.length)} tài sản`);
+}
+})();
 
 </script>
 <script>/* js/app/main.js */
