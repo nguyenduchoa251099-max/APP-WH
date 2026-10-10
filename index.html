@@ -231,6 +231,13 @@
   @media(max-width:480px){.row2{grid-template-columns:1fr;}}
   .stat-lines .bd-ns:last-child{border-bottom:0; padding-bottom:0;}
 
+  /* Tổng quan từng kho (tab Tổng quan, không phải trang Tổng quan 3 kho): chữ 3 thẻ Nhân sự / Tăng ca / Nhắc nhở to hơn */
+  #tab-dashboard .stat.stat-multi small{font-size:15px;}
+  #tab-dashboard .stat-lines{gap:7px; margin-top:10px;}
+  #tab-dashboard .stat-lines .k{font-size:15px;}
+  #tab-dashboard .stat-lines .v{font-size:21px;}
+  #tab-dashboard .stat-lines > div:first-child .v{font-size:28px;}
+
 </style>
 <style>/* css/modules/tailieu.css */
 /* Tab WI / Training (kho tài liệu)
@@ -3155,7 +3162,7 @@
           <span>📍 VỊ TRÍ</span><input type="text" id="scVt" placeholder="VD: A01A" autocomplete="off" spellcheck="false">
         </label>
         <button class="sc-btn sc-vtl" id="scBtnVtl" title="Mở bảng các thùng đã lưu: JO - BUYER PO - STYLE - VỊ TRÍ - UCC - GHI CHÚ (sửa tạm / copy được)">🗂 VỊ TRÍ ĐÃ LƯU</button>
-        <button class="sc-btn sc-xuat" id="scBtnXuat" title="Xuất Excel: JOB NO - BUYER PO - STYLE NO - VỊ TRÍ - UCC - QTY">⬇ XUẤT FILE</button>
+        <button class="sc-btn sc-xuat" id="scBtnXuat" title="Xuất Excel: JOB NO - BUYER PO - STYLE NO - VỊ TRÍ - UCC - GHI CHÚ - QTY (xếp lần lượt theo thứ tự này)">⬇ XUẤT FILE</button>
         <button class="sc-btn sc-xoa" id="scBtnXoa" title="Scan và xuất file xong: xoá tiến độ scan và xoá file này ở SCAN OS">🗑 XOÁ DỮ LIỆU</button>
       </div>
     </div>
@@ -14080,16 +14087,18 @@ async function luuScan(){
 function xuatFile(){
   if(!DATA) return;
   if(!window.XLSX){ toast('⚠ Chưa tải được thư viện Excel — kiểm tra mạng rồi tải lại trang'); return; }
-  const rows = DATA.rows.slice().sort((a,b)=>{
-    for(const k of ['job','po','sty','ucc']){ const d = soSanh(a[k]||'', b[k]||''); if(d) return d; }
-    return 0;
-  });
   // Vị trí trống = chưa scan, hoặc lúc lưu không điền vị trí (thùng trong phiên chưa lưu tính là chưa scan)
-  const aoa = [['JOB NO','BUYER PO','STYLE NO','VỊ TRÍ','GHI CHÚ','UCC','QTY']]
-    .concat(rows.map(r=>{ const u = String(r.ucc||'').trim(), s = daLuu(u) ? SAVED.get(u) : null;
-      return [r.job, r.po, r.sty, s ? s.vt : '', s ? s.gc : '', u, Number(r.qty)||0]; }));
+  const dong = DATA.rows.map(r=>{ const u = String(r.ucc||'').trim(), s = daLuu(u) ? SAVED.get(u) : null;
+    return [r.job, r.po, r.sty, s ? s.vt : '', u, s ? s.gc : '', Number(r.qty)||0]; });
+  // Xếp lần lượt JO -> PO -> STYLE -> VỊ TRÍ -> UCC (thùng chưa có vị trí xếp cuối trong cùng STYLE)
+  dong.sort((a,b)=>{
+    for(const i of [0,1,2]){ const d = soSanh(a[i]||'', b[i]||''); if(d) return d; }
+    if(!a[3] !== !b[3]) return a[3] ? -1 : 1;
+    return soSanh(a[3], b[3]) || soSanh(a[4], b[4]);
+  });
+  const aoa = [['JOB NO','BUYER PO','STYLE NO','VỊ TRÍ','UCC','GHI CHÚ','QTY']].concat(dong);
   const ws = XLSX.utils.aoa_to_sheet(aoa);     // mã đều là chữ -> Excel không đổi sang dạng 7.2224E+12
-  ws['!cols'] = [{wch:18},{wch:16},{wch:16},{wch:10},{wch:28},{wch:22},{wch:8}];
+  ws['!cols'] = [{wch:18},{wch:16},{wch:16},{wch:10},{wch:22},{wch:28},{wch:8}];
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'SCAN');
   const ten = String(DATA.name).replace(/\.(xlsx|xlsm|xls|csv)$/i,'').replace(/[\\/:*?"<>|]+/g,'_');
@@ -18258,8 +18267,8 @@ async function renderTaiSan(){
   if(!TAI){ host.innerHTML = '<div class="tsw-wrap"><p class="empty-msg">Đang tải danh sách tài sản…</p></div>'; await tai(); }
   // đang gõ tìm kiếm thì chỉ vẽ lại bảng, không vẽ lại ô tìm (khỏi mất chỗ gõ)
   const sua = duocSua();
-  if(host.querySelector('.tsw-wrap #tswTim') && host.dataset.sua === String(sua)){ veBang(); return; }
-  host.dataset.sua = String(sua);           // đăng nhập / đăng xuất thì vẽ lại cả trang (hiện / ẩn nút sửa)
+  if(host.querySelector('.tsw-wrap #tswTim') && host.dataset.tswQuyen === String(sua)){ veBang(); return; }
+  host.dataset.tswQuyen = String(sua);           // đăng nhập / đăng xuất thì vẽ lại cả trang (hiện / ẩn nút sửa)
   host.innerHTML = `<div class="tsw-wrap">
     <div class="tsw-tieude"><h2>🏷 Tài sản WH</h2>
       <span>Tài sản của 3 kho${sua ? '' : ' · chỉ xem'}</span>
@@ -18323,16 +18332,17 @@ function veBang(){
 
 // ---- Sửa ngay ở bảng ----
 async function onBangChange(e){
-  const s = e.target.closest('[data-kho]'); if(!s) return;
+  const s = e.target.closest('select[data-kho]'); if(!s) return;
   const id = s.dataset.kho, kho = s.value;
   const ok = await ghi(o=>{ const x = o.ds.find(y=>y.id === id); if(x) x.kho = kho; });
   if(ok) toast(`✓ Đã chuyển sang ${tenKho(kho)}`);
   veBang();
 }
 async function onBangClick(e){
-  const s = e.target.closest('[data-sua]');
-  if(s){ moForm(TS.ds.find(x=>x.id === s.dataset.sua)); return; }
-  const d = e.target.closest('[data-xoa]'); if(!d) return;
+  // chỉ nút trong bảng (không lấy nhầm thuộc tính data-* của khung trang bên ngoài)
+  const s = e.target.closest('button[data-sua]');
+  if(s){ const x = TS.ds.find(y=>y.id === s.dataset.sua); if(x) moForm(x); return; }
+  const d = e.target.closest('button[data-xoa]'); if(!d) return;
   const x = TS.ds.find(y=>y.id === d.dataset.xoa); if(!x) return;
   if(!await confirmBox(`Xoá tài sản ${x.so} — ${x.mota || ''}?`)) return;
   if(await ghi(o=>{ o.ds = o.ds.filter(y=>y.id !== x.id); })) toast('✓ Đã xoá tài sản');
