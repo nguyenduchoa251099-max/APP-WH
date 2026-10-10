@@ -35,6 +35,9 @@
     --bong:0 1px 2px rgba(16,24,40,.05), 0 1px 3px rgba(16,24,40,.04);
     --amber:#c98a1c; --amber-bg:#fbeecb; --amber-line:#e3b356;
     --blue:#0096BE; --blue-bg:#E6F6FA; --blue-dark:#00789A;
+    /* Màu trạng thái nhân sự — thống nhất cả 3 kho */
+    --st-go:#2FAE59; --st-muon:#FDE68A; --st-muon-ink:#713f12; --st-som:#FDBA74; --st-som-ink:#7c2d12;
+    --st-off:#FF2020; --st-nv:#111827; --st-ts:#F9A8D4; --st-ts-ink:#831843;
     --hot-yellow:#FFD400; --hot-yellow-ink:#5c4600; --hot-red:#FF2020;
     --teal:#2f7a4f; --teal-bg:#e6f2ea;
     --red:#b3432f; --red-bg:#f7e6e1;
@@ -162,23 +165,31 @@
   .panel h2 .n{background:var(--blue); color:#ffffff; font-family:var(--mono); font-size:10px; padding:2px 6px; border-radius:2px;}
   .panel h2 .h2spacer{flex:1;}
 
-  .stat{border-radius:12px; padding:16px; color:#fff; min-height:88px; position:relative; overflow:hidden;}
+  /* Thẻ số liệu: nền trắng + vạch màu nhấn ở đầu thẻ (bỏ khối màu đặc cho đỡ rối mắt) */
+  .stat{border-radius:12px; padding:16px; color:var(--ink); background:#fff; border:1px solid var(--line); border-top:4px solid var(--nhan, #2368b1);
+    box-shadow:var(--bong); min-height:88px; position:relative; overflow:hidden;}
   .stat b{font-size:26px; display:block; margin-top:4px;}
-  .stat small{opacity:.9; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.03em;}
-  .stat.s1{background:#2368b1;} .stat.s2{background:#208b72;} .stat.s3{background:#e08a1e;} .stat.s4{background:#c94b3c;}
-  .stat.s5{background:#6d28d9;}
+  .stat small{color:var(--nhan, #2368b1); font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.04em;}
+  .stat.s1{--nhan:#2368b1;} .stat.s2{--nhan:#208b72;} .stat.s3{--nhan:#e08a1e;} .stat.s4{--nhan:#c94b3c;}
+  .stat.s5{--nhan:#6d28d9;}
   .stat.stat-multi{padding:14px 16px;}
   #page-tong3kho{padding-top:22px;}
-  .stat.big{padding:20px 22px;}
-  .stat.big small{font-size:16px; letter-spacing:0; display:flex; align-items:center; gap:8px;}
-  .stat.big small svg{width:22px; height:22px;}
-  .stat.big .stat-lines{gap:9px; margin-top:12px;}
-  .stat.big .stat-lines .k{font-size:15px; font-weight:600;}
-  .stat.big .stat-lines .v{font-size:23px; font-weight:800;}
+  .stat.big{padding:16px 18px;}
+  .stat.big small{font-size:14px; letter-spacing:0; display:flex; align-items:center; gap:8px;}
+  .stat.big small svg{width:19px; height:19px;}
+  .stat.big .stat-lines{gap:4px; margin-top:10px;}
+  .stat.big .stat-lines .k{font-size:13.5px; font-weight:600;}
+  .stat.big .stat-lines .v{font-size:17px; font-weight:800;}
   .stat-lines{margin-top:8px; display:flex; flex-direction:column; gap:5px;}
-  .stat-lines > div{display:flex; justify-content:space-between; align-items:baseline; gap:8px;}
-  .stat-lines .k{font-size:11.5px; opacity:.92; font-weight:600;}
-  .stat-lines .v{font-size:17px; font-weight:800;}
+  .stat-lines > div, .stat-lines .bd-ns{display:flex; justify-content:space-between; align-items:baseline; gap:8px;
+    padding-bottom:4px; border-bottom:1px solid var(--line-soft);}
+  .stat-lines > div:last-child, .stat-lines > div[style*="contents"]{border-bottom:0; padding-bottom:0;}
+  .stat-lines .k{font-size:11.5px; color:var(--ink-soft); font-weight:600;}
+  .stat-lines .v{font-size:17px; font-weight:800; color:var(--ink); font-variant-numeric:tabular-nums;}
+  /* dòng đầu (VD Tổng nhân sự) là số chính: to và theo màu nhấn của thẻ */
+  .stat-lines > div:first-child .k{color:var(--ink); font-weight:700;}
+  .stat-lines > div:first-child .v{color:var(--nhan, #2368b1); font-size:22px;}
+  .stat.big .stat-lines > div:first-child .v{font-size:24px;}
 
   table{width:100%; border-collapse:collapse; font-size:13px;}
   th,td{padding:9px 10px; border-bottom:1px solid var(--line-soft); text-align:left; vertical-align:middle; font-size:15px;}
@@ -218,6 +229,7 @@
   .row2{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
   .row3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;}
   @media(max-width:480px){.row2{grid-template-columns:1fr;}}
+  .stat-lines .bd-ns:last-child{border-bottom:0; padding-bottom:0;}
 
 </style>
 <style>/* css/modules/tailieu.css */
@@ -849,10 +861,11 @@
   .sqwrap{display:flex; gap:6px; flex-wrap:wrap; flex:1;}
   .sq{min-width:58px; height:36px; padding:0 9px; border-radius:7px; display:flex; align-items:center; justify-content:center;
       font-size:11.5px; font-weight:800; color:#fff; cursor:default; white-space:nowrap;}
-  .sq.go{background:#2FAE59;}
-  .sq.off{background:#FF2020;}
-  .sq.som{background:#FAD4E2; color:#8a2b52;}
-  .sq.muon{background:#F5B400; color:#5c4600;}
+  .sq.go{background:var(--st-go);}
+  .sq.off{background:var(--st-off);}
+  .sq.som{background:var(--st-som); color:var(--st-som-ink);}
+  .sq.muon{background:var(--st-muon); color:var(--st-muon-ink);}
+  .sq.ts{background:var(--st-ts); color:var(--st-ts-ink);}
   .sq.empty{background:#fff; border:1px dashed var(--line); color:var(--ink-soft);}
   /* ---- Bảng nhân sự tổng quan 3 kho (ô màu, không ghi tên) ---- */
   .ovboard{display:grid; grid-template-columns:repeat(auto-fit,minmax(330px,1fr)); gap:14px;}
@@ -1055,12 +1068,12 @@
   .ot-row.cho-nghi .ot-shift{background:#374151; color:#e5e7eb; border-color:#4b5563;}
   .cho-nghi-nhan{display:inline-block; margin-left:6px; padding:0 7px; border-radius:999px; background:#fff; color:#111827;
     font-size:11px; font-weight:800; vertical-align:1px;}
-  .sq.cho-nghi{background:#111827 !important; color:#fff !important;}
+  .sq.cho-nghi{background:var(--st-nv) !important; color:#fff !important;}
   /* giữ trạng thái hôm nay bằng vạch màu ở đáy ô */
-  .sq.cho-nghi.go{box-shadow:inset 0 -4px 0 #2FAE59;}
-  .sq.cho-nghi.off{box-shadow:inset 0 -4px 0 #FF2020;}
-  .sq.cho-nghi.som{box-shadow:inset 0 -4px 0 #f472b6;}
-  .sq.cho-nghi.muon{box-shadow:inset 0 -4px 0 #F5B400;}
+  .sq.cho-nghi.go{box-shadow:inset 0 -4px 0 var(--st-go);}
+  .sq.cho-nghi.off{box-shadow:inset 0 -4px 0 var(--st-off);}
+  .sq.cho-nghi.som{box-shadow:inset 0 -4px 0 var(--st-som);}
+  .sq.cho-nghi.muon{box-shadow:inset 0 -4px 0 var(--st-muon);}
   .sq.mini.cho-nghi{box-shadow:inset 0 -3px 0 #9ca3af;}
   .slot-pill.cho-nghi{background:#111827 !important; color:#fff !important; border-color:#111827 !important;}
   .slot-pill.cho-nghi .edit-ic{color:#d1d5db;}
@@ -1076,12 +1089,42 @@
   .otc-ng-so{font-size:10.5px; font-weight:800;}
   .otc-axn{fill:#6b7280; font-style:italic;}
   .otc-lg-ng{font-weight:800; letter-spacing:1px;}
-  .stat-lines .bd-ns{display:flex; justify-content:space-between; align-items:baseline; gap:8px;}
+
   /* danh sách Tăng ca: số giờ trên thanh (0/4, 3.5/12…) chữ trắng khi nền đen */
   .ot-row.cho-nghi .otb-top{color:#fff;}
   .ot-row.cho-nghi .otb-track{background:#4b5563;}
   /* nhãn "Nghỉ việc từ dd/mm": nền trắng chữ đen (không bị quy tắc chữ trắng của dòng nền đen đè) */
   .ot-row.cho-nghi .ot-name .nm .cho-nghi-nhan{color:#111827;}
+
+  /* ===== Tổng quan 3 kho: khối thu gọn / mở bằng mũi tên ===== */
+  .panel.tg > h2{cursor:pointer; user-select:none; margin:-6px -8px; padding:6px 8px; border-radius:8px; transition:background .15s;}
+  .panel.tg > h2:hover{background:var(--blue-bg);}
+  .panel.tg > h2:focus-visible{outline:2px solid var(--blue); outline-offset:2px;}
+  .panel.tg.mo > h2{margin-bottom:6px;}
+  .panel.tg:not(.mo) > :not(h2){display:none;}
+  .panel.tg:not(.mo) > h2 .tg-mo-chi{display:none;}
+  .tg-mui{display:inline-block; width:16px; color:var(--blue); font-size:16px; transition:transform .18s;}
+  .panel.tg.mo .tg-mui{transform:rotate(90deg);}
+  .tg-tom{font-size:12.5px; font-weight:700; text-transform:none; letter-spacing:0; color:var(--ink-soft);
+    background:#f3f4f6; border-radius:999px; padding:2px 10px; margin-left:4px;}
+  .tg-tom:empty{display:none;}
+  .tg-tom.xau{background:#fee2e2; color:#b91c1c;}
+  .tg-tom.vua{background:#fef3c7; color:#92400e;}
+  .tg-tom.tot{background:#dcfce7; color:#166534;}
+  .panel.tg.mo .tg-tom{opacity:.85;}
+
+  /* ===== THAI SẢN (Quản lý nhân sự) — màu hồng ===== */
+  button.ts-btn{background:#fff; color:var(--st-ts-ink); border-color:#ec4899;}
+  button.ts-btn:hover{background:var(--st-ts); opacity:1;}
+  button.ts-btn.dac{background:#ec4899; color:#fff; border-color:#ec4899;}
+  .ts-hd{display:flex; align-items:center; gap:8px; margin:18px 0 4px; font-size:12.5px; font-weight:800; letter-spacing:.06em; color:#be185d;}
+  .ts-hd span{background:#ec4899; color:#fff; border-radius:999px; padding:0 8px; font-size:11.5px;}
+  .rowline.ts-row{background:#fdf2f8; border:1px solid var(--st-ts); border-radius:8px; padding:9px 10px; margin-bottom:6px;}
+  .ts-row .ts-sub{font-size:11px; color:#9d174d;}
+  .ts-row button.ts-undo{background:#fff; color:#be185d; border-color:#ec4899; white-space:nowrap;}
+  .ts-row button.ts-undo:hover{background:var(--st-ts); opacity:1;}
+  .nv-xn-ten.ts{background:#ec4899;}
+  .nv-xn-ten.ts span{color:#fce7f3;}
 
 </style>
 <style>/* css/modal.css */
@@ -2118,6 +2161,15 @@
   #tab-hotrokk .hk-barw .sl small.gio{color:#0e7490; font-weight:700;}
   #tab-hotrokk .hk-kpi .k small{font-weight:600; font-size:10.5px;}
   #tab-hotrokk .hk-nk .sl small{font-weight:600; color:#0e7490;}
+  /* Nhật ký hỗ trợ: mỗi tháng 1 khối thu gọn, bấm thanh tháng để mở */
+  #tab-hotrokk details.hk-nkd{margin-bottom:6px;}
+  #tab-hotrokk details.hk-nkd > summary{list-style:none; cursor:pointer; user-select:none; display:flex; align-items:center;}
+  #tab-hotrokk details.hk-nkd > summary::-webkit-details-marker{display:none;}
+  #tab-hotrokk details.hk-nkd > summary:hover{filter:brightness(.97);}
+  #tab-hotrokk .hk-nkthang .mui{display:inline-block; width:16px; opacity:1; transition:transform .18s;}
+  #tab-hotrokk details.hk-nkd[open] > summary .mui{transform:rotate(90deg);}
+  #tab-hotrokk details.hk-nkd > summary.hk-nkthang{margin:8px 0 0;}
+  #tab-hotrokk details.hk-nkd[open] > summary.hk-nkthang{margin-bottom:7px;}
 
 </style>
 <style>/* css/modules/tonphep.css */
@@ -2529,28 +2581,30 @@
   <!-- ============ TRANG TỔNG QUAN 3 KHO ============ -->
   <main class="tabpage active" id="page-tong3kho">
     <div class="grid3" id="all3Cards"></div>
-    <div class="panel" style="margin-top:18px;">
-      <h2><span class="n">👥</span>Nhân sự theo ca &amp; vị trí — hôm nay<span class="h2spacer"></span>
-        <span class="ovlegend">
-          <span><i style="background:#2FAE59"></i>Đi làm</span>
-          <span><i style="background:#F5B400"></i>Đi muộn</span>
-          <span><i style="background:#FAD4E2"></i>Về sớm</span>
-          <span><i style="background:#FF2020"></i>Nghỉ</span>
+    <div class="panel tg" data-tg="ns" style="margin-top:18px;">
+      <h2><span class="tg-mui" aria-hidden="true">▸</span><span class="n">👥</span>Nhân sự theo ca &amp; vị trí — hôm nay<span class="tg-tom" id="tgTomNs"></span><span class="h2spacer"></span>
+        <span class="ovlegend tg-mo-chi">
+          <span><i style="background:var(--st-go)"></i>Đi làm</span>
+          <span><i style="background:var(--st-muon)"></i>Đi muộn</span>
+          <span><i style="background:var(--st-som)"></i>Về sớm</span>
+          <span><i style="background:var(--st-off)"></i>Nghỉ làm</span>
+          <span><i style="background:var(--st-nv)"></i>Nghỉ việc</span>
+          <span><i style="background:var(--st-ts)"></i>Thai sản</span>
         </span>
       </h2>
       <div class="ovboard" id="all3Boards"></div>
     </div>
-    <div class="panel" style="margin-top:18px;">
-      <h2><span class="n">⚠</span>Cảnh báo hạn mức tăng ca<span class="h2spacer"></span><span class="chip info" id="all3LimitRule">Ngày &gt;4h · Tuần &gt;12h · Tháng &gt;24h · Năm ≥350h</span></h2>
+    <div class="panel tg" data-tg="cb" style="margin-top:18px;">
+      <h2><span class="tg-mui" aria-hidden="true">▸</span><span class="n">⚠</span>Cảnh báo hạn mức tăng ca<span class="tg-tom" id="tgTomCb"></span><span class="h2spacer"></span><span class="chip info tg-mo-chi" id="all3LimitRule">Ngày &gt;4h · Tuần &gt;12h · Tháng &gt;24h · Năm ≥350h</span></h2>
       <div class="tblwrap"><table id="all3Limit"></table></div>
     </div>
-    <div class="panel" style="margin-top:18px;">
-      <h2><span class="n">🌴</span>Phép tồn trên 24h<span class="h2spacer"></span><span class="chip info">Số còn lại sau mọi đơn đã đăng ký</span></h2>
+    <div class="panel tg" data-tg="pt" style="margin-top:18px;">
+      <h2><span class="tg-mui" aria-hidden="true">▸</span><span class="n">🌴</span>Phép tồn trên 24h<span class="tg-tom" id="tgTomPt"></span><span class="h2spacer"></span><span class="chip info tg-mo-chi">Số còn lại sau mọi đơn đã đăng ký</span></h2>
       <div class="grid3" id="all3Ton24"></div>
     </div>
-    <div class="panel" style="margin-top:18px;">
-      <h2><span class="n">📊</span>Giờ tăng ca theo tháng — 3 kho<span class="h2spacer"></span>
-        <span class="otc-seg" id="otcMode" role="group" aria-label="Cách tính">
+    <div class="panel tg" data-tg="otc" style="margin-top:18px;">
+      <h2><span class="tg-mui" aria-hidden="true">▸</span><span class="n">📊</span>Giờ tăng ca theo tháng — 3 kho<span class="tg-tom" id="tgTomOtc"></span><span class="h2spacer"></span>
+        <span class="otc-seg tg-mo-chi" id="otcMode" role="group" aria-label="Cách tính">
           <button data-m="tong" class="on">Tổng giờ</button><button data-m="bq">Bình quân / người</button>
         </span>
       </h2>
@@ -2613,10 +2667,11 @@
     <div class="panel" style="margin-top:14px;">
       <h2><span class="n">👥</span>Vị trí làm việc — hôm nay<span class="h2spacer"></span><span class="chip info" id="posSum">—</span></h2>
       <div class="poslegend">
-        <span><i style="background:#2FAE59"></i> Đi làm</span>
-        <span><i style="background:#FF2020"></i> Nghỉ</span>
-        <span><i style="background:#FAD4E2; border:1px solid #e7aec3"></i> Về sớm (ghi số giờ)</span>
-        <span><i style="background:#F5B400"></i> Đi muộn (ghi số giờ)</span>
+        <span><i style="background:var(--st-go)"></i> Đi làm</span>
+        <span><i style="background:var(--st-muon)"></i> Đi muộn (ghi số giờ)</span>
+        <span><i style="background:var(--st-som)"></i> Về sớm (ghi số giờ)</span>
+        <span><i style="background:var(--st-off)"></i> Nghỉ làm</span>
+        <span><i style="background:var(--st-nv)"></i> Nghỉ việc</span>
       </div>
       <div class="btnrow" id="posTools" style="display:none; margin-bottom:10px;">
         <button class="secondary sm" id="posAddJob">🗂 Quản lý mục công việc</button>
@@ -4384,7 +4439,7 @@ function empRank(e){
 // bảng công vẫn có tên nhưng những ngày đi hỗ trợ tính 0h. Quay lại thì Hoàn tác (Quản lý
 // nhân sự): đợt vừa đi được ghi vào e.hoTroLs = [{ tu, den }] để bảng công tháng cũ vẫn đúng.
 function khoEmployees(id){
-  return HR.employees.filter(e=>e.warehouseId===id && !e.nghiViec && !e.diHoTro)
+  return HR.employees.filter(e=>e.warehouseId===id && !e.nghiViec && !e.diHoTro && !e.thaiSan)
     .slice().sort((a,b)=>{
       const ra = empRank(a), rb = empRank(b);
       if(ra !== rb) return ra - rb;
@@ -4414,6 +4469,16 @@ function nhanChoNghi(e){
 function khoDiHoTro(id){
   return HR.employees.filter(e=>e.warehouseId===id && e.diHoTro && !e.nghiViec)
     .sort((a,b)=>a.diHoTro.localeCompare(b.diHoTro) || a.name.localeCompare(b.name,'vi'));
+}
+// THAI SẢN: e.thaiSan = ngày bắt đầu (e.thaiSanLs = các đợt đã xong). Giống đi hỗ trợ: ẩn khỏi danh sách
+// hằng ngày, vẫn tính Tổng nhân sự, bảng công 0h; riêng ô màu hồng ở "Nhân sự theo ca & vị trí" (Tổng quan 3 kho).
+function khoThaiSan(id){
+  return HR.employees.filter(e=>e.warehouseId===id && e.thaiSan && !e.nghiViec)
+    .sort((a,b)=>a.thaiSan.localeCompare(b.thaiSan) || a.name.localeCompare(b.name,'vi'));
+}
+function dangThaiSan(e, key){
+  if(e.thaiSan && key >= e.thaiSan) return true;
+  return (e.thaiSanLs || []).some(p=>key >= p.tu && key <= p.den);
 }
 // Ngày `key` người này có đang đi hỗ trợ không (đợt đang đi hoặc các đợt đã xong)
 function dangDiHoTro(e, key){
@@ -5155,7 +5220,7 @@ function khoStats(khoId, ref){
   const uniq = arr => new Set(arr.map(x=>x.employeeId)).size;
   return {
     // Tổng nhân sự: tính cả người đang đi hỗ trợ bộ phận khác (họ vẫn ẩn khỏi phân công, 5S, tăng ca…)
-    khoId, name: khoName(khoId), total: emps.length + khoDiHoTro(khoId).length,
+    khoId, name: khoName(khoId), total: emps.length + khoDiHoTro(khoId).length + khoThaiSan(khoId).length,
     nghi: uniq(nghi), som: uniq(som), muon: uniq(muon),
     nghiRecs: nghi.length, somRecs: som.length, muonRecs: muon.length,
     somH: som.reduce((s,l)=>s+(Number(l.hours)||0),0),
@@ -5197,11 +5262,38 @@ function dongBienDongNs(khoId){
     { k:'Chờ nghỉ việc', n:khoChoNghi(khoId).length, g:'vẫn tính trong tổng', cls:'den' },
     { k:'Đã nghỉ việc', n:khoDaNghiThang(khoId, ym).length, g:'tháng này · đã trừ', cls:'xam' },
     { k:'Hỗ trợ bộ phận khác', n:khoDiHoTro(khoId).length, g:'vẫn tính trong tổng nhân sự', cls:'cam' },
+    { k:'Thai sản', n:khoThaiSan(khoId).length, g:'vẫn tính trong tổng nhân sự', cls:'hong' },
   ];
   return ds.filter(x=>x.n > 0).map(x=>`<div class="bd-ns ${x.cls}" title="${x.g}"><span class="k">${x.k}</span><span class="v">${x.n}</span></div>`).join('');
 }
+// 4 khối (Nhân sự theo ca · Cảnh báo hạn mức · Phép tồn · Giờ tăng ca) mặc định THU GỌN: bấm thanh tiêu đề
+// (mũi tên ▸) để mở / đóng; dòng tóm tắt trên thanh cho biết có cần mở hay không. Nhớ khối đang mở trên máy này.
+const KEY_TG = 'appwh-3kho-mo';
+function tgDocMo(){ try{ return JSON.parse(localStorage.getItem(KEY_TG) || '[]'); }catch(e){ return []; } }
+function tgApDung(){
+  const mo = tgDocMo();
+  document.querySelectorAll('#page-tong3kho .panel.tg').forEach(p=>{
+    p.classList.toggle('mo', mo.includes(p.dataset.tg));
+    const h = p.querySelector('h2');
+    if(!h || h._tg) return;
+    h._tg = true; h.setAttribute('role', 'button'); h.tabIndex = 0;
+    const doi = e=>{
+      if(e.target.closest('button, a, input, select')) return;      // bấm nút trong thanh (VD Tổng giờ / Bình quân) thì không đóng mở
+      const on = !p.classList.contains('mo');
+      p.classList.toggle('mo', on);
+      const ds = tgDocMo().filter(x=>x !== p.dataset.tg); if(on) ds.push(p.dataset.tg);
+      try{ localStorage.setItem(KEY_TG, JSON.stringify(ds)); }catch(err){}
+      if(on && p.dataset.tg === 'otc') renderOtChart();             // vẽ lại biểu đồ cho vừa bề ngang
+    };
+    h.addEventListener('click', doi);
+    h.addEventListener('keydown', e=>{ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); doi(e); } });
+  });
+}
+// Dòng tóm tắt trên thanh tiêu đề khối (cls: 'xau' đỏ · 'vua' cam · 'tot' xanh)
+function tgTom(id, html, cls){ const el = $(id); if(el){ el.innerHTML = html; el.className = 'tg-tom' + (cls ? ' ' + cls : ''); } }
 function renderAll3(){
   const ref = new Date();
+  tgApDung();
   const stats = WAREHOUSES.map(w=>khoStats(w.id, ref));
 
   $('all3Cards').innerHTML = stats.map((st,i)=>{
@@ -5212,7 +5304,6 @@ function renderAll3(){
         <div><span class="k">Tổng nhân sự</span><span class="v">${st.total}</span></div>
         <div><span class="k">Đi làm hôm nay</span><span class="v">${st.working}</span></div>
         <div><span class="k">Nghỉ phép</span><span class="v">${st.nghi}</span></div>
-        <div><span class="k">OT hôm nay</span><span class="v">${fmtHours(st.otTodayH)}</span></div>
         <div><span class="k">OT tháng này</span><span class="v">${fmtHours(st.otMonthH)}</span></div>
         <div><span class="k">Phép tồn trên 24h</span><span class="v">${
           (typeof tpDemTonTren === 'function') ? tpDemTonTren(w.id, 24) : 0}</span></div>
@@ -5281,6 +5372,8 @@ function renderAll3ViPham(ref){
   const ds = [];
   WAREHOUSES.forEach(w=>ds.push(...otViPham(w.id, ref)));
   ds.sort((a, b)=>(thuTu[a.kind] - thuTu[b.kind]) || (b.val - a.val));
+  const nVp = new Set(ds.map(a=>a.emp.id)).size;
+  tgTom('tgTomCb', nVp ? `⚠ ${nVp} người vượt hạn mức` : '✓ Không ai vượt hạn mức', nVp ? 'xau' : 'tot');
   $('all3LimitRule').textContent = `Tháng ${pad(ref.getMonth() + 1)}/${ref.getFullYear()} · Ngày >${OT_VI_PHAM.ngay}h · Tuần >${OT_VI_PHAM.tuan}h · Tháng >${OT_VI_PHAM.thang}h · Năm ≥${OT_VI_PHAM.nam}h`;
   $('all3Limit').innerHTML = ds.length
     ? `<thead><tr><th>Họ tên</th><th>Kho</th><th>Vi phạm</th><th>Chi tiết</th><th style="text-align:right">Số giờ</th><th style="text-align:right">Quy định</th></tr></thead>
@@ -5303,8 +5396,10 @@ function renderAll3ViPham(ref){
 const KHO_MAU = { vai:'#2368b1', phulieu:'#208b72', thanhpham:'#d07514' };
 function renderAll3Ton24(){
   const box = $('all3Ton24'); if(!box) return;
+  let tongTon = 0;
   box.innerHTML = WAREHOUSES.map(w=>{
     const ds = (typeof tpDsTonTren === 'function') ? tpDsTonTren(w.id, 24) : [];
+    tongTon += ds.length;
     return `<div class="ton24" style="--kho:${KHO_MAU[w.id] || 'var(--blue)'}">
       <div class="ton24-hd"><span class="sw"></span><b>${esc(khoName(w.id))}</b><span class="dem">${ds.length} người</span></div>
       ${ds.length ? `<ol class="ton24-ds">${ds.map(x=>`<li><span class="ten">${esc(x.e.name)}${maSoDuoiTen(x.e)}</span>
@@ -5312,6 +5407,7 @@ function renderAll3Ton24(){
         : `<p class="empty-msg">Không ai tồn phép trên 24h.</p>`}
     </div>`;
   }).join('');
+  tgTom('tgTomPt', tongTon ? `${tongTon} người tồn phép trên 24h` : '✓ Không ai tồn phép trên 24h', tongTon ? 'vua' : 'tot');
 }
 
 // ---------------------------------------------------------------------
@@ -5479,6 +5575,8 @@ function renderOtChart(){
   });
   wrap.onmouseleave = ()=>{ tip.hidden = true; wrap.querySelectorAll('.otc-band').forEach(x=>x.classList.remove('on')); };
 
+  const mT = OTC_THANG.find(m=>S.trangThai(m) === 'nay');
+  if(mT) tgTom('tgTomOtc', `${otcTenThang(mT)} (đến hôm nay): ${fmtHours(khos.reduce((t, k)=>t + S.tong[k][mT], 0))} · ${khos.reduce((t, k)=>t + (S.nguoi[k][mT] || 0), 0)} người`);
   $('otcNote').textContent = OTC_MODE === 'bq'
     ? 'Bình quân = tổng giờ tăng ca của kho ÷ số người của kho trong tháng đó. Tháng chưa tới để trống.'
     : 'Tính theo kho hiện tại của từng người. Tháng chưa tới để trống.';
@@ -5526,9 +5624,13 @@ function ovBoardRows(khoId){
             }, 0);
       }
       return { label:r.name, target, people };
-    });
+    }).concat(khoThaiSan(khoId).length ? [{ label:'Thai sản', target:null,
+      people: khoThaiSan(khoId).map(e=>({ emp:e, st:'ts', extra:'Nghỉ thai sản', hours:0 })) }] : []);
   }
-  const emps = khoEmployees(khoId).filter(e=>e.position !== 'Giám sát');
+  // người nghỉ thai sản vẫn hiện ở nhóm ca / vị trí của mình, ô màu hồng (st 'ts')
+  const tsIds = new Set(khoThaiSan(khoId).map(e=>e.id));
+  const trangThai = e => tsIds.has(e.id) ? { st:'ts', extra:'Nghỉ thai sản', hours:0 } : todayStatus(e.id, tKey);
+  const emps = khoEmployees(khoId).concat(khoThaiSan(khoId)).filter(e=>e.position !== 'Giám sát');
   const daXep = new Set(), rows = [];
   cfg.rows.forEach(r=>{
     const list = emps.filter(e=>{
@@ -5541,7 +5643,7 @@ function ovBoardRows(khoId){
     rows.push({
       label: cfg.theoCa ? `${r.shift} — ${r.pos}` : r.pos,
       target: r.target,
-      people: list.map(e=>({ emp:e, ...todayStatus(e.id, tKey) })),
+      people: list.map(e=>({ emp:e, ...trangThai(e) })),
     });
   });
   // Người chưa khớp nhóm cấu hình -> tự gom thành dòng riêng theo "Ca — Vị trí".
@@ -5559,14 +5661,15 @@ function ovBoardRows(khoId){
     });
     [...nhom.keys()].sort().forEach(lb=>rows.push({
       label: lb, target: null, tuDong: true,
-      people: nhom.get(lb).map(e=>({ emp:e, ...todayStatus(e.id, tKey) })),
+      people: nhom.get(lb).map(e=>({ emp:e, ...trangThai(e) })),
     }));
   }
   return rows;
 }
-const ST_LABEL_OV = { go:'Đi làm', off:'Nghỉ cả ngày', som:'Về sớm', muon:'Đi muộn' };
+const ST_LABEL_OV = { go:'Đi làm', off:'Nghỉ cả ngày', som:'Về sớm', muon:'Đi muộn', ts:'Nghỉ thai sản' };
 function renderAll3Boards(){
   const box = $('all3Boards'); if(!box) return;
+  const tg = { tong:0, go:0, off:0, tre:0 };
   box.innerHTML = WAREHOUSES.map(w=>{
     let rows = ovBoardRows(w.id);
     // Giám sát: 1 dòng riêng trên cùng — số người của kho tính đủ cả giám sát
@@ -5576,9 +5679,10 @@ function renderAll3Boards(){
       <div class="ovempty">Chưa thiết lập nhóm ca &amp; vị trí cho kho này.</div></div>`;
     const all = rows.reduce((a,r)=>a.concat(r.people), []);
     const dem = st => all.filter(p=>p.st === st).length;
+    tg.tong += all.length; tg.go += dem('go'); tg.off += dem('off'); tg.tre += dem('muon') + dem('som');
     return `<div class="ovkho">
       <h3>${w.icon}<span>${esc(w.name)}</span>
-        <span class="sub">${all.length} người · đi làm ${dem('go')}${dem('muon')?` · muộn ${dem('muon')}`:''}${dem('som')?` · về sớm ${dem('som')}`:''}${dem('off')?` · nghỉ ${dem('off')}`:''}</span>
+        <span class="sub">${all.length} người · đi làm ${dem('go')}${dem('ts')?` · thai sản ${dem('ts')}`:''}${dem('muon')?` · muộn ${dem('muon')}`:''}${dem('som')?` · về sớm ${dem('som')}`:''}${dem('off')?` · nghỉ ${dem('off')}`:''}</span>
       </h3>
       ${rows.map(r=>{
         const sorted = r.people.slice().sort((a,b)=>ST_ORDER[a.st] - ST_ORDER[b.st]);
@@ -5595,6 +5699,7 @@ function renderAll3Boards(){
       }).join('')}
     </div>`;
   }).join('');
+  tgTom('tgTomNs', `${tg.tong} người · đi làm ${tg.go + tg.tre}${tg.tre ? ` (muộn / về sớm ${tg.tre})` : ''}${tg.off ? ` · nghỉ ${tg.off}` : ''}`, tg.off ? 'vua' : '');
 }
 
 // Việc sắp tới của 1 kho: lịch họp/sự kiện + chuyến gia công + ghi chú nhắc việc
@@ -5656,7 +5761,7 @@ function posRowHtml(label, people){
     <div class="poslabel">${esc(label)}<span class="cnt">${people.length} người${off?` · nghỉ ${off}`:''}</span></div>
     <div class="sqwrap">${sq}</div></div>`;
 }
-const ST_ORDER = { go:0, muon:1, som:2, off:3 };   // xanh -> vàng -> hồng -> đỏ
+const ST_ORDER = { go:0, muon:1, som:2, off:3, ts:4 };   // xanh lá -> vàng nhạt -> cam nhạt -> đỏ -> hồng (thai sản)
 function posRowHtml2(label, people, posId, canEdit){
   const off = people.filter(p=>p.st==='off').length;
   const sorted = people.slice().sort((a,b)=>(ST_ORDER[a.st]-ST_ORDER[b.st]) || a.emp.name.localeCompare(b.emp.name,'vi'));
@@ -6919,7 +7024,7 @@ function rotBoNguoi(khoId, id){
 //     (đi sau tất cả mọi người, không làm đổi người đang trực)
 function rotThemNguoi(khoId, e){
   const K = KHO[khoId];
-  if(!K || !K.rotation || !e || e.nghiViec || e.diHoTro || e.position === 'Giám sát') return [];
+  if(!K || !K.rotation || !e || e.nghiViec || e.diHoTro || e.thaiSan || e.position === 'Giám sát') return [];
   const ghi = [];
   rotationPlan(K).forEach(p=>{
     const g = p.g;
@@ -8100,9 +8205,9 @@ function bo5sNguoiNghi(khoId, e){
     o.push({ loai:c.loai, key:c.key, nhan:c.nhan, con });
   });
   if(!o.length) return { n:0 };
-  const hoTro = !!e.diHoTro && !e.nghiViec;
+  const hoTro = !!(e.diHoTro || e.thaiSan) && !e.nghiViec;     // vắng dài hạn: giữ chỗ cho chính người đó
   K.cho5s = (K.cho5s || []).filter(x=>x.id !== e.id)
-    .concat(Object.assign({ id:e.id, ten, ngay:e.nghiViec || e.diHoTro || todayKey(), o }, hoTro ? { hoTro:true } : {}));
+    .concat(Object.assign({ id:e.id, ten, ngay:e.nghiViec || e.diHoTro || e.thaiSan || todayKey(), o }, hoTro ? { hoTro:true } : {}));
   return { n:o.length };
 }
 
@@ -8111,7 +8216,7 @@ function bo5sNguoiNghi(khoId, e){
 // Trả về null nếu không có gì để nhận, ngược lại { cua: tên người cũ, nhan: [nhãn các ô đã nhận] }
 function nhan5sNguoiMoi(khoId, e, idNghi){
   const K = KHO[khoId];
-  if(!K || !e || e.nghiViec || e.diHoTro || e.position === 'Giám sát' || !(K.cho5s || []).length) return null;
+  if(!K || !e || e.nghiViec || e.diHoTro || e.thaiSan || e.position === 'Giám sát' || !(K.cho5s || []).length) return null;
   const hang = K.cho5s.slice().sort((a, b)=>String(a.ngay).localeCompare(String(b.ngay)));
   // người mới chỉ nhận ô của người NGHỈ VIỆC; ô của người đi hỗ trợ giữ cho chính họ
   const x = idNghi ? hang.find(h=>h.id === idNghi) : hang.find(h=>!h.hoTro);
@@ -10440,62 +10545,13 @@ async function hoanTacNghiViec(e){
   await saveHr(); if(ghi.length || s5) await saveKho();
   return ghi.concat(s5 && s5.nhan.length ? [`5S: nhận lại ${s5.nhan.length} ô`] : []);
 }
-// ---- ĐI HỖ TRỢ (dài hạn, không biết bao lâu, chắc chắn quay lại) ----
-// Giống nghỉ việc: cắt khỏi danh sách / số lượng kho (khoEmployees bỏ người có e.diHoTro), bỏ trống
-// chỗ ở phân công, Đổi ca, Hỗ trợ / KK và gỡ tên khỏi ô 5S. Khác: ô 5S được GIỮ CHỖ cho chính
-// người đó; bảng công vẫn có tên nhưng từ ngày đi tính 0h (dangDiHoTro); Hoàn tác lúc nào cũng
-// được — chọn ngày quay lại làm, đợt vừa đi ghi vào e.hoTroLs để bảng công tháng cũ vẫn đúng.
-function xacNhanDiHoTro(e){
-  return new Promise(res=>{
-    const tp = e.warehouseId === 'thanhpham';
-    const m = openModal('Đi hỗ trợ', `
-      <div class="nv-xn-ten"><b>${esc(e.name)}</b><span>${esc(khoName(e.warehouseId))} · ${esc(e.shift||'')}${e.position?' - '+esc(e.position):''}</span></div>
-      <label class="field-label">Ngày bắt đầu đi hỗ trợ <span style="font-weight:600;color:var(--ink-soft)">— từ ngày này bảng công tính 0h</span></label>
-      <input type="date" data-ngay value="${todayKey()}" max="${todayKey()}">
-      <label class="field-label">Hỗ trợ ở đâu <span style="font-weight:600;color:var(--ink-soft)">— không bắt buộc</span></label>
-      <input type="text" data-noi placeholder="VD: Kho vải, xưởng may 2…">
-      <ul class="nv-xn-ds">
-        <li>Ẩn khỏi phân công, 5S, tăng ca / nghỉ phép của ${esc(khoName(e.warehouseId).toLowerCase())} — <b>vẫn tính trong Tổng nhân sự</b>; chuyển vào mục <b>Đang đi hỗ trợ — chờ quay lại</b>.</li>
-        <li>Bảng công Excel: từ ngày bắt đầu đi, mỗi ngày tính <b>0h</b> (tới ngày quay lại).</li>
-        <li>Bảng phân công, Đổi ca${tp ? ', Hỗ trợ / KK' : ''}: tự bỏ trống chỗ của người này.</li>
-        <li>5S: gỡ tên khỏi các ô đang phụ trách; các ô đó giữ chỗ, quay lại sẽ nhận lại (người mới không nhận).</li>
-        <li>Khi quay lại: bấm <b>↺ Hoàn tác</b>, chọn ngày quay lại làm — trở lại kho như bình thường.</li>
-      </ul>
-      <div class="row2" style="margin-top:16px;"><button class="ghost" data-no>Hủy</button><button class="ht-btn dac" data-yes>Xác nhận</button></div>`);
-    m.body.querySelector('[data-no]').onclick = ()=>{ m.close(); res(null); };
-    m.body.querySelector('[data-yes]').onclick = ()=>{
-      const ngay = m.body.querySelector('[data-ngay]').value;
-      if(!ngay){ toast('⚠ Chọn ngày bắt đầu đi hỗ trợ'); return; }
-      if(ngay > todayKey()){ toast('⚠ Ngày bắt đầu không được sau hôm nay'); return; }
-      m.close(); res({ ngay, noi: m.body.querySelector('[data-noi]').value.trim() });
-    };
-  });
-}
-function xacNhanQuayLai(e){
-  return new Promise(res=>{
-    const m = openModal('Hỗ trợ xong — quay lại kho', `
-      <div class="nv-xn-ten ht"><b>${esc(e.name)}</b><span>Đi hỗ trợ từ ${fmtVN(fromKey(e.diHoTro))}${e.diHoTroNoi ? ' · ' + esc(e.diHoTroNoi) : ''}</span></div>
-      <label class="field-label">Ngày quay lại làm ở kho <span style="font-weight:600;color:var(--ink-soft)">— từ ngày này bảng công tính bình thường</span></label>
-      <input type="date" data-ngay value="${todayKey()}" min="${e.diHoTro}" max="${todayKey()}">
-      <ul class="nv-xn-ds">
-        <li>Bảng công: các ngày từ ${fmtVN(fromKey(e.diHoTro))} tới trước ngày quay lại vẫn giữ <b>0h</b>.</li>
-        <li>Bấm nhầm "Hỗ trợ"? Chọn ngày quay lại = ngày bắt đầu đi (${fmtVN(fromKey(e.diHoTro))}) — coi như chưa từng đi.</li>
-        <li>Trở lại danh sách kho, Đổi ca; nhận lại các ô 5S cũ (ô nào đã có người sửa tay thì để yên).</li>
-      </ul>
-      <div class="row2" style="margin-top:16px;"><button class="ghost" data-no>Hủy</button><button class="ht-btn dac" data-yes>Quay lại kho</button></div>`);
-    m.body.querySelector('[data-no]').onclick = ()=>{ m.close(); res(null); };
-    m.body.querySelector('[data-yes]').onclick = ()=>{
-      const ngay = m.body.querySelector('[data-ngay]').value;
-      if(!ngay){ toast('⚠ Chọn ngày quay lại làm'); return; }
-      if(ngay < e.diHoTro){ toast('⚠ Ngày quay lại không được trước ngày bắt đầu đi'); return; }
-      if(ngay > todayKey()){ toast('⚠ Ngày quay lại không được sau hôm nay'); return; }
-      m.close(); res(ngay);
-    };
-  });
-}
-async function choDiHoTro(e, ngay, noi){
-  e.diHoTro = ngay;
-  if(noi) e.diHoTroNoi = noi; else delete e.diHoTroNoi;
+// ---- VẮNG DÀI HẠN: ĐI HỖ TRỢ (e.diHoTro) · THAI SẢN (e.thaiSan) ----
+// Cả hai: VẪN tính trong Tổng nhân sự, nhưng ẩn khỏi danh sách hằng ngày (khoEmployees bỏ ra): phân
+// công, Đổi ca, Hỗ trợ / KK, 5S (ô 5S GIỮ CHỖ cho chính người đó), tăng ca / nghỉ phép. Bảng công từ
+// ngày bắt đầu tính 0h. Hoàn tác lúc nào cũng được — chọn ngày quay lại làm; đợt vừa vắng ghi vào
+// e.hoTroLs / e.thaiSanLs để bảng công tháng cũ vẫn đúng.
+// Khác nhau: thai sản HIỆN ô màu hồng ở "Nhân sự theo ca & vị trí" (Tổng quan 3 kho), đi hỗ trợ thì không.
+async function vangGoKhoi(e, ngay){
   WAREHOUSES.forEach(w=>{
     const K = KHO[w.id];
     if(!K.current) return;
@@ -10506,7 +10562,7 @@ async function choDiHoTro(e, ngay, noi){
   });
   const ghi = typeof rotBoNguoi === 'function' ? rotBoNguoi(e.warehouseId, e.id) : [];
   if(ghi.length) applyRotation(e.warehouseId);
-  // Hỗ trợ / KK: gỡ khỏi các buổi từ ngày đi trở đi (hkBoNguoi giữ các buổi <= ngày truyền vào)
+  // Hỗ trợ / KK: gỡ khỏi các buổi từ ngày bắt đầu trở đi (hkBoNguoi giữ các buổi <= ngày truyền vào)
   const truoc = new Date(fromKey(ngay)); truoc.setDate(truoc.getDate() - 1);
   const hk = (e.warehouseId === 'thanhpham' && typeof hkBoNguoi === 'function') ? hkBoNguoi(e.id, toKey(truoc)) : 0;
   // 5S: gỡ tên, ô giữ chỗ cho chính người này (thay-nguoi-5s.js)
@@ -10515,18 +10571,99 @@ async function choDiHoTro(e, ngay, noi){
   return ghi.concat(hk ? [`Hỗ trợ / KK: gỡ khỏi ${hk} buổi đã xếp`] : [])
     .concat(s5.n ? [`5S: tạm gỡ ${s5.n} ô`] : s5.trung ? ['5S: trùng tên ngắn với người khác — sửa sơ đồ 5S bằng tay'] : []);
 }
-async function hoanTacDiHoTro(e, ngayQuayLai){
-  // đợt vừa đi: từ ngày đi tới hôm trước ngày quay lại (quay lại đúng ngày đi = bấm nhầm, không ghi)
-  if(ngayQuayLai > e.diHoTro){
-    const den = new Date(fromKey(ngayQuayLai)); den.setDate(den.getDate() - 1);
-    e.hoTroLs = (e.hoTroLs || []).concat(Object.assign({ tu: e.diHoTro, den: toKey(den) }, e.diHoTroNoi ? { noi: e.diHoTroNoi } : {}));
-  }
-  delete e.diHoTro; delete e.diHoTroNoi;
+async function vangTraVe(e){
   const ghi = typeof rotThemNguoi === 'function' ? rotThemNguoi(e.warehouseId, e) : [];
   if(ghi.length) applyRotation(e.warehouseId);          // trả ca / vị trí đúng lịch tuần này
   const s5 = typeof nhan5sNguoiMoi === 'function' ? nhan5sNguoiMoi(e.warehouseId, e, e.id) : null;   // lấy lại ô 5S của mình
   await saveHr(); if(ghi.length || s5) await saveKho();
   return ghi.concat(s5 && s5.nhan.length ? [`5S: nhận lại ${s5.nhan.length} ô`] : []);
+}
+// Ghi đợt vắng vừa xong (từ ngày bắt đầu tới hôm trước ngày quay lại); quay lại đúng ngày bắt đầu = bấm nhầm
+function vangGhiDot(e, truong, ls, ngayQuayLai, them){
+  if(ngayQuayLai > e[truong]){
+    const den = new Date(fromKey(ngayQuayLai)); den.setDate(den.getDate() - 1);
+    e[ls] = (e[ls] || []).concat(Object.assign({ tu: e[truong], den: toKey(den) }, them || {}));
+  }
+}
+// Hộp hỏi ngày bắt đầu (+ ô ghi chú tuỳ chọn)
+function vangHoiBatDau(e, cfg){
+  return new Promise(res=>{
+    const tp = e.warehouseId === 'thanhpham';
+    const m = openModal(cfg.tieuDe, `
+      <div class="nv-xn-ten ${cfg.cls}"><b>${esc(e.name)}</b><span>${esc(khoName(e.warehouseId))}${e.maSo ? ' · ' + esc(e.maSo) : ''}</span></div>
+      <label class="field-label">${cfg.nhanNgay} <span style="font-weight:600;color:var(--ink-soft)">— từ ngày này bảng công tính 0h</span></label>
+      <input type="date" data-ngay value="${todayKey()}" max="${todayKey()}">
+      <label class="field-label">${cfg.nhanGc} <span style="font-weight:600;color:var(--ink-soft)">— không bắt buộc</span></label>
+      <input type="text" data-noi placeholder="${cfg.goiYGc}">
+      <ul class="nv-xn-ds">
+        <li><b>Vẫn tính trong Tổng nhân sự</b>${cfg.hienTongQuan ? ' và hiện ô <b>màu hồng</b> ở "Nhân sự theo ca &amp; vị trí" (Tổng quan 3 kho)' : ''}; ẩn khỏi phân công, 5S, Đổi ca${tp ? ', Hỗ trợ / KK' : ''}, tăng ca / nghỉ phép.</li>
+        <li>Bảng công Excel: từ ngày bắt đầu, mỗi ngày tính <b>0h</b> (tới ngày quay lại).</li>
+        <li>5S: gỡ tên khỏi các ô đang phụ trách; các ô đó giữ chỗ, quay lại sẽ nhận lại (người mới không nhận).</li>
+        <li>Khi quay lại: bấm <b>↺ Hoàn tác</b>, chọn ngày đi làm lại — trở lại kho như bình thường.</li>
+      </ul>
+      <div class="row2" style="margin-top:16px;"><button class="ghost" data-no>Hủy</button><button class="${cfg.nut} dac" data-yes>Xác nhận</button></div>`);
+    m.body.querySelector('[data-no]').onclick = ()=>{ m.close(); res(null); };
+    m.body.querySelector('[data-yes]').onclick = ()=>{
+      const ngay = m.body.querySelector('[data-ngay]').value;
+      if(!ngay){ toast('⚠ Chọn ' + cfg.nhanNgay.toLowerCase()); return; }
+      if(ngay > todayKey()){ toast('⚠ Ngày bắt đầu không được sau hôm nay'); return; }
+      m.close(); res({ ngay, noi: m.body.querySelector('[data-noi]').value.trim() });
+    };
+  });
+}
+// Hộp hỏi ngày quay lại làm
+function vangHoiQuayLai(e, cfg, tu, gc){
+  return new Promise(res=>{
+    const m = openModal(cfg.tieuDeVe, `
+      <div class="nv-xn-ten ${cfg.cls}"><b>${esc(e.name)}</b><span>${cfg.ten} từ ${fmtVN(fromKey(tu))}${gc ? ' · ' + esc(gc) : ''}</span></div>
+      <label class="field-label">Ngày đi làm lại ở kho <span style="font-weight:600;color:var(--ink-soft)">— từ ngày này bảng công tính bình thường</span></label>
+      <input type="date" data-ngay value="${todayKey()}" min="${tu}" max="${todayKey()}">
+      <ul class="nv-xn-ds">
+        <li>Bảng công: các ngày từ ${fmtVN(fromKey(tu))} tới trước ngày đi làm lại vẫn giữ <b>0h</b>.</li>
+        <li>Bấm nhầm? Chọn ngày đi làm lại = ngày bắt đầu (${fmtVN(fromKey(tu))}) — coi như chưa từng vắng.</li>
+        <li>Trở lại danh sách kho, Đổi ca; nhận lại các ô 5S cũ (ô nào đã có người sửa tay thì để yên).</li>
+      </ul>
+      <div class="row2" style="margin-top:16px;"><button class="ghost" data-no>Hủy</button><button class="${cfg.nut} dac" data-yes>Đi làm lại</button></div>`);
+    m.body.querySelector('[data-no]').onclick = ()=>{ m.close(); res(null); };
+    m.body.querySelector('[data-yes]').onclick = ()=>{
+      const ngay = m.body.querySelector('[data-ngay]').value;
+      if(!ngay){ toast('⚠ Chọn ngày đi làm lại'); return; }
+      if(ngay < tu){ toast('⚠ Ngày đi làm lại không được trước ngày bắt đầu'); return; }
+      if(ngay > todayKey()){ toast('⚠ Ngày đi làm lại không được sau hôm nay'); return; }
+      m.close(); res(ngay);
+    };
+  });
+}
+const VANG_HOTRO = { tieuDe:'Đi hỗ trợ', tieuDeVe:'Hỗ trợ xong — quay lại kho', ten:'Đi hỗ trợ', cls:'ht', nut:'ht-btn',
+  nhanNgay:'Ngày bắt đầu đi hỗ trợ', nhanGc:'Hỗ trợ ở đâu', goiYGc:'VD: Kho vải, xưởng may 2…', hienTongQuan:false };
+const VANG_THAISAN = { tieuDe:'Nghỉ thai sản', tieuDeVe:'Hết thai sản — đi làm lại', ten:'Nghỉ thai sản', cls:'ts', nut:'ts-btn',
+  nhanNgay:'Ngày bắt đầu nghỉ thai sản', nhanGc:'Ghi chú', goiYGc:'VD: dự kiến đi làm lại tháng 4/2027', hienTongQuan:true };
+
+// Đi hỗ trợ
+const xacNhanDiHoTro = e => vangHoiBatDau(e, VANG_HOTRO);
+const xacNhanQuayLai = e => vangHoiQuayLai(e, VANG_HOTRO, e.diHoTro, e.diHoTroNoi);
+async function choDiHoTro(e, ngay, noi){
+  e.diHoTro = ngay;
+  if(noi) e.diHoTroNoi = noi; else delete e.diHoTroNoi;
+  return vangGoKhoi(e, ngay);
+}
+async function hoanTacDiHoTro(e, ngayQuayLai){
+  vangGhiDot(e, 'diHoTro', 'hoTroLs', ngayQuayLai, e.diHoTroNoi ? { noi: e.diHoTroNoi } : null);
+  delete e.diHoTro; delete e.diHoTroNoi;
+  return vangTraVe(e);
+}
+// Thai sản
+const xacNhanThaiSan = e => vangHoiBatDau(e, VANG_THAISAN);
+const xacNhanHetThaiSan = e => vangHoiQuayLai(e, VANG_THAISAN, e.thaiSan, e.thaiSanGc);
+async function choThaiSan(e, ngay, gc){
+  e.thaiSan = ngay;
+  if(gc) e.thaiSanGc = gc; else delete e.thaiSanGc;
+  return vangGoKhoi(e, ngay);
+}
+async function hoanTacThaiSan(e, ngayQuayLai){
+  vangGhiDot(e, 'thaiSan', 'thaiSanLs', ngayQuayLai, e.thaiSanGc ? { gc: e.thaiSanGc } : null);
+  delete e.thaiSan; delete e.thaiSanGc;
+  return vangTraVe(e);
 }
 
 function manageEmpModal(){
@@ -10534,17 +10671,22 @@ function manageEmpModal(){
   const m = openModal('Quản lý nhân sự', `<div id="mEmpBox"></div>`);
   const draw = ()=>{
     const all = HR.employees.filter(e=>e.warehouseId===khoId);
-    const list = all.filter(e=>!e.nghiViec && !e.diHoTro && !e.choNghiViec);
+    const list = all.filter(e=>!e.nghiViec && !e.diHoTro && !e.thaiSan && !e.choNghiViec);
     // chờ nghỉ việc: chưa cắt tên — vẫn tính vào danh sách / số lượng kho
     const choNghi = all.filter(e=>e.choNghiViec && !e.nghiViec).sort((a,b)=>a.choNghiViec.localeCompare(b.choNghiViec));
     const dongChoNghi = e=>`<div class="rowline nv-row"><div><b>${esc(e.name)}</b>
-        <div class="nv-sub">${e.maSo?esc(e.maSo)+' · ':''}${esc(e.shift||'')}${e.position?' - '+esc(e.position):''} · Ngày làm cuối ${fmtVN(fromKey(e.choNghiViec))}${e.choNghiViec < todayKey() ? ' · <b class="nv-qua">đã qua ngày làm cuối — bấm Cắt tên</b>' : ''}</div></div>
+        <div class="nv-sub">${e.maSo?esc(e.maSo)+' · ':''}Ngày làm cuối ${fmtVN(fromKey(e.choNghiViec))}${e.choNghiViec < todayKey() ? ' · <b class="nv-qua">đã qua ngày làm cuối — bấm Cắt tên</b>' : ''}</div></div>
         <div style="display:flex;gap:6px"><button class="ghost sm nv-undo" data-bocho="${e.id}" title="Không nghỉ nữa — bỏ khỏi mục Chờ nghỉ việc">↺ Hoàn tác</button>
         <button class="sm nv-cat" data-catten="${e.id}" title="Cắt ngay khỏi danh sách và số lượng kho — công vẫn tính tới hết tháng">✂ Cắt tên</button></div></div>`;
     const ht = khoDiHoTro(khoId);
+    const ts = khoThaiSan(khoId);
+    const dongThaiSan = e=>`<div class="rowline ts-row"><div><b>${esc(e.name)}</b>
+        <div class="ts-sub">${e.maSo?esc(e.maSo)+' · ':''}Nghỉ từ ${fmtVN(fromKey(e.thaiSan))}${e.thaiSanGc ? ' · ' + esc(e.thaiSanGc) : ''} · bảng công 0h</div>
+        ${(c5 => c5 ? `<div class="ts-sub">5S giữ chỗ: ${esc(c5.o.map(x=>x.nhan).join(', '))}</div>` : '')(typeof cho5sCua === 'function' && cho5sCua(e.warehouseId, e.id))}</div>
+        <div style="display:flex;gap:6px"><button class="ghost sm ts-undo" data-vets="${e.id}" title="Hết thai sản — đi làm lại">↺ Hoàn tác</button></div></div>`;
     const soNgayDi = k => Math.max(0, Math.round((fromKey(todayKey()) - fromKey(k)) / 864e5));
     const dongHoTro = e=>`<div class="rowline ht-row"><div><b>${esc(e.name)}</b>
-        <div class="ht-sub">${e.maSo?esc(e.maSo)+' · ':''}${esc(e.shift||'')}${e.position?' - '+esc(e.position):''}</div>
+${e.maSo ? `        <div class="ht-sub">${esc(e.maSo)}</div>` : ''}
         <div class="ht-sub">Đi từ ${fmtVN(fromKey(e.diHoTro))} · ${soNgayDi(e.diHoTro)} ngày${e.diHoTroNoi ? ' · ' + esc(e.diHoTroNoi) : ''} · bảng công 0h</div>
         ${(c5 => c5 ? `<div class="ht-sub ht-5s">5S giữ chỗ: ${esc(c5.o.map(s=>s.nhan).join(', '))}</div>` : '')(typeof cho5sCua === 'function' && cho5sCua(e.warehouseId, e.id))}</div>
         <div style="display:flex;gap:6px"><button class="ghost sm ht-undo" data-veht="${e.id}" title="Người này đã quay lại — đưa trở lại danh sách kho">↺ Hoàn tác</button></div></div>`;
@@ -10561,14 +10703,17 @@ function manageEmpModal(){
     $('mEmpBox').innerHTML = `
       <label class="field-label">Kho</label>
       <select id="mEmpKho">${WAREHOUSES.map(w=>`<option value="${w.id}" ${w.id===khoId?'selected':''}>${w.name}</option>`).join('')}</select>
-      <div style="font-size:12px;color:#888;margin:8px 0">${list.length + choNghi.length + ht.length} nhân sự${choNghi.length || ht.length ? ` (gồm ${[choNghi.length ? choNghi.length + ' chờ nghỉ việc' : '', ht.length ? ht.length + ' đang đi hỗ trợ' : ''].filter(Boolean).join(', ')})` : ''}${cho.length ? ` · ${cho.length} đã cắt tên trong tháng` : ''}</div>
-      ${list.map(e=>`<div class="rowline"><div><b>${esc(e.name)}</b><div style="font-size:11px;color:#888">${e.maSo?esc(e.maSo)+' · ':''}${esc(e.shift||'')}${e.position?' - '+esc(e.position):''} · OT đầu kỳ ${fmtHours(Number(e.otOpeningBalance)||0)}</div></div>
-        <div class="nv-nut"><button class="ht-btn sm" data-ht="${e.id}" title="Đi hỗ trợ nơi khác — cắt khỏi danh sách kho, quay lại thì Hoàn tác">Hỗ trợ</button><button class="nv-btn sm" data-nv="${e.id}" title="Chọn ngày làm cuối — chuyển vào mục Chờ nghỉ việc (vẫn tính số lượng tới khi Cắt tên)">Nghỉ việc</button><button class="secondary sm" data-ee="${e.id}">Sửa</button><button class="danger sm" data-de="${e.id}">✕</button></div></div>`).join('')}
+      <div style="font-size:12px;color:#888;margin:8px 0">${list.length + choNghi.length + ht.length + ts.length} nhân sự${choNghi.length || ht.length || ts.length ? ` (gồm ${[choNghi.length ? choNghi.length + ' chờ nghỉ việc' : '', ht.length ? ht.length + ' đang đi hỗ trợ' : '', ts.length ? ts.length + ' nghỉ thai sản' : ''].filter(Boolean).join(', ')})` : ''}${cho.length ? ` · ${cho.length} đã cắt tên trong tháng` : ''}</div>
+      ${list.map(e=>`<div class="rowline"><div><b>${esc(e.name)}</b>${e.maSo ? `<div style="font-size:11px;color:#888">${esc(e.maSo)}</div>` : ''}</div>
+        <div class="nv-nut"><button class="ts-btn sm" data-ts="${e.id}" title="Nghỉ thai sản — vẫn tính tổng nhân sự, ẩn khỏi phân công / 5S / Đổi ca…">Thai sản</button><button class="ht-btn sm" data-ht="${e.id}" title="Đi hỗ trợ nơi khác — cắt khỏi danh sách kho, quay lại thì Hoàn tác">Hỗ trợ</button><button class="nv-btn sm" data-nv="${e.id}" title="Chọn ngày làm cuối — chuyển vào mục Chờ nghỉ việc (vẫn tính số lượng tới khi Cắt tên)">Nghỉ việc</button><button class="secondary sm" data-ee="${e.id}">Sửa</button><button class="danger sm" data-de="${e.id}">✕</button></div></div>`).join('')}
       <div class="btnrow" style="margin-top:14px;"><button id="mEmpAdd">+ Thêm nhân viên vào ${esc(khoName(khoId))}</button></div>
       ${(k => k ? `<div class="nv-ghi" style="margin-top:6px">Người mới thêm vào sẽ nhận ${k.o.length} ô 5S của <b>${esc(k.ten)}</b>.</div>` : '')(typeof cho5sKeTiep === 'function' && cho5sKeTiep(khoId))}
       ${choNghi.length ? `<div class="nv-hd">CHỜ NGHỈ VIỆC <span>${choNghi.length}</span></div>
         <div class="nv-ghi">Vẫn trong danh sách và số lượng kho, tên hiện màu đen ở danh sách hằng ngày. Bấm ✂ Cắt tên để bỏ hẳn (công vẫn tính tới hết tháng).</div>
         ${choNghi.map(dongChoNghi).join('')}` : ''}
+      ${ts.length ? `<div class="ts-hd">ĐANG NGHỈ THAI SẢN <span>${ts.length}</span></div>
+        <div class="nv-ghi">Vẫn tính trong Tổng nhân sự và hiện ô hồng ở Tổng quan 3 kho; ẩn khỏi phân công, 5S, Đổi ca, Hỗ trợ / KK, tăng ca / nghỉ phép; bảng công 0h. Đi làm lại thì bấm ↺ Hoàn tác.</div>
+        ${ts.map(dongThaiSan).join('')}` : ''}
       ${ht.length ? `<div class="ht-hd">ĐANG ĐI HỖ TRỢ — CHỜ QUAY LẠI <span>${ht.length}</span></div>
         <div class="nv-ghi">Vẫn tính trong Tổng nhân sự, nhưng ẩn khỏi phân công, 5S, tăng ca / nghỉ phép; bảng công tính 0h từ ngày đi. Quay lại thì bấm ↺ Hoàn tác.</div>
         ${ht.map(dongHoTro).join('')}` : ''}
@@ -10598,6 +10743,22 @@ function manageEmpModal(){
       const ghi = await catTenNghiViec(e);
       draw(); render();
       toast(`✂ Đã cắt tên ${e.name}` + (ghi.length ? ' · ' + ghi.join('; ') : ''));
+    });
+    $('mEmpBox').querySelectorAll('[data-ts]').forEach(b=>b.onclick=async ()=>{
+      const e = empById(b.dataset.ts);
+      const kq = await xacNhanThaiSan(e);
+      if(!kq) return;
+      const ghi = await choThaiSan(e, kq.ngay, kq.noi);
+      draw(); render();
+      toast(`✓ ${e.name} nghỉ thai sản từ ${fmtVN(fromKey(kq.ngay))}` + (ghi.length ? ' · ' + ghi.join('; ') : ''));
+    });
+    $('mEmpBox').querySelectorAll('[data-vets]').forEach(b=>b.onclick=async ()=>{
+      const e = empById(b.dataset.vets);
+      const ngay = await xacNhanHetThaiSan(e);
+      if(!ngay) return;
+      const ghi = await hoanTacThaiSan(e, ngay);
+      draw(); render();
+      toast(`↺ ${e.name} đã đi làm lại` + (ghi.length ? ' · ' + ghi.join('; ') : ''));
     });
     $('mEmpBox').querySelectorAll('[data-ht]').forEach(b=>b.onclick=async ()=>{
       const e = empById(b.dataset.ht);
@@ -10938,8 +11099,8 @@ function renderCalendar(){
     const has = lv.length + ot.length + ev.length + gc.length > 0;
     const tags = [];
     if(nghi.length) tags.push(`<span class="cal-tag" style="background:#d7263d">${nghi.length===1?esc(empName(nghi[0].employeeId).split(' ').slice(-1)[0]):nghi.length+' nghỉ'}</span>`);
-    if(som.length) tags.push(`<span class="cal-tag" style="background:#2fae59">${som.length}S</span>`);
-    if(muon.length) tags.push(`<span class="cal-tag" style="background:#f5b400">${muon.length}M</span>`);
+    if(som.length) tags.push(`<span class="cal-tag" style="background:var(--st-som); color:var(--st-som-ink)">${som.length}S</span>`);
+    if(muon.length) tags.push(`<span class="cal-tag" style="background:var(--st-muon); color:var(--st-muon-ink)">${muon.length}M</span>`);
     if(ot.length) tags.push(`<span class="cal-tag" style="background:#2368b1">${new Set(ot.map(r=>r.employeeId)).size}-OT</span>`);
     // Gia công: in kèm 2 phiên bản chữ trong cùng 1 nhãn tím.
     // CSS quyết định hiện cái nào: máy tính -> mã đầy đủ (OSTESTẢI), điện thoại -> "OS".
@@ -11129,7 +11290,7 @@ function dungBangCong(khoId, ym){
   const dsKho = (khoId === 'ALL') ? WAREHOUSES.map(w=>w.id) : [khoId];
   // người đang làm + người đang đi hỗ trợ (vẫn là người của kho) + người đã cắt nghỉ trong tháng này
   // (vẫn tính công tới ngày làm việc cuối cùng)
-  const nvs = dsKho.flatMap(id => khoEmployees(id).concat(khoDiHoTro(id), khoNghiTrongThang(id, ym)).map(e=>({ ...e, _kho: khoName(id) })));
+  const nvs = dsKho.flatMap(id => khoEmployees(id).concat(khoDiHoTro(id), khoThaiSan(id), khoNghiTrongThang(id, ym)).map(e=>({ ...e, _kho: khoName(id) })));
   const { ot, lv } = gomGioTheoNgay();
   const CA = 8;                                        // giờ làm trong ca, mặc định 8
   const lam = x => Math.round(x * 100) / 100;          // làm tròn 2 số lẻ
@@ -11140,7 +11301,7 @@ function dungBangCong(khoId, ym){
     ngays.forEach(d=>{
       if(e.nghiViec && toKey(d) > e.nghiViec) return;      // sau ngày làm việc cuối cùng thì không tính
       if(e.choNghiViec && toKey(d) > e.choNghiViec) return; // chờ nghỉ việc (chưa cắt tên): cũng chỉ tới ngày làm cuối
-      if(dangDiHoTro(e, toKey(d))){                         // ngày đi hỗ trợ nơi khác: 0h
+      if(dangDiHoTro(e, toKey(d)) || dangThaiSan(e, toKey(d))){   // ngày đi hỗ trợ nơi khác / nghỉ thai sản: 0h
         rows.push({ ngay: new Date(d), maSo: e.maSo || '', ten: e.name, pos: cv.pos, ratio: cv.ratio,
                     normal: 0, ot: 0, leave: 0, tt: 0, kho: e._kho });
         return;
@@ -14412,6 +14573,7 @@ window.renderTraining = taoBoSuuTap({
   let CUR = new Date();              // mục hỗ trợ xem theo năm, kiểm kê xem theo quý
   let LOC_VIEC = null;               // đang lọc nhật ký theo loại việc nào
   let NK_THANG = null;               // nhật ký đang xem tháng nào; null = cả năm
+  const NK_MO = new Set();           // nhật ký: các tháng đang MỞ (mặc định thu gọn hết)
   let KK_NGAY = null;                // thứ Bảy đang thao tác ở mục kiểm kê
   let KK_CHI_HC = true;              // lưới kiểm kê chỉ hiện người ca hành chính
 
@@ -14702,8 +14864,10 @@ window.renderTraining = taoBoSuuTap({
       ${Object.keys(nhom).sort().reverse().map(t=>{
         const os = nhom[t].slice().reverse();
         const m = Number(t.slice(5,7)) - 1;
-        return `<div class="hk-nkthang">${THANG[m]} / ${t.slice(0,4)}<span class="sp"></span>
-            <span>${os.length} buổi · ${soLuot(os)} lượt${soGio(os) ? ' · ' + fmtHours(soGio(os)) : ''}</span></div>` +
+        // Mỗi tháng 1 khối thu gọn — bấm thanh tháng (mũi tên) để mở xem các buổi; đang lọc 1 tháng thì mở sẵn
+        return `<details class="hk-nkd" data-nkth="${t}"${NK_MO.has(t) || NK_THANG != null ? ' open' : ''}>
+          <summary class="hk-nkthang"><span class="mui">▸</span>${THANG[m]} / ${t.slice(0,4)}<span class="sp"></span>
+            <span>${os.length} buổi · ${soLuot(os)} lượt${soGio(os) ? ' · ' + fmtHours(soGio(os)) : ''}</span></summary>` +
           os.map(o=>{
             const b = o.b, d = fromKey(o.key);
             const lan = b.viec ? lanThu(o.key, o.i, b.viec, y) : 0;
@@ -14718,11 +14882,14 @@ window.renderTraining = taoBoSuuTap({
                 <button class="danger sm" data-hkxoa="${o.key}" data-hki="${o.i}" title="Xoá buổi">✕</button></div>
               ${b.gc ? `<div class="gc">Ghi chú: ${esc(b.gc)}</div>` : ''}
             </div>`;
-          }).join('');
+          }).join('') + `</details>`;
       }).join('')}
     </div>`;
 
     gan();
+    $('hkChinh').querySelectorAll('details.hk-nkd').forEach(d=> d.addEventListener('toggle', ()=>{
+      if(d.open) NK_MO.add(d.dataset.nkth); else NK_MO.delete(d.dataset.nkth);
+    }));
     $('hkChinh').querySelectorAll('[data-hksua]').forEach(b=>
       b.onclick = ()=>buoiHoTroModal(b.dataset.hksua, Number(b.dataset.hki)));
     $('hkChinh').querySelectorAll('[data-hkxoa]').forEach(b=> b.onclick = async ()=>{
