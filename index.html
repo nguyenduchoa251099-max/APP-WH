@@ -1753,7 +1753,12 @@
     transition:transform .12s, box-shadow .12s;}
   #tab-scan .sc-btn:hover{opacity:1; transform:translateY(-1px); box-shadow:0 5px 12px rgba(16,24,40,.18);}
   #tab-scan .sc-vtl{background:linear-gradient(135deg,#8b5cf6,#6d28d9);}
-  #tab-scan .sc-vtl.on{background:#fff; color:#6d28d9; box-shadow:inset 0 0 0 2px #6d28d9;}
+  /* nút quay lại SCAN OS: nằm đầu hàng nút, đẩy các nút khác sang phải */
+  #tab-scan .sc-act{flex:1 1 auto;}
+  #tab-scan .sc-back{margin-right:auto; background:#fff; color:#0b5a70; box-shadow:inset 0 0 0 2px #0e8fb0;}
+  #tab-scan .sc-back:hover{background:#e3f4f9;}
+  #tab-scan .sc-sb{background:#fff; color:#0b5a70; box-shadow:inset 0 0 0 2px #0e8fb0; font-size:20px; padding-left:14px; padding-right:14px; justify-content:center;}
+  #tab-scan .sc-sb:hover{background:#e3f4f9;}
   #tab-scan .sc-xuat{background:linear-gradient(135deg,#24557a,#173b57);}
   #tab-scan .sc-xoa{background:#fff; color:#b91c1c; box-shadow:inset 0 0 0 2px #ef4444;}
   #tab-scan .sc-xoa:hover{background:#fef2f2; box-shadow:inset 0 0 0 2px #dc2626, 0 4px 10px rgba(220,38,38,.18);}
@@ -1786,8 +1791,6 @@
   #tab-scan .sc-gc input{width:170px; font-family:var(--font); font-size:14px; font-weight:700; text-transform:none;}
   #tab-scan .sc-gc input::placeholder{color:#94b8cf;}
   #tab-scan .sc-gc:focus-within{box-shadow:0 0 0 3px #dcecf6;}
-  #tab-scan .sc-luot .h .gc{display:block; margin-top:2px; font-style:normal; color:#1f5f86; font-weight:700;}
-  #tab-scan .sc-vtbtn.khong b{font-family:var(--font); font-style:italic; font-size:13.5px;}
 
   /* ---------- 3 cột ---------- */
   #tab-scan .sc-main{display:grid; grid-template-columns:minmax(280px,1fr) minmax(330px,1.15fr) minmax(280px,1fr); gap:12px; align-items:start;}
@@ -1900,20 +1903,6 @@
   #tab-scan .ln.sai{color:#f87171;}
   #tab-scan .ln:first-child{background:rgba(255,255,255,.06);}
 
-  /* vị trí đã lưu */
-  #tab-scan .sc-vtbtn{display:flex; align-items:center; gap:6px; width:100%; text-align:left; margin-bottom:6px; padding:10px 12px;
-    background:#f5f0ff; color:#4c1d95; border:1px solid #ddd0fb; border-radius:9px; font-size:14px; font-weight:600;}
-  #tab-scan .sc-vtbtn b{font-family:var(--mono); font-size:15px;}
-  #tab-scan .sc-vtbtn small{margin-left:auto; font-size:11px; color:#7c6aa6;}
-  #tab-scan .sc-vtbtn:hover{background:#ede4fe; opacity:1;}
-  #tab-scan .sc-vtbtn.on{background:#6d28d9; color:#fff; border-color:#6d28d9;}
-  #tab-scan .sc-vtbtn.on small{color:#e3d7fb;}
-  #tab-scan .sc-luot{margin-bottom:10px; border:1px solid var(--line-soft); border-radius:9px; overflow:hidden;}
-  #tab-scan .sc-luot .h{display:flex; align-items:center; gap:8px; padding:6px 8px 6px 10px; background:#f1f4f8; font-size:12.5px; color:var(--ink-soft);}
-  #tab-scan .sc-luot .h span{flex:1;}
-  #tab-scan .sc-luot .h b{color:var(--ink);}
-  #tab-scan .sc-luot .h button:hover{color:var(--red); border-color:var(--red); opacity:1;}
-
   /* hộp xác nhận xoá dữ liệu — nằm trong modal chung nên không gắn #tab-scan */
   .sc-xoa-file{display:flex; flex-direction:column; gap:2px; padding:10px 12px; background:var(--paper); border:1px solid var(--line-soft);
     border-radius:9px; font-size:13px; color:var(--ink-soft);}
@@ -1942,6 +1931,48 @@
     #tab-scan .sc-right{flex-direction:column;}
     #tab-scan .sc-act{margin-left:0;}
   }
+
+  /* Tab SCAN toàn màn hình: ẩn thanh tiêu đề xanh, cột cao thêm phần đó */
+  body.sc-full header.top{display:none;}
+  body.sc-full #tab-scan{--sc-h:calc(100vh - 115px);}
+
+  /* cửa sổ "Vị trí đã lưu" (trong modal chung nên không gắn #tab-scan) — rộng vừa bảng */
+  .modal-card.sc-vl-card{width:auto; min-width:min(520px, 96vw); max-width:min(1100px, 96vw);}
+  .sc-vl-bar{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px; font-size:13.5px;}
+  .sc-vl-bar .sc-vl-ghi{flex:1; font-size:12px; color:var(--ink-soft);}
+  .sc-vl-wrap{max-height:62vh; overflow:auto; border:1px solid var(--line-soft); border-radius:9px;}
+  table.sc-vl{border-collapse:collapse; font-size:13px; width:100%;}
+  table.sc-vl th{position:sticky; top:0; background:#173b57; color:#fff; font-size:11.5px; letter-spacing:.04em; padding:7px 10px; text-align:left; white-space:nowrap;}
+  table.sc-vl td{padding:5px 10px; border-top:1px solid var(--line-soft); white-space:nowrap; outline:none;}
+  table.sc-vl td.m{font-family:var(--mono);}
+  table.sc-vl tr:nth-child(even) td{background:#f7f9fb;}
+  .sc-vl-trong{padding:24px; text-align:center; color:var(--ink-soft);}
+  .sc-vl-luot{margin-top:12px; font-size:13px;}
+  .sc-vl-luot summary{cursor:pointer; font-weight:700; color:var(--ink-soft);}
+  .sc-vl-luot .ln{display:flex; align-items:center; gap:8px; padding:6px 4px; border-bottom:1px dashed var(--line-soft);}
+  .sc-vl-luot .ln span{flex:1;}
+  .sc-vl-luot .ln button:hover{color:var(--red); border-color:var(--red);}
+
+  /* lọc vị trí · chọn cột copy · ô chữ vừa copy */
+  .sc-vl-dong{display:flex; align-items:center; gap:6px 10px; flex-wrap:wrap; margin-bottom:9px; font-size:13px;}
+  .sc-vl-dong > b{font-size:12px; color:var(--ink-soft); letter-spacing:.03em;}
+  .sc-vl-chip{border:1px solid #ddd0fb; background:#f5f0ff; color:#4c1d95; border-radius:999px; padding:4px 11px; font-family:var(--mono); font-weight:800; font-size:13px;}
+  .sc-vl-chip i{font-style:normal; font-family:var(--font); font-weight:700; font-size:11.5px; opacity:.75;}
+  .sc-vl-chip.khong{font-family:var(--font); font-style:italic;}
+  .sc-vl-chip.on{background:#6d28d9; border-color:#6d28d9; color:#fff;}
+  .sc-vl-ra{margin-top:10px;}
+  .sc-vl-ra textarea{width:100%; min-height:110px; max-height:30vh; margin-top:4px; font-family:var(--mono); font-size:13px; white-space:pre; overflow:auto;}
+
+  /* chọn ô kiểu Excel */
+  table.sc-vl{user-select:none;}
+  table.sc-vl td[data-c]{cursor:cell;}
+  table.sc-vl th[data-c]{cursor:pointer;}
+  table.sc-vl th[data-c]:hover{background:#24557a;}
+  table.sc-vl th.sel{background:#0e8fb0;}
+  table.sc-vl th.so, table.sc-vl td.so{width:34px; text-align:right; color:var(--ink-soft); font-size:11.5px; padding:5px 8px; cursor:pointer;}
+  table.sc-vl th.so{color:#cfe0ec;}
+  table.sc-vl td.so.sel{background:#cfe9f3 !important; color:#0b5a70; font-weight:800;}
+  table.sc-vl td.sel{background:#d6eef8 !important; box-shadow:inset 0 0 0 1px #8ccde3;}
 
 </style>
 <style>/* css/modules/hotrokk.css */
@@ -3069,13 +3100,15 @@
         <div class="sc-prog"><div class="bar"><i id="scBar"></i></div><span id="scPt">0%</span></div>
       </div>
       <div class="sc-act">
+        <button class="sc-btn sc-sb" id="scBtnSb" title="Ẩn/hiện danh sách kho">☰</button>
+        <button class="sc-btn sc-back" id="scBtnBack" title="Quay lại tab SCAN OS">← Quay lại</button>
         <label class="sc-vt sc-gc" id="scGcBox" title="Ghi chú cho các thùng của phiên này (không bắt buộc) — có trong file Excel khi xuất">
           <span>📝 GHI CHÚ</span><input type="text" id="scGc" placeholder="VD: hàng bị bẩn" autocomplete="off" maxlength="200">
         </label>
         <label class="sc-vt" id="scVtBox" title="Vị trí đặt các thùng của phiên này (không bắt buộc)">
           <span>📍 VỊ TRÍ</span><input type="text" id="scVt" placeholder="VD: A01A" autocomplete="off" spellcheck="false">
         </label>
-        <button class="sc-btn sc-vtl" id="scBtnVtl" title="Xem các vị trí đã lưu và UCC ở từng vị trí">🗂 VỊ TRÍ ĐÃ LƯU</button>
+        <button class="sc-btn sc-vtl" id="scBtnVtl" title="Mở bảng các thùng đã lưu: JO - BUYER PO - STYLE - VỊ TRÍ - UCC - GHI CHÚ (sửa tạm / copy được)">🗂 VỊ TRÍ ĐÃ LƯU</button>
         <button class="sc-btn sc-xuat" id="scBtnXuat" title="Xuất Excel: JOB NO - BUYER PO - STYLE NO - VỊ TRÍ - UCC - QTY">⬇ XUẤT FILE</button>
         <button class="sc-btn sc-xoa" id="scBtnXoa" title="Scan và xuất file xong: xoá tiến độ scan và xoá file này ở SCAN OS">🗑 XOÁ DỮ LIỆU</button>
       </div>
@@ -5161,6 +5194,8 @@ function render(){
   if(qb){ qb.style.display = ro ? '' : 'none'; qb.textContent = AUTH.user ? '👁 Chỉ xem' : '👁 Khách · chỉ xem'; }
   renderSidebar();
   applyTabVisibility();
+  // Tab SCAN: ẩn thanh tiêu đề xanh để màn hình quét rộng nhất (nút "← Quay lại" về SCAN OS)
+  document.body.classList.toggle('sc-full', VIEW === 'kho' && activeTab === 'scan');
   if(VIEW === 'tong3kho'){ renderAll3(); return; }
   if(VIEW === 'aiproj'){ moAiProjects(); return; }
   if(VIEW === 'caidat'){ renderCaiDat(); return; }
@@ -13683,7 +13718,6 @@ let PHIEN = [];                 // phiên quét hiện tại: [{ucc, at}]
 let ALL = { v:1, f:{} };        // tiến độ đã lưu (mọi file)
 let SAVED = new Map();          // ucc -> {vt, id, at} của file đang scan
 let LOI = [];                   // báo trùng / báo sai: [{loai, ucc, msg, at}]
-let XEM_VT = false, VT_CHON = null;
 let LAN_TAI = 0, DANG_TAI = null;
 
 const tenMode = m => (TEN_MODE[DATA && DATA.nm] || TEN_MODE.tgv)[m || MODE];
@@ -13705,7 +13739,7 @@ function napDuLieu(d){
     U.set(ucc, o);
   });
   // lấy lại phiên đang quét dở của đúng file này
-  PHIEN = []; SEL = null; MODE = 'job'; XEM_VT = false; VT_CHON = null; LOI = [];
+  PHIEN = []; SEL = null; MODE = 'job'; LOI = [];
   $('scVt').value = ''; $('scGc').value = '';
   try{
     const p = d && JSON.parse(localStorage.getItem(KEY_PHIEN + ':' + d.key) || 'null');
@@ -13860,26 +13894,12 @@ function veDangChon(){
   const ds = nhomTheo(MODE).get(SEL) || [], ps = phienSet();
   const con = ds.filter(u=>!daLuu(u) && !ps.has(u)).length;
   el.className = 'sc-cur';
-  el.innerHTML = `Đang scan theo ${esc(tenMode())}: <b>${esc(SEL)}</b> <span>${soVN(ds.length)} thùng · còn ${soVN(con)}</span>`;
+  el.innerHTML = `<b>${esc(SEL)}</b> <span>${soVN(ds.length)} thùng · còn ${soVN(con)}</span>`;
 }
 function veGiua(){
   $('scDem').textContent = soVN(PHIEN.length);
   $('scBtnLuu').classList.toggle('co', PHIEN.length > 0);
   const box = $('scOk');
-  if(XEM_VT){
-    // Xem vị trí đã lưu: ô giữa hiện các UCC của vị trí đang chọn ở ô bên phải
-    const o = VT_CHON != null && vungVT().find(x=>x.vt === VT_CHON);
-    $('scOkT').textContent = o ? (o.vt ? `UCC Ở VỊ TRÍ ${o.vt}` : 'UCC KHÔNG GHI VỊ TRÍ') : 'UCC Ở VỊ TRÍ ĐÃ CHỌN';
-    $('scOkN').textContent = o ? `${soVN(o.thung)} thùng` : '';
-    box.innerHTML = !o ? `<div class="trong">👉 Bấm 1 vị trí ở ô bên phải để xem các UCC đã lưu ở đó</div>`
-      : o.luot.map(l=>`<div class="sc-luot">
-          <div class="h"><span>Lượt lưu ${ngayGio(l.at)} · <b>${soVN(l.u.length)} thùng</b>${l.gc ? `<i class="gc">📝 ${esc(l.gc)}</i>` : ''}</span>
-            <button class="ghost sm" data-xoa="${esc(l.id)}" title="Xoá lượt này — các thùng sẽ về trạng thái chưa scan">🗑 Xoá lượt</button></div>
-          ${l.u.slice().sort(soSanh).map(u=>{ const x = U.get(u);
-            return `<div class="uc"><span>${esc(u)}</span><i>(${soVN(x.qty)})</i><small>${esc(giaTri(x.rows[0], MODE))}</small></div>`; }).join('')}
-        </div>`).join('');
-    return;
-  }
   $('scOkT').textContent = 'UCC ĐÃ SCAN ĐÚNG';
   $('scOkN').textContent = PHIEN.length ? `${soVN(PHIEN.length)} thùng` : '';
   box.innerHTML = PHIEN.length
@@ -13890,22 +13910,12 @@ function veGiua(){
 }
 function vePhai(){
   const box = $('scChua');
-  $('scBtnVtl').classList.toggle('on', XEM_VT);
-  if(XEM_VT){
-    const ds = vungVT();
-    $('scChuaT').textContent = 'VỊ TRÍ ĐÃ LƯU';
-    $('scChuaN').textContent = `${ds.length} vị trí`;
-    box.innerHTML = ds.length
-      ? ds.map(o=>`<button class="sc-vtbtn${o.vt === VT_CHON ? ' on' : ''}${o.vt ? '' : ' khong'}" data-vt="${esc(o.vt)}">
-          <b>${esc(tenVT(o.vt))}</b>: ${soVN(o.thung)} thùng${o.luot.length > 1 ? `<small>${o.luot.length} lượt</small>` : ''}</button>`).join('')
-      : `<div class="trong">Chưa lưu vị trí nào</div>`;
-    return;
-  }
   const ps = phienSet();
   let ds = SEL ? (nhomTheo(MODE).get(SEL) || []) : [...U.keys()];
   ds = ds.filter(u=>!daLuu(u) && !ps.has(u)).sort(soSanh);
-  $('scChuaT').textContent = SEL ? `UCC CHƯA SCAN · ${SEL}` : 'UCC CHƯA SCAN · CẢ FILE';
-  $('scChuaN').textContent = `${soVN(ds.length)} thùng`;
+  // đã chọn 1 dòng thì tên + số thùng hiện ở dòng trên ô quét -> ở đây chỉ để tiêu đề
+  $('scChuaT').textContent = SEL ? 'UCC CHƯA SCAN' : 'UCC CHƯA SCAN · CẢ FILE';
+  $('scChuaN').textContent = SEL ? '' : `${soVN(ds.length)} thùng`;
   box.innerHTML = ds.length
     ? ds.map(u=>`<div class="uc"><span>${esc(u)}</span><i>(${soVN(U.get(u).qty)})</i></div>`).join('')
     : `<div class="trong xong">✓ Đã scan hết${SEL ? ' ' + esc(SEL) : ''}</div>`;
@@ -13964,7 +13974,6 @@ function timUcc(ma){
 function xuLyMa(raw){
   const ma = String(raw||'').replace(/[\s()]/g,'').trim();
   if(!ma) return;
-  if(XEM_VT){ XEM_VT = false; VT_CHON = null; }
   const o = timUcc(ma);
   if(!SEL){ baoLoi('sai', ma, `chưa chọn ${tenMode()} — chọn 1 dòng ở bảng bên trái trước khi scan`); veTatCa(); return; }
   if(!o){ baoLoi('sai', ma, 'không có trong file'); veTatCa(); return; }
@@ -14036,6 +14045,135 @@ function xuatFile(){
   XLSX.writeFile(wb, `SCAN_${ten}_${new Date().toISOString().slice(0,10)}.xlsx`);
   ghiDaXuat();
   toast(PHIEN.length ? `⚠ Đã xuất file — ${PHIEN.length} thùng trong phiên CHƯA LƯU nên vị trí đang để trống` : '✓ Đã xuất file');
+}
+
+// Cửa sổ "VỊ TRÍ ĐÃ LƯU": mỗi thùng ĐÃ BẤM LƯU SCAN là 1 dòng JO - BUYER PO - STYLE - VỊ TRÍ - UCC - GHI CHÚ.
+// Lọc theo vị trí, chọn ô kiểu Excel (kéo chuột / bấm tên cột / số dòng) rồi Copy; chỉ copy đúng vùng đã chọn.
+// Chữ vừa copy hiện ở ô bên dưới để sửa tạm / copy lại bằng tay (KHÔNG lưu vào app).
+// Bên dưới: danh sách các lượt lưu, có nút xoá lượt lưu nhầm (cái này thì lưu thật lên máy chủ).
+function dongDaLuu(){
+  const ds = [];
+  SAVED.forEach((s, u)=>{
+    const o = U.get(u); if(!o) return;
+    const gop = k => [...new Set(o.rows.map(r=>String(r[k]==null?'':r[k]).trim()).filter(Boolean))].join(', ');
+    ds.push([gop('job'), gop('po'), gop('sty'), s.vt, u, s.gc]);
+  });
+  return ds.sort((a,b)=>{ for(const i of [0,1,2,3,4]){ const d = soSanh(a[i], b[i]); if(d) return d; } return 0; });
+}
+async function moBangDaLuu(){
+  if(!DATA) return;
+  await taiTienDo();                         // lấy cả lượt máy khác vừa lưu
+  const m = openModal('Vị trí đã lưu — ' + DATA.name, `<div id="scVlBox"></div>`);
+  m.el.querySelector('.modal-card').classList.add('sc-vl-card');
+  const dau = [tenMode('job'), tenMode('po'), tenMode('sty'), 'VỊ TRÍ', 'UCC', 'GHI CHÚ'];
+  const SO_COT = dau.length;
+  const box = m.body.querySelector('#scVlBox');
+  let DS = [];                               // các dòng đang hiện (theo vị trí đang lọc)
+  let loc = null;                            // vị trí đang lọc (null = tất cả)
+  // Vùng chọn kiểu Excel: điểm neo a + điểm cuối b ({r, c}); null = chưa chọn
+  let a = null, b = null, keo = null;        // keo: 'o' (kéo ô) | 'cot' (kéo tiêu đề cột) | 'dong' (kéo số dòng)
+  const vung = () => a && b ? { r1:Math.min(a.r, b.r), r2:Math.max(a.r, b.r), c1:Math.min(a.c, b.c), c2:Math.max(a.c, b.c) } : null;
+  const veChon = ()=>{
+    const v = vung();
+    box.querySelectorAll('table.sc-vl td[data-c]').forEach(td=>{
+      const r = +td.dataset.r, c = +td.dataset.c;
+      td.classList.toggle('sel', !!v && r >= v.r1 && r <= v.r2 && c >= v.c1 && c <= v.c2);
+    });
+    box.querySelectorAll('table.sc-vl th[data-c]').forEach(th=>{ const c = +th.dataset.c; th.classList.toggle('sel', !!v && c >= v.c1 && c <= v.c2); });
+    box.querySelectorAll('table.sc-vl td.so').forEach(td=>{ const r = +td.dataset.r; td.classList.toggle('sel', !!v && r >= v.r1 && r <= v.r2); });
+    const n = v ? (v.r2 - v.r1 + 1) * (v.c2 - v.c1 + 1) : 0;
+    const btn = box.querySelector('[data-copy]');
+    if(btn) btn.textContent = v ? `📋 Copy ${soVN(n)} ô đã chọn` : `📋 Copy cả bảng (${soVN(DS.length)} dòng)`;
+    const bo = box.querySelector('[data-bochon]'); if(bo) bo.hidden = !v;
+  };
+  const ve = ()=>{
+    const tat = dongDaLuu();
+    const vts = new Map(); tat.forEach(r=>vts.set(r[3], (vts.get(r[3]) || 0) + 1));
+    if(loc != null && !vts.has(loc)) loc = null;
+    DS = loc == null ? tat : tat.filter(r=>r[3] === loc);
+    const f = ALL.f[DATA.key], luot = ((f && f.luot) || []).filter(l=>(l.u||[]).some(u=>U.has(u)));
+    a = b = null;
+    const chip = (v, t, n) => `<button class="sc-vl-chip${v === loc ? ' on' : ''}${v === '' ? ' khong' : ''}" data-loc="${v == null ? '*' : esc(v)}">${esc(t)} <i>${soVN(n)}</i></button>`;
+    box.innerHTML = !tat.length
+      ? `<div class="sc-vl-trong">Chưa có thùng nào được bấm 💾 LƯU SCAN</div>`
+      : `<div class="sc-vl-dong"><b>Vị trí:</b>${chip(null, 'Tất cả', tat.length)}${[...vts.keys()].sort((x, y)=>(!x - !y) || soSanh(x, y)).map(v=>chip(v, tenVT(v), vts.get(v))).join('')}</div>
+        <div class="sc-vl-dong">
+          <span class="sc-vl-ghi">Chọn như Excel: <b>giữ chuột kéo</b> qua các ô (VD kéo dọc cột UCC) · bấm <b>tên cột</b> = chọn cả cột · bấm <b>số dòng</b> = chọn cả dòng · Shift + bấm = mở rộng vùng chọn. Rồi bấm Copy hoặc <b>Ctrl + C</b>.</span>
+          <button class="ghost sm" data-bochon hidden>Bỏ chọn</button>
+          <button class="sm" data-copy></button></div>
+        <div class="sc-vl-wrap"><table class="sc-vl">
+          <thead><tr><th class="so">#</th>${dau.map((t, j)=>`<th data-c="${j}" title="Bấm để chọn cả cột ${esc(t)}">${esc(t)}</th>`).join('')}</tr></thead>
+          <tbody>${DS.map((r, i)=>`<tr><td class="so" data-r="${i}">${i + 1}</td>${r.map((v, j)=>`<td data-r="${i}" data-c="${j}"${j === 4 ? ' class="m"' : ''}>${esc(v)}</td>`).join('')}</tr>`).join('')}</tbody>
+        </table></div>
+        <div class="sc-vl-ra" hidden><div class="sc-vl-ghi">Nội dung vừa copy — sửa thoải mái ở đây rồi <b>Ctrl + A</b>, <b>Ctrl + C</b> để copy lại (không lưu vào app)</div>
+          <textarea spellcheck="false" data-ra></textarea></div>
+        <details class="sc-vl-luot"><summary>Các lượt đã lưu (${soVN(luot.length)}) — xoá lượt lưu nhầm</summary>
+          ${luot.slice().reverse().map(l=>`<div class="ln"><span>${ngayGio(l.at)} · <b>${esc(tenVT(l.vt))}</b> · ${soVN((l.u||[]).filter(u=>U.has(u)).length)} thùng${l.gc ? ` · 📝 ${esc(l.gc)}` : ''}</span>
+            <button class="ghost sm" data-xoa="${esc(l.id)}" title="Xoá lượt này — các thùng về trạng thái chưa scan">🗑 Xoá lượt</button></div>`).join('')}
+        </details>`;
+    veChon();
+  };
+  // Copy đúng vùng đã chọn (chưa chọn = cả bảng kèm tiêu đề). Cột cách nhau bằng Tab, dòng xuống dòng
+  // -> dán vào Excel đúng ô. Chữ cũng hiện ở ô bên dưới để sửa / copy lại bằng tay.
+  async function copy(){
+    if(!DS.length) return;
+    const v = vung();
+    const txt = v
+      ? DS.slice(v.r1, v.r2 + 1).map(r=>r.slice(v.c1, v.c2 + 1).join('\t')).join('\n')
+      : [dau.join('\t')].concat(DS.map(r=>r.join('\t'))).join('\n');
+    const ra = box.querySelector('[data-ra]');
+    ra.value = txt; ra.closest('.sc-vl-ra').hidden = false;
+    let ok = false;
+    try{ await navigator.clipboard.writeText(txt); ok = true; }catch(_){}
+    if(!ok){ ra.focus(); ra.select(); try{ ok = document.execCommand('copy'); }catch(_){} }
+    toast(ok ? `✓ Đã copy ${v ? soVN((v.r2 - v.r1 + 1) * (v.c2 - v.c1 + 1)) + ' ô' : 'cả bảng'} — dán (Ctrl + V) vào Excel / Zalo / mail`
+             : '⚠ Trình duyệt chặn copy tự động — chữ đã hiện ở ô bên dưới, bấm vào đó rồi Ctrl + A, Ctrl + C');
+  }
+  ve();
+  // ---- chọn vùng bằng chuột ----
+  box.addEventListener('mousedown', e=>{
+    const td = e.target.closest('table.sc-vl td[data-c]'), th = e.target.closest('table.sc-vl th[data-c]'), so = e.target.closest('table.sc-vl td.so');
+    if(!td && !th && !so) return;
+    e.preventDefault();                       // không để trình duyệt bôi đen chữ cả dòng
+    m.el.focus();
+    const cuoi = DS.length - 1;
+    if(td){ const o = { r:+td.dataset.r, c:+td.dataset.c }; if(e.shiftKey && a) b = o; else { a = o; b = { ...o }; } keo = 'o'; }
+    if(th){ const c = +th.dataset.c; if(e.shiftKey && a){ a = { r:0, c:a.c }; b = { r:cuoi, c }; } else { a = { r:0, c }; b = { r:cuoi, c }; } keo = 'cot'; }
+    if(so){ const r = +so.dataset.r; if(e.shiftKey && a){ a = { r:a.r, c:0 }; b = { r, c:SO_COT - 1 }; } else { a = { r, c:0 }; b = { r, c:SO_COT - 1 }; } keo = 'dong'; }
+    veChon();
+  });
+  box.addEventListener('mouseover', e=>{
+    if(!keo) return;
+    if(keo === 'o'){ const td = e.target.closest('table.sc-vl td[data-c]'); if(td){ b = { r:+td.dataset.r, c:+td.dataset.c }; veChon(); } }
+    if(keo === 'cot'){ const th = e.target.closest('table.sc-vl th[data-c]'); if(th){ b = { r:DS.length - 1, c:+th.dataset.c }; veChon(); } }
+    if(keo === 'dong'){ const td = e.target.closest('table.sc-vl td[data-r]'); if(td){ b = { r:+td.dataset.r, c:SO_COT - 1 }; veChon(); } }
+  });
+  const thaKeo = ()=>{ keo = null; };
+  document.addEventListener('mouseup', thaKeo);
+  // Ctrl + C (không phải đang ở ô chữ bên dưới) -> copy vùng đã chọn
+  m.el.addEventListener('keydown', e=>{
+    if(!(e.ctrlKey || e.metaKey) || e.key.toLowerCase() !== 'c' || !vung() || e.target.matches('textarea')) return;
+    e.preventDefault(); copy();
+  });
+  m.el.tabIndex = -1; m.el.focus();
+  m.body.addEventListener('click', async e=>{
+    const l = e.target.closest('[data-loc]');
+    if(l){ loc = l.dataset.loc === '*' ? null : l.dataset.loc; ve(); return; }
+    if(e.target.closest('[data-copy]')){ copy(); return; }
+    if(e.target.closest('[data-bochon]')){ a = b = null; veChon(); return; }
+    const xoa = e.target.closest('[data-xoa]'); if(!xoa) return;
+    const id = xoa.dataset.xoa;
+    if(!await confirmBox('Xoá lượt lưu này? Các thùng trong lượt sẽ về trạng thái CHƯA SCAN (mọi người cùng dùng app đều thấy).')) return;
+    try{
+      await ghiTienDo(o=>{ const f = o.f[DATA.key]; if(f) f.luot = f.luot.filter(x=>x.id !== id); });
+      toast('Đã xoá lượt lưu');
+    }catch(err){ toast('⚠ Chưa xoá được: ' + (err.message || err)); }
+    ve(); veTatCa();
+    const d = box.querySelector('.sc-vl-luot'); if(d) d.open = true;
+  });
+  // đóng cửa sổ thì gỡ sự kiện gắn vào document
+  new MutationObserver((_, ob)=>{ if(!m.el.isConnected){ document.removeEventListener('mouseup', thaKeo); ob.disconnect(); } })
+    .observe($('modalHost'), { childList:true });
 }
 
 // =====================================================================
@@ -14125,7 +14263,9 @@ $('scBtnXoa').onclick = ()=>xoaDuLieu();
 $('scEmpty').addEventListener('click', e=>{ const b = e.target.closest('[data-chon]'); if(b) doiFile(b.dataset.chon); });
 $('scBtnLuu').onclick = ()=>luuScan();
 $('scBtnXuat').onclick = ()=>xuatFile();
-$('scBtnVtl').onclick = ()=>{ XEM_VT = !XEM_VT; VT_CHON = null; veGiua(); vePhai(); };
+$('scBtnVtl').onclick = ()=>moBangDaLuu();
+$('scBtnBack').onclick = ()=>switchTab('scanos');
+$('scBtnSb').onclick = ()=>$('btnBurger').click();      // thanh tiêu đề (có nút ☰) đang ẩn ở tab SCAN
 $('scLoiX').onclick = ()=>{ LOI = []; veLoi(); inp.focus(); };
 
 document.querySelectorAll('#scMode button').forEach(b=> b.onclick = ()=>{
@@ -14136,31 +14276,12 @@ document.querySelectorAll('#scMode button').forEach(b=> b.onclick = ()=>{
 $('scGBody').addEventListener('click', e=>{
   const the = e.target.closest('[data-v]'); if(!the) return;
   SEL = the.dataset.v;
-  if(XEM_VT){ XEM_VT = false; VT_CHON = null; }
   luuPhien(); veTatCa(); inp.focus();
 });
-$('scChua').addEventListener('click', e=>{
-  const b = e.target.closest('[data-vt]'); if(!b) return;
-  VT_CHON = b.dataset.vt; veGiua(); vePhai();
-});
-$('scOk').addEventListener('click', async e=>{
-  const bo = e.target.closest('[data-bo]');
-  if(bo){
-    PHIEN = PHIEN.filter(p=>p.ucc !== bo.dataset.bo);
-    luuPhien(); veTatCa(); inp.focus();
-    return;
-  }
-  const xoa = e.target.closest('[data-xoa]');
-  if(xoa){
-    const id = xoa.dataset.xoa;
-    if(!await confirmBox('Xoá lượt lưu này? Các thùng trong lượt sẽ về trạng thái CHƯA SCAN (mọi người cùng dùng app đều thấy).')) return;
-    try{
-      await ghiTienDo(o=>{ const f = o.f[DATA.key]; if(f) f.luot = f.luot.filter(l=>l.id !== id); });
-      toast('Đã xoá lượt lưu');
-    }catch(err){ toast('⚠ Chưa xoá được: ' + (err.message || err)); }
-    if(!vungVT().some(x=>x.vt === VT_CHON)) VT_CHON = null;
-    veTatCa();
-  }
+$('scOk').addEventListener('click', e=>{
+  const bo = e.target.closest('[data-bo]'); if(!bo) return;
+  PHIEN = PHIEN.filter(p=>p.ucc !== bo.dataset.bo);
+  luuPhien(); veTatCa(); inp.focus();
 });
 
 window.scanRender = async function(){
@@ -15640,25 +15761,8 @@ window.renderTraining = taoBoSuuTap({
   // Chỉ điền cho người CHƯA có số liệu, nên chạy lại bao nhiêu lần cũng không
   // ghi đè thứ bạn đã sửa tay. Khớp theo tên trong từng kho.
   const SEED_PHEP = [{"kho":"vai","ten":"Nguyễn Văn Phúc","maSo":"THV0007916","gio":10.0,"ton":0.0},{"kho":"vai","ten":"Nguyễn Thị Ngọc Anh","maSo":"THV0018431","gio":9.33,"ton":0.0},{"kho":"vai","ten":"Nguyễn Trung Hiếu","maSo":"THV0001917","gio":10.66,"ton":0.0},{"kho":"vai","ten":"Nguyễn Duy Sơn","maSo":"THV0002733","gio":10.66,"ton":0.0},{"kho":"vai","ten":"Nguyễn Ngọc Mẫn","maSo":"THV0005326","gio":10.66,"ton":0.0},{"kho":"vai","ten":"Nguyễn Hữu Thu","maSo":"THV0009073","gio":10.0,"ton":0.0},{"kho":"vai","ten":"Trần Mạnh Đạt","maSo":"THV0008244","gio":10.0,"ton":0.0},{"kho":"vai","ten":"Quách Đình Thanh","maSo":"THV0013122","gio":10.0,"ton":0.0},{"kho":"vai","ten":"Nguyen Ngoc Duy","maSo":"THV0014682","gio":9.33,"ton":0.0},{"kho":"vai","ten":"Nguyễn Thanh Bằng","maSo":"THV0008149","gio":10.0,"ton":0.0},{"kho":"vai","ten":"Trần Trọng Khiên","maSo":"THV0017535","gio":9.33,"ton":0.0},{"kho":"vai","ten":"Nguyễn Đình Niêm","maSo":"THV0017640","gio":9.33,"ton":0.0},{"kho":"vai","ten":"Dương Phúc Đạt","maSo":"THV0018512","gio":9.33,"ton":0.0},{"kho":"vai","ten":"Nguyễn Hữu Sơn","maSo":"THV0018649","gio":9.33,"ton":0.0},{"kho":"vai","ten":"Quách Công Nghĩa","maSo":"THV0019299","gio":9.33,"ton":0.0},{"kho":"vai","ten":"Nguyễn Văn Lương","maSo":"THV0019358","gio":9.33,"ton":0.0},{"kho":"vai","ten":"Đinh Tiến Hải","maSo":"THV0019378","gio":9.33,"ton":0.0},{"kho":"phulieu","ten":"Nguyễn Minh Tuấn","maSo":"THV0018650","gio":9.33,"ton":0.0},{"kho":"phulieu","ten":"Trịnh Ngọc Hải","maSo":"THV0000716","gio":10.66,"ton":0.0},{"kho":"phulieu","ten":"Hoàng Thị Thủy","maSo":"THV0003141","gio":10.66,"ton":0.0},{"kho":"phulieu","ten":"Nguyễn Tự Nam","maSo":"THV0005222","gio":10.66,"ton":0.0},{"kho":"phulieu","ten":"Đỗ Thị Duyên","maSo":"THV0006137","gio":10.0,"ton":0.0},{"kho":"phulieu","ten":"Đinh Quang Nam","maSo":"THV0004753","gio":10.66,"ton":0.0},{"kho":"phulieu","ten":"Nguyễn Thị Hương","maSo":"THV0003498","gio":10.66,"ton":0.0},{"kho":"phulieu","ten":"Nguyễn Hoàng Anh","maSo":"THV0007740","gio":10.0,"ton":0.0},{"kho":"phulieu","ten":"Phạm văn Lực","maSo":"THV0010111","gio":10.0,"ton":0.0},{"kho":"phulieu","ten":"Nguyễn Đức Trung","maSo":"THV0012744","gio":10.0,"ton":0.0},{"kho":"phulieu","ten":"Bùi Văn Anh","maSo":"THV0013110","gio":10.0,"ton":0.0},{"kho":"phulieu","ten":"Nguyễn Hoàng Anh","maSo":"THV0014891","gio":9.33,"ton":0.0},{"kho":"phulieu","ten":"Nguyễn Văn Nam","maSo":"THV0014869","gio":9.33,"ton":0.0},{"kho":"phulieu","ten":"Bùi Văn Nguyên","maSo":"THV0016060","gio":9.33,"ton":0.0},{"kho":"phulieu","ten":"Nguyễn Thị Huế","maSo":"THV0016268","gio":9.33,"ton":0.0},{"kho":"phulieu","ten":"Bùi Văn Mạnh","maSo":"THV0001083","gio":10.66,"ton":0.0},{"kho":"phulieu","ten":"Bùi Quốc Trượng","maSo":"THV0017899","gio":9.33,"ton":0.0},{"kho":"phulieu","ten":"Nguyễn Minh Đạt","maSo":"THV0018335","gio":9.33,"ton":0.0},{"kho":"phulieu","ten":"Hoàng Văn Huy","maSo":"THV0018552","gio":9.33,"ton":0.0},{"kho":"phulieu","ten":"Hà Viết Thành","maSo":"THV0018657","gio":9.33,"ton":0.0},{"kho":"phulieu","ten":"Qoách Đức Hiền","maSo":"THV0018721","gio":9.33,"ton":0.0},{"kho":"phulieu","ten":"Bùi Văn Thọ","maSo":"THV0018810","gio":9.33,"ton":0.0},{"kho":"thanhpham","ten":"Nguyễn Đức Hoà","maSo":"THV0012803","gio":10.0,"ton":-0.98},{"kho":"thanhpham","ten":"Ngô Chí Thái","maSo":"THV0003985","gio":10.66,"ton":8.62},{"kho":"thanhpham","ten":"Đỗ Hữu Tuyền","maSo":"THV0000717","gio":10.66,"ton":11.41},{"kho":"thanhpham","ten":"Nguyễn Đình Chí","maSo":"THV0008288","gio":10.0,"ton":11.5},{"kho":"thanhpham","ten":"Hoàng Hoài Bắc","maSo":"THV0000006","gio":10.66,"ton":13.41},{"kho":"thanhpham","ten":"Lê Văn Luận","maSo":"THV0004491","gio":10.66,"ton":23.15},{"kho":"thanhpham","ten":"Giang Quôc Tuấn","maSo":"THV0007164","gio":10.0,"ton":4.75},{"kho":"thanhpham","ten":"Trần Văn Nam","maSo":"THV0013929","gio":9.33,"ton":19.17},{"kho":"thanhpham","ten":"Bùi Chí Cương","maSo":"THV0014297","gio":9.33,"ton":19.17},{"kho":"thanhpham","ten":"Nguyễn Văn Vinh","maSo":"THV0014892","gio":9.33,"ton":3.17},{"kho":"thanhpham","ten":"Nguyễn Hữu Lợi","maSo":"THV0016205","gio":9.33,"ton":-12.19},{"kho":"thanhpham","ten":"Nguyễn Văn Kỷ","maSo":"THV0016989","gio":9.33,"ton":-10.55},{"kho":"thanhpham","ten":"Hoàng Văn Toàn","maSo":"THV0018558","gio":9.33,"ton":16.81},{"kho":"thanhpham","ten":"Đinh Văn Hoàng","maSo":"THV0018796","gio":9.33,"ton":23.19},{"kho":"thanhpham","ten":"Bùi Văn Vũ","maSo":"THV0019070","gio":9.33,"ton":-3.64},{"kho":"thanhpham","ten":"Nguyễn Văn Thái Bảo","maSo":"THV0019371","gio":9.33,"ton":3.84},{"kho":"thanhpham","ten":"Đinh Thành Phú","maSo":"THV0019376","gio":9.33,"ton":10.17}];
-  // Ba người đã nghỉ việc. Bản dự phòng cũ nhúng trong file còn tên họ, nên
-  // nếu có lần nào app phải chạy bằng bản dự phòng thì họ sẽ quay lại danh
-  // sách. Danh sách dưới đây để dọn một lần cho dứt điểm.
-  const DA_NGHI_VIEC = [
-    { kho:'thanhpham', ten:'Tạ Thị Hằng' },
-    { kho:'thanhpham', ten:'Phạm Hùng Cường' },
-    { kho:'thanhpham', ten:'Bùi Quốc Toản' },
-  ];
-  function donNguoiDaNghi(){
-    const truoc = HR.employees.length;
-    HR.employees = HR.employees.filter(e =>
-      !DA_NGHI_VIEC.some(x => x.kho === e.warehouseId && normName(x.ten) === normName(e.name)));
-    return truoc - HR.employees.length;
-  }
-
   window.napPhepLanDau = async function(){
     let n = 0;
-    const bo = donNguoiDaNghi();
-    if(bo){ n += bo; toast('✓ Đã gỡ ' + bo + ' người đã nghỉ việc khỏi danh sách nhân sự'); }
     // Số tồn trong file chốt trước hôm nay, nên đặt mốc là HÔM QUA để đơn nghỉ
     // ghi trong hôm nay vẫn được trừ bình thường.
     const homQua = (()=>{ const d = new Date(); d.setDate(d.getDate() - 1); return toKey(d); })();
