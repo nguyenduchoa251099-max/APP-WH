@@ -1125,6 +1125,9 @@
   .ts-row button.ts-undo:hover{background:var(--st-ts); opacity:1;}
   .nv-xn-ten.ts{background:#ec4899;}
   .nv-xn-ten.ts span{color:#fce7f3;}
+  /* tóm tắt "Nhân sự kho": ô màu trạng thái + số người */
+  .tg-tom .tg-o{display:inline-flex; align-items:center; gap:4px; margin-left:9px; font-weight:800; color:var(--ink);}
+  .tg-tom .tg-o i{display:inline-block; width:11px; height:11px; border-radius:3px;}
 
 </style>
 <style>/* css/modal.css */
@@ -2582,7 +2585,7 @@
   <main class="tabpage active" id="page-tong3kho">
     <div class="grid3" id="all3Cards"></div>
     <div class="panel tg" data-tg="ns" style="margin-top:18px;">
-      <h2><span class="tg-mui" aria-hidden="true">▸</span><span class="n">👥</span>Nhân sự theo ca &amp; vị trí — hôm nay<span class="tg-tom" id="tgTomNs"></span><span class="h2spacer"></span>
+      <h2><span class="tg-mui" aria-hidden="true">▸</span><span class="n">👥</span>Nhân sự kho<span class="tg-tom" id="tgTomNs"></span><span class="h2spacer"></span>
         <span class="ovlegend tg-mo-chi">
           <span><i style="background:var(--st-go)"></i>Đi làm</span>
           <span><i style="background:var(--st-muon)"></i>Đi muộn</span>
@@ -4471,7 +4474,7 @@ function khoDiHoTro(id){
     .sort((a,b)=>a.diHoTro.localeCompare(b.diHoTro) || a.name.localeCompare(b.name,'vi'));
 }
 // THAI SẢN: e.thaiSan = ngày bắt đầu (e.thaiSanLs = các đợt đã xong). Giống đi hỗ trợ: ẩn khỏi danh sách
-// hằng ngày, vẫn tính Tổng nhân sự, bảng công 0h; riêng ô màu hồng ở "Nhân sự theo ca & vị trí" (Tổng quan 3 kho).
+// hằng ngày, vẫn tính Tổng nhân sự, bảng công 0h; riêng ô màu hồng ở mục "Nhân sự kho" (Tổng quan 3 kho).
 function khoThaiSan(id){
   return HR.employees.filter(e=>e.warehouseId===id && e.thaiSan && !e.nghiViec)
     .sort((a,b)=>a.thaiSan.localeCompare(b.thaiSan) || a.name.localeCompare(b.name,'vi'));
@@ -5266,7 +5269,7 @@ function dongBienDongNs(khoId){
   ];
   return ds.filter(x=>x.n > 0).map(x=>`<div class="bd-ns ${x.cls}" title="${x.g}"><span class="k">${x.k}</span><span class="v">${x.n}</span></div>`).join('');
 }
-// 4 khối (Nhân sự theo ca · Cảnh báo hạn mức · Phép tồn · Giờ tăng ca) mặc định THU GỌN: bấm thanh tiêu đề
+// 4 khối (Nhân sự kho · Cảnh báo hạn mức · Phép tồn · Giờ tăng ca) mặc định THU GỌN: bấm thanh tiêu đề
 // (mũi tên ▸) để mở / đóng; dòng tóm tắt trên thanh cho biết có cần mở hay không. Nhớ khối đang mở trên máy này.
 const KEY_TG = 'appwh-3kho-mo';
 function tgDocMo(){ try{ return JSON.parse(localStorage.getItem(KEY_TG) || '[]'); }catch(e){ return []; } }
@@ -5669,7 +5672,7 @@ function ovBoardRows(khoId){
 const ST_LABEL_OV = { go:'Đi làm', off:'Nghỉ cả ngày', som:'Về sớm', muon:'Đi muộn', ts:'Nghỉ thai sản' };
 function renderAll3Boards(){
   const box = $('all3Boards'); if(!box) return;
-  const tg = { tong:0, go:0, off:0, tre:0 };
+  const tg = { tong:0, go:0, muon:0, som:0, off:0, nv:0, ts:0 };
   box.innerHTML = WAREHOUSES.map(w=>{
     let rows = ovBoardRows(w.id);
     // Giám sát: 1 dòng riêng trên cùng — số người của kho tính đủ cả giám sát
@@ -5679,7 +5682,8 @@ function renderAll3Boards(){
       <div class="ovempty">Chưa thiết lập nhóm ca &amp; vị trí cho kho này.</div></div>`;
     const all = rows.reduce((a,r)=>a.concat(r.people), []);
     const dem = st => all.filter(p=>p.st === st).length;
-    tg.tong += all.length; tg.go += dem('go'); tg.off += dem('off'); tg.tre += dem('muon') + dem('som');
+    tg.tong += all.length;
+    all.forEach(p=>{ if(laChoNghi(p.emp)) tg.nv++; else if(tg[p.st] != null) tg[p.st]++; });
     return `<div class="ovkho">
       <h3>${w.icon}<span>${esc(w.name)}</span>
         <span class="sub">${all.length} người · đi làm ${dem('go')}${dem('ts')?` · thai sản ${dem('ts')}`:''}${dem('muon')?` · muộn ${dem('muon')}`:''}${dem('som')?` · về sớm ${dem('som')}`:''}${dem('off')?` · nghỉ ${dem('off')}`:''}</span>
@@ -5699,7 +5703,9 @@ function renderAll3Boards(){
       }).join('')}
     </div>`;
   }).join('');
-  tgTom('tgTomNs', `${tg.tong} người · đi làm ${tg.go + tg.tre}${tg.tre ? ` (muộn / về sớm ${tg.tre})` : ''}${tg.off ? ` · nghỉ ${tg.off}` : ''}`, tg.off ? 'vua' : '');
+  // tóm tắt bằng ô màu + số người (thấy được cả khi khối đang đóng)
+  const O = [['go','Đi làm'],['muon','Đi muộn'],['som','Về sớm'],['off','Nghỉ làm'],['nv','Nghỉ việc'],['ts','Thai sản']];
+  tgTom('tgTomNs', `${tg.tong} người` + O.filter(([k])=>tg[k]).map(([k, t])=>`<span class="tg-o" title="${t}: ${tg[k]}"><i style="background:var(--st-${k})"></i>${tg[k]}</span>`).join(''));
 }
 
 // Việc sắp tới của 1 kho: lịch họp/sự kiện + chuyến gia công + ghi chú nhắc việc
@@ -6862,7 +6868,7 @@ function swapTp5s(K, idA, idB){
 //     · g.doiViTri = true  -> mỗi ca gắn 1 vị trí riêng (g.jobs[i] theo
 //       g.shifts[i]); ai xoay sang ca nào thì nhận vị trí của ca đó.
 //       (dùng cho nhóm Xuất hàng: Ca HC = Xe nâng, Ca 2 = Xuất)
-//   Vì mục "Tăng ca/Nghỉ phép" và bảng "Nhân sự theo ca & vị trí" ở Tổng
+//   Vì mục "Tăng ca/Nghỉ phép" và mục "Nhân sự kho" ở Tổng
 //   quan đều đọc thẳng e.shift / e.position nên cả 2 nơi tự cập nhật theo.
 // ---------------------------------------------------------------------
 function rotJobCot(g, i){
@@ -7376,7 +7382,7 @@ function rotGroupModal(group){
         <label class="field-label">Vị trí công việc của từng ca</label>
         <div id="rgJobs"></div>
         <div class="note" style="margin-top:8px">Ai xoay sang ca nào sẽ nhận vị trí của ca đó. Mục
-          <b>Tăng ca/Nghỉ phép</b> và bảng <b>Nhân sự theo ca &amp; vị trí</b> ở Tổng quan 3 kho tự đổi người theo.</div>
+          <b>Tăng ca/Nghỉ phép</b> và mục <b>Nhân sự kho</b> ở Tổng quan 3 kho tự đổi người theo.</div>
       </div>
     </div>
     <div id="rgTurnBox" style="display:none;">
@@ -10550,7 +10556,7 @@ async function hoanTacNghiViec(e){
 // công, Đổi ca, Hỗ trợ / KK, 5S (ô 5S GIỮ CHỖ cho chính người đó), tăng ca / nghỉ phép. Bảng công từ
 // ngày bắt đầu tính 0h. Hoàn tác lúc nào cũng được — chọn ngày quay lại làm; đợt vừa vắng ghi vào
 // e.hoTroLs / e.thaiSanLs để bảng công tháng cũ vẫn đúng.
-// Khác nhau: thai sản HIỆN ô màu hồng ở "Nhân sự theo ca & vị trí" (Tổng quan 3 kho), đi hỗ trợ thì không.
+// Khác nhau: thai sản HIỆN ô màu hồng ở mục "Nhân sự kho" (Tổng quan 3 kho), đi hỗ trợ thì không.
 async function vangGoKhoi(e, ngay){
   WAREHOUSES.forEach(w=>{
     const K = KHO[w.id];
@@ -10596,7 +10602,7 @@ function vangHoiBatDau(e, cfg){
       <label class="field-label">${cfg.nhanGc} <span style="font-weight:600;color:var(--ink-soft)">— không bắt buộc</span></label>
       <input type="text" data-noi placeholder="${cfg.goiYGc}">
       <ul class="nv-xn-ds">
-        <li><b>Vẫn tính trong Tổng nhân sự</b>${cfg.hienTongQuan ? ' và hiện ô <b>màu hồng</b> ở "Nhân sự theo ca &amp; vị trí" (Tổng quan 3 kho)' : ''}; ẩn khỏi phân công, 5S, Đổi ca${tp ? ', Hỗ trợ / KK' : ''}, tăng ca / nghỉ phép.</li>
+        <li><b>Vẫn tính trong Tổng nhân sự</b>${cfg.hienTongQuan ? ' và hiện ô <b>màu hồng</b> ở mục "Nhân sự kho" (Tổng quan 3 kho)' : ''}; ẩn khỏi phân công, 5S, Đổi ca${tp ? ', Hỗ trợ / KK' : ''}, tăng ca / nghỉ phép.</li>
         <li>Bảng công Excel: từ ngày bắt đầu, mỗi ngày tính <b>0h</b> (tới ngày quay lại).</li>
         <li>5S: gỡ tên khỏi các ô đang phụ trách; các ô đó giữ chỗ, quay lại sẽ nhận lại (người mới không nhận).</li>
         <li>Khi quay lại: bấm <b>↺ Hoàn tác</b>, chọn ngày đi làm lại — trở lại kho như bình thường.</li>
