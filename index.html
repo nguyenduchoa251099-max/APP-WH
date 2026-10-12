@@ -1718,8 +1718,115 @@
   .so-empty i.k.find{background:#fdf1d8; color:#8a5a00;}
   .so-empty i.k.send{background:#fff0e6; color:#c2410c;}
 
+  /* ---------- Dashboard (ô nhà máy chọn "📊 Dashboard") ---------- */
+  /* ẩn các nút chỉ dùng cho file: nạp, check, chọn file, tìm, đưa sang SCAN */
+  #tab-scanos.so-db #soBtnImp, #tab-scanos.so-db #soBtnChk, #tab-scanos.so-db .so-pick,
+  #tab-scanos.so-db .so-search, #tab-scanos.so-db #soBtnSend, #tab-scanos.so-db .so-note{display:none;}
+  #tab-scanos.so-db .so-card{background:transparent; border:0; box-shadow:none; overflow:visible;}
+  #tab-scanos.so-db .so-wrap{max-height:none; min-height:0; overflow:visible;}
+  #tab-scanos .db{--db-tgv:#2a78d6; --db-dl:#eb6834; display:flex; flex-direction:column; gap:14px;}
+
+  #tab-scanos .db-bar{display:flex; flex-wrap:wrap; align-items:center; gap:10px;}
+  #tab-scanos .db-gian{flex:1;}
+  #tab-scanos .db-thang{display:flex; align-items:center; gap:4px; background:#fff; border:1px solid var(--line); border-radius:10px; padding:3px;}
+  #tab-scanos .db-thang button{border:0; background:transparent; color:var(--ink); font-size:18px; font-weight:800; width:34px; height:34px;
+    padding:0; border-radius:7px;}
+  #tab-scanos .db-thang button:hover{background:var(--paper); opacity:1;}
+  #tab-scanos .db-thang button.nay{width:auto; padding:0 10px; font-size:12.5px; color:var(--blue-dark); background:var(--blue-bg);}
+  #tab-scanos .db-thang input{width:auto; border:0; font-weight:800; font-size:14px; color:var(--ink); padding:6px 4px; background:transparent;}
+  #tab-scanos .db-thang input:focus{box-shadow:none;}
+  #tab-scanos .db-seg{display:inline-flex; background:#eef1f6; border-radius:10px; padding:3px; gap:2px;}
+  #tab-scanos .db-seg button{display:inline-flex; align-items:center; gap:6px; border:0; background:transparent; color:var(--ink-soft);
+    font-weight:700; font-size:13px; padding:7px 13px; border-radius:8px; white-space:nowrap;}
+  #tab-scanos .db-seg button:hover{color:var(--ink); opacity:1;}
+  #tab-scanos .db-seg button.on{background:#fff; color:var(--ink); box-shadow:0 1px 3px rgba(16,24,40,.12);}
+  #tab-scanos .db-seg button i{width:10px; height:10px; border-radius:3px; display:inline-block;}
+  #tab-scanos .db-tai{font-size:13px; color:var(--ink-soft);}
+
+  /* thẻ tổng tháng */
+  #tab-scanos .db-kpi{display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:12px;}
+  #tab-scanos .db-the{background:#fff; border:1px solid var(--line); border-radius:12px; box-shadow:var(--bong); padding:14px 16px 12px;
+    border-top:4px solid var(--mau, #173b57);}
+  #tab-scanos .db-the.tong{border-top-color:#173b57; background:linear-gradient(180deg,#f6f9fc,#fff);}
+  #tab-scanos .db-the .k{display:flex; align-items:center; gap:8px; font-size:13px; font-weight:800; color:var(--ink); text-transform:uppercase; letter-spacing:.05em;}
+  #tab-scanos .db-the .k i{width:11px; height:11px; border-radius:3px; background:var(--mau);}
+  #tab-scanos .db-the .k small{margin-left:auto; font-size:12px; font-weight:700; color:var(--ink-soft); text-transform:none; letter-spacing:0;}
+  #tab-scanos .db-the .v{display:flex; align-items:baseline; gap:8px; margin-top:8px;}
+  #tab-scanos .db-the .v b{font-size:32px; font-weight:800; line-height:1.1; color:var(--ink); font-variant-numeric:tabular-nums;}
+  #tab-scanos .db-the .v2{display:flex; align-items:baseline; gap:6px; margin-top:2px;}
+  #tab-scanos .db-the .v2 b{font-size:19px; font-weight:800; color:#24557a; font-variant-numeric:tabular-nums;}
+  #tab-scanos .db-the .v span, #tab-scanos .db-the .v2 span{font-size:12.5px; font-weight:700; color:var(--ink-soft);}
+  #tab-scanos .db-the .d{font-size:12.5px; color:var(--ink-soft); margin-top:6px; line-height:1.45;}
+  #tab-scanos .db-the .d:empty{display:none;}
+  #tab-scanos .db-the .d b{color:var(--ink);}
+  #tab-scanos .db-the .ss{font-weight:700; color:var(--ink-soft);}
+  #tab-scanos .db-the .ss.len{color:#1f7a45;}
+  #tab-scanos .db-the .ss.xuong{color:#b42318;}
+
+  /* khung biểu đồ / bảng */
+  #tab-scanos .db-card{background:#fff; border:1px solid var(--line); border-radius:12px; box-shadow:var(--bong); padding:14px 16px;}
+  #tab-scanos .db-h{display:flex; flex-wrap:wrap; align-items:center; gap:8px 16px; margin-bottom:8px;}
+  #tab-scanos .db-h b{font-size:14.5px; color:var(--ink);}
+  #tab-scanos .db-lg{display:flex; gap:14px; margin-left:auto; font-size:12.5px; font-weight:700; color:var(--ink-soft);}
+  #tab-scanos .db-lg span{display:inline-flex; align-items:center; gap:6px;}
+  #tab-scanos .db-lg i{width:11px; height:11px; border-radius:3px;}
+  #tab-scanos .db-ghi{margin-left:auto; font-size:12px; color:var(--ink-soft);}
+  #tab-scanos .db-chart{position:relative;}
+  #tab-scanos .db-chart svg{display:block; overflow:visible;}
+  #tab-scanos .db-trong{min-height:220px; padding:30px 20px;}
+  #tab-scanos .db-grid{stroke:#eef1f5; stroke-width:1;}
+  #tab-scanos .db-base{stroke:#c9d2de; stroke-width:1;}
+  #tab-scanos .db-cn{fill:#f6f8fb;}
+  #tab-scanos .db-ax{font-size:11px; fill:#7b8592; font-variant-numeric:tabular-nums;}
+  #tab-scanos .db-ax.nay{fill:var(--blue-dark); font-weight:800;}
+  #tab-scanos .db-val{font-size:10.5px; font-weight:700; fill:var(--ink); font-variant-numeric:tabular-nums;}
+  #tab-scanos .db-bar{transition:opacity .12s;}
+  #tab-scanos .db-bar.mo{opacity:.35;}
+  #tab-scanos .db-hit{fill:transparent; cursor:pointer; outline:none;}
+  #tab-scanos .db-hit.on{fill:rgba(23,59,87,.05);}
+  #tab-scanos .db-tip{position:absolute; top:8px; z-index:5; min-width:230px; background:#fff; border:1px solid var(--line); border-radius:10px;
+    box-shadow:0 8px 24px rgba(16,24,40,.16); padding:10px 12px; font-size:12.5px; pointer-events:none;}
+  #tab-scanos .db-tip .th{font-weight:800; color:var(--ink); margin-bottom:6px;}
+  #tab-scanos .db-tip .r{display:flex; align-items:center; gap:7px; padding:2px 0; color:var(--ink-soft);}
+  #tab-scanos .db-tip .r i{width:12px; height:3px; border-radius:2px; flex:0 0 auto;}
+  #tab-scanos .db-tip .r b{color:var(--ink); font-size:14px; font-variant-numeric:tabular-nums;}
+  #tab-scanos .db-tip .r.tong{border-top:1px solid var(--line-soft); margin-top:4px; padding-top:6px; padding-left:19px;}
+  #tab-scanos .db-tip .f{margin-top:4px; font-size:11.5px; color:#8a939f;}
+
+  /* bảng chi tiết theo ngày */
+  #tab-scanos table.db-tbl{width:100%; border-collapse:collapse; font-size:13.5px; font-variant-numeric:tabular-nums;}
+  #tab-scanos .db-tbl th{font-size:11.5px; font-weight:800; letter-spacing:.05em; text-transform:uppercase; color:var(--ink-soft);
+    padding:7px 12px; text-align:right; border-bottom:1px solid var(--line); background:#f8fafc; white-space:nowrap;}
+  #tab-scanos .db-tbl th.ng, #tab-scanos .db-tbl td.ng{text-align:left;}
+  #tab-scanos .db-tbl th.nm{text-align:center; color:var(--ink); border-bottom:2px solid var(--mau, #173b57);}
+  #tab-scanos .db-tbl th.nm i{display:inline-block; width:10px; height:10px; border-radius:3px; background:var(--mau); margin-right:6px; vertical-align:-1px;}
+  #tab-scanos .db-tbl td{padding:8px 12px; text-align:right; border-bottom:1px solid var(--line-soft); white-space:nowrap;}
+  #tab-scanos .db-tbl td.tong, #tab-scanos .db-tbl th.tong{background:#f6f9fc; font-weight:800;}
+  #tab-scanos .db-tbl .ko{color:#c3c9d2;}
+  #tab-scanos .db-tbl tr.ngay{cursor:pointer;}
+  #tab-scanos .db-tbl tr.ngay:hover td{background:#eef6fb;}
+  #tab-scanos .db-tbl td.ng{font-weight:700; color:var(--ink);}
+  #tab-scanos .db-tbl td.ng small{font-weight:600; color:var(--ink-soft); margin-left:4px;}
+  #tab-scanos .db-tbl td.ng .sf{margin-left:10px; font-size:11.5px; font-weight:600; color:#8a939f;}
+  #tab-scanos .db-tbl .mui{display:inline-block; width:14px; color:#8a939f; transition:transform .15s;}
+  #tab-scanos .db-tbl tr.mo .mui{transform:rotate(90deg);}
+  #tab-scanos .db-tbl tr.files td{background:#fafbfd; padding:4px 12px 8px 30px; text-align:left;}
+  #tab-scanos .db-tbl .f{display:flex; align-items:center; flex-wrap:wrap; gap:6px 14px; padding:6px 0; border-bottom:1px dashed var(--line-soft); font-size:13px; color:var(--ink-soft);}
+  #tab-scanos .db-tbl .f:last-child{border-bottom:0;}
+  #tab-scanos .db-tbl .f b{color:var(--ink);}
+  #tab-scanos .db-tbl .f .ten{max-width:320px; overflow:hidden; text-overflow:ellipsis;}
+  #tab-scanos .db-tbl .f .nmc{font-size:11.5px; font-weight:800; padding:1px 8px; border-radius:999px; color:var(--ink);
+    background:#fff; box-shadow:inset 0 0 0 1.5px var(--mau);}
+  #tab-scanos .db-tbl .f .sc{font-size:12px; font-weight:700;}
+  #tab-scanos .db-tbl .f .sc.du{color:#1f7a45;}
+  #tab-scanos .db-tbl .f .sc.thieu{color:#a15c00;}
+  #tab-scanos .db-tbl .f .luc{font-size:12px; color:#8a939f;}
+  #tab-scanos .db-tbl .f button{margin-left:auto;}
+  #tab-scanos .db-tbl tfoot td{border-top:2px solid var(--line); border-bottom:0; font-weight:800; color:var(--ink); background:#f8fafc;}
+
   /* ---------- Màn hình hẹp ---------- */
   @media(max-width:900px){
+    #tab-scanos .db-card{overflow-x:auto;}
     #tab-scanos .so-send{margin-left:0;}
     #tab-scanos .so-pick, #tab-scanos .so-search{max-width:none;}
     #tab-scanos .so-wrap{max-height:calc(100vh - 200px);}
@@ -1754,9 +1861,10 @@
   #tab-scan .sc-prog .bar i{display:block; height:100%; background:linear-gradient(90deg,#34b36b,#1f9d55); transition:width .3s;}
   #tab-scan .sc-prog span{font-size:12.5px; font-weight:800; color:#23874f; min-width:36px;}
 
-  #tab-scan .sc-act{display:flex; align-items:stretch; gap:8px; flex-wrap:wrap; margin-left:auto;}
+  /* hàng nút: luôn 1 dòng (màn hình hẹp dưới 900px mới cho xuống dòng) */
+  #tab-scan .sc-act{display:flex; align-items:stretch; gap:6px; flex-wrap:nowrap; margin-left:auto; min-width:0;}
   #tab-scan .sc-btn{display:inline-flex; align-items:center; gap:6px; border:0; border-radius:10px; color:#fff; font-weight:800;
-    font-size:13.5px; letter-spacing:.03em; padding:10px 16px; white-space:nowrap; box-shadow:0 2px 6px rgba(16,24,40,.14);
+    font-size:13.5px; letter-spacing:.03em; padding:10px 13px; white-space:nowrap; box-shadow:0 2px 6px rgba(16,24,40,.14); flex:0 0 auto;
     transition:transform .12s, box-shadow .12s;}
   #tab-scan .sc-btn:hover{opacity:1; transform:translateY(-1px); box-shadow:0 5px 12px rgba(16,24,40,.18);}
   #tab-scan .sc-vtl{background:linear-gradient(135deg,#8b5cf6,#6d28d9);}
@@ -1767,6 +1875,7 @@
   #tab-scan .sc-sb{background:#fff; color:#0b5a70; box-shadow:inset 0 0 0 2px #0e8fb0; font-size:20px; padding-left:14px; padding-right:14px; justify-content:center;}
   #tab-scan .sc-sb:hover{background:#e3f4f9;}
   #tab-scan .sc-xuat{background:linear-gradient(135deg,#24557a,#173b57);}
+  #tab-scan .sc-db{background:linear-gradient(135deg,#34b36b,#23874f);}
   #tab-scan .sc-xoa{background:#fff; color:#b91c1c; box-shadow:inset 0 0 0 2px #ef4444;}
   #tab-scan .sc-xoa:hover{background:#fef2f2; box-shadow:inset 0 0 0 2px #dc2626, 0 4px 10px rgba(220,38,38,.18);}
 
@@ -1785,17 +1894,17 @@
   #tab-scan .sc-chonfile small{margin-left:auto; font-size:11.5px; font-weight:600; color:var(--ink-soft); white-space:nowrap;}
 
   /* ô vị trí */
-  #tab-scan .sc-vt{display:flex; align-items:center; gap:8px; background:#fff; border:2px solid #e0a526; border-radius:10px;
-    padding:0 6px 0 11px; min-height:42px; cursor:text;}
+  #tab-scan .sc-vt{display:flex; align-items:center; gap:6px; background:#fff; border:2px solid #e0a526; border-radius:10px;
+    padding:0 6px 0 10px; min-height:42px; cursor:text; flex:0 1 auto; min-width:0;}
   #tab-scan .sc-vt span{font-size:12.5px; font-weight:800; color:#8a5a00; white-space:nowrap;}
-  #tab-scan .sc-vt input{width:110px; border:0; background:transparent; padding:6px 2px; font-family:var(--mono); font-size:16px;
+  #tab-scan .sc-vt input{width:90px; min-width:40px; border:0; background:transparent; padding:6px 2px; font-family:var(--mono); font-size:16px;
     font-weight:800; text-transform:uppercase; color:var(--ink); outline:none;}
   #tab-scan .sc-vt input::placeholder{font-weight:600; color:#c4a466; text-transform:none; font-family:var(--font); font-size:13px;}
   #tab-scan .sc-vt:focus-within{box-shadow:0 0 0 3px #fcefc9;}
   /* ô ghi chú: cùng dáng ô vị trí, màu xanh để phân biệt, chữ thường */
   #tab-scan .sc-gc{border-color:#7fb6d6;}
   #tab-scan .sc-gc span{color:#1f5f86;}
-  #tab-scan .sc-gc input{width:170px; font-family:var(--font); font-size:14px; font-weight:700; text-transform:none;}
+  #tab-scan .sc-gc input{width:100px; font-family:var(--font); font-size:14px; font-weight:700; text-transform:none;}
   #tab-scan .sc-gc input::placeholder{color:#94b8cf;}
   #tab-scan .sc-gc:focus-within{box-shadow:0 0 0 3px #dcecf6;}
 
@@ -1922,6 +2031,13 @@
   .sc-xoa-xuat.chua{background:#fff6e5; color:#8a5a00; border:1px solid #f0cf8a;}
   .sc-xoa-nut{display:flex; gap:8px; margin-top:16px; flex-wrap:wrap;}
   .sc-xoa-nut button{flex:1; white-space:nowrap;}
+  /* hộp "Lưu vào Dashboard" */
+  .sc-db-so{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px;}
+  .sc-db-so div{display:flex; flex-direction:column; align-items:center; padding:12px; border-radius:10px; background:#eef6fb; border:1px solid #cfe4f0;}
+  .sc-db-so b{font-size:26px; font-weight:800; line-height:1.15; color:#173b57; font-variant-numeric:tabular-nums;}
+  .sc-db-so span{font-size:12px; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.05em;}
+  .sc-db-ngay{display:flex; align-items:center; gap:10px; margin-top:12px; font-size:13.5px; font-weight:700; color:var(--ink);}
+  .sc-db-ngay input{width:auto; flex:0 0 auto;}
 
   /* ---------- Màn hình hẹp: xếp chồng ---------- */
   @media(max-width:1180px){
@@ -1929,6 +2045,9 @@
     #tab-scan .sc-right{grid-column:1 / -1; flex-direction:row; height:auto;}
     #tab-scan .sc-right .sc-box{height:340px;}
     #tab-scan .sc-box.loi{flex:1;}
+  }
+  @media(max-width:900px){
+    #tab-scan .sc-act{flex-wrap:wrap;}
   }
   @media(max-width:760px){
     #tab-scan .sc-main{grid-template-columns:1fr;}
@@ -3107,6 +3226,7 @@
         <select id="soNm">
           <option value="tgv">TGV/TDV</option>
           <option value="dl">Đô Lương</option>
+          <option value="db">📊 Dashboard</option>
         </select>
       </div>
       <button class="so-btn so-imp" id="soBtnImp" title="Nạp file Excel OS (chọn được nhiều file một lúc)"><span class="ic">⬆</span><span id="soImpTxt">Input</span></button>
@@ -3156,14 +3276,15 @@
         <button class="sc-btn sc-sb" id="scBtnSb" title="Ẩn/hiện danh sách kho">☰</button>
         <button class="sc-btn sc-back" id="scBtnBack" title="Quay lại tab SCAN OS">← Quay lại</button>
         <label class="sc-vt sc-gc" id="scGcBox" title="Ghi chú cho các thùng của phiên này (không bắt buộc) — có trong file Excel khi xuất">
-          <span>📝 GHI CHÚ</span><input type="text" id="scGc" placeholder="VD: hàng bị bẩn" autocomplete="off" maxlength="200">
+          <span>📝 GHI CHÚ</span><input type="text" id="scGc" placeholder="VD: bẩn" autocomplete="off" maxlength="200">
         </label>
         <label class="sc-vt" id="scVtBox" title="Vị trí đặt các thùng của phiên này (không bắt buộc)">
           <span>📍 VỊ TRÍ</span><input type="text" id="scVt" placeholder="VD: A01A" autocomplete="off" spellcheck="false">
         </label>
         <button class="sc-btn sc-vtl" id="scBtnVtl" title="Mở bảng các thùng đã lưu: JO - BUYER PO - STYLE - VỊ TRÍ - UCC - GHI CHÚ (sửa tạm / copy được)">🗂 VỊ TRÍ ĐÃ LƯU</button>
         <button class="sc-btn sc-xuat" id="scBtnXuat" title="Xuất Excel: JOB NO - BUYER PO - STYLE NO - VỊ TRÍ - UCC - GHI CHÚ - QTY (xếp lần lượt theo thứ tự này)">⬇ XUẤT FILE</button>
-        <button class="sc-btn sc-xoa" id="scBtnXoa" title="Scan và xuất file xong: xoá tiến độ scan và xoá file này ở SCAN OS">🗑 XOÁ DỮ LIỆU</button>
+        <button class="sc-btn sc-db" id="scBtnDb" title="Scan xong: lưu số thùng (CTN) / PCS của file này vào Dashboard (SCAN OS), rồi xoá dữ liệu tìm kiếm và scan">📊 LƯU</button>
+        <button class="sc-btn sc-xoa" id="scBtnXoa" title="Scan và xuất file xong: xoá tiến độ scan và xoá file này ở SCAN OS">🗑 XOÁ</button>
       </div>
     </div>
 
@@ -13171,8 +13292,9 @@ let NM = 'tgv';                           // nhà máy đang chọn
 let CHK = null;                           // khoá file đã bấm Check file (của nhà máy đang chọn)
 let VIS = [];                             // các dòng đang hiện: [{f, r}]
 let DA_DOC = false, LUU_OK = true;
+let DB_MO = false;                        // đang xem Dashboard (ô nhà máy chọn "📊 Dashboard")
 const keyChk = () => KEY_CHK + (NM === 'tgv' ? '' : '-' + NM);
-try{ NM = NHA_MAY[localStorage.getItem(KEY_NM)] ? localStorage.getItem(KEY_NM) : 'tgv'; }catch(e){}
+try{ NM = NHA_MAY[localStorage.getItem(KEY_NM)] ? localStorage.getItem(KEY_NM) : 'tgv'; DB_MO = localStorage.getItem(KEY_NM) === 'db'; }catch(e){}
 try{ CHK = localStorage.getItem(keyChk()) || null; }catch(e){}
 
 // TGV/TDV: tên file khác nhau -> file riêng; trùng tên (không phân biệt hoa thường, bỏ đuôi) -> cập nhật
@@ -13250,6 +13372,29 @@ async function chuanBiGhi(){
   try{ const raw = await sbGet(KEY); DA_DOC = true; if(raw) STORE = moGoi(raw); }catch(e){}
 }
 window.flushScanOs = function(){ if(tLuu){ clearTimeout(tLuu); tLuu = null; luu(); } };
+
+// ---- Dashboard: khoá riêng, nhẹ (không đụng dữ liệu file) ----
+// { v:1, ds:[ { id, nm, ten, ngay:'YYYY-MM-DD', at, ctn, pcs, ctnScan, pcsScan } ] }
+//   Mỗi lần bấm "📊 LƯU" ở tab SCAN = 1 bản ghi: ctn = số UCC (thùng) của file, pcs = tổng QTY / PCS,
+//   ctnScan / pcsScan = phần đã bấm LƯU SCAN. ngay = ngày tính vào dashboard (mặc định hôm lưu).
+const KEY_DB = 'appwh-scanos-db';
+let DB = { v:1, ds:[] }, DB_LUC = 0;
+const moDb = raw => { const o = raw ? JSON.parse(raw) : null; return (o && Array.isArray(o.ds)) ? o : { v:1, ds:[] }; };
+async function taiDb(){
+  try{ DB = moDb(await sbGet(KEY_DB)); lsSet(KEY_DB, JSON.stringify(DB)); }
+  catch(e){ try{ DB = moDb(lsGet(KEY_DB)); }catch(_){} }
+  DB_LUC = Date.now();
+  if(DB_MO) veLai();
+}
+// Đọc bản mới nhất -> sửa -> ghi -> kiểm tra (2 máy cùng lưu không mất bản ghi của nhau)
+async function ghiDb(sua){
+  const o = moDb(await sbGet(KEY_DB));
+  sua(o);
+  const raw = JSON.stringify(o);
+  await sbSetVerified(KEY_DB, raw);
+  lsSet(KEY_DB, raw);
+  DB = o; DB_LUC = Date.now();
+}
 
 // =====================================================================
 // C. LỌC + SẮP XẾP
@@ -13394,6 +13539,8 @@ function veBang(tu){
 }
 function veLai(){
   if(!$('soWrap')) return;
+  $('tab-scanos').classList.toggle('so-db', DB_MO);
+  if(DB_MO){ $('soNm').value = 'db'; veDb(); return; }
   const tu = tachTu($('soQ').value);
   veChon();
   VIS = hangHienThi(tu);
@@ -13401,6 +13548,241 @@ function veLai(){
   veNut();
   veInfo(tu);
 }
+
+// =====================================================================
+// D2. DASHBOARD — tổng thùng (CTN) / PCS theo ngày trong tháng, mỗi nhà máy 1 màu
+//     Dữ liệu từ nút "📊 LƯU" ở tab SCAN (xem KEY_DB). Cột chồng TGV/TDV (dưới) + Đô Lương (trên).
+// =====================================================================
+const DB_NM = [ { k:'tgv', ten:'TGV/TDV', mau:'#2a78d6' }, { k:'dl', ten:'Đô Lương', mau:'#eb6834' } ];
+const p2 = n => String(n).padStart(2, '0');
+const thangCua = d => d.getFullYear() + '-' + p2(d.getMonth() + 1);
+const homNay = () => { const d = new Date(); return thangCua(d) + '-' + p2(d.getDate()); };
+const doiThang = (ym, n) => { const [y, m] = ym.split('-').map(Number); return thangCua(new Date(y, m - 1 + n, 1)); };
+const tenThang = ym => `T${Number(ym.slice(5))}/${ym.slice(0, 4)}`;
+const THU = ['CN','T2','T3','T4','T5','T6','T7'];
+const THU_DU = ['Chủ nhật','Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7'];
+const soGon = n => n >= 10000 ? (n / 1000).toLocaleString('vi-VN', {maximumFractionDigits: n >= 100000 ? 0 : 1}) + 'k' : soVN(n);
+const tenDo = d => d === 'pcs' ? 'pcs' : 'thùng';
+let DB_THANG = thangCua(new Date()), DB_DO = 'ctn', DB_LOC = 'all';
+const DB_MO_NGAY = new Set();             // các ngày đang mở danh sách file ở bảng chi tiết
+let DB_TINH = null;                       // số liệu tháng đang vẽ (cho tooltip)
+
+function soLieuThang(ym){
+  const [y, m] = ym.split('-').map(Number), soNgay = new Date(y, m, 0).getDate();
+  const rong = () => ({ ctn:0, pcs:0, n:0 });
+  const ngay = Array.from({length: soNgay}, (_, i)=>({ d:i + 1, tgv:rong(), dl:rong(), ds:[] }));
+  const tong = { tgv:rong(), dl:rong() };
+  DB.ds.filter(r=>String(r.ngay || '').slice(0, 7) === ym).forEach(r=>{
+    const o = ngay[Number(r.ngay.slice(8, 10)) - 1]; if(!o) return;
+    const nm = r.nm === 'dl' ? 'dl' : 'tgv';
+    [o[nm], tong[nm]].forEach(t=>{ t.ctn += Number(r.ctn) || 0; t.pcs += Number(r.pcs) || 0; t.n++; });
+    o.ds.push(r);
+  });
+  return { ym, y, m, soNgay, ngay, tong };
+}
+const dsHien = () => DB_LOC === 'all' ? DB_NM : DB_NM.filter(x=>x.k === DB_LOC);
+const cong = (o, nms, k) => nms.reduce((s, x)=>s + o[x.k][k], 0);
+// Trục làm tròn lên số đẹp: 1, 2, 2.5, 5 x 10^n
+function tronTren(v){
+  if(v <= 0) return 10;
+  const mu = Math.pow(10, Math.floor(Math.log10(v)));
+  for(const b of [1, 2, 2.5, 5, 10]) if(b * mu >= v) return b * mu;
+  return 10 * mu;
+}
+
+function veDb(){
+  const wrap = $('soWrap');
+  const coSua = typeof coSuaKhoa !== 'function' || coSuaKhoa(KEY_DB);
+  $('soInfoL').innerHTML = `<span class="so-chip on">📊 Dashboard — số thùng / PCS theo ngày</span>
+    <span class="so-chip">Dữ liệu từ nút <b>📊 LƯU</b> ở màn hình SCAN</span>`;
+  const S = soLieuThang(DB_THANG), T = soLieuThang(doiThang(DB_THANG, -1));
+  DB_TINH = S;
+  const nms = dsHien();
+  const coNgay = S.ngay.filter(o=>nms.some(x=>o[x.k].n));
+
+  // ---- thẻ tổng tháng ----
+  const soSanhTruoc = (a, b) => {
+    if(!b) return a ? `<span class="ss len">mới so với ${tenThang(T.ym)}</span>` : '';
+    const pt = Math.round((a - b) / b * 100);
+    return `<span class="ss ${pt > 0 ? 'len' : pt < 0 ? 'xuong' : ''}">${pt > 0 ? '▲' : pt < 0 ? '▼' : '•'} ${Math.abs(pt)}% thùng so với ${tenThang(T.ym)}</span>`;
+  };
+  const the = x => {
+    const t = S.tong[x.k], soNg = S.ngay.filter(o=>o[x.k].n).length;
+    return `<div class="db-the" style="--mau:${x.mau}">
+      <div class="k"><i></i>${esc(x.ten)}<small>${tenThang(S.ym)}</small></div>
+      <div class="v"><b>${soVN(t.ctn)}</b><span>thùng (CTN)</span></div>
+      <div class="v2"><b>${soVN(t.pcs)}</b><span>pcs</span></div>
+      <div class="d">${soVN(t.n)} file · ${soNg} ngày có hàng${soNg ? ` · TB ${soVN(Math.round(t.ctn / soNg))} thùng/ngày` : ''}</div>
+      <div class="d">${soSanhTruoc(t.ctn, T.tong[x.k].ctn)}</div>
+    </div>`;
+  };
+  let theTong = '';
+  if(DB_LOC === 'all'){
+    const ctn = cong(S.tong, DB_NM, 'ctn'), pcs = cong(S.tong, DB_NM, 'pcs');
+    const max = coNgay.reduce((b, o)=>cong(o, DB_NM, 'ctn') > (b ? cong(b, DB_NM, 'ctn') : -1) ? o : b, null);
+    theTong = `<div class="db-the tong">
+      <div class="k">Tổng 2 nhà máy<small>${tenThang(S.ym)}</small></div>
+      <div class="v"><b>${soVN(ctn)}</b><span>thùng (CTN)</span></div>
+      <div class="v2"><b>${soVN(pcs)}</b><span>pcs</span></div>
+      <div class="d">${coNgay.length} ngày có hàng${max ? ` · cao nhất ${p2(max.d)}/${p2(S.m)}: <b>${soVN(cong(max, DB_NM, 'ctn'))}</b> thùng` : ''}</div>
+      <div class="d">${soSanhTruoc(ctn, cong(T.tong, DB_NM, 'ctn'))}</div>
+    </div>`;
+  }
+
+  // ---- bảng chi tiết theo ngày ----
+  const fmtLuu = iso => iso ? new Date(iso).toLocaleString('vi-VN', {hour:'2-digit', minute:'2-digit', day:'2-digit', month:'2-digit'}) : '';
+  const bang = !coNgay.length ? '' : `<table class="db-tbl">
+    <thead><tr><th rowspan="2" class="ng">Ngày</th>${nms.map(x=>`<th colspan="2" class="nm" style="--mau:${x.mau}"><i></i>${esc(x.ten)}</th>`).join('')}
+      ${nms.length > 1 ? '<th colspan="2" class="nm tong">Tổng</th>' : ''}</tr>
+      <tr>${(nms.length > 1 ? nms.concat([{}]) : nms).map(()=>'<th>Thùng</th><th>PCS</th>').join('')}</tr></thead>
+    <tbody>${coNgay.map(o=>{
+      const key = S.ym + '-' + p2(o.d), mo = DB_MO_NGAY.has(key), d = new Date(S.y, S.m - 1, o.d);
+      const files = o.ds.filter(r=>nms.some(x=>x.k === (r.nm === 'dl' ? 'dl' : 'tgv')))
+        .sort((a, b)=>String(a.at).localeCompare(String(b.at)));
+      return `<tr class="ngay${mo ? ' mo' : ''}" data-db-ngay="${key}" title="Bấm để ${mo ? 'ẩn' : 'xem'} các file đã lưu ngày này">
+          <td class="ng"><span class="mui">▸</span>${p2(o.d)}/${p2(S.m)} <small>${THU[d.getDay()]}</small><span class="sf">${files.length} file</span></td>
+          ${nms.map(x=>`<td>${o[x.k].n ? soVN(o[x.k].ctn) : '<span class="ko">–</span>'}</td><td>${o[x.k].n ? soVN(o[x.k].pcs) : '<span class="ko">–</span>'}</td>`).join('')}
+          ${nms.length > 1 ? `<td class="tong">${soVN(cong(o, nms, 'ctn'))}</td><td class="tong">${soVN(cong(o, nms, 'pcs'))}</td>` : ''}
+        </tr>` + (mo ? `<tr class="files"><td colspan="${1 + 2 * (nms.length + (nms.length > 1 ? 1 : 0))}">${files.map(r=>{
+          const x = DB_NM.find(n=>n.k === (r.nm === 'dl' ? 'dl' : 'tgv'));
+          const du = Number(r.ctnScan) >= Number(r.ctn);
+          return `<div class="f">
+            <span class="nmc" style="--mau:${x.mau}">${esc(x.ten)}</span>
+            <b class="ten" title="${esc(r.ten)}">${esc(r.ten)}</b>
+            <span><b>${soVN(r.ctn)}</b> thùng · <b>${soVN(r.pcs)}</b> pcs</span>
+            <span class="sc ${du ? 'du' : 'thieu'}" title="Số thùng đã bấm LƯU SCAN lúc lưu vào dashboard">${du ? '✓' : '⚠'} đã scan ${soVN(r.ctnScan)}/${soVN(r.ctn)}</span>
+            <span class="luc">lưu ${fmtLuu(r.at)}</span>
+            ${coSua ? `<button class="ghost sm" data-db-xoa="${esc(r.id)}" title="Xoá bản ghi này khỏi dashboard (lưu nhầm)">🗑</button>` : ''}
+          </div>`; }).join('')}</td></tr>` : '');
+    }).join('')}</tbody>
+    <tfoot><tr><td class="ng">Cả tháng</td>${nms.map(x=>`<td>${soVN(S.tong[x.k].ctn)}</td><td>${soVN(S.tong[x.k].pcs)}</td>`).join('')}
+      ${nms.length > 1 ? `<td class="tong">${soVN(cong(S.tong, nms, 'ctn'))}</td><td class="tong">${soVN(cong(S.tong, nms, 'pcs'))}</td>` : ''}</tr></tfoot>
+  </table>`;
+
+  const nut = (attr, v, cur, txt) => `<button data-${attr}="${v}" class="${v === cur ? 'on' : ''}">${txt}</button>`;
+  wrap.innerHTML = `<div class="db">
+    <div class="db-bar">
+      <div class="db-thang">
+        <button data-db-thang="-1" title="Tháng trước">‹</button>
+        <input type="month" id="soDbThang" value="${DB_THANG}" title="Chọn tháng">
+        <button data-db-thang="1" title="Tháng sau">›</button>
+        ${DB_THANG !== thangCua(new Date()) ? `<button class="nay" data-db-thang="0">Tháng này</button>` : ''}
+      </div>
+      <div class="db-seg" title="Nhà máy">${nut('db-loc', 'all', DB_LOC, 'Tất cả')}${DB_NM.map(x=>nut('db-loc', x.k, DB_LOC, `<i style="background:${x.mau}"></i>${esc(x.ten)}`)).join('')}</div>
+      <span class="db-gian"></span>
+      <div class="db-seg" title="Biểu đồ theo">${nut('db-do', 'ctn', DB_DO, 'Thùng (CTN)')}${nut('db-do', 'pcs', DB_DO, 'PCS')}</div>
+    </div>
+    ${DB_LUC ? '' : `<div class="db-tai">⏳ Đang tải dữ liệu dashboard…</div>`}
+    <div class="db-kpi">${nms.map(the).join('')}${theTong}</div>
+    <div class="db-card">
+      <div class="db-h"><b>${DB_DO === 'pcs' ? 'Số PCS' : 'Số thùng (CTN)'} theo ngày — ${tenThang(S.ym)}</b>
+        ${nms.length > 1 ? `<span class="db-lg">${nms.map(x=>`<span><i style="background:${x.mau}"></i>${esc(x.ten)}</span>`).join('')}</span>` : ''}</div>
+      <div class="db-chart" id="soDbChart">${coNgay.length ? '' : `<div class="so-empty db-trong"><div class="big">📊</div>
+        <b>${tenThang(S.ym)} chưa có dữ liệu${DB_LOC === 'all' ? '' : ' của ' + esc(dsHien()[0].ten)}</b>
+        <span>Scan xong một file, bấm <i class="k send">📊 LƯU</i> ở màn hình SCAN — số thùng và PCS của file sẽ được cộng vào ngày hôm đó.</span></div>`}</div>
+    </div>
+    ${bang ? `<div class="db-card"><div class="db-h"><b>Chi tiết theo ngày</b><span class="db-ghi">Bấm vào 1 ngày để xem các file đã lưu</span></div>${bang}</div>` : ''}
+  </div>`;
+  if(coNgay.length) veBieuDo(S, nms);
+}
+
+function veBieuDo(S, nms){
+  const box = $('soDbChart'); if(!box) return;
+  const W = Math.max(520, box.clientWidth || 900), H = 300;
+  const L = 52, R = 12, TOP = 26, B = 42;
+  const pw = W - L - R, ph = H - TOP - B;
+  const tongNgay = o => cong(o, nms, DB_DO);
+  const top = tronTren(Math.max(...S.ngay.map(tongNgay)) * 1.12);
+  const yOf = v => TOP + ph - v / top * ph;
+  const band = pw / S.soNgay, bw = Math.max(6, Math.min(30, band * 0.62));
+  const nay = homNay();
+  let svg = `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" role="img" aria-label="${DB_DO === 'pcs' ? 'Số PCS' : 'Số thùng'} theo ngày ${tenThang(S.ym)}">`;
+  // nền cuối tuần (chủ nhật) + lưới + nhãn trục trái
+  S.ngay.forEach((o, i)=>{
+    if(new Date(S.y, S.m - 1, o.d).getDay() === 0) svg += `<rect x="${L + band * i}" y="${TOP}" width="${band}" height="${ph}" class="db-cn"/>`;
+  });
+  for(let i = 0; i <= 4; i++){
+    const v = top * i / 4, y = yOf(v);
+    svg += `<line x1="${L}" x2="${W - R}" y1="${y}" y2="${y}" class="${i ? 'db-grid' : 'db-base'}"/>`
+         + `<text x="${L - 8}" y="${y + 4}" text-anchor="end" class="db-ax">${soGon(v)}</text>`;
+  }
+  const buoc = band >= 22 ? 1 : 2;
+  S.ngay.forEach((o, i)=>{
+    const cx = L + band * i + band / 2, x = cx - bw / 2;
+    const key = S.ym + '-' + p2(o.d), laNay = key === nay;
+    if(o.d === 1 || (o.d - 1) % buoc === 0 || laNay)
+      svg += `<text x="${cx}" y="${H - B + 18}" text-anchor="middle" class="db-ax${laNay ? ' nay' : ''}">${o.d}</text>`;
+    // cột chồng: nhà máy đầu ở dưới; khe 2px nền trắng giữa 2 phần, chỉ đầu cột trên cùng bo 4px
+    let tich = 0;
+    const phan = nms.filter(x=>o[x.k][DB_DO] > 0);
+    phan.forEach((n, j)=>{
+      const yb = yOf(tich) - (j ? 2 : 0);          // đáy phần này (chừa khe 2px với phần dưới)
+      tich += o[n.k][DB_DO];
+      const y = yOf(tich), hh = yb - y;
+      if(hh <= 0) return;
+      const r = j === phan.length - 1 ? Math.min(4, hh, bw / 2) : 0;
+      svg += r
+        ? `<path d="M${x},${yb} V${y + r} Q${x},${y} ${x + r},${y} H${x + bw - r} Q${x + bw},${y} ${x + bw},${y + r} V${yb} Z" fill="${n.mau}" class="db-bar" data-i="${i}"/>`
+        : `<rect x="${x}" y="${y}" width="${bw}" height="${hh}" fill="${n.mau}" class="db-bar" data-i="${i}"/>`;
+    });
+    // số trên đầu cột: chỉ khi đủ chỗ (chi tiết từng ngày có ở tooltip + bảng bên dưới)
+    const t = tongNgay(o);
+    if(t > 0 && band >= 24) svg += `<text x="${cx}" y="${yOf(t) - 6}" text-anchor="middle" class="db-val">${soGon(t)}</text>`;
+    // vùng rê chuột: cả cột ngày (to hơn cột vẽ)
+    svg += `<rect x="${L + band * i}" y="${TOP - 18}" width="${band}" height="${ph + 18 + 24}" class="db-hit" data-i="${i}" tabindex="${t > 0 ? 0 : -1}"/>`;
+  });
+  svg += `<text x="${L - 8}" y="${TOP - 10}" text-anchor="end" class="db-ax">${tenDo(DB_DO)}</text></svg><div class="db-tip" id="soDbTip" hidden></div>`;
+  box.innerHTML = svg;
+
+  const tip = $('soDbTip');
+  const hien = el=>{
+    const i = Number(el.dataset.i), o = S.ngay[i], d = new Date(S.y, S.m - 1, o.d);
+    box.querySelectorAll('.db-hit').forEach(h=>h.classList.toggle('on', h === el));
+    box.querySelectorAll('.db-bar').forEach(b=>b.classList.toggle('mo', b.dataset.i !== String(i)));
+    tip.innerHTML = `<div class="th">${THU_DU[d.getDay()]}, ${p2(o.d)}/${p2(S.m)}/${S.y}</div>`
+      + nms.map(x=>`<div class="r"><i style="background:${x.mau}"></i><b>${soVN(o[x.k].ctn)}</b><span>thùng · ${soVN(o[x.k].pcs)} pcs — ${esc(x.ten)}</span></div>`).join('')
+      + (nms.length > 1 ? `<div class="r tong"><b>${soVN(cong(o, nms, 'ctn'))}</b><span>thùng · ${soVN(cong(o, nms, 'pcs'))} pcs — Tổng</span></div>` : '')
+      + `<div class="f">${o.ds.filter(r=>nms.some(x=>x.k === (r.nm === 'dl' ? 'dl' : 'tgv'))).length} file đã lưu</div>`;
+    tip.hidden = false;
+    const tyLe = box.clientWidth / W, cx = (Number(el.getAttribute('x')) + band / 2) * tyLe;
+    let left = cx + 14;
+    if(left + tip.offsetWidth > box.clientWidth - 4) left = cx - 14 - tip.offsetWidth;
+    tip.style.left = Math.max(4, left) + 'px';
+  };
+  const an = ()=>{ tip.hidden = true; box.querySelectorAll('.db-hit.on').forEach(h=>h.classList.remove('on')); box.querySelectorAll('.db-bar.mo').forEach(b=>b.classList.remove('mo')); };
+  box.querySelectorAll('.db-hit').forEach(h=>{
+    h.addEventListener('pointerenter', ()=>hien(h));
+    h.addEventListener('focus', ()=>hien(h));
+    h.addEventListener('click', ()=>hien(h));
+    h.addEventListener('blur', an);
+  });
+  box.querySelector('svg').addEventListener('pointerleave', an);
+}
+
+// ---- sự kiện của dashboard (gắn 1 lần vào khung bảng) ----
+$('soWrap').addEventListener('click', async e=>{
+  if(!DB_MO) return;
+  const th = e.target.closest('[data-db-thang]');
+  if(th){ const n = Number(th.dataset.dbThang); DB_THANG = n ? doiThang(DB_THANG, n) : thangCua(new Date()); veLai(); return; }
+  const lc = e.target.closest('[data-db-loc]'); if(lc){ DB_LOC = lc.dataset.dbLoc; veLai(); return; }
+  const dd = e.target.closest('[data-db-do]'); if(dd){ DB_DO = dd.dataset.dbDo; veLai(); return; }
+  const xoa = e.target.closest('[data-db-xoa]');
+  if(xoa){
+    const r = DB.ds.find(x=>x.id === xoa.dataset.dbXoa); if(!r) return;
+    if(!await confirmBox(`Xoá "${r.ten}" (${soVN(r.ctn)} thùng · ${soVN(r.pcs)} pcs, ngày ${r.ngay.split('-').reverse().join('/')}) khỏi dashboard? Mọi người cùng dùng app sẽ không còn thấy bản ghi này.`)) return;
+    try{ await ghiDb(o=>{ o.ds = o.ds.filter(x=>x.id !== r.id); }); toast('Đã xoá khỏi dashboard'); }
+    catch(err){ toast('⚠ Chưa xoá được: ' + (err.message || err)); }
+    veLai(); return;
+  }
+  const ng = e.target.closest('[data-db-ngay]');
+  if(ng){ const k = ng.dataset.dbNgay; DB_MO_NGAY.has(k) ? DB_MO_NGAY.delete(k) : DB_MO_NGAY.add(k); veLai(); }
+});
+$('soWrap').addEventListener('change', e=>{
+  if(!DB_MO || e.target.id !== 'soDbThang' || !/^\d{4}-\d{2}$/.test(e.target.value)) return;
+  DB_THANG = e.target.value; e.target.blur(); veLai();
+});
+let tCo = null;
+window.addEventListener('resize', ()=>{ clearTimeout(tCo); tCo = setTimeout(()=>{ if(DB_MO && $('soDbChart') && $('soDbChart').offsetParent && DB_TINH) veBieuDo(DB_TINH, dsHien()); }, 200); });
 
 // =====================================================================
 // E. NẠP FILE
@@ -13428,6 +13810,7 @@ function baoKetQua(okHtml, canhBao, loi){
   if(tot) setTimeout(()=>{ if($('soNote').className.includes('ok')) baoNote(''); }, 8000);
 }
 async function napFiles(list){
+  if(DB_MO){ toast('Đang xem Dashboard — chọn TGV/TDV hoặc Đô Lương rồi mới nạp file'); return; }
   list = [...list].filter(f=>/\.(xlsx|xlsm|xls|csv)$/i.test(f.name));
   if(!list.length){ toast('⚠ Chỉ nhận file Excel (.xlsx, .xls, .csv)'); return; }
   if(!window.XLSX){ toast('⚠ Chưa tải được thư viện Excel — kiểm tra mạng rồi tải lại trang'); return; }
@@ -13538,8 +13921,24 @@ $('soSel').onchange = ()=>{ veNut(); veInfo(tachTu($('soQ').value)); };
 // Đổi nhà máy: danh sách file, file đang xem và tên cột đổi theo nhà máy đó
 $('soNm').onchange = ()=>{
   const nm = $('soNm').value;
-  if(!NHA_MAY[nm] || nm === NM) return;
   if(document.activeElement && document.activeElement.closest && document.activeElement.closest('#soWrap')) document.activeElement.blur();
+  // Dashboard: thay bảng bằng màn hình tổng hợp theo ngày, ẩn các nút nạp / tìm / đưa sang SCAN
+  if(nm === 'db'){
+    if(DB_MO) return;
+    DB_MO = true;
+    try{ localStorage.setItem(KEY_NM, 'db'); }catch(e){}
+    baoNote('');
+    veLai();
+    $('soWrap').scrollTop = 0;
+    taiDb();
+    return;
+  }
+  if(!NHA_MAY[nm]) return;
+  if(DB_MO){
+    DB_MO = false;
+    if(nm === NM){ try{ localStorage.setItem(KEY_NM, nm); }catch(e){} veLai(); toast('🏭 Nhà máy: ' + NHA_MAY[nm].ten); return; }
+  }
+  if(nm === NM) return;
   CHK_NM[NM] = CHK;
   NM = nm;
   try{ localStorage.setItem(KEY_NM, nm); }catch(e){}
@@ -13592,7 +13991,7 @@ $('soBtnSend').onclick = async ()=>{
   toast(`✓ Đã đưa ${soVN(rows.length)} dòng của "${f.name}" sang SCAN`);
   if(typeof switchTab === 'function') switchTab('scan');
 };
-$('soBtnSync').onclick = ()=>{ tai(true); };
+$('soBtnSync').onclick = ()=>{ tai(true); if(DB_MO) taiDb(); };
 // SCAN không còn dòng riêng ở sidebar — mở từ nút này (chưa đưa file nào thì SCAN tự hiện danh sách chọn file)
 $('soBtnScan').onclick = ()=>{ if(typeof switchTab === 'function') switchTab('scan'); };
 
@@ -13707,6 +14106,7 @@ async function napTuHop(){
 
 window.soRender = function(){
   damBaoDaTai().then(kiemHop);    // lần đầu mở tab: lấy dữ liệu đang có trên máy chủ, rồi nạp file mới từ mail (nếu có)
+  if(DB_MO && Date.now() - DB_LUC > 30000) taiDb();   // dashboard: lấy bản ghi máy khác vừa lưu (tối đa 30 giây/lần)
   // render() tổng chạy lại định kỳ khi đồng bộ — đang gõ dở trong 1 ô thì không vẽ lại kẻo mất chữ
   if(document.activeElement && document.activeElement.closest && document.activeElement.closest('#soWrap')) return;
   veLai();
@@ -13749,6 +14149,12 @@ window.SCAN_OS = {
   layDuLieuScan: ()=> STORE.scan ? JSON.parse(JSON.stringify(STORE.scan)) : null,
   damBaoDaTai,
   kiemHop,                                // nạp file mới từ mail (n8n) nếu có — tab SCAN gọi khi mở
+  // Nút "📊 LƯU" ở tab SCAN: thêm 1 bản ghi vào Dashboard — { nm, ten, ngay, ctn, pcs, ctnScan, pcsScan }
+  luuDashboard: async rec=>{
+    const r = { id:'d' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), at:new Date().toISOString(), ...rec };
+    await ghiDb(o=>{ o.ds.push(r); });
+    DB_THANG = String(r.ngay).slice(0, 7);   // mở Dashboard là thấy ngay tháng vừa lưu
+  },
 
 };
 })();
@@ -14299,18 +14705,58 @@ async function xoaDuLieu(){
   m.body.querySelector('[data-yes]').onclick = ()=>lam(false);
   const xx = m.body.querySelector('[data-xx]'); if(xx) xx.onclick = ()=>lam(true);
 }
-async function thucHienXoa(){
+// Nút "📊 LƯU": scan xong -> ghi số thùng (CTN) + PCS của file vào Dashboard (tab SCAN OS),
+// rồi xoá tiến độ scan + file ở SCAN OS (giống nút 🗑 XOÁ) — chỉ còn lại con số trong Dashboard.
+async function luuDashboard(){
+  if(!DATA) return;
+  await taiTienDo();
+  veTatCa();
+  let da = 0, pcsDa = 0; U.forEach((o,u)=>{ if(daLuu(u)){ da++; pcsDa += o.qty; } });
+  const ctn = U.size, pcs = DATA.rows.reduce((s, r)=>s + (Number(r.qty)||0), 0);
+  const xuat = daXuat(), ten = DATA.name, nm = DATA.nm === 'dl' ? 'dl' : 'tgv';
+  const d = new Date(), hom = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  const m = openModal('Lưu vào Dashboard', `
+    <div class="sc-xoa-file"><b>📄 ${esc(ten)}</b>
+      <span>🏭 ${nm === 'dl' ? 'Đô Lương' : 'TGV/TDV'} · đã scan ${soVN(da)}/${soVN(ctn)} thùng${PHIEN.length ? ` · <em>${PHIEN.length} thùng đang quét chưa lưu</em>` : ''}</span></div>
+    <div class="sc-db-so"><div><b>${soVN(ctn)}</b><span>thùng (CTN)</span></div><div><b>${soVN(pcs)}</b><span>pcs</span></div></div>
+    <label class="sc-db-ngay">Tính vào ngày <input type="date" data-ngay value="${hom}" max="${hom}"></label>
+    ${da < ctn ? `<div class="sc-xoa-xuat chua">⚠ Còn ${soVN(ctn - da)} thùng chưa scan — dashboard vẫn tính đủ ${soVN(ctn)} thùng của file</div>` : ''}
+    <div class="sc-xoa-canh">Sau khi lưu: <b>xoá tiến độ scan</b> (vị trí, các lượt đã lưu) và <b>xoá file này ở SCAN OS</b> (không còn tìm kiếm / scan được).
+      Chỉ giữ lại số thùng và PCS trong <b>📊 Dashboard</b> của tab SCAN OS.</div>
+    ${xuat ? '' : `<div class="sc-xoa-xuat chua">⚠ Chưa xuất file (hoặc có lượt lưu mới sau lần xuất gần nhất) — nên xuất trước khi lưu</div>`}
+    <div class="sc-xoa-nut"><button class="ghost" data-no>Huỷ</button>
+      ${xuat ? '' : '<button class="secondary" data-xx>⬇ Xuất file rồi lưu</button>'}
+      <button data-yes>📊 Lưu vào Dashboard</button></div>`);
+  m.body.querySelector('[data-no]').onclick = ()=>{ m.close(); inp.focus(); };
+  const lam = async xuatTruoc=>{
+    const ngay = m.body.querySelector('[data-ngay]').value;
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(ngay)){ toast('Chọn ngày tính vào dashboard'); return; }
+    m.body.querySelectorAll('button').forEach(b=>b.disabled = true);
+    if(xuatTruoc) xuatFile();
+    try{ await SCAN_OS.luuDashboard({ nm, ten, ngay, ctn, pcs, ctnScan:da, pcsScan:pcsDa }); }
+    catch(e){
+      m.body.querySelectorAll('button').forEach(b=>b.disabled = false);
+      toast('⚠ Chưa lưu được vào Dashboard: ' + (e.message || e) + ' — dữ liệu scan vẫn giữ nguyên');
+      return;
+    }
+    m.close();
+    await thucHienXoa(`📊 Đã lưu ${soVN(ctn)} thùng · ${soVN(pcs)} pcs của "${ten}" vào Dashboard`);
+  };
+  m.body.querySelector('[data-yes]').onclick = ()=>lam(false);
+  const xx = m.body.querySelector('[data-xx]'); if(xx) xx.onclick = ()=>lam(true);
+}
+async function thucHienXoa(baoXong){
   const k = DATA.key, ten = DATA.name;
   try{
     await ghiTienDo(o=>{ delete o.f[k]; });            // 1. tiến độ scan
     await SCAN_OS.xoaFile(k);                          // 2. file ở SCAN OS (kèm dữ liệu đã đưa sang SCAN)
-  }catch(e){ toast('⚠ Chưa xoá xong: ' + (e.message || e) + ' — kiểm tra mạng rồi thử lại'); veTatCa(); return; }
+  }catch(e){ toast((baoXong ? baoXong + ' — nhưng ' : '') + '⚠ Chưa xoá xong: ' + (e.message || e) + ' — kiểm tra mạng rồi bấm 🗑 XOÁ'); veTatCa(); return; }
   try{ localStorage.removeItem(KEY_PHIEN + ':' + k); }catch(e){}
   delete XUAT_MEM[k];
   try{ const o = JSON.parse(localStorage.getItem(KEY_XUAT) || '{}'); delete o[k]; localStorage.setItem(KEY_XUAT, JSON.stringify(o)); }catch(e){}
   napDuLieu(null);
   await window.scanRender();
-  toast(`🗑 Đã xoá dữ liệu file ${ten}`);
+  toast(baoXong ? baoXong + ' — đã xoá dữ liệu tìm kiếm & scan' : `🗑 Đã xoá dữ liệu file ${ten}`);
 }
 
 // =====================================================================
@@ -14336,6 +14782,7 @@ $('scInBox').addEventListener('click', ()=>inp.focus());
 
 $('scDoi').onchange = ()=>{ const k = $('scDoi').value; $('scDoi').value = ''; $('scDoi').blur(); doiFile(k); };
 $('scBtnXoa').onclick = ()=>xoaDuLieu();
+$('scBtnDb').onclick = ()=>luuDashboard();
 $('scEmpty').addEventListener('click', e=>{ const b = e.target.closest('[data-chon]'); if(b) doiFile(b.dataset.chon); });
 $('scBtnLuu').onclick = ()=>luuScan();
 $('scBtnXuat').onclick = ()=>xuatFile();
