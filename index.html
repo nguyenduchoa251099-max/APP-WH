@@ -238,6 +238,25 @@
   #tab-dashboard .stat-lines .v{font-size:21px;}
   #tab-dashboard .stat-lines > div:first-child .v{font-size:28px;}
 
+  /* Con số có danh sách khi rê chuột (Tổng quan kho + Tổng quan 3 kho): gạch chân chấm để biết rê vào được */
+  .stat-lines .v[data-ovtip]{cursor:help; text-decoration:underline dotted; text-decoration-thickness:1.5px;
+    text-underline-offset:4px; text-decoration-color:color-mix(in srgb, currentColor 45%, transparent);}
+  .ov-tip{position:fixed; z-index:9000; min-width:200px; max-width:340px; background:#fff; border:1px solid var(--line);
+    border-radius:10px; box-shadow:0 10px 28px rgba(16,24,40,.18); padding:9px 12px 10px; pointer-events:none; font-size:13px;}
+  .ov-tip .th{display:flex; align-items:center; gap:8px; font-size:12px; font-weight:800; letter-spacing:.04em; text-transform:uppercase;
+    color:var(--ink-soft); padding-bottom:6px; margin-bottom:4px; border-bottom:1px solid var(--line-soft);}
+  .ov-tip .th i{font-style:normal; margin-left:auto; background:var(--paper); border:1px solid var(--line); border-radius:99px;
+    padding:0 8px; color:var(--ink); font-variant-numeric:tabular-nums;}
+  .ov-tip .r{display:flex; flex-direction:column; padding:4px 0; border-bottom:1px dashed var(--line-soft); line-height:1.35;}
+  .ov-tip .r:last-child{border-bottom:0;}
+  .ov-tip .r b{font-weight:700; color:var(--ink);}
+  .ov-tip .r span{font-size:12px; color:var(--ink-soft);}
+  .ov-tip .them{padding-top:5px; font-size:12px; font-weight:700; color:var(--ink-soft);}
+  /* dòng "Lịch họp / sự kiện": bấm để mở trang Họp kho */
+  .stat-lines .ov-link{cursor:pointer; border-radius:6px;}
+  .stat-lines .ov-link .k i{font-style:normal; color:var(--nhan); font-weight:800; margin-left:2px;}
+  .stat-lines .ov-link:hover .k{color:var(--nhan); text-decoration:underline;}
+
 </style>
 <style>/* css/modules/tailieu.css */
 /* Tab WI / Training (kho tài liệu)
@@ -1884,6 +1903,8 @@
   #tab-scan .sc-back:hover{background:#e3f4f9;}
   #tab-scan .sc-sb{background:#fff; color:#0b5a70; box-shadow:inset 0 0 0 2px #0e8fb0; font-size:1.25em; padding:.3em .65em; justify-content:center;}
   #tab-scan .sc-sb:hover{background:#e3f4f9;}
+  #tab-scan .sc-copy{background:#fff; color:#173b57; box-shadow:inset 0 0 0 2px #64748b;}
+  #tab-scan .sc-copy:hover{background:#f1f5f9;}
   #tab-scan .sc-xuat{background:linear-gradient(135deg,#24557a,#173b57);}
   #tab-scan .sc-db{background:linear-gradient(135deg,#34b36b,#23874f);}
   #tab-scan .sc-xoa{background:#fff; color:#b91c1c; box-shadow:inset 0 0 0 2px #ef4444;}
@@ -1944,11 +1965,32 @@
   #tab-scan .sc-gi .t{font-family:var(--mono); font-size:.92em; font-weight:800; color:#173b57; line-height:1.35;
     word-break:break-word; margin-bottom:.25em;}
   #tab-scan .sc-gi.xong .t{color:#23874f;}
+  /* nền theo tiến độ: scan đủ = xanh lá nhạt · đã scan nhưng thiếu = vàng nhạt (đang chọn thì đậm hơn 1 bậc) */
+  #tab-scan .sc-gi.xong{background:#e6f6ec;}
+  #tab-scan .sc-gi.thieu{background:#fff6d6;}
+  #tab-scan .sc-gi.xong:hover{background:#d8f0e1;}
+  #tab-scan .sc-gi.thieu:hover{background:#fdefbd;}
+  #tab-scan .sc-gi.xong.on{background:#cdebd8;}
+  #tab-scan .sc-gi.thieu.on{background:#fbe7a6;}
   #tab-scan .sc-gwrap .nums b{font-size:1.1em; font-weight:800; font-variant-numeric:tabular-nums; line-height:1.2; color:var(--ink);}
   #tab-scan .sc-gwrap .nums b.da{color:#23874f;}
   #tab-scan .sc-gwrap .nums b.con{color:#c2410c;}
   #tab-scan .sc-gwrap .nums b.pl{color:#6d28d9;}
   #tab-scan .sc-gi.xong .nums b.con{color:#9aa3ae;}
+  /* khung tóm tắt vị trí đã lưu khi rê chuột vào 1 dòng (đặt cạnh phải dòng đó) */
+  #tab-scan .sc-tip{position:fixed; z-index:60; max-width:22em; background:#fff; border:1px solid var(--line); border-radius:.7em;
+    box-shadow:0 8px 24px rgba(16,24,40,.18); padding:.6em .75em .65em; pointer-events:none;}
+  #tab-scan .sc-tip .th{display:flex; align-items:baseline; gap:.8em; font-size:.85em; color:var(--ink-soft); margin-bottom:.45em;}
+  #tab-scan .sc-tip .th span{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  #tab-scan .sc-tip .th b{font-family:var(--mono); color:#173b57;}
+  #tab-scan .sc-tip .th i{font-style:normal; font-weight:800; color:#23874f; white-space:nowrap;}
+  #tab-scan .sc-tip .vts{display:flex; flex-wrap:wrap; gap:.35em;}
+  #tab-scan .sc-tip .vts span{display:inline-flex; align-items:baseline; gap:.4em; padding:.15em .55em; border-radius:.45em;
+    background:#fff6e0; border:1px solid #f0cf8a; font-size:.9em; color:#8a5a00; font-variant-numeric:tabular-nums;}
+  #tab-scan .sc-tip .vts span b{font-family:var(--mono); font-size:1.05em; color:#5c3d00;}
+  #tab-scan .sc-tip .vts span.khong{background:#f1f4f8; border-color:#d8dde5; color:var(--ink-soft);}
+  #tab-scan .sc-tip .vts span.khong b{font-family:var(--font); font-size:.95em; color:var(--ink-soft);}
+  #tab-scan .sc-tip .f{margin-top:.45em; font-size:.8em; font-weight:700; color:#e8590c;}
   #tab-scan .sc-gi .nums em{display:block; font-style:normal; font-size:.65em; font-weight:700; color:#e8590c; white-space:nowrap;}
   #tab-scan .sc-gi .bar{height:3px; border-radius:99px; background:#e8edf3; overflow:hidden; margin-top:.35em;}
   #tab-scan .sc-gi .bar i{display:block; height:100%; background:linear-gradient(90deg,#34b36b,#1f9d55);}
@@ -2004,6 +2046,11 @@
   #tab-scan .sc-bh button{border:0; background:rgba(255,255,255,.18); color:#fff; font-size:.95em; padding:.2em .7em; border-radius:.45em;}
   #tab-scan .sc-bb{flex:1; overflow:auto; padding:.5em .6em;}
   #tab-scan .sc-box.ok .sc-bh{background:linear-gradient(135deg,#34b36b,#23874f);}
+  /* nút "↺ SCAN LẠI" trên thanh UCC ĐÃ SCAN ĐÚNG: nền trắng chữ xanh cho nổi trên thanh xanh */
+  #tab-scan .sc-bh button.sc-lai{background:#fff; color:#1d6b40; font-weight:800; letter-spacing:.04em; padding:.25em .75em;
+    box-shadow:0 1px 3px rgba(0,0,0,.18);}
+  #tab-scan .sc-bh button.sc-lai:hover{background:#ecfdf3; opacity:1;}
+  #tab-scan .sc-bh button[hidden]{display:none;}
   #tab-scan .sc-box.chua .sc-bh{background:linear-gradient(135deg,#24557a,#173b57);}
   /* UCC chưa scan: cao vừa 5 dòng UCC (1 dòng = 2.15em), cuộn để xem tiếp; báo trùng / sai lấy hết phần còn lại */
   #tab-scan .sc-box.chua{flex:0 0 auto;}
@@ -2898,9 +2945,9 @@
       <div class="stat s4 stat-multi">
         <small>Nhắc nhở sắp tới</small>
         <div class="stat-lines">
-          <div><span class="k">Lịch họp / sự kiện</span><span class="v" id="dRemEvent">0</span></div>
-          <div id="remGcLine"><span class="k">Chuyến gia công</span><span class="v" id="dRemGc">0</span></div>
-          <div><span class="k">Ghi chú nhắc việc</span><span class="v" id="dRemNote">0</span></div>
+          <div class="ov-link" id="remHopLine" title="Mở trang 📅 Họp kho"><span class="k">Lịch họp / sự kiện <i>›</i></span><span class="v" id="dRemEvent">0</span></div>
+          <div><span class="k">Gia công tháng này</span><span class="v" id="dGcThang">0</span></div>
+          <div><span class="k">Gia công tuần này</span><span class="v" id="dGcTuan">0</span></div>
         </div>
       </div>
     </div>
@@ -3312,6 +3359,7 @@
       <div class="sc-act">
         <button class="sc-btn sc-sb" id="scBtnSb" title="Ẩn/hiện danh sách kho">☰</button>
         <button class="sc-btn sc-back" id="scBtnBack" title="Quay lại tab SCAN OS">← Quay lại</button>
+        <button class="sc-btn sc-copy" id="scBtnCopy" title="Copy toàn bộ UCC của JO / PO / STYLE đang chọn ở bảng bên trái — mỗi dòng 1 UCC">📋 COPY</button>
         <label class="sc-vt sc-gc" id="scGcBox" title="Ghi chú cho các thùng của phiên này (không bắt buộc) — có trong file Excel khi xuất">
           <span>📝 GHI CHÚ</span><input type="text" id="scGc" placeholder="VD: bẩn" autocomplete="off" maxlength="200">
         </label>
@@ -3354,7 +3402,8 @@
         </div>
         <div class="sc-cur" id="scCur"></div>
         <div class="sc-box ok">
-          <div class="sc-bh"><span id="scOkT">UCC ĐÃ SCAN ĐÚNG</span><span class="n" id="scOkN"></span></div>
+          <div class="sc-bh"><span id="scOkT">UCC ĐÃ SCAN ĐÚNG</span><span class="n" id="scOkN"></span>
+            <button class="sc-lai" id="scBtnLai" title="Bỏ các thùng đã quét nhưng CHƯA LƯU — trả về UCC CHƯA SCAN để quét lại" hidden>↺ SCAN LẠI</button></div>
           <div class="sc-bb" id="scOk"></div>
         </div>
       </section>
@@ -5512,19 +5561,78 @@ function otWarnings(khoId, ref){
     return b.val - a.val;
   });
 }
-// 3 dòng biến động nhân sự của 1 kho — chỉ hiện dòng nào có người:
+// ---------------------------------------------------------------------
+// KHUNG GỢI Ý KHI RÊ CHUỘT VÀO CON SỐ (Tổng quan từng kho + Tổng quan 3 kho)
+//   Con số có data-ovtip="id" -> rê chuột vào hiện danh sách (tên người, ngày…). Nội dung giữ trong OV_TIP,
+//   xoá sạch mỗi lần vẽ lại trang (ovTipXoa) để không phình bộ nhớ.
+// ---------------------------------------------------------------------
+const OV_TIP = new Map();
+let ovTipSo = 0;
+function ovTipXoa(){ OV_TIP.clear(); }
+// Ghi nội dung, trả về id. dong: [{ t: chữ chính, s: chữ phụ }]
+function ovTipId(tieuDe, dong){
+  if(!dong || !dong.length) return '';
+  const id = 'ot' + (++ovTipSo);
+  OV_TIP.set(id, { tieuDe, dong });
+  return id;
+}
+// Cho chuỗi HTML: ' data-ovtip="…"' (rỗng nếu không có ai)
+const ovTipAttr = (tieuDe, dong) => { const id = ovTipId(tieuDe, dong); return id ? ` data-ovtip="${id}"` : ''; };
+// Cho phần tử có sẵn trong trang (VD #dOffToday)
+function ovTipGan(el, tieuDe, dong){
+  if(!el) return;
+  const id = ovTipId(tieuDe, dong);
+  if(id) el.dataset.ovtip = id; else delete el.dataset.ovtip;
+}
+(function(){
+  const tip = document.createElement('div');
+  tip.className = 'ov-tip'; tip.hidden = true;
+  document.body.appendChild(tip);
+  const TOI_DA = 15;
+  document.addEventListener('mouseover', e=>{
+    const el = e.target.closest && e.target.closest('[data-ovtip]');
+    const d = el && OV_TIP.get(el.dataset.ovtip);
+    if(!d){ tip.hidden = true; return; }
+    tip.innerHTML = `<div class="th">${esc(d.tieuDe)} <i>${d.dong.length}</i></div>`
+      + d.dong.slice(0, TOI_DA).map(x=>`<div class="r"><b>${esc(x.t)}</b>${x.s ? `<span>${esc(x.s)}</span>` : ''}</div>`).join('')
+      + (d.dong.length > TOI_DA ? `<div class="them">+${d.dong.length - TOI_DA} nữa</div>` : '');
+    tip.hidden = false;
+    // đặt dưới con số, canh phải theo con số; hết chỗ bên dưới thì đưa lên trên
+    const r = el.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
+    const left = Math.max(8, Math.min(r.right - w, window.innerWidth - w - 8));
+    const top = (r.bottom + 6 + h < window.innerHeight) ? r.bottom + 6 : Math.max(8, r.top - h - 6);
+    tip.style.left = left + 'px'; tip.style.top = top + 'px';
+  });
+  window.addEventListener('scroll', ()=>{ tip.hidden = true; }, true);
+})();
+// Danh sách tên cho khung gợi ý
+const ovNgay = k => k ? fmtVN(fromKey(k)).slice(0, 5) : '';
+function dsNghiHomNay(khoId){
+  const tKey = todayKey(), ids = new Set(khoEmployees(khoId).map(e=>e.id)), daCo = new Set();
+  return HR.leave.filter(l=>l.type === 'nghi' && l.date === tKey && ids.has(l.employeeId) && !daCo.has(l.employeeId) && daCo.add(l.employeeId))
+    .map(l=>({ t:empName(l.employeeId), s:l.reason || 'Nghỉ cả ngày' }));
+}
+const dsChoNghi = khoId => khoChoNghi(khoId).map(e=>({ t:e.name, s:nhanChoNghi(e) }));
+const dsDaNghi  = khoId => khoDaNghiThang(khoId, todayKey().slice(0, 7)).map(e=>({ t:e.name, s:'làm tới ' + ovNgay(e.nghiViec) }));
+const dsHoTro   = khoId => khoDiHoTro(khoId).map(e=>({ t:e.name, s:'đi hỗ trợ từ ' + ovNgay(e.diHoTro) }));
+const dsThaiSan = khoId => khoThaiSan(khoId).map(e=>({ t:e.name, s:'nghỉ thai sản từ ' + ovNgay(e.thaiSan) }));
+
+// 4 dòng biến động nhân sự của 1 kho — chỉ hiện dòng nào có người:
 //   Chờ nghỉ việc (đã bấm Nghỉ việc, chưa Cắt tên — VẪN tính trong tổng)
 //   Đã nghỉ việc (đã Cắt tên, ngày làm cuối trong tháng này — đã trừ khỏi tổng)
 //   Hỗ trợ bộ phận khác (đang đi hỗ trợ — VẪN tính trong Tổng nhân sự, chỉ ẩn khỏi danh sách hằng ngày)
-function dongBienDongNs(khoId){
-  const ym = todayKey().slice(0, 7);
+//   Thai sản
+// coTip: các dòng có khung gợi ý tên khi rê chuột ('cho','da','ht','ts'); bỏ trống = không dòng nào
+function dongBienDongNs(khoId, coTip){
+  const ym = todayKey().slice(0, 7), tip = new Set(coTip || []);
   const ds = [
-    { k:'Chờ nghỉ việc', n:khoChoNghi(khoId).length, g:'vẫn tính trong tổng', cls:'den' },
-    { k:'Đã nghỉ việc', n:khoDaNghiThang(khoId, ym).length, g:'tháng này · đã trừ', cls:'xam' },
-    { k:'Hỗ trợ bộ phận khác', n:khoDiHoTro(khoId).length, g:'vẫn tính trong tổng nhân sự', cls:'cam' },
-    { k:'Thai sản', n:khoThaiSan(khoId).length, g:'vẫn tính trong tổng nhân sự', cls:'hong' },
+    { id:'cho', k:'Chờ nghỉ việc', n:khoChoNghi(khoId).length, g:'vẫn tính trong tổng', cls:'den', ds:dsChoNghi },
+    { id:'da',  k:'Đã nghỉ việc', n:khoDaNghiThang(khoId, ym).length, g:'tháng này · đã trừ', cls:'xam', ds:dsDaNghi },
+    { id:'ht',  k:'Hỗ trợ bộ phận khác', n:khoDiHoTro(khoId).length, g:'vẫn tính trong tổng nhân sự', cls:'cam', ds:dsHoTro },
+    { id:'ts',  k:'Thai sản', n:khoThaiSan(khoId).length, g:'vẫn tính trong tổng nhân sự', cls:'hong', ds:dsThaiSan },
   ];
-  return ds.filter(x=>x.n > 0).map(x=>`<div class="bd-ns ${x.cls}" title="${x.g}"><span class="k">${x.k}</span><span class="v">${x.n}</span></div>`).join('');
+  return ds.filter(x=>x.n > 0).map(x=>`<div class="bd-ns ${x.cls}"><span class="k" title="${x.g}">${x.k}</span><span class="v"${
+    tip.has(x.id) ? ovTipAttr(x.k, x.ds(khoId)) : ''}>${x.n}</span></div>`).join('');
 }
 // 4 khối (Nhân sự kho · Cảnh báo hạn mức · Phép tồn · Giờ tăng ca) mặc định THU GỌN: bấm thanh tiêu đề
 // (mũi tên ▸) để mở / đóng; dòng tóm tắt trên thanh cho biết có cần mở hay không. Nhớ khối đang mở trên máy này.
@@ -5556,18 +5664,20 @@ function renderAll3(){
   tgApDung();
   const stats = WAREHOUSES.map(w=>khoStats(w.id, ref));
 
+  ovTipXoa();
   $('all3Cards').innerHTML = stats.map((st,i)=>{
     const w = WAREHOUSES[i];
+    const ton = (typeof tpDsTonTren === 'function') ? tpDsTonTren(w.id, 24) : [];
+    // rê chuột vào con số: Nghỉ phép · Phép tồn trên 24h · Hỗ trợ · Thai sản · Chờ nghỉ việc · Đã nghỉ việc
     return `<div class="stat ${['s1','s2','s5'][i]} stat-multi big">
       <small>${w.icon}<span>${esc(st.name)}</span></small>
       <div class="stat-lines">
         <div><span class="k">Tổng nhân sự</span><span class="v">${st.total}</span></div>
         <div><span class="k">Đi làm hôm nay</span><span class="v">${st.working}</span></div>
-        <div><span class="k">Nghỉ phép</span><span class="v">${st.nghi}</span></div>
+        <div><span class="k">Nghỉ phép</span><span class="v"${ovTipAttr('Nghỉ hôm nay', dsNghiHomNay(w.id))}>${st.nghi}</span></div>
         <div><span class="k">OT tháng này</span><span class="v">${fmtHours(st.otMonthH)}</span></div>
-        <div><span class="k">Phép tồn trên 24h</span><span class="v">${
-          (typeof tpDemTonTren === 'function') ? tpDemTonTren(w.id, 24) : 0}</span></div>
-        ${dongBienDongNs(w.id)}
+        <div><span class="k">Phép tồn trên 24h</span><span class="v"${ovTipAttr('Phép tồn trên 24h', ton.map(x=>({ t:x.e.name, s:`tồn ${x.gio} (${x.ngay} ngày)` })))}>${ton.length}</span></div>
+        ${dongBienDongNs(w.id, ['cho','da','ht','ts'])}
       </div></div>`;
   }).join('');
 
@@ -6177,29 +6287,64 @@ async function reorderPosition(fromId, toId){
 // =====================================================================
 // 7. TỔNG QUAN TỪNG KHO
 // =====================================================================
+// Họp kho (mục sidebar 📅 HỌP KHO) chỉ tải khi mở trang đó — Tổng quan kho cần buổi họp tới nên tự tải 1 lần
+let DB_HOP_DANG = null;
+function dbBuoiHopToi(){
+  if(typeof hopBuoiToi !== 'function') return null;
+  if(!HOP_TAI){
+    if(!DB_HOP_DANG) DB_HOP_DANG = hopTai().then(()=>{ if(VIEW === 'kho' && activeTab === 'dashboard') renderDashboard(); })
+      .catch(()=>{}).finally(()=>{ DB_HOP_DANG = null; });
+    return null;
+  }
+  return HOP ? hopBuoiToi() : null;
+}
 function renderDashboard(){
   const ref = new Date(), tKey = todayKey();
   const s = khoStats(CUR_KHO, ref);
+  ovTipXoa();
+  // Nhân sự — rê chuột vào con số: Nghỉ hôm nay · Chờ nghỉ việc · Thai sản (hiện tên người)
   $('dTotalCnv').textContent = s.total;
-  if($('dBienDongNs')) $('dBienDongNs').innerHTML = dongBienDongNs(CUR_KHO);   // chờ nghỉ / đã nghỉ / hỗ trợ
+  if($('dBienDongNs')) $('dBienDongNs').innerHTML = dongBienDongNs(CUR_KHO, ['cho','ts']);   // chờ nghỉ / đã nghỉ / hỗ trợ / thai sản
   $('dWorkingToday').textContent = s.working;
   $('dOffToday').textContent = s.nghi;
+  ovTipGan($('dOffToday'), 'Nghỉ hôm nay', dsNghiHomNay(CUR_KHO));
   $('dOtToday').textContent = fmtHours(s.otTodayH);
   $('dOtMonth').textContent = fmtHours(s.otMonthH);
   const warns = otWarnings(CUR_KHO, ref);
   const over = warns.filter(a=>a.level==='bad');
   $('dOtOver').textContent = new Set(over.map(a=>a.emp.id)).size;
+  const vuot = new Map();                                    // mỗi người 1 dòng: "Hết hạn mức tuần 13h/12h · …"
+  over.forEach(a=>{ const ds = vuot.get(a.emp.id) || []; ds.push(`${a.title.replace('Hết hạn mức ', '')} ${fmtHours(a.val)}/${a.limit}h`); vuot.set(a.emp.id, ds); });
+  ovTipGan($('dOtOver'), 'Người vượt hạn mức', [...vuot].map(([id, ds])=>({ t:empName(id), s:'vượt ' + ds.join(' · ') })));
+
+  // Nhắc nhở sắp tới
+  //   Lịch họp / sự kiện = sự kiện của kho trong 7 ngày tới + buổi Họp kho tới (nếu trong 30 ngày) — bấm để mở trang Họp kho
+  //   Gia công tháng này / tuần này (thứ 2 – Chủ nhật) = số chuyến gia công của kho
+  const up = getUpcomingItems(CUR_KHO, 7);
+  const lich = up.filter(x=>x.kind === 'event').map(x=>({ d:x.date, t:x.title, s:x.sub }));
+  const hop = dbBuoiHopToi();
+  if(hop && hop.ngay <= toKey(addDays(new Date(), 30))){
+    const w = WAREHOUSES.find(x=>x.id === hop.kho);
+    lich.push({ d:hop.ngay, t:`Họp kho tháng ${hop.thang.slice(5)}`, s:`${w ? 'chủ trì: ' + w.name : ''}${hop.gio ? ' · ' + hop.gio : ''}${hop.diaDiem ? ' · ' + hop.diaDiem : ''}` });
+  }
+  lich.sort((a, b)=>a.d.localeCompare(b.d));
+  $('dRemEvent').textContent = lich.length;
+  ovTipGan($('dRemEvent'), 'Lịch họp / sự kiện', lich.map(x=>({ t:x.t, s:`${x.d === tKey ? 'Hôm nay' : ovNgay(x.d)}${x.s ? ' · ' + x.s : ''}` })));
+  if($('remHopLine')) $('remHopLine').onclick = ()=>setView('hopkho');
+  const thu2 = addDays(ref, -((ref.getDay() + 6) % 7)), tu = toKey(thu2), den = toKey(addDays(thu2, 6));
+  const gcKho = HR.giaCong.filter(g=>g.warehouseId === CUR_KHO).sort((a, b)=>String(a.date).localeCompare(String(b.date)));
+  const dongGc = g => ({ t:g.title || 'Gia công', s:[ovNgay(g.date), g.factory, g.vehicleType].filter(Boolean).join(' · ') });
+  const gcThang = gcKho.filter(g=>inCurrentMonth(g.date, ref)), gcTuan = gcKho.filter(g=>g.date >= tu && g.date <= den);
+  $('dGcThang').textContent = gcThang.length;
+  ovTipGan($('dGcThang'), 'Gia công tháng này', gcThang.map(dongGc));
+  $('dGcTuan').textContent = gcTuan.length;
+  ovTipGan($('dGcTuan'), `Gia công tuần này (${ovNgay(tu)} – ${ovNgay(den)})`, gcTuan.map(dongGc));
 
   const KK = curKho();
   const understaffed = getUnderstaffedPositions().filter(p=>{
     const arr = (KK.current && KK.current.assignments[p.id]) || [];
     return arr.filter(x=>!x).length > 0 || arr.length < p.count;   // chỉ báo khi thật sự còn chỗ trống
   });
-  const up = getUpcomingItems(CUR_KHO, 7);
-  $('dRemEvent').textContent = up.filter(x=>x.kind==='event').length;
-  $('dRemGc').textContent = up.filter(x=>x.kind==='giacong').length;
-  if($('remGcLine')) $('remGcLine').style.display = (CUR_KHO === 'vai') ? 'none' : '';
-  $('dRemNote').textContent = up.filter(x=>x.kind==='note').length;
   renderTpHub();
   renderPositionBoard();
 
@@ -13604,7 +13749,7 @@ const doiThang = (ym, n) => { const [y, m] = ym.split('-').map(Number); return t
 const tenThang = ym => `T${Number(ym.slice(5))}/${ym.slice(0, 4)}`;
 const THU = ['CN','T2','T3','T4','T5','T6','T7'];
 const THU_DU = ['Chủ nhật','Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7'];
-const soGon = n => n >= 10000 ? (n / 1000).toLocaleString('vi-VN', {maximumFractionDigits: n >= 100000 ? 0 : 1}) + 'k' : soVN(n);
+const soGon = n => n >= 1000 ? (n / 1000).toLocaleString('vi-VN', {maximumFractionDigits: n >= 100000 ? 0 : 1}) + 'k' : soVN(n);
 const tenDo = d => d === 'pcs' ? 'pcs' : 'thùng';
 let DB_THANG = thangCua(new Date()), DB_DO = 'ctn', DB_LOC = 'all';
 const DB_MO_NGAY = new Set();             // các ngày đang mở danh sách file ở bảng chi tiết
@@ -13618,18 +13763,21 @@ function soLieuThang(ym){
   DB.ds.filter(r=>String(r.ngay || '').slice(0, 7) === ym).forEach(r=>{
     const o = ngay[Number(r.ngay.slice(8, 10)) - 1]; if(!o) return;
     const nm = r.nm === 'dl' ? 'dl' : 'tgv';
-    [o[nm], tong[nm]].forEach(t=>{ t.ctn += Number(r.ctn) || 0; t.pcs += Number(r.pcs) || 0; t.n++; });
+    // PCS lấy trị tuyệt đối: file TGV/TDV ghi QTY âm (hàng xuất), Đô Lương ghi dương — cộng 2 nhà máy phải cùng dấu.
+    // (bản ghi lưu trước khi sửa vẫn mang số âm -> đổi luôn ở đây)
+    [o[nm], tong[nm]].forEach(t=>{ t.ctn += Number(r.ctn) || 0; t.pcs += Math.abs(Number(r.pcs) || 0); t.n++; });
     o.ds.push(r);
   });
   return { ym, y, m, soNgay, ngay, tong };
 }
 const dsHien = () => DB_LOC === 'all' ? DB_NM : DB_NM.filter(x=>x.k === DB_LOC);
 const cong = (o, nms, k) => nms.reduce((s, x)=>s + o[x.k][k], 0);
-// Trục làm tròn lên số đẹp: 1, 2, 2.5, 5 x 10^n
+// Trục làm tròn lên mức đẹp gần nhất: 1 · 1.5 · 2 · 2.5 · 3 · 4 · 5 · 6 · 8 x 10^n
+//   VD 18k -> 20k · 21k -> 25k · 28.7k -> 30k · 33k -> 40k
 function tronTren(v){
   if(v <= 0) return 10;
   const mu = Math.pow(10, Math.floor(Math.log10(v)));
-  for(const b of [1, 2, 2.5, 5, 10]) if(b * mu >= v) return b * mu;
+  for(const b of [1, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10]) if(b * mu >= v - 1e-9) return b * mu;
   return 10 * mu;
 }
 
@@ -13692,7 +13840,7 @@ function veDb(){
           return `<div class="f">
             <span class="nmc" style="--mau:${x.mau}">${esc(x.ten)}</span>
             <b class="ten" title="${esc(r.ten)}">${esc(r.ten)}</b>
-            <span><b>${soVN(r.ctn)}</b> thùng · <b>${soVN(r.pcs)}</b> pcs</span>
+            <span><b>${soVN(r.ctn)}</b> thùng · <b>${soVN(Math.abs(Number(r.pcs) || 0))}</b> pcs</span>
             <span class="sc ${du ? 'du' : 'thieu'}" title="Số thùng đã bấm LƯU SCAN lúc lưu vào dashboard">${du ? '✓' : '⚠'} đã scan ${soVN(r.ctnScan)}/${soVN(r.ctn)}</span>
             <span class="luc">lưu ${fmtLuu(r.at)}</span>
             ${coSua ? `<button class="ghost sm" data-db-xoa="${esc(r.id)}" title="Xoá bản ghi này khỏi dashboard (lưu nhầm)">🗑</button>` : ''}
@@ -13735,7 +13883,8 @@ function veBieuDo(S, nms){
   const L = 52, R = 12, TOP = 26, B = 42;
   const pw = W - L - R, ph = H - TOP - B;
   const tongNgay = o => cong(o, nms, DB_DO);
-  const top = tronTren(Math.max(...S.ngay.map(tongNgay)) * 1.12);
+  // trục làm tròn lên mức đẹp gần nhất: 18k -> 20k, 21k -> 25k, 42k -> 50k (cột cao nhất chạm vừa đỉnh trục)
+  const top = tronTren(Math.max(...S.ngay.map(tongNgay)));
   const yOf = v => TOP + ph - v / top * ph;
   const band = pw / S.soNgay, bw = Math.max(6, Math.min(30, band * 0.62));
   const nay = homNay();
@@ -13812,7 +13961,7 @@ $('soWrap').addEventListener('click', async e=>{
   const xoa = e.target.closest('[data-db-xoa]');
   if(xoa){
     const r = DB.ds.find(x=>x.id === xoa.dataset.dbXoa); if(!r) return;
-    if(!await confirmBox(`Xoá "${r.ten}" (${soVN(r.ctn)} thùng · ${soVN(r.pcs)} pcs, ngày ${r.ngay.split('-').reverse().join('/')}) khỏi dashboard? Mọi người cùng dùng app sẽ không còn thấy bản ghi này.`)) return;
+    if(!await confirmBox(`Xoá "${r.ten}" (${soVN(r.ctn)} thùng · ${soVN(Math.abs(Number(r.pcs) || 0))} pcs, ngày ${r.ngay.split('-').reverse().join('/')}) khỏi dashboard? Mọi người cùng dùng app sẽ không còn thấy bản ghi này.`)) return;
     try{ await ghiDb(o=>{ o.ds = o.ds.filter(x=>x.id !== r.id); }); toast('Đã xoá khỏi dashboard'); }
     catch(err){ toast('⚠ Chưa xoá được: ' + (err.message || err)); }
     veLai(); return;
@@ -14246,6 +14395,8 @@ let LAN_TAI = 0, DANG_TAI = null;
 const tenMode = m => (TEN_MODE[DATA && DATA.nm] || TEN_MODE.tgv)[m || MODE];
 const giaTri = (r, m) => String(r[m]==null?'':r[m]).trim() || '(trống)';
 const phienSet = () => new Set(PHIEN.map(p=>p.ucc));
+// Thùng quét chưa lưu thuộc dòng đang chọn (JO / PO / STYLE) — thùng chưa lưu của dòng khác không tính
+const phienCuaDong = () => SEL ? PHIEN.filter(p=>{ const o = U.get(p.ucc); return o && thuocNhom(o, MODE, SEL); }) : [];
 const daLuu = u => SAVED.has(u) && U.has(u);
 const tenVT = vt => vt || '(không vị trí)';
 
@@ -14387,16 +14538,22 @@ function veNhom(){
   if(SEL && !g.has(SEL)) SEL = null;
   let tT = 0, tD = 0, tP = 0, tC = 0;
   const tatCaLuot = new Set();
+  VT_NHOM = new Map();
   $('scGBody').innerHTML = keys.map(v=>{
     const ds = g.get(v);
     const luu = ds.filter(daLuu).length, phien = ds.filter(u=>ps.has(u) && !daLuu(u)).length;
+    // các vị trí đã lưu của dòng này (cho khung tóm tắt khi rê chuột): vị trí -> số thùng
+    const vtDem = new Map();
+    ds.filter(daLuu).forEach(u=>{ const vt = SAVED.get(u).vt || ''; vtDem.set(vt, (vtDem.get(vt) || 0) + 1); });
+    VT_NHOM.set(v, { vts:[...vtDem].sort((a, b)=>(!a[0] - !b[0]) || soSanh(a[0], b[0])), luu, phien, tong:ds.length });
     const con = ds.length - luu - phien;
     const luot = new Set(ds.filter(daLuu).map(u=>SAVED.get(u).id));      // số pallet = số lượt lưu có thùng của dòng này
     luot.forEach(x=>tatCaLuot.add(x));
     tT += ds.length; tD += luu + phien; tP += phien; tC += con;
     const pt = ds.length ? Math.round((luu + phien) * 100 / ds.length) : 0;
     // Mỗi dòng 1 thẻ: tên ở trên (dài thì xuống dòng), 4 số chia đều bên dưới -> không phải kéo ngang
-    return `<div class="sc-gi${v === SEL ? ' on' : ''}${con === 0 ? ' xong' : ''}" data-v="${esc(v)}">
+    // tô nền cả thẻ: scan đủ = xanh lá nhạt (xong) · đã scan nhưng thiếu = vàng nhạt (thieu) · chưa scan = giữ nguyên
+    return `<div class="sc-gi${v === SEL ? ' on' : ''}${con === 0 ? ' xong' : (luu + phien) > 0 ? ' thieu' : ''}" data-v="${esc(v)}">
       <div class="t">${con === 0 ? '<i class="ok">✓</i>' : ''}${esc(v)}</div>
       <div class="nums">
         <b>${soVN(ds.length)}</b>
@@ -14410,6 +14567,21 @@ function veNhom(){
   $('scGFoot').innerHTML = `<div class="t">Tổng ${keys.length} ${esc(tenMode())}</div>
     <div class="nums"><b>${soVN(tT)}</b><b class="da">${soVN(tD)}</b><b class="con">${soVN(tC)}</b><b class="pl">${soVN(tatCaLuot.size)}</b></div>`;
 }
+// Khung tóm tắt khi rê chuột vào 1 dòng ở bảng bên trái: các vị trí đã lưu + số thùng mỗi vị trí.
+// Chỉ hiện khi dòng đã có thùng bấm LƯU SCAN; không cần bấm vào dòng.
+let VT_NHOM = new Map();          // giá trị dòng -> { vts:[[vị trí, số thùng]], luu, phien, tong }
+function hienTipVT(the){
+  const tip = $('scTip'), d = VT_NHOM.get(the.dataset.v);
+  if(!d || !d.luu){ tip.hidden = true; return; }
+  tip.innerHTML = `<div class="th"><span>${esc(TEN_NGAN[MODE])} <b>${esc(the.dataset.v)}</b></span><i>${soVN(d.luu)}/${soVN(d.tong)} thùng</i></div>
+    <div class="vts">${d.vts.map(([vt, n])=>`<span class="${vt ? '' : 'khong'}"><b>${esc(vt || 'Không vị trí')}</b>${soVN(n)}</span>`).join('')}</div>
+    ${d.phien ? `<div class="f">+${soVN(d.phien)} thùng đang quét, chưa lưu</div>` : ''}`;
+  tip.hidden = false;
+  const r = the.getBoundingClientRect(), h = tip.offsetHeight;
+  tip.style.left = Math.min(r.right + 8, window.innerWidth - tip.offsetWidth - 8) + 'px';
+  tip.style.top = Math.max(8, Math.min(r.top, window.innerHeight - h - 8)) + 'px';
+}
+function anTipVT(){ const tip = $('scTip'); if(tip) tip.hidden = true; }
 function veDangChon(){
   const el = $('scCur');
   if(!SEL){
@@ -14428,6 +14600,7 @@ function veGiua(){
   const box = $('scOk');
   $('scOkT').textContent = 'UCC ĐÃ SCAN ĐÚNG';
   $('scOkN').textContent = PHIEN.length ? `${soVN(PHIEN.length)} thùng` : '';
+  $('scBtnLai').hidden = !phienCuaDong().length; // chỉ hiện khi dòng đang chọn có thùng quét chưa lưu
   box.innerHTML = PHIEN.length
     ? PHIEN.slice().reverse().map((p,i)=>{ const x = U.get(p.ucc);
         return `<div class="uc${i === 0 ? ' moi' : ''}"><span>${esc(p.ucc)}</span><i>(${soVN(x.qty)})</i>
@@ -14571,6 +14744,7 @@ async function luuScan(){
   veTatCa();
   toast(luu.length ? `✓ Đã lưu ${luu.length} thùng${vt ? ' vào vị trí ' + vt : ''}${gc ? ' · ghi chú: ' + gc : ''}` : '⚠ Không có thùng nào mới để lưu');
   $('scIn').focus();
+  return true;                                   // lưu xong (cho cảnh báo "chưa lưu" khi đổi dòng)
 }
 function xuatFile(){
   if(!DATA) return;
@@ -14777,8 +14951,9 @@ async function luuDashboard(){
   if(!DATA) return;
   await taiTienDo();
   veTatCa();
-  let da = 0, pcsDa = 0; U.forEach((o,u)=>{ if(daLuu(u)){ da++; pcsDa += o.qty; } });
-  const ctn = U.size, pcs = DATA.rows.reduce((s, r)=>s + (Number(r.qty)||0), 0);
+  // PCS = trị tuyệt đối của từng dòng: file TGV/TDV ghi QTY âm (hàng xuất), Đô Lương ghi dương
+  let da = 0, pcsDa = 0; U.forEach((o,u)=>{ if(daLuu(u)){ da++; pcsDa += o.rows.reduce((s, r)=>s + Math.abs(Number(r.qty)||0), 0); } });
+  const ctn = U.size, pcs = DATA.rows.reduce((s, r)=>s + Math.abs(Number(r.qty)||0), 0);
   const xuat = daXuat(), ten = DATA.name, nm = DATA.nm === 'dl' ? 'dl' : 'tgv';
   const d = new Date(), hom = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
   const m = openModal('Lưu vào Dashboard', `
@@ -14847,6 +15022,39 @@ $('scInBox').addEventListener('click', ()=>inp.focus());
 });
 
 $('scDoi').onchange = ()=>{ const k = $('scDoi').value; $('scDoi').value = ''; $('scDoi').blur(); doiFile(k); };
+// Nút "↺ SCAN LẠI": bỏ hết thùng đã quét mà CHƯA bấm LƯU SCAN -> các UCC đó về lại "UCC CHƯA SCAN" để quét lại.
+// Thùng đã lưu không bị đụng tới; vị trí + ghi chú đang điền giữ nguyên.
+// Chỉ bỏ thùng của dòng ĐANG CHỌN; thùng chưa lưu của dòng khác giữ nguyên.
+$('scBtnLai').onclick = async ()=>{
+  const bo = new Set(phienCuaDong().map(p=>p.ucc)), n = bo.size;
+  if(!n) return;
+  if(!await confirmBox(`Bỏ ${n} thùng của ${tenMode()} ${SEL} đã quét nhưng chưa lưu để scan lại? Các UCC này sẽ về lại danh sách UCC CHƯA SCAN.`)){ inp.focus(); return; }
+  PHIEN = PHIEN.filter(p=>!bo.has(p.ucc));
+  luuPhien();
+  veTatCa();
+  toast(`↺ Đã trả ${soVN(n)} thùng về UCC CHƯA SCAN — quét lại`);
+  inp.focus();
+};
+// Nút "📋 COPY": copy toàn bộ UCC (cả đã scan lẫn chưa) của dòng đang chọn ở bảng bên trái, mỗi dòng 1 UCC
+$('scBtnCopy').onclick = async ()=>{
+  if(!DATA) return;
+  if(!SEL){ toast(`👈 Bấm chọn 1 dòng ${tenMode()} ở bảng bên trái trước khi copy`); return; }
+  const ds = (nhomTheo(MODE).get(SEL) || []).slice().sort(soSanh);
+  if(!ds.length){ toast('Dòng này không có UCC nào'); return; }
+  const txt = ds.join('\r\n');
+  let ok = false;
+  try{ await navigator.clipboard.writeText(txt); ok = true; }catch(e){}
+  if(!ok){
+    const ta = document.createElement('textarea');
+    ta.value = txt; ta.style.cssText = 'position:fixed; left:-9999px; top:0;';
+    document.body.appendChild(ta); ta.select();
+    try{ ok = document.execCommand('copy'); }catch(e){}
+    ta.remove();
+  }
+  toast(ok ? `✓ Đã copy ${soVN(ds.length)} UCC của ${tenMode()} ${SEL} — dán (Ctrl + V) ra mỗi dòng 1 UCC`
+           : '⚠ Trình duyệt chặn copy — thử lại hoặc dùng 🗂 VỊ TRÍ ĐÃ LƯU');
+  inp.focus();
+};
 // Ô tích "Bắt buộc vị trí": mặc định tích, nhớ trên máy này
 const KEY_BB = 'appwh-scan-bbvt';
 try{ $('scBbVt').checked = localStorage.getItem(KEY_BB) !== '0'; }catch(e){ $('scBbVt').checked = true; }
@@ -14867,14 +15075,45 @@ $('scBtnBack').onclick = ()=>switchTab('scanos');
 $('scBtnSb').onclick = ()=>$('btnBurger').click();      // thanh tiêu đề (có nút ☰) đang ẩn ở tab SCAN
 $('scLoiX').onclick = ()=>{ LOI = []; veLoi(); inp.focus(); };
 
-document.querySelectorAll('#scMode button').forEach(b=> b.onclick = ()=>{
+// Rời dòng đang chọn mà dòng đó còn thùng đã quét CHƯA LƯU -> cảnh báo trước.
+// Trả true = được chuyển (đã lưu xong, hoặc chọn "vẫn chuyển" — thùng chưa lưu giữ nguyên trong phiên).
+function roiDong(){
+  const ds = phienCuaDong();
+  if(!ds.length) return Promise.resolve(true);
+  return new Promise(res=>{
+    let xong = false;
+    const tra = v=>{ if(xong) return; xong = true; m.close(); res(v); };
+    const m = openModal('Chưa lưu scan', `
+      <div class="sc-xoa-file"><b>${esc(tenMode())} ${esc(SEL)}</b>
+        <span><em>${soVN(ds.length)} thùng</em> đã scan nhưng <b style="font-size:inherit">CHƯA bấm 💾 LƯU SCAN</b></span></div>
+      <div class="sc-xoa-xuat chua">Lưu trước khi chuyển để không quên. Chọn "Vẫn chuyển" thì các thùng này vẫn giữ trong phiên, quay lại dòng này lưu sau.</div>
+      <div class="sc-xoa-nut"><button class="ghost" data-no>Ở lại</button>
+        <button class="secondary" data-di>Vẫn chuyển</button>
+        <button data-luu>💾 Lưu rồi chuyển</button></div>`);
+    m.body.querySelector('[data-no]').onclick = ()=>{ tra(false); inp.focus(); };
+    m.body.querySelector('[data-di]').onclick = ()=>tra(true);
+    m.body.querySelector('[data-luu]').onclick = async ()=>{ xong = true; m.close(); res(!!(await luuScan())); };
+    // đóng bằng ✕ hoặc bấm ra ngoài = ở lại
+    new MutationObserver((_, ob)=>{ if(!m.el.isConnected){ ob.disconnect(); if(!xong){ xong = true; res(false); } } })
+      .observe($('modalHost'), { childList:true });
+  });
+}
+document.querySelectorAll('#scMode button').forEach(b=> b.onclick = async ()=>{
   if(MODE === b.dataset.m) return;
+  if(!await roiDong()) return;
   MODE = b.dataset.m; SEL = null;
   luuPhien(); veTatCa(); inp.focus();
 });
-$('scGBody').addEventListener('click', e=>{
+// khung tóm tắt vị trí: nằm ngoài danh sách (danh sách vẽ lại thường xuyên), hiện cạnh dòng đang rê chuột
+{ const tip = document.createElement('div'); tip.id = 'scTip'; tip.className = 'sc-tip'; tip.hidden = true; $('tab-scan').appendChild(tip); }
+$('scGBody').addEventListener('mouseover', e=>{ const the = e.target.closest('.sc-gi'); if(the) hienTipVT(the); else anTipVT(); });
+$('scGBody').addEventListener('mouseleave', anTipVT);
+$('scGBody').addEventListener('scroll', anTipVT);
+$('scGBody').addEventListener('click', async e=>{
   const the = e.target.closest('[data-v]'); if(!the) return;
-  SEL = the.dataset.v;
+  const v = the.dataset.v;
+  if(v !== SEL && !await roiDong()) return;
+  SEL = v;
   luuPhien(); veTatCa(); inp.focus();
 });
 $('scOk').addEventListener('click', e=>{
