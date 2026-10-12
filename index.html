@@ -1588,6 +1588,134 @@
   @media (max-width:900px){ #tab-checkct .cc-stats{grid-template-columns:1fr 1fr;} }
 
 </style>
+<style>/* css/modules/otdash.css */
+/* Tab Tăng ca/Nghỉ phép -> tab con "📊 Dashboard" (js/modules/tangca/ot-dashboard.js)
+   1 màu xanh cho giờ OT; vàng / đỏ chỉ dùng cho trạng thái hạn mức (sắp hết / hết). */
+  .od{--od-ot:#2a78d6; --od-warn:#f5a524; --od-bad:#d92d20;
+    --h0:#f1f4f8; --h1:#dbe9fb; --h2:#a9cbf3; --h3:#5f9ee6; --h4:#2a78d6; --h5:#174f96;
+    display:flex; flex-direction:column; gap:14px;}
+
+  /* ---------- thanh chọn kỳ ---------- */
+  .od-bar{display:flex; flex-wrap:wrap; align-items:center; gap:10px;}
+  .od-seg{display:inline-flex; background:#eef1f6; border-radius:10px; padding:3px; gap:2px;}
+  .od-seg button{border:0; background:transparent; color:var(--ink-soft); font-weight:700; font-size:13px; padding:7px 14px; border-radius:8px; white-space:nowrap;}
+  .od-seg button:hover{color:var(--ink); opacity:1;}
+  .od-seg button.on{background:#fff; color:var(--ink); box-shadow:0 1px 3px rgba(16,24,40,.12);}
+  .od-ky{display:inline-flex; align-items:center; gap:4px; background:#fff; border:1px solid var(--line); border-radius:10px; padding:3px;}
+  .od-ky b{font-size:14px; padding:0 8px; min-width:200px; text-align:center; font-variant-numeric:tabular-nums;}
+  .od-ky button{border:0; background:transparent; color:var(--ink); font-size:18px; font-weight:800; width:32px; height:32px; padding:0; border-radius:7px;}
+  .od-ky button:hover{background:var(--paper); opacity:1;}
+  .od-nay{border:0; background:var(--blue-bg); color:var(--blue-dark); font-weight:800; font-size:12.5px; padding:8px 12px; border-radius:9px;}
+
+  /* ---------- 2 thẻ ---------- */
+  .od-kpi{display:grid; grid-template-columns:1.4fr 1fr; gap:12px;}
+  .od-the{background:#fff; border:1px solid var(--line); border-top:4px solid var(--od-ot); border-radius:12px; box-shadow:var(--bong); padding:14px 16px 12px;}
+  .od-the.hm{border-top-color:#173b57;}
+  .od-the .k{display:flex; align-items:baseline; gap:8px; font-size:13px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:var(--ink);}
+  .od-the .k small{margin-left:auto; font-size:12px; font-weight:600; text-transform:none; letter-spacing:0; color:var(--ink-soft);}
+  .od-the .v{display:flex; align-items:baseline; flex-wrap:wrap; gap:6px 14px; margin-top:6px;}
+  .od-the .v b{font-size:34px; font-weight:800; line-height:1.1; color:var(--ink); font-variant-numeric:tabular-nums;}
+  .od-the .v span{font-size:13px; font-weight:700; color:var(--ink-soft);}
+  .od-the .d{font-size:12.5px; color:var(--ink-soft); margin-top:4px;}
+  .od-the .ss{font-weight:700; color:var(--ink);}
+  .od-kho{display:flex; flex-wrap:wrap; gap:6px 16px; margin-top:8px; padding-top:8px; border-top:1px dashed var(--line-soft); font-size:12.5px; color:var(--ink-soft);}
+  .od-kho span{display:inline-flex; align-items:center; gap:6px;} .od-kho i{width:10px; height:10px; border-radius:3px;}
+  .od-kho b{color:var(--ink); font-variant-numeric:tabular-nums;}
+  .od-the .hm2{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;}
+  .od-the .hm2 > div{display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:10px;}
+  .od-the .hm2 .bad{background:#fef3f2;} .od-the .hm2 .warn{background:#fff8e6;}
+  .od-the .hm2 b{font-size:30px; font-weight:800; line-height:1; font-variant-numeric:tabular-nums;}
+  .od-the .hm2 .bad b{color:#b42318;} .od-the .hm2 .warn b{color:#a15c00;}
+  .od-the .hm2 span{font-size:12.5px; font-weight:700; color:var(--ink); line-height:1.35;}
+  .od-the .hm2 span i{font-style:normal; font-weight:600; color:var(--ink-soft); font-size:11.5px;}
+  /* con số / chữ có danh sách khi rê chuột */
+  .od [data-ovtip]:not(rect):not(td){cursor:help; text-decoration:underline dotted; text-decoration-thickness:1.5px; text-underline-offset:4px;
+    text-decoration-color:color-mix(in srgb, currentColor 45%, transparent);}
+
+  /* ---------- khung ---------- */
+  .od-hang{display:grid; grid-template-columns:2.2fr 1fr; gap:12px;}
+  .od-hang.rong{grid-template-columns:1fr;}         /* nhiều người: biểu đồ trải hết bề ngang, Mức dùng hạn mức xuống dưới */
+  .od-card{background:#fff; border:1px solid var(--line); border-radius:12px; box-shadow:var(--bong); padding:14px 16px; min-width:0;}
+  .od-h{display:flex; flex-wrap:wrap; align-items:center; gap:6px 14px; margin-bottom:8px;}
+  .od-h b{font-size:14.5px;}
+  .od-lg{display:flex; gap:12px; margin-left:auto; font-size:12.5px; font-weight:700; color:var(--ink-soft);}
+  .od-lg span{display:inline-flex; align-items:center; gap:6px;} .od-lg i{width:11px; height:11px; border-radius:3px;}
+  .od-ghi{margin-left:auto; font-size:12px; color:var(--ink-soft);}
+  .od-trong{display:flex; align-items:center; justify-content:center; min-height:200px; color:var(--ink-soft); font-size:13.5px;}
+
+  /* ---------- biểu đồ cột ---------- */
+  .od-chart{overflow-x:auto;} .od-chart svg{display:block; overflow:visible;}
+  .od-grid{stroke:#eef1f5; stroke-width:1;} .od-base{stroke:#c9d2de; stroke-width:1;}
+  .od-cn{fill:#f6f8fb;}
+  .od-ax{font-size:11px; fill:#7b8592; font-variant-numeric:tabular-nums;}
+  .od-ax.phu{font-size:10px;} .od-ax.cn{fill:#b42318;} .od-ax.nay{fill:var(--blue-dark); font-weight:800;}
+  .od-val{font-size:10.5px; font-weight:700; fill:var(--ink); font-variant-numeric:tabular-nums;}
+  .od-hit{fill:transparent; cursor:pointer;} .od-hit:hover{fill:rgba(23,59,87,.06);}
+
+  /* ---------- mức dùng hạn mức ---------- */
+  .od-md{display:flex; flex-direction:column; gap:12px; margin-top:6px;}
+  .od-md .r{display:grid; grid-template-columns:110px 1fr 34px; align-items:center; gap:10px;}
+  .od-md .t{display:inline-flex; align-items:center; gap:7px; font-size:13px; font-weight:700; white-space:nowrap;}
+  .od-md .t i{width:10px; height:10px; border-radius:3px;}
+  .od-md .bar{height:12px; background:var(--h0); border-radius:4px; overflow:hidden;}
+  .od-md .bar i{display:block; height:100%; border-radius:0 4px 4px 0;}
+  .od-md b{text-align:right; font-size:17px; font-weight:800; font-variant-numeric:tabular-nums;}
+  .od-md-f{margin-top:14px; padding-top:8px; border-top:1px dashed var(--line-soft); font-size:12px; color:var(--ink-soft);}
+
+  /* ---------- bản đồ nhiệt ---------- */
+  .od-hm-wrap{overflow-x:auto;}                /* hiện đủ mọi người, chỉ cuộn ngang khi bảng rộng */
+  table.od-hm{width:auto; border-collapse:separate; border-spacing:2px; font-size:11px; font-variant-numeric:tabular-nums;}
+  /* bỏ kiểu bảng chung của app (đệm 9px, chữ 15px, tiêu đề in hoa, gạch dưới) — ô nhiệt phải vuông đều */
+  .od-hm th, .od-hm td{padding:0; border-bottom:0; font-size:11px; text-transform:none; letter-spacing:0; vertical-align:middle;}
+  .od-hm tbody tr:hover td{background:transparent;}
+  .od-hm tbody tr:hover td.ten, .od-hm tbody tr:hover td.tong{background:#f3f7fb;}
+  .od-hm thead th{position:sticky; top:0; z-index:2; background:#fff; font-weight:700; color:var(--ink-soft); padding:2px 0 4px; text-align:center; min-width:26px; line-height:1.2;}
+  .od-hm thead th small{display:block; font-weight:500; font-size:9.5px;}
+  .od-hm th.cn{color:#b42318;} .od-hm th.nay{color:var(--blue-dark);}
+  .od-hm .ten{position:sticky; left:0; z-index:1; background:#fff; text-align:left; min-width:170px; max-width:220px; padding:2px 10px 2px 4px;}
+  .od-hm thead .ten{z-index:3;} .od-hm th.ten i{font-style:normal; font-weight:500;}
+  .od-hm td.ten button{border:0; background:none; padding:0; font-size:12.5px; font-weight:700; color:var(--ink); text-align:left; cursor:pointer;}
+  .od-hm td.ten button:hover{color:var(--blue-dark); text-decoration:underline; opacity:1;}
+  .od-hm td.ten small{display:block; font-size:10.5px; color:var(--ink-soft); line-height:1.15; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .od-hm td.o{width:26px; height:26px; border-radius:4px; text-align:center; font-weight:700; position:relative; cursor:default;}
+  .od-hm.nam td.o{width:44px;}
+  .od-hm td.o.l0{background:var(--h0);} .od-hm td.o.l1{background:var(--h1); color:#174f96;} .od-hm td.o.l2{background:var(--h2); color:#123c73;}
+  .od-hm td.o.l3{background:var(--h3); color:#fff;} .od-hm td.o.l4{background:var(--h4); color:#fff;} .od-hm td.o.l5{background:var(--h5); color:#fff;}
+  .od-hm td.o.cn{outline:1px dashed #f0c4c0; outline-offset:-1px;}
+  .od-hm td.o.vuot::after, .od-hm-lg i.vuot::after{content:''; position:absolute; top:1px; right:1px; border:4px solid transparent;
+    border-top-color:var(--od-bad); border-right-color:var(--od-bad); border-radius:0 3px 0 0;}
+  .od-hm td.o[data-ovtip]:hover{box-shadow:0 0 0 2px var(--ink);}
+  /* cột Tổng dính mép phải: tháng 31 ngày vẫn luôn thấy tổng mỗi người khi cuộn ngang */
+  .od-hm .tong{position:sticky; right:0; z-index:1; background:#fff; min-width:140px; padding:0 4px 0 10px; text-align:left;
+    box-shadow:-6px 0 6px -6px rgba(16,24,40,.18);}
+  .od-hm thead .tong{z-index:3;}
+  .od-hm .tb{display:flex; align-items:center; gap:8px;}
+  .od-hm .tb .bar{flex:1; height:8px; background:var(--h0); border-radius:4px; overflow:hidden;}
+  .od-hm .tb .bar i{display:block; height:100%; background:var(--od-ot); border-radius:4px;}
+  .od-hm .tb .bar i.warn{background:var(--od-warn);} .od-hm .tb .bar i.bad{background:var(--od-bad);}
+  .od-hm .tb b{font-size:12px; min-width:44px; text-align:right;} .od-hm .tb b.bad{color:#b42318;} .od-hm .tb b.warn{color:#a15c00;}
+  .od-hm tr.nhom td{padding:8px 4px 4px; font-size:12.5px; font-weight:800; color:var(--ink); position:sticky; left:0;}
+  .od-hm tr.nhom i{display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:6px;}
+  .od-hm tr.nhom span{font-weight:600; color:var(--ink-soft); margin-left:8px;}
+  .od-hm tfoot td{font-weight:700; color:var(--ink-soft); text-align:center; font-size:10.5px; padding-top:4px; border-top:1px solid var(--line-soft);}
+  .od-hm tfoot td.ten{font-size:12px; color:var(--ink);} .od-hm tfoot td.tong{font-size:12px; color:var(--ink);}
+  .od-hm-lg{display:flex; flex-wrap:wrap; align-items:center; gap:8px 14px; margin-top:12px; font-size:12px; color:var(--ink-soft);}
+  .od-hm-lg .m{display:inline-flex; align-items:center; gap:5px;}
+  .od-hm-lg i{position:relative; width:18px; height:14px; border-radius:3px; background:var(--h0);}
+  .od-hm-lg i.l1{background:var(--h1);} .od-hm-lg i.l2{background:var(--h2);} .od-hm-lg i.l3{background:var(--h3);}
+  .od-hm-lg i.l4{background:var(--h4);} .od-hm-lg i.l5{background:var(--h5);}
+  .od-hm-lg i.cn{background:#fff; outline:1px dashed #e8a29b; outline-offset:-1px;}
+
+  @media(max-width:1000px){ .od-kpi, .od-hang{grid-template-columns:1fr;} }
+
+  /* biểu đồ cột theo người: tên dưới chân cột, vạch hạn mức / cảnh báo nét đứt */
+  .od-ten{font-size:11px; fill:var(--ink); font-weight:600;}
+  .od-khoten{font-weight:800; fill:var(--ink);}
+  .od-hm-line{stroke-width:1.5; stroke-dasharray:5 4;}
+  .od-hm-line.bad{stroke:var(--od-bad);} .od-hm-line.warn{stroke:var(--od-warn);}
+  .od-hm-txt{font-size:10.5px; font-weight:700;} .od-hm-txt.bad{fill:#b42318;} .od-hm-txt.warn{fill:#a15c00;}
+
+</style>
 <style>/* css/modules/scanos.css */
 /* Tab SCAN OS (chỉ kho thành phẩm) + tab SCAN tạm
    Mỗi cột 1 màu riêng: tiêu đề, ô tìm thấy và ô tổng cùng tông để dễ dò */
@@ -2882,7 +3010,7 @@
       <div class="ovboard" id="all3Boards"></div>
     </div>
     <div class="panel tg" data-tg="cb" style="margin-top:18px;">
-      <h2><span class="tg-mui" aria-hidden="true">▸</span><span class="n">⚠</span>Cảnh báo hạn mức tăng ca<span class="tg-tom" id="tgTomCb"></span><span class="h2spacer"></span><span class="chip info tg-mo-chi" id="all3LimitRule">Ngày &gt;4h · Tuần &gt;12h · Tháng &gt;24h · Năm ≥350h</span></h2>
+      <h2><span class="tg-mui" aria-hidden="true">▸</span><span class="n">⚠</span>Cảnh báo hạn mức tăng ca<span class="tg-tom" id="tgTomCb"></span><span class="h2spacer"></span><span class="chip info tg-mo-chi" id="all3LimitRule">Ngày &gt;4h · Tuần &gt;12h · Tháng &gt;24h · Năm ≥250h</span></h2>
       <div class="tblwrap"><table id="all3Limit"></table></div>
     </div>
     <div class="panel tg" data-tg="pt" style="margin-top:18px;">
@@ -3466,11 +3594,15 @@
 
 <main class="tabpage" id="tab-tangca">
     <div class="subnav" id="otSubnav">
+      <button data-sub="dash">📊 Dashboard</button>
       <button data-sub="ds" class="active">👥 Danh sách &amp; giờ OT</button>
       <button data-sub="dk">✍ Đăng ký nhanh</button>
       <button data-sub="lich">📅 Lịch tháng</button>
       <button data-sub="tonphep">🌴 Tồn phép năm</button>
     </div>
+
+    <!-- Dashboard tăng ca: Tuần / Tháng / Năm, kho đang xem hoặc cả 3 kho (js/modules/tangca/ot-dashboard.js) -->
+    <div class="subpage" id="sub-dash"><div class="od" id="odBox"></div></div>
 
     <div class="subpage active" id="sub-ds">
       <div class="panel">
@@ -5488,6 +5620,7 @@ function render(){
   if(activeTab === 'doica') renderRotation();
   if(activeTab === 'tangca'){
     $('otKhoName').textContent = w.name.toLowerCase();
+    if(activeSub === 'dash') renderOtDash();
     if(activeSub === 'ds') renderOtList();
     if(activeSub === 'dk') renderQuickEntry();
     if(activeSub === 'lich') renderCalendar();
@@ -5569,15 +5702,15 @@ function otWarnings(khoId, ref){
 const OV_TIP = new Map();
 let ovTipSo = 0;
 function ovTipXoa(){ OV_TIP.clear(); }
-// Ghi nội dung, trả về id. dong: [{ t: chữ chính, s: chữ phụ }]
-function ovTipId(tieuDe, dong){
+// Ghi nội dung, trả về id. dong: [{ t: chữ chính, s: chữ phụ }] · khongDem: ẩn ô số đếm cạnh tiêu đề
+function ovTipId(tieuDe, dong, khongDem){
   if(!dong || !dong.length) return '';
   const id = 'ot' + (++ovTipSo);
-  OV_TIP.set(id, { tieuDe, dong });
+  OV_TIP.set(id, { tieuDe, dong, khongDem });
   return id;
 }
 // Cho chuỗi HTML: ' data-ovtip="…"' (rỗng nếu không có ai)
-const ovTipAttr = (tieuDe, dong) => { const id = ovTipId(tieuDe, dong); return id ? ` data-ovtip="${id}"` : ''; };
+const ovTipAttr = (tieuDe, dong, khongDem) => { const id = ovTipId(tieuDe, dong, khongDem); return id ? ` data-ovtip="${id}"` : ''; };
 // Cho phần tử có sẵn trong trang (VD #dOffToday)
 function ovTipGan(el, tieuDe, dong){
   if(!el) return;
@@ -5593,7 +5726,7 @@ function ovTipGan(el, tieuDe, dong){
     const el = e.target.closest && e.target.closest('[data-ovtip]');
     const d = el && OV_TIP.get(el.dataset.ovtip);
     if(!d){ tip.hidden = true; return; }
-    tip.innerHTML = `<div class="th">${esc(d.tieuDe)} <i>${d.dong.length}</i></div>`
+    tip.innerHTML = `<div class="th">${esc(d.tieuDe)}${d.khongDem ? '' : ` <i>${d.dong.length}</i>`}</div>`
       + d.dong.slice(0, TOI_DA).map(x=>`<div class="r"><b>${esc(x.t)}</b>${x.s ? `<span>${esc(x.s)}</span>` : ''}</div>`).join('')
       + (d.dong.length > TOI_DA ? `<div class="them">+${d.dong.length - TOI_DA} nữa</div>` : '');
     tip.hidden = false;
@@ -5693,11 +5826,11 @@ function renderAll3(){
 // Chỉ báo khi ĐÃ VƯỢT, không báo "sắp chạm". Ngưỡng cố định, không theo hạn
 // mức tháng cài trong app (cài 36h thì vượt 24h vẫn báo).
 //   Ngày  > 4h     Tuần (thứ 2 – thứ 7) > 12h     Tháng > 24h
-//   Năm  >= 350h   (quy định 380h, báo sớm từ 350h)
+//   Năm  >= 250h   (quy định 280h, báo sớm từ 250h để theo dõi cuối năm)
 // Xét trong THÁNG HIỆN TẠI: các ngày của tháng này, các tuần có ngày nằm
 // trong tháng này, tổng tháng này và tổng năm nay (kể cả số đầu kỳ).
 // ---------------------------------------------------------------------
-const OT_VI_PHAM = { ngay:4, tuan:12, thang:24, nam:350, namQuyDinh:380 };
+const OT_VI_PHAM = { ngay:4, tuan:12, thang:24, nam:250, namQuyDinh:280 };
 function otViPham(khoId, ref){
   const out = [];
   const y = ref.getFullYear(), mo = ref.getMonth();
@@ -10515,7 +10648,7 @@ function otLimitModal(){
     <div class="note">Giới hạn này áp dụng cho <b>cả 3 kho</b>: thanh M trong danh sách, cảnh báo khi đăng ký và bảng cảnh báo ở tab Tổng quan 3 kho.</div>
     <div class="row2" style="margin-top:10px;">
       <button class="pick ${cur===24?'on':''}" data-lim="24">24 giờ / tháng</button>
-      <button class="pick ${cur===36?'on':''}" data-lim="36">36 giờ / tháng</button>
+      <button class="pick ${cur===38?'on':''}" data-lim="38">38 giờ / tháng</button>
     </div>
     <label class="field-label">Hoặc nhập số khác</label>
     <input type="number" id="mLimOther" min="1" max="120" value="${cur}">
@@ -11870,6 +12003,298 @@ function export5S(kind){
 // =====================================================================
 
 // ===== Gắn toàn bộ nút bấm — chạy ngay khi mở trang =====
+
+</script>
+<script>/* js/modules/tangca/ot-dashboard.js */
+// Tab Tăng ca/Nghỉ phép -> tab con "📊 Dashboard": tổng quan GIỜ TĂNG CA theo Tuần / Tháng / Năm
+// (chỉ tăng ca, không gồm nghỉ phép). Danh sách chi tiết vẫn ở tab con "👥 Danh sách & giờ OT".
+//   Phạm vi : kho đang xem | cả 3 kho (chỉ những kho tài khoản được xem)
+//   Kỳ      : Tuần = T2 – T7 (giống hạn mức tuần, Chủ nhật không tính) · Tháng · Năm
+//   Hạn mức : tuần LIMITS.week · tháng LIMITS.month (24h / 38h tuỳ cài đặt) · năm LIMITS.year (280h, theo dõi từ 250h)
+//             "Sắp hết" từ mốc TH.*.y, "Hết hạn mức" từ mốc LIMITS (giống cảnh báo ở danh sách)
+//   Năm hiện tại: tổng mỗi người cộng thêm số giờ đầu kỳ (otOpeningBalance) để so hạn mức năm
+// Bố cục: thanh chọn kỳ · 2 thẻ (Tổng giờ OT, Hạn mức) · biểu đồ cột + mức dùng hạn mức · bản đồ nhiệt người × ngày/tháng
+// =====================================================================
+const OD = { pham:'kho', ky:'thang', moc:new Date() };
+const OD_MAU = '#2a78d6';                                   // 1 màu cho giờ OT khi xem 1 kho
+const OD_THU = ['CN','T2','T3','T4','T5','T6','T7'];
+const OD_THU_DU = ['Chủ nhật','Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7'];
+const odSo = h => fmtNumShort(h).replace('.', ',');         // 2.5 -> "2,5"
+
+function odKhos(){
+  const xem = WAREHOUSES.filter(w=>coXem(w.id)).map(w=>w.id);
+  return OD.pham === 'all' && xem.length > 1 ? xem : [CUR_KHO];
+}
+// Các cột của kỳ: [{ tu, den, nhan, phu, ten, cn }] (tu / den = 'YYYY-MM-DD')
+function odCot(ky, moc){
+  if(ky === 'tuan'){
+    const mon = getMonday(moc);
+    return Array.from({length:6}, (_, i)=>{ const d = addDays(mon, i), k = toKey(d);
+      return { tu:k, den:k, nhan:OD_THU[d.getDay()], phu:`${pad(d.getDate())}/${pad(d.getMonth() + 1)}`, ten:`${OD_THU_DU[d.getDay()]}, ${fmtVN(d)}` }; });
+  }
+  if(ky === 'thang'){
+    const y = moc.getFullYear(), m = moc.getMonth(), n = new Date(y, m + 1, 0).getDate();
+    return Array.from({length:n}, (_, i)=>{ const d = new Date(y, m, i + 1), k = toKey(d);
+      return { tu:k, den:k, nhan:String(i + 1), phu:OD_THU[d.getDay()], ten:`${OD_THU_DU[d.getDay()]}, ${fmtVN(d)}`, cn:d.getDay() === 0 }; });
+  }
+  const y = moc.getFullYear();
+  return Array.from({length:12}, (_, i)=>({ tu:`${y}-${pad(i + 1)}-01`, den:toKey(new Date(y, i + 1, 0)), nhan:`T${i + 1}`, phu:'', ten:`Tháng ${pad(i + 1)}/${y}` }));
+}
+function odDoi(ky, moc, n){
+  const d = new Date(moc);
+  if(ky === 'tuan') d.setDate(d.getDate() + 7 * n);
+  else if(ky === 'thang'){ d.setDate(1); d.setMonth(d.getMonth() + n); }
+  else d.setFullYear(d.getFullYear() + n);
+  return d;
+}
+function odTen(ky, moc, ngan){
+  if(ky === 'tuan'){ const mon = getMonday(moc), sat = addDays(mon, 5);
+    return ngan ? `tuần ${pad(mon.getDate())}/${pad(mon.getMonth() + 1)}` : `Tuần ${pad(mon.getDate())}/${pad(mon.getMonth() + 1)} – ${fmtVN(sat)}`; }
+  if(ky === 'thang') return `${ngan ? 'T' : 'Tháng '}${ngan ? moc.getMonth() + 1 : pad(moc.getMonth() + 1)}/${moc.getFullYear()}`;
+  return `${ngan ? 'năm' : 'Năm'} ${moc.getFullYear()}`;
+}
+const odHanMuc = ky => ky === 'tuan' ? { lim:LIMITS.week, y:TH.week.y, ten:'tuần' }
+                     : ky === 'thang' ? { lim:LIMITS.month, y:TH.month.y, ten:'tháng' }
+                     : { lim:LIMITS.year, y:TH.year.y, ten:'năm' };
+
+// Số liệu 1 kỳ: { cot, nguoi:[{ e, o:[giờ mỗi cột], tong, dauKy, soHM }], cotTong:[{ tong, kho:{} }], tong }
+function odSoLieu(ky, moc, khos){
+  const cot = odCot(ky, moc), tu = cot[0].tu, den = cot[cot.length - 1].den;
+  const byId = new Map(HR.employees.filter(e=>khos.includes(e.warehouseId)).map(e=>[e.id, e]));
+  const viTri = new Map(cot.map((c, i)=>[c.tu, i]));
+  const cotCua = ky === 'nam' ? (d => Number(d.slice(5, 7)) - 1) : (d => viTri.has(d) ? viTri.get(d) : -1);
+  const nguoi = new Map(), cotTong = cot.map(()=>({ tong:0, kho:{} }));
+  const lay = e => { let p = nguoi.get(e.id); if(!p){ p = { e, o:cot.map(()=>0), tong:0 }; nguoi.set(e.id, p); } return p; };
+  let tong = 0;
+  HR.ot.forEach(r=>{
+    if(!r.date || r.date < tu || r.date > den) return;
+    const e = byId.get(r.employeeId); if(!e) return;
+    const i = cotCua(r.date); if(i < 0) return;              // tuần: Chủ nhật không thuộc tuần T2 – T7
+    const h = Number(r.hours) || 0; if(!h) return;
+    const p = lay(e);
+    p.o[i] += h; p.tong += h; tong += h;
+    cotTong[i].tong += h; cotTong[i].kho[e.warehouseId] = (cotTong[i].kho[e.warehouseId] || 0) + h;
+  });
+  // năm hiện tại: cộng số giờ đầu kỳ (tăng ca trước khi dùng app) để so hạn mức năm
+  const dauKy = ky === 'nam' && moc.getFullYear() === new Date().getFullYear();
+  if(dauKy) byId.forEach(e=>{ if((Number(e.otOpeningBalance) || 0) > 0 && !e.nghiViec) lay(e); });
+  nguoi.forEach(p=>{ p.dauKy = dauKy ? (Number(p.e.otOpeningBalance) || 0) : 0; p.soHM = p.tong + p.dauKy; });
+  return { cot, nguoi:[...nguoi.values()].sort((a, b)=>b.soHM - a.soHM || a.e.name.localeCompare(b.e.name, 'vi')), cotTong, tong };
+}
+// Trục làm tròn lên mức đẹp gần nhất: 18 -> 20 · 21 -> 25 · 33 -> 40
+function odTronTren(v){
+  if(v <= 0) return 4;
+  const mu = Math.pow(10, Math.floor(Math.log10(v)));
+  for(const b of [1, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10]) if(b * mu >= v - 1e-9) return b * mu;
+  return 10 * mu;
+}
+const odMauKho = k => (typeof KHO_MAU !== 'undefined' && KHO_MAU[k]) || OD_MAU;
+
+// ---------------------------------------------------------------------
+// VẼ
+// ---------------------------------------------------------------------
+function renderOtDash(){
+  const box = $('odBox'); if(!box) return;
+  ovTipXoa();
+  const khos = odKhos(), ba = khos.length > 1;
+  const S = odSoLieu(OD.ky, OD.moc, khos), truoc = odDoi(OD.ky, OD.moc, -1), T = odSoLieu(OD.ky, truoc, khos);
+  const hm = odHanMuc(OD.ky);
+  const coOT = S.nguoi.filter(p=>p.tong > 0);
+  const kyNay = odTen(OD.ky, OD.moc) === odTen(OD.ky, new Date());
+  const xem3 = WAREHOUSES.filter(w=>coXem(w.id)).length > 1;
+  const nut = (k, v, cur, txt) => `<button data-od-${k}="${v}" class="${v === cur ? 'on' : ''}">${txt}</button>`;
+
+  // ---- thẻ 1: tổng giờ OT ----
+  let ss = '';
+  if(T.tong > 0){ const pt = Math.round((S.tong - T.tong) / T.tong * 100);
+    ss = `<span class="ss ${pt > 0 ? 'len' : pt < 0 ? 'xuong' : ''}">${pt > 0 ? '▲' : pt < 0 ? '▼' : '•'} ${Math.abs(pt)}% so với ${odTen(OD.ky, truoc, true)}</span>`; }
+  else if(S.tong > 0) ss = `<span class="ss">${odTen(OD.ky, truoc, true)} không có tăng ca</span>`;
+  const theoKho = ba ? `<div class="od-kho">${khos.map(k=>{ const h = S.nguoi.filter(p=>p.e.warehouseId === k).reduce((s, p)=>s + p.tong, 0);
+    return `<span><i style="background:${odMauKho(k)}"></i>${esc(khoName(k))} <b>${fmtHours(h)}</b></span>`; }).join('')}</div>` : '';
+  // ---- thẻ 2: hạn mức ----
+  const het = S.nguoi.filter(p=>p.soHM >= hm.lim), sap = S.nguoi.filter(p=>p.soHM >= hm.y && p.soHM < hm.lim);
+  const dsTen = ds => ds.map(p=>({ t:p.e.name, s:`${fmtHours(p.soHM)} / ${hm.lim}h${ba ? ' · ' + khoName(p.e.warehouseId) : ''}${p.dauKy ? ` (gồm ${fmtHours(p.dauKy)} đầu kỳ)` : ''}` }));
+
+  box.innerHTML = `
+  <div class="od-bar">
+    ${xem3 ? `<div class="od-seg">${nut('pham', 'kho', OD.pham, esc(khoName(CUR_KHO)))}${nut('pham', 'all', OD.pham, 'Cả 3 kho')}</div>` : ''}
+    <div class="od-seg">${nut('ky', 'tuan', OD.ky, 'Tuần')}${nut('ky', 'thang', OD.ky, 'Tháng')}${nut('ky', 'nam', OD.ky, 'Năm')}</div>
+    <div class="od-ky"><button data-od-doi="-1" title="Kỳ trước">‹</button><b>${odTen(OD.ky, OD.moc)}</b><button data-od-doi="1" title="Kỳ sau">›</button></div>
+    ${kyNay ? '' : `<button class="od-nay" data-od-doi="0">Hôm nay</button>`}
+  </div>
+  <div class="od-kpi">
+    <div class="od-the">
+      <div class="k">Tổng giờ tăng ca<small>${esc(odTen(OD.ky, OD.moc))}</small></div>
+      <div class="v"><b>${fmtHours(S.tong)}</b><span>${coOT.length} người tăng ca</span></div>
+      <div class="d">${ss}</div>${(()=>{ const dk = S.nguoi.reduce((s, p)=>s + p.dauKy, 0);
+        return dk ? `<div class="d">Chưa gồm <b>${fmtHours(dk)}</b> tăng ca đầu kỳ (trước khi dùng app) — có tính khi so hạn mức năm</div>` : ''; })()}${theoKho}
+    </div>
+    <div class="od-the hm">
+      <div class="k">Hạn mức ${hm.ten}<small>${hm.lim}h / người · cảnh báo từ ${hm.y}h</small></div>
+      <div class="hm2">
+        <div class="bad"><b${ovTipAttr('Hết hạn mức ' + hm.ten, dsTen(het))}>${het.length}</b><span>⛔ hết hạn mức<br><i>≥ ${hm.lim}h</i></span></div>
+        <div class="warn"><b${ovTipAttr('Sắp hết hạn mức ' + hm.ten, dsTen(sap))}>${sap.length}</b><span>⚠ sắp hết<br><i>${hm.y}h – dưới ${hm.lim}h</i></span></div>
+      </div>
+    </div>
+  </div>
+  <div class="od-hang${S.nguoi.filter(p=>p.soHM > 0).length > 20 ? ' rong' : ''}">   <!-- nhiều người: biểu đồ trải hết bề ngang -->
+    <div class="od-card">
+      <div class="od-h"><b>Giờ tăng ca theo người</b>
+        <span class="od-lg"><span><i style="background:${OD_MAU}"></i>bình thường</span><span><i style="background:var(--od-warn)"></i>sắp hết</span>
+          <span><i style="background:var(--od-bad)"></i>hết hạn mức</span>${S.nguoi.some(p=>p.dauKy) ? '<span><i style="background:#c9d4e0"></i>đầu kỳ</span>' : ''}</span></div>
+      <div class="od-chart" id="odChart"></div>
+    </div>
+    <div class="od-card">
+      <div class="od-h"><b>Mức dùng hạn mức ${hm.ten}</b></div>
+      ${odMucDung(S, hm, ba)}
+    </div>
+  </div>
+  <div class="od-card">
+    <div class="od-h"><b>Bản đồ nhiệt: người × ${OD.ky === 'nam' ? 'tháng' : 'ngày'}</b>
+      <span class="od-ghi">Ô càng đậm = càng nhiều giờ${ba ? ' · rê chuột vào ô để xem' : ''} · bấm tên để xem lịch sử OT</span></div>
+    ${odBanDoNhiet(S, hm, khos)}
+  </div>`;
+  odVeCot(S, khos);
+}
+
+// Mức dùng hạn mức: chia người có tăng ca theo % hạn mức của kỳ
+function odMucDung(S, hm, ba){
+  const ds = S.nguoi.filter(p=>p.soHM > 0);
+  if(!ds.length) return `<p class="empty-msg">Chưa có ai tăng ca trong kỳ này.</p>`;
+  const MUC = [
+    { ten:'Dưới 50%', tu:0, den:.5, mau:'#a9cbf3' },
+    { ten:'50 – 80%', tu:.5, den:.8, mau:OD_MAU },
+    { ten:'80 – 100%', tu:.8, den:1, mau:'#f5a524' },
+    { ten:'Hết hạn mức', tu:1, den:Infinity, mau:'#d92d20' },
+  ];
+  const nhom = MUC.map(m=>({ ...m, ds:ds.filter(p=>{ const f = p.soHM / hm.lim; return f >= m.tu && f < m.den; }) }));
+  const max = Math.max(...nhom.map(n=>n.ds.length), 1);
+  return `<div class="od-md">${nhom.map(n=>`<div class="r">
+      <span class="t"><i style="background:${n.mau}"></i>${n.ten}</span>
+      <span class="bar"><i style="width:${n.ds.length / max * 100}%; background:${n.mau}"></i></span>
+      <b${ovTipAttr(n.ten + ' hạn mức ' + hm.ten, n.ds.map(p=>({ t:p.e.name, s:`${fmtHours(p.soHM)} / ${hm.lim}h · ${Math.round(p.soHM / hm.lim * 100)}%${ba ? ' · ' + khoName(p.e.warehouseId) : ''}` })))}>${n.ds.length}</b>
+    </div>`).join('')}</div>
+    <div class="od-md-f">${ds.length} người${ds.some(p=>p.dauKy) ? ' (tính cả giờ tăng ca đầu kỳ)' : ' có tăng ca'} · hạn mức ${hm.lim}h / ${hm.ten}</div>`;
+}
+
+// Biểu đồ cột THEO NGƯỜI: mỗi cột 1 người (tên dưới chân cột), trục giờ bên trái, nhiều giờ nhất bên trái.
+//   Màu cột theo hạn mức của kỳ: xanh = bình thường · vàng = sắp hết (từ mốc cảnh báo) · đỏ = hết hạn mức
+//   2 vạch nét đứt: hạn mức (đỏ) và mốc cảnh báo (vàng). Năm hiện tại: phần giờ đầu kỳ là đoạn xám nhạt ở đáy cột.
+//   Cả 3 kho: gom cột theo kho, dưới tên có vạch màu + tên kho. Bấm cột = mở lịch sử OT của người đó.
+const odTenNgan = full => { const p = String(full || '').trim().split(/\s+/); return p.length > 2 ? p.slice(-2).join(' ') : p.join(' '); };
+function odVeCot(S, khos){
+  const box = $('odChart'); if(!box) return;
+  const hm = odHanMuc(OD.ky), ba = khos.length > 1;
+  let ds = S.nguoi.filter(p=>p.soHM > 0);
+  if(!ds.length){ box.innerHTML = `<div class="od-trong">Không có giờ tăng ca nào trong kỳ này.</div>`; return; }
+  if(ba) ds = khos.flatMap(k=>ds.filter(p=>p.e.warehouseId === k));      // giữ thứ tự nhiều giờ nhất trong từng kho
+  // mỗi cột rộng tối thiểu 20px để tên không chồng nhau; không đủ chỗ thì khung cuộn ngang
+  const n = ds.length, rong = box.clientWidth || 800, W = Math.max(480, rong, 116 + n * 20);
+  const L = 46, R = 12, TOP = 18, B = ba ? 112 : 92, H = 250 + B;
+  const pw = W - L - R, ph = H - TOP - B;
+  const top = odTronTren(Math.max(hm.lim, ...ds.map(p=>p.soHM)));
+  const yOf = v => TOP + ph - v / top * ph;
+  const band = pw / n, bw = Math.max(4, Math.min(34, band * .62));
+  const mauCot = p => p.soHM >= hm.lim ? 'var(--od-bad)' : p.soHM >= hm.y ? 'var(--od-warn)' : OD_MAU;
+  let svg = `<svg viewBox="0 0 ${W} ${H}" width="${W > rong ? W : '100%'}" height="${H}" role="img" aria-label="Giờ tăng ca theo người, ${odTen(OD.ky, OD.moc)}">`;
+  const vach = Number.isInteger(top / 4) ? 4 : Number.isInteger(top / 5) ? 5 : 4;   // số tròn: 25h, 150h -> 5 vạch · 40h, 300h -> 4 vạch
+  for(let k = 0; k <= vach; k++){
+    const v = top * k / vach, y = yOf(v);
+    svg += `<line x1="${L}" x2="${W - R}" y1="${y}" y2="${y}" class="${k ? 'od-grid' : 'od-base'}"/><text x="${L - 7}" y="${y + 4}" text-anchor="end" class="od-ax">${odSo(v)}h</text>`;
+  }
+  // vạch hạn mức + mốc cảnh báo (ghi chữ ở lề phải)
+  [[hm.lim, 'bad', `hạn mức ${hm.lim}h`], [hm.y, 'warn', `cảnh báo ${hm.y}h`]].forEach(([v, cls, chu])=>{
+    const y = yOf(v);
+    svg += `<line x1="${L}" x2="${W - R}" y1="${y}" y2="${y}" class="od-hm-line ${cls}"/><text x="${L + 6}" y="${y - 4}" class="od-hm-txt ${cls}">${chu}</text>`;
+  });
+  ds.forEach((p, i)=>{
+    const cx = L + band * i + band / 2, x = cx - bw / 2;
+    const phan = [];
+    if(p.dauKy > 0) phan.push({ v:p.dauKy, mau:'#c9d4e0' });               // giờ đầu kỳ (trước khi dùng app)
+    if(p.tong > 0) phan.push({ v:p.tong, mau:mauCot(p) });
+    let tich = 0;
+    phan.forEach((s, j)=>{
+      const yb = yOf(tich) - (j ? 2 : 0); tich += s.v;
+      const y = yOf(tich), hh = yb - y; if(hh <= 0) return;
+      const r = j === phan.length - 1 ? Math.min(4, hh, bw / 2) : 0;
+      svg += r ? `<path d="M${x},${yb} V${y + r} Q${x},${y} ${x + r},${y} H${x + bw - r} Q${x + bw},${y} ${x + bw},${y + r} V${yb} Z" fill="${s.mau}"/>`
+               : `<rect x="${x}" y="${y}" width="${bw}" height="${hh}" fill="${s.mau}"/>`;
+    });
+    if(band >= 30) svg += `<text x="${cx}" y="${yOf(p.soHM) - 5}" text-anchor="middle" class="od-val">${odSo(p.soHM)}</text>`;
+    // tên người dưới chân cột, nghiêng 45° (2 chữ cuối của tên; tên đủ ở khung rê chuột)
+    const ty = TOP + ph + 12;
+    svg += `<text x="${cx}" y="${ty}" transform="rotate(-45 ${cx} ${ty})" text-anchor="end" class="od-ten">${esc(odTenNgan(p.e.name))}</text>`;
+    const chiTiet = [{ t:`${fmtHours(p.tong)} tăng ca · ${odTen(OD.ky, OD.moc)}`, s:`${Math.round(p.soHM / hm.lim * 100)}% hạn mức ${hm.ten} ${hm.lim}h` }];
+    if(p.dauKy) chiTiet.push({ t:`+ ${fmtHours(p.dauKy)} đầu kỳ`, s:`tổng so hạn mức: ${fmtHours(p.soHM)}` });
+    chiTiet.push({ t:[p.e.shift, p.e.position].filter(Boolean).join(' — ') || '—', s:(ba ? khoName(p.e.warehouseId) + ' · ' : '') + 'bấm để xem lịch sử OT' });
+    // khung chi tiết khi rê chuột: chỉ khi xem Cả 3 kho (xem từng kho thì không hiện) — bấm cột vẫn mở lịch sử OT
+    svg += `<rect x="${L + band * i}" y="${TOP}" width="${band}" height="${ph + B - 10}" class="od-hit" data-od-ng="${esc(p.e.id)}"${ba ? ovTipAttr(p.e.name, chiTiet, true) : ''}/>`;
+  });
+  // cả 3 kho: vạch màu + tên kho dưới nhóm cột của kho đó
+  if(ba){
+    let dau = 0;
+    khos.forEach(k=>{
+      const so = ds.filter(p=>p.e.warehouseId === k).length; if(!so) return;
+      const x1 = L + band * dau + 2, x2 = L + band * (dau + so) - 2, y = H - 18;
+      svg += `<line x1="${x1}" x2="${x2}" y1="${y}" y2="${y}" stroke="${odMauKho(k)}" stroke-width="3" stroke-linecap="round"/>
+        <text x="${(x1 + x2) / 2}" y="${y + 14}" text-anchor="middle" class="od-ax od-khoten">${esc(khoName(k))} · ${so}</text>`;
+      dau += so;
+    });
+  }
+  box.innerHTML = svg + '</svg>';
+}
+
+// Bản đồ nhiệt người × cột. Ô ngày: đậm theo số giờ (vượt 4h/ngày có góc đỏ).
+// Ô tháng (chế độ Năm): đậm theo % hạn mức tháng (vượt hạn mức tháng có góc đỏ).
+function odBanDoNhiet(S, hm, khos){
+  if(!S.nguoi.length) return `<p class="empty-msg">Chưa có ai tăng ca trong kỳ này.</p>`;
+  const nam = OD.ky === 'nam';
+  const muc = h => { if(!h) return 0;
+    if(nam){ const f = h / LIMITS.month; return f <= .25 ? 1 : f <= .5 ? 2 : f <= .75 ? 3 : f <= 1 ? 4 : 5; }
+    return h <= 1 ? 1 : h <= 2 ? 2 : h <= 3 ? 3 : h <= LIMITS.day ? 4 : 5; };
+  const vuot = h => nam ? h > LIMITS.month : h > LIMITS.day;
+  const homNay = todayKey(), ba = khos.length > 1;
+  const dongNguoi = p => `<tr>
+      <td class="ten"><button data-od-ng="${esc(p.e.id)}" title="Xem lịch sử tăng ca">${esc(p.e.name)}</button>
+        <small>${esc([p.e.shift, p.e.position].filter(Boolean).join(' — ') || '—')}</small></td>
+      ${p.o.map((h, i)=>{ const c = S.cot[i];
+        return `<td class="o l${muc(h)}${vuot(h) ? ' vuot' : ''}${c.cn ? ' cn' : ''}"${h && ba ? ovTipAttr(p.e.name, [{ t:c.ten, s:`${fmtHours(h)} tăng ca${vuot(h) ? ` — vượt ${nam ? LIMITS.month + 'h/tháng' : LIMITS.day + 'h/ngày'}` : ''}` }], true) : ''}>${h ? odSo(h) : ''}</td>`; }).join('')}
+      <td class="tong">${(()=>{ const f = p.soHM / hm.lim, cls = p.soHM >= hm.lim ? 'bad' : p.soHM >= hm.y ? 'warn' : '';
+        return `<div class="tb"><span class="bar"><i class="${cls}" style="width:${Math.min(100, f * 100)}%"></i></span>
+          <b class="${cls}"${p.dauKy ? ` title="Gồm ${fmtHours(p.dauKy)} tăng ca đầu kỳ (trước khi dùng app)"` : ''}>${fmtHours(p.soHM)}</b></div>`; })()}</td>
+    </tr>`;
+  const nhom = ba ? khos.map(k=>({ k, ds:S.nguoi.filter(p=>p.e.warehouseId === k) })).filter(g=>g.ds.length) : [{ k:null, ds:S.nguoi }];
+  return `<div class="od-hm-wrap"><table class="od-hm${nam ? ' nam' : ''}">
+    <thead><tr><th class="ten">Người <i>(nhiều giờ nhất trước)</i></th>
+      ${S.cot.map(c=>`<th class="${c.cn ? 'cn' : ''}${c.tu <= homNay && homNay <= c.den ? ' nay' : ''}">${c.nhan}${c.phu && !nam ? `<small>${c.phu}</small>` : ''}</th>`).join('')}
+      <th class="tong">Tổng / ${hm.lim}h</th></tr></thead>
+    <tbody>${nhom.map(g=>{
+      if(!g.k) return g.ds.map(dongNguoi).join('');
+      const gio = g.ds.reduce((s, p)=>s + p.tong, 0), dk = g.ds.reduce((s, p)=>s + p.dauKy, 0);
+      return `<tr class="nhom"><td colspan="${S.cot.length + 2}"><i style="background:${odMauKho(g.k)}"></i>${esc(khoName(g.k))}
+        <span>${g.ds.length} người · ${fmtHours(gio)}${dk ? ` (+${fmtHours(dk)} đầu kỳ)` : ''}</span></td></tr>` + g.ds.map(dongNguoi).join(''); }).join('')}</tbody>
+    <tfoot><tr><td class="ten">Tổng theo ${nam ? 'tháng' : 'ngày'}</td>${S.cotTong.map(c=>`<td>${c.tong ? odSo(c.tong) : ''}</td>`).join('')}<td class="tong">${fmtHours(S.tong)}</td></tr></tfoot>
+  </table></div>
+  <div class="od-hm-lg"><span>${nam ? 'Giờ / tháng (so hạn mức ' + LIMITS.month + 'h):' : 'Giờ / ngày:'}</span>
+    ${(nam ? ['≤25%', '≤50%', '≤75%', '≤100%', '>100%'] : ['≤1h', '≤2h', '≤3h', '≤' + LIMITS.day + 'h', '>' + LIMITS.day + 'h']).map((t, i)=>`<span class="m"><i class="l${i + 1}"></i>${t}</span>`).join('')}
+    <span class="m"><i class="l3 vuot"></i>vượt ${nam ? LIMITS.month + 'h/tháng' : LIMITS.day + 'h/ngày'}</span>
+    ${OD.ky === 'thang' ? '<span class="m"><i class="cn"></i>Chủ nhật</span>' : ''}</div>`;
+}
+
+// ---- sự kiện (gắn 1 lần) ----
+(function(){
+  const box = $('odBox'); if(!box) return;
+  box.addEventListener('click', e=>{
+    const p = e.target.closest('[data-od-pham]'); if(p){ OD.pham = p.dataset.odPham; renderOtDash(); return; }
+    const k = e.target.closest('[data-od-ky]'); if(k){ OD.ky = k.dataset.odKy; renderOtDash(); return; }
+    const d = e.target.closest('[data-od-doi]');
+    if(d){ const n = Number(d.dataset.odDoi); OD.moc = n ? odDoi(OD.ky, OD.moc, n) : new Date(); renderOtDash(); return; }
+    const ng = e.target.closest('[data-od-ng]'); if(ng && typeof otHistoryModal === 'function') otHistoryModal(ng.dataset.odNg);
+  });
+  let t = null;
+  window.addEventListener('resize', ()=>{ clearTimeout(t); t = setTimeout(()=>{
+    if(activeTab === 'tangca' && activeSub === 'dash' && $('odChart') && $('odChart').offsetParent) renderOtDash(); }, 200); });
+})();
 
 </script>
 <script>/* js/app/bindings-main.js */
