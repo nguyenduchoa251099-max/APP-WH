@@ -1854,6 +1854,15 @@
   #tab-scan .sc-kpi .k b{font-size:22px; font-weight:800; line-height:1.1; font-variant-numeric:tabular-nums;}
   #tab-scan .sc-kpi .k b small{font-size:14px; opacity:.85; font-weight:700;}
   #tab-scan .sc-kpi .k i{font-style:normal; font-size:11.5px; opacity:.85;}
+  /* ô tích "Bắt buộc vị trí" (bên trái ô ĐÃ SCAN) */
+  #tab-scan .sc-bb{display:inline-flex; align-items:center; gap:7px; padding:5px 11px 5px 9px; border-radius:10px; cursor:pointer;
+    background:#fff; border:2px solid #d8dde5; user-select:none; transition:border-color .12s, background .12s;}
+  #tab-scan .sc-bb input{width:18px; height:18px; margin:0; accent-color:#d97706; cursor:pointer; flex:0 0 auto;}
+  #tab-scan .sc-bb span{font-size:11px; font-weight:800; letter-spacing:.04em; line-height:1.2; color:var(--ink-soft); text-transform:uppercase;}
+  #tab-scan .sc-bb:has(input:checked){border-color:#e0a526; background:#fff8e6;}
+  #tab-scan .sc-bb:has(input:checked) span{color:#8a5a00;}
+  /* bấm lưu mà chưa điền vị trí (đang bắt buộc) -> ô vị trí nháy đỏ */
+  #tab-scan .sc-vt.thieu{animation:scSai 1.2s; border-color:#dc2626;}
   #tab-scan .sc-kpi .k.da{background:linear-gradient(135deg,#34b36b,#23874f);}
   #tab-scan .sc-kpi .k.con{background:linear-gradient(135deg,#ff9a3c,#e8590c);}
   #tab-scan .sc-prog{display:flex; align-items:center; gap:7px;}
@@ -3268,6 +3277,8 @@
         <select class="sc-doi" id="scDoi" title="Đổi sang scan file khác — tiến độ của từng file được giữ riêng"></select>
       </div>
       <div class="sc-kpi">
+        <label class="sc-bb" title="Tích: bấm LƯU SCAN bắt buộc phải điền VỊ TRÍ · Bỏ tích: lưu tự do, không cần vị trí">
+          <input type="checkbox" id="scBbVt"><span>Bắt buộc<br>vị trí</span></label>
         <div class="k da"><span>ĐÃ SCAN</span><b id="scDa">0</b><i>thùng</i></div>
         <div class="k con"><span>CÒN LẠI</span><b id="scCon">0</b><i>thùng</i></div>
         <div class="sc-prog"><div class="bar"><i id="scBar"></i></div><span id="scPt">0%</span></div>
@@ -3278,7 +3289,7 @@
         <label class="sc-vt sc-gc" id="scGcBox" title="Ghi chú cho các thùng của phiên này (không bắt buộc) — có trong file Excel khi xuất">
           <span>📝 GHI CHÚ</span><input type="text" id="scGc" placeholder="VD: bẩn" autocomplete="off" maxlength="200">
         </label>
-        <label class="sc-vt" id="scVtBox" title="Vị trí đặt các thùng của phiên này (không bắt buộc)">
+        <label class="sc-vt" id="scVtBox" title="Vị trí đặt các thùng của phiên này — bắt buộc khi tích ô &quot;Bắt buộc vị trí&quot;">
           <span>📍 VỊ TRÍ</span><input type="text" id="scVt" placeholder="VD: A01A" autocomplete="off" spellcheck="false">
         </label>
         <button class="sc-btn sc-vtl" id="scBtnVtl" title="Mở bảng các thùng đã lưu: JO - BUYER PO - STYLE - VỊ TRÍ - UCC - GHI CHÚ (sửa tạm / copy được)">🗂 VỊ TRÍ ĐÃ LƯU</button>
@@ -14337,7 +14348,10 @@ function veNhom(){
   });
   $('scGHead').textContent = tenMode();
   const ps = phienSet(), g = nhomTheo(MODE);
-  const keys = [...g.keys()].sort(soSanh);
+  // 3 tầng, tính theo số thùng ĐÃ BẤM LƯU SCAN (thùng đang quét chưa lưu không làm dòng nhảy chỗ):
+  //   trên cùng: chưa lưu thùng nào · giữa: đã lưu một phần · cuối: đã lưu đủ
+  const tang = v => { const ds = g.get(v), luu = ds.filter(daLuu).length; return !luu ? 0 : luu < ds.length ? 1 : 2; };
+  const keys = [...g.keys()].sort((a, b)=>(tang(a) - tang(b)) || soSanh(a, b));
   if(SEL && !g.has(SEL)) SEL = null;
   let tT = 0, tD = 0, tP = 0, tC = 0;
   const tatCaLuot = new Set();
@@ -14476,8 +14490,15 @@ function xuLyMa(raw){
 async function luuScan(){
   if(!DATA) return;
   if(!PHIEN.length){ toast('Phiên này chưa scan thùng nào'); $('scIn').focus(); return; }
-  // vị trí và ghi chú đều không bắt buộc
+  // ghi chú không bắt buộc; vị trí bắt buộc khi đang tích ô "Bắt buộc vị trí"
   const vt = $('scVt').value.trim().toUpperCase();
+  if(!vt && $('scBbVt').checked){
+    const box = $('scVtBox');
+    box.classList.remove('thieu'); void box.offsetWidth; box.classList.add('thieu');
+    toast('⚠ Điền VỊ TRÍ trước khi lưu (hoặc bỏ tích "Bắt buộc vị trí")');
+    $('scVt').focus();
+    return;
+  }
   const gc = $('scGc').value.trim().slice(0, 200);
   const btn = $('scBtnLuu');
   btn.disabled = true; btn.textContent = '⏳ Đang lưu…';
@@ -14781,6 +14802,16 @@ $('scInBox').addEventListener('click', ()=>inp.focus());
 });
 
 $('scDoi').onchange = ()=>{ const k = $('scDoi').value; $('scDoi').value = ''; $('scDoi').blur(); doiFile(k); };
+// Ô tích "Bắt buộc vị trí": mặc định tích, nhớ trên máy này
+const KEY_BB = 'appwh-scan-bbvt';
+try{ $('scBbVt').checked = localStorage.getItem(KEY_BB) !== '0'; }catch(e){ $('scBbVt').checked = true; }
+$('scBbVt').onchange = ()=>{
+  try{ localStorage.setItem(KEY_BB, $('scBbVt').checked ? '1' : '0'); }catch(e){}
+  $('scVtBox').classList.remove('thieu');
+  toast($('scBbVt').checked ? '📍 Bấm LƯU SCAN phải điền vị trí' : 'Lưu scan tự do — không cần điền vị trí');
+  inp.focus();
+};
+$('scVt').addEventListener('input', ()=>$('scVtBox').classList.remove('thieu'));
 $('scBtnXoa').onclick = ()=>xoaDuLieu();
 $('scBtnDb').onclick = ()=>luuDashboard();
 $('scEmpty').addEventListener('click', e=>{ const b = e.target.closest('[data-chon]'); if(b) doiFile(b.dataset.chon); });
