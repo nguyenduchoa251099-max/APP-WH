@@ -10009,7 +10009,8 @@ function xhBangTrongTrang(doc){
   }).filter(Boolean);
 }
 function xhCot(headers, ten){ return headers.findIndex(h=>h === ten || h.startsWith(ten)); }
-// DESTINATION cho báo cáo: COUNTRY + BY + SEA/AIR (lấy từ SHIP_MODE)
+// r.dest của lệnh: COUNTRY + BY + SEA/AIR (lấy từ SHIP_MODE). File mail Daily Shipment nay tính
+// DESTINATION theo mã nước trong JOB_ORDER_NO (xhBcDich ở xh-baocao.js); r.dest chỉ còn dự phòng.
 //   HK + SEA FREIGHT -> HK BY SEA · USA + AIR COLLECT -> USA BY AIR
 //   SHIP_MODE không có SEA/AIR thì lấy chữ đầu của nó (TRUCK -> BY TRUCK)
 function xhDich(country, shipMode){
@@ -10261,7 +10262,8 @@ function xhExportXlsx(){
 const XH_BC = {
   chiLayDaXong: true,                 // true = chỉ tính lệnh đã tích ✓ ở tab Xuất hàng
   tz: 'Asia/Ho_Chi_Minh',
-  // DOCUMENT NO, ISSUE DATE, SC NO, ORDER QTY: chỉ có tiêu đề, dữ liệu để trống (theo mẫu nhap/update.xlsx)
+  // DOCUMENT NO, ISSUE DATE, ORDER QTY: chỉ có tiêu đề, dữ liệu để trống (theo mẫu nhap/update.xlsx)
+  // SC NO = "S" + 8 ký tự bên trái của REFERENCE NO (26M04979US01 -> S26M04979)
   cot: ['DATE','DOCUMENT NO','ISSUE DATE','SC NO','REFERENCE NO','CUSTOMER','BUYER PO','STYLE','CARTONS',
         'ORDER QTY','ISSUE QTY','DESTINATION','REMARKS'],
   // Cột CUSTOMER của file gửi mail: đổi tên BUYER tóm tắt (lấy lúc import html) ra tên khách hàng đầy đủ.
@@ -10282,6 +10284,11 @@ const XH_BC = {
     [/^CRJ\b/,          'YAMATO INTERNATIONAL INCORPORATED'],
     [/^MUJI\b/,         'RYOHIN KEIKAKU CO. LTD.'],
     [/^(CHARLES\b|CT\b|CT\s*\d)/, 'CHARLES TYRWHITT SHIRTS LTD'],   // CHARLES TYRWHITT / CT / CT1 / CT 6 - BK00
+  ],
+  // DESTINATION (xem xhBcDich): đổi mã nước lấy từ REFERENCE NO · khách luôn đi 1 nơi cố định (so phần đầu BUYER)
+  maNuoc: { US: 'USA' },
+  dichCoDinh: [
+    [/^QUINCE\b/, 'USA BY AIR'],
   ],
   // Biểu đồ cột ISSUE QTY: false = không gửi trong mail, chỉ hiện ở "✉ Xem trước mail" trên web
   bieuDoTrongMail: false,
@@ -10327,6 +10334,26 @@ function xhBcTenKhach(r, ref){
   return o ? o[1] : goc;
 }
 
+// DESTINATION từng dòng job order = mã nước trong JOB_ORDER_NO + " BY " + cách đi theo SHIP_MODE
+//   25M10922AU29 + SEA FREIGHT -> AU BY SEA · 26M04979US01 + AIR COLLECT -> US BY AIR · TRUCKING -> BY TRUCKING
+// Mã nước = các chữ cái ngay sau 8 ký tự đầu của REFERENCE NO.
+// Lệnh không lưu SHIP_MODE (import trước đây / điền từ file Excel) thì lấy cách đi sau chữ BY của r.dest.
+// Không tách được mã nước hoặc cách đi thì giữ r.dest như cũ.
+// Ngoại lệ (XH_BC): mã nước đổi theo maNuoc (US -> USA); khách trong dichCoDinh luôn ra 1 nơi (QUINCE -> USA BY AIR).
+function xhBcCach(shipMode){
+  const m = String(shipMode || '').toUpperCase().trim();
+  return /\bSEA\b/.test(m) ? 'SEA' : /\bAIR\b/.test(m) ? 'AIR' : (m.split(/\s+/)[0] || '');
+}
+function xhBcDich(r, ref){
+  const kh = String(r.buyer || r.customer || '').trim().toUpperCase().replace(/\s+/g, ' ');
+  const coDinh = XH_BC.dichCoDinh.find(([re])=> re.test(kh));
+  if(coDinh) return coDinh[1];
+  let ma = (String(ref || '').toUpperCase().trim().slice(8).match(/^[A-Z]+/) || [])[0];
+  if(ma && XH_BC.maNuoc[ma]) ma = XH_BC.maNuoc[ma];
+  const cach = r.shipMode ? xhBcCach(r.shipMode) : (String(r.dest || '').split(/\s+BY\s+/i)[1] || '').trim().toUpperCase();
+  return ma && cach ? `${ma} BY ${cach}` : (r.dest || '');
+}
+
 // Các dòng của file đính kèm. Trả { dong, thieu } — thieu = số lệnh import
 // trước khi có chi tiết job order (dòng ra thiếu REFERENCE NO / PO / STYLE...).
 function xhBcLapDong(xuathang, den){
@@ -10343,10 +10370,10 @@ function xhBcLapDong(xuathang, den){
       const jo = coJo ? r.jo : [{ ref:'', po:'', style:'', ctn: xhBcSo(r.ctn), pcs: xhBcSo(r.pcs) }];
       // Thứ tự khoá = thứ tự cột file Excel (n8n lấy cột theo khoá của dòng đầu)
       jo.forEach(j=> dong.push({
-        'DATE': ngay, 'DOCUMENT NO': '', 'ISSUE DATE': '', 'SC NO': '',
+        'DATE': ngay, 'DOCUMENT NO': '', 'ISSUE DATE': '', 'SC NO': j.ref ? 'S' + String(j.ref).trim().slice(0, 8) : '',
         'REFERENCE NO': j.ref || '', 'CUSTOMER': xhBcTenKhach(r, j.ref),
         'BUYER PO': j.po || '', 'STYLE': j.style || '', 'CARTONS': Number(j.ctn) || 0, 'ORDER QTY': '',
-        'ISSUE QTY': Number(j.pcs) || 0, 'DESTINATION': r.dest || '', 'REMARKS': xhBcMa(r),
+        'ISSUE QTY': Number(j.pcs) || 0, 'DESTINATION': xhBcDich(r, j.ref), 'REMARKS': xhBcMa(r),
       }));
     });
   });
@@ -10471,12 +10498,15 @@ function xhXemTruocMail(){
         </span>
         <span class="s">Tính từ <b>${fmtVN(fromKey(tuNgay))}</b> đến <b>${fmtVN(fromKey(den))}</b>
           · ${XH_BC.chiLayDaXong ? 'chỉ lệnh đã tích ✓' : 'mọi lệnh'}</span>
+        ${xhBsDuocSua() ? `<button class="ghost sm" id="xhBcBoSung"
+          title="Lấy nguyên từng dòng job order từ file Excel DAILY SHIPMENT đầy đủ">📄 Cập nhật từ file Excel</button>` : ''}
         ${xhBcDuocGui() ? `<button id="xhBcGui" class="xh-bcgui" ${dong.length ? '' : 'disabled'}
           title="Gửi đúng nội dung đang xem qua n8n">📨 Gửi mail</button>` : ''}
       </div>
       ${daGui}
       ${thieu ? `<div class="note warn">⚠ ${thieu} lệnh import trước khi có chi tiết job order — dòng của lệnh đó thiếu REFERENCE NO, BUYER PO, STYLE, DESTINATION.
-        Mở đúng ngày rồi <b>⬆ Import</b> lại trang SHIPMENT REQUEST để bổ sung.</div>` : ''}
+        Mở đúng ngày rồi <b>⬆ Import</b> lại trang SHIPMENT REQUEST để bổ sung${xhBsDuocSua() ? `, hoặc bấm
+        <b>📄 Cập nhật từ file Excel</b> (file DAILY SHIPMENT có cột REFERENCE NO)` : ''}.</div>` : ''}
       ${thieuPcs ? `<div class="note warn">⚠ ${thieuPcs} dòng có ISSUE QTY = 0 (chưa có số PCS).</div>` : ''}
       ${!dong.length ? `<div class="note">Chưa có lệnh nào trong kỳ này nên không có gì để gửi.</div>` : `
       <div class="xh-bcmeta">
@@ -10506,6 +10536,8 @@ function xhXemTruocMail(){
     };
     veKhung('xhBcMail', mail.html);
     veKhung('xhBcBieuDo', mail.bieuDo);
+    const bs = m.body.querySelector('#xhBcBoSung');
+    if(bs) bs.onclick = ()=> xhBoSungExcel(()=>{ daGui = ''; ve(); });
     const tai = m.body.querySelector('#xhBcTai');
     if(tai) tai.onclick = ()=> xhBcTaiFile(dong, mail.tenFile);
     const gui = m.body.querySelector('#xhBcGui');
@@ -10565,6 +10597,139 @@ function xhBcTaiFile(dong, tenFile){
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'DAILY SHIPMENT');
   XLSX.writeFile(wb, tenFile);
+}
+
+</script>
+<script>/* js/modules/xuathang/xh-bosung.js */
+// Xuất hàng: cập nhật chi tiết job order từ file Excel DAILY SHIPMENT
+// =====================================================================
+// File Excel DAILY SHIPMENT đầy đủ (VD nhap/update.xlsx) là nguồn chính xác nhất:
+// mỗi dòng file = 1 dòng job order, giữ NGUYÊN từng dòng (không gộp dòng trùng
+// REFERENCE NO — khác PO / STYLE là dòng khác).
+//
+// Ghép theo mã REQUEST trong cột REMARKS (SHIPMENT/GIORDA_20260930-0091/TEHV…)
+// với r.reqId của lệnh. Lệnh có trong file: THAY TOÀN BỘ r.jo bằng các dòng của file
+// (REFERENCE NO, BUYER PO, STYLE, CARTONS, ISSUE QTY). r.dest giữ nguyên như đang có, chỉ
+// điền từ file khi lệnh còn trống — để biết cách đi (SEA / AIR…) cho lệnh không lưu SHIP_MODE
+// (DESTINATION của file mail tính ở xhBcDich). Lệnh không có trong file: giữ nguyên.
+// Mở từ "✉ Xem trước mail" (nút 📄 Cập nhật từ file Excel).
+// =====================================================================
+function xhBsDuocSua(){ return coSuaTab('thanhpham', 'xuathang'); }
+
+// Ô ngày của Excel: số seri (46296) hoặc chữ 10/1/2026 -> 'YYYY-MM-DD'
+function xhBsNgay(v){
+  if(typeof v === 'number' && v > 20000){
+    const d = new Date(Date.UTC(1899, 11, 30) + Math.round(v) * 86400000);
+    return d.toISOString().slice(0, 10);
+  }
+  const m = /^(\d{1,2})\/(\d{1,2})\/(\d{4})/.exec(String(v || '').trim());
+  return m ? `${m[3]}-${pad(+m[1])}-${pad(+m[2])}` : '';
+}
+const xhBsSo = v => Number(String(v == null ? '' : v).replace(/[^\d.]/g, '')) || 0;
+
+// Đọc file -> Map reqId -> { jo:[…], dest, ngay:Set }
+function xhBsDocFile(buf){
+  const wb = XLSX.read(buf, { type: 'array' });
+  for(const ten of wb.SheetNames){
+    const aoa = XLSX.utils.sheet_to_json(wb.Sheets[ten], { header: 1, defval: '', raw: true });
+    const iH = aoa.findIndex(r => r.some(c => String(c).trim().toUpperCase() === 'REMARKS')
+                               && r.some(c => String(c).trim().toUpperCase() === 'REFERENCE NO'));
+    if(iH < 0) continue;
+    const H = aoa[iH].map(c => String(c).trim().toUpperCase());
+    const c = k => H.indexOf(k);
+    const iRm = c('REMARKS'), iRef = c('REFERENCE NO'), iPo = c('BUYER PO'), iSt = c('STYLE'),
+          iCt = c('CARTONS'), iPcs = c('ISSUE QTY'), iDe = c('DESTINATION'), iDa = c('DATE');
+    const theoReq = new Map();
+    aoa.slice(iH + 1).forEach(r => {
+      const m = /_(\d{8}-\d{4})\b/.exec(String(r[iRm] || '')) || /\b(\d{8}-\d{4})\b/.exec(String(r[iRm] || ''));
+      const ref = String(r[iRef] || '').trim();
+      if(!m || !ref) return;
+      const o = theoReq.get(m[1]) || { jo: [], dest: '', ngay: new Set() };
+      o.jo.push({ ref, po: iPo >= 0 ? String(r[iPo] || '').trim() : '', style: iSt >= 0 ? String(r[iSt] || '').trim() : '',
+                  ctn: iCt >= 0 ? xhBsSo(r[iCt]) : 0, pcs: iPcs >= 0 ? Math.round(xhBsSo(r[iPcs])) : 0 });
+      if(!o.dest && iDe >= 0) o.dest = String(r[iDe] || '').trim();
+      if(iDa >= 0 && xhBsNgay(r[iDa])) o.ngay.add(xhBsNgay(r[iDa]));
+      theoReq.set(m[1], o);
+    });
+    if(theoReq.size) return theoReq;
+  }
+  return null;
+}
+
+// Đối chiếu với bảng Xuất hàng -> danh sách lệnh có trong file
+//   moi: chưa có job order · khac: có nhưng khác file · giong: đã giống hệt file
+function xhBsDoiChieu(theoReq){
+  const xh = (KHO.thanhpham && KHO.thanhpham.xuathang) || {};
+  const ra = [], thay = new Set();
+  const chuoi = jo => JSON.stringify((jo || []).map(j => [j.ref || '', j.po || '', j.style || '', Number(j.ctn) || 0, Number(j.pcs) || 0]));
+  Object.keys(xh).sort().forEach(k => (xh[k] || []).forEach(r => {
+    if(!r || !r.reqId || !theoReq.has(r.reqId)) return;
+    thay.add(r.reqId);
+    const f = theoReq.get(r.reqId);
+    const coJo = Array.isArray(r.jo) && r.jo.length;
+    const tt = !coJo ? 'moi' : chuoi(r.jo) === chuoi(f.jo) && (r.dest || !f.dest) ? 'giong' : 'khac';
+    const ctn = f.jo.reduce((s, j) => s + j.ctn, 0), pcs = f.jo.reduce((s, j) => s + j.pcs, 0);
+    const lech = [];
+    if(xhBsSo(r.ctn) && xhBsSo(r.ctn) !== ctn) lech.push(`CTN bảng ${xhBsSo(r.ctn)} ≠ file ${ctn}`);
+    if(xhBsSo(r.pcs) && xhBsSo(r.pcs) !== pcs) lech.push(`PCS bảng ${xhBsSo(r.pcs)} ≠ file ${pcs}`);
+    if(f.ngay.size && !f.ngay.has(k)) lech.push(`ngày trong file ${[...f.ngay].map(x => fmtVN(fromKey(x))).join(', ')}`);
+    ra.push({ k, r, f, ctn, pcs, lech, tt, cu: coJo ? r.jo.length : 0 });
+  }));
+  return { ra, khongCo: [...theoReq.keys()].filter(q => !thay.has(q)).length };
+}
+
+// Chọn file -> xem trước -> áp dụng. onXong(): vẽ lại nơi gọi sau khi lưu.
+function xhBoSungExcel(onXong){
+  if(typeof XLSX === 'undefined'){ toast('⚠ Chưa tải được thư viện Excel — kiểm tra mạng rồi tải lại trang'); return; }
+  if(!xhBsDuocSua()){ toast('⚠ Tài khoản chưa được sửa tab Xuất hàng'); return; }
+  const inp = document.createElement('input');
+  inp.type = 'file'; inp.accept = '.xlsx,.xls,.xlsm';
+  inp.onchange = async ()=>{
+    const f = inp.files && inp.files[0];
+    if(!f) return;
+    let theoReq = null;
+    try{ theoReq = xhBsDocFile(await f.arrayBuffer()); }catch(e){}
+    if(!theoReq){ toast('⚠ Không thấy bảng có cột REFERENCE NO và REMARKS trong file'); return; }
+    flushXuatHang();
+    const { ra, khongCo } = xhBsDoiChieu(theoReq);
+    const doi = ra.filter(o => o.tt !== 'giong');            // lệnh sẽ ghi
+    const soJo = doi.reduce((s, o) => s + o.f.jo.length, 0);
+    const dem = t => ra.filter(o => o.tt === t).length;
+    const nhanTT = { moi: '<span class="chip ok">Bổ sung</span>', khac: '<span class="chip warn">Thay theo file</span>', giong: '<span class="chip">Đã giống file</span>' };
+    const m = openModal('Cập nhật job order từ file Excel', `
+      <div class="note">File <b>${esc(f.name)}</b>: ${theoReq.size} lệnh · ${[...theoReq.values()].reduce((s, o) => s + o.jo.length, 0)} dòng job order.
+        Khớp ${ra.length} lệnh trong bảng: <b>${dem('moi')}</b> bổ sung · <b>${dem('khac')}</b> thay theo file · ${dem('giong')} đã giống file.
+        ${khongCo ? `<br>⚠ ${khongCo} lệnh trong file không có trong bảng Xuất hàng (bỏ qua).` : ''}</div>
+      <div class="note">Lấy nguyên từng dòng của file (REFERENCE NO, BUYER PO, STYLE, CARTONS, ISSUE QTY) — không gộp dòng.
+        DESTINATION trong file mail tính theo mã nước của REFERENCE NO + SHIP_MODE (không lấy cột DESTINATION của file).</div>
+      ${ra.some(o => o.lech.length) ? `<div class="note warn">⚠ Có lệnh lệch số liệu giữa bảng và file — xem cột Kiểm tra trước khi áp dụng.</div>` : ''}
+      ${ra.length ? `<div class="tblwrap" style="max-height:380px; overflow:auto;">
+        <table class="hist-table" style="width:100%">
+          <thead><tr><th>Ngày</th><th>Customer</th><th>REQUEST</th><th>Job order</th><th>CTN</th><th>PCS</th><th>Sẽ làm</th><th>Kiểm tra</th></tr></thead>
+          <tbody>${ra.map(o => `<tr>
+            <td>${fmtVN(fromKey(o.k))}</td><td><b>${esc(o.r.customer || o.r.buyer || '')}</b></td><td>${esc(o.r.reqId)}</td>
+            <td title="${esc(o.f.jo.map(j => j.ref + ' · ' + j.po).join('\n'))}">${o.tt === 'khac' && o.cu !== o.f.jo.length ? `${o.cu} → ` : ''}${o.f.jo.length} dòng</td>
+            <td>${o.ctn}</td><td>${o.pcs.toLocaleString('en-US')}</td><td>${nhanTT[o.tt]}</td>
+            <td>${o.lech.length ? `<span class="chip warn">${esc(o.lech.join(' · '))}</span>` : '<span class="chip ok">Khớp</span>'}</td>
+          </tr>`).join('')}</tbody>
+        </table></div>
+        ${doi.length ? `<div class="btnrow" style="margin-top:14px;"><button id="xhBsApply">✓ Cập nhật ${doi.length} lệnh (${soJo} dòng)</button></div>`
+                     : '<div class="note ok" style="margin-top:10px;">✓ Bảng đã giống hệt file, không cần cập nhật.</div>'}` : ''}`);
+    const nut = m.body.querySelector('#xhBsApply');
+    if(nut) nut.onclick = async ()=>{
+      nut.disabled = true; nut.textContent = 'Đang lưu…';
+      doi.forEach(o => {
+        o.r.jo = o.f.jo.map(j => ({ ...j }));
+        if(!o.r.dest && o.f.dest) o.r.dest = o.f.dest;
+      });
+      const ok = await saveKho();
+      m.close();
+      if(typeof renderXuatHang === 'function' && activeTab === 'xuathang') renderXuatHang();
+      if(onXong) onXong();
+      toast(ok ? `✓ Đã cập nhật job order cho ${doi.length} lệnh (${soJo} dòng)` : '⚠ Đã điền nhưng chưa lưu được lên máy chủ — thử lại 🔄');
+    };
+  };
+  inp.click();
 }
 
 </script>
