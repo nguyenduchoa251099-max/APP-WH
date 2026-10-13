@@ -2540,6 +2540,11 @@
   #tab-hotrokk details.hk-nkd[open] > summary .mui{transform:rotate(90deg);}
   #tab-hotrokk details.hk-nkd > summary.hk-nkthang{margin:8px 0 0;}
   #tab-hotrokk details.hk-nkd[open] > summary.hk-nkthang{margin-bottom:7px;}
+  /* --- HC / OT: hỗ trợ trong giờ hành chính hay giờ tăng ca --- */
+  #tab-hotrokk .hk-nk .ca{font-size:11px; font-weight:800; border-radius:999px; padding:2px 8px; white-space:nowrap;
+    background:#eef1f6; color:#1F4E79; border:1px solid #c3d0e8;}
+  #tab-hotrokk .hk-nk .ca.ot{background:var(--red-bg); color:var(--red); border-color:#e0b6ab;}
+  #tab-hotrokk .hk-kpi > div.ot .v{color:var(--red);}
 
 </style>
 <style>/* css/modules/tonphep.css */
@@ -10256,7 +10261,30 @@ function xhExportXlsx(){
 const XH_BC = {
   chiLayDaXong: true,                 // true = chỉ tính lệnh đã tích ✓ ở tab Xuất hàng
   tz: 'Asia/Ho_Chi_Minh',
-  cot: ['DATE','REFERENCE NO','CUSTOMER','BUYER PO','STYLE','CARTONS','ISSUE QTY','DESTINATION','REMARKS'],
+  // DOCUMENT NO, ISSUE DATE, SC NO, ORDER QTY: chỉ có tiêu đề, dữ liệu để trống (theo mẫu nhap/update.xlsx)
+  cot: ['DATE','DOCUMENT NO','ISSUE DATE','SC NO','REFERENCE NO','CUSTOMER','BUYER PO','STYLE','CARTONS',
+        'ORDER QTY','ISSUE QTY','DESTINATION','REMARKS'],
+  // Cột CUSTOMER của file gửi mail: đổi tên BUYER tóm tắt (lấy lúc import html) ra tên khách hàng đầy đủ.
+  // Chỉ đổi trong file Excel gửi mail; bảng Xuất hàng và dữ liệu import giữ nguyên.
+  // So khớp phần ĐẦU tên BUYER (viết hoa). GIORDANO xét riêng theo REFERENCE NO — xem xhBcTenKhach.
+  // BUYER không có trong danh sách thì giữ nguyên.
+  tenKhach: [
+    [/^TENDAM\b/,       'EUROFIEL CONFECCION.S.A.'],
+    [/^ETERNA\b/,       'ETERNA KG'],
+    [/^QUINCE\b/,       'LAST BRAND INC'],
+    [/^HAZZYS\b/,       'LF CORP.'],
+    [/^GAZMAN\b/,       'AUSTIN CLOTHING COMPANY PTY LTD'],
+    [/^FAST?TECH\b/,    'CONG TY TNHH FASTTECH ASIA'],      // FASTECH ASIA / FASTTECH ASIA
+    [/^YODY\b/,         'YODY FASHION JOINT STOCK COMPANY'],
+    [/^OWEN\b/,         'PROMINENT (VIETNAM) CO.,LTD'],
+    [/^TOKYO ?LIFE\b/,  'PROMINENT (VIETNAM) CO.,LTD'],
+    [/^ROUTINE\b/,      'ROUTINE VIET NAM COMPANY LIMITED'],
+    [/^CRJ\b/,          'YAMATO INTERNATIONAL INCORPORATED'],
+    [/^MUJI\b/,         'RYOHIN KEIKAKU CO. LTD.'],
+    [/^(CHARLES\b|CT\b|CT\s*\d)/, 'CHARLES TYRWHITT SHIRTS LTD'],   // CHARLES TYRWHITT / CT / CT1 / CT 6 - BK00
+  ],
+  // Biểu đồ cột ISSUE QTY: false = không gửi trong mail, chỉ hiện ở "✉ Xem trước mail" trên web
+  bieuDoTrongMail: false,
   thang: ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'],
   mau: '#2e75b6', mauChu: '#1f3864',
   // Chữ ký cuối mail — chép theo chữ ký Outlook (n8n gửi qua máy chủ nên Outlook không tự chèn)
@@ -10289,6 +10317,16 @@ function xhBcMa(r){
   return 'SHIPMENT/' + bo(r.buyer || r.customer).slice(0, 6) + '_' + req + (rm.length ? '/' + rm.join('/') : '');
 }
 
+// Tên khách hàng cho cột CUSTOMER. GIORDANO: REFERENCE NO (tên đơn) có chữ KR -> GIORDANO LTD,
+// còn lại (kể cả lệnh chưa có job order) -> TIGER ENTERPRISES LTD.
+function xhBcTenKhach(r, ref){
+  const goc = String(r.buyer || r.customer || '').trim();
+  const t = goc.toUpperCase().replace(/\s+/g, ' ');
+  if(/^GIORDANO\b/.test(t)) return /KR/i.test(ref || '') ? 'GIORDANO LTD' : 'TIGER ENTERPRISES LTD.';
+  const o = XH_BC.tenKhach.find(([re])=> re.test(t));
+  return o ? o[1] : goc;
+}
+
 // Các dòng của file đính kèm. Trả { dong, thieu } — thieu = số lệnh import
 // trước khi có chi tiết job order (dòng ra thiếu REFERENCE NO / PO / STYLE...).
 function xhBcLapDong(xuathang, den){
@@ -10303,9 +10341,11 @@ function xhBcLapDong(xuathang, den){
       const coJo = Array.isArray(r.jo) && r.jo.length;
       if(!coJo) thieu++;
       const jo = coJo ? r.jo : [{ ref:'', po:'', style:'', ctn: xhBcSo(r.ctn), pcs: xhBcSo(r.pcs) }];
+      // Thứ tự khoá = thứ tự cột file Excel (n8n lấy cột theo khoá của dòng đầu)
       jo.forEach(j=> dong.push({
-        'DATE': ngay, 'REFERENCE NO': j.ref || '', 'CUSTOMER': r.buyer || r.customer || '',
-        'BUYER PO': j.po || '', 'STYLE': j.style || '', 'CARTONS': Number(j.ctn) || 0,
+        'DATE': ngay, 'DOCUMENT NO': '', 'ISSUE DATE': '', 'SC NO': '',
+        'REFERENCE NO': j.ref || '', 'CUSTOMER': xhBcTenKhach(r, j.ref),
+        'BUYER PO': j.po || '', 'STYLE': j.style || '', 'CARTONS': Number(j.ctn) || 0, 'ORDER QTY': '',
         'ISSUE QTY': Number(j.pcs) || 0, 'DESTINATION': r.dest || '', 'REMARKS': xhBcMa(r),
       }));
     });
@@ -10365,7 +10405,8 @@ function xhBcChuKy(){
     ].join('<br>')}</p>`;
 }
 
-// Nội dung mail: lời chào + bảng gộp theo ngày (Row Labels / Sum of ISSUE QTY) + biểu đồ + chữ ký
+// Nội dung mail: lời chào + bảng gộp theo ngày (Row Labels / Sum of ISSUE QTY) + (biểu đồ) + chữ ký
+// Biểu đồ trả riêng ở `bieuDo`; chỉ nằm trong `html` khi XH_BC.bieuDoTrongMail = true
 function xhBcSoanMail(dong){
   const tong = new Map();
   dong.forEach(r=>{
@@ -10379,6 +10420,7 @@ function xhBcSoanMail(dong){
   const [y, m] = cuoi.split('-');
   const thang = XH_BC.thang[+m - 1];
 
+  const bieuDo = ngay.length ? xhBcBieuDo(ngay, `DAILY SHIPMENT – ISSUE QTY (PCS) – ${thang} ${y}`) : '';
   const td = 'padding:2px 10px;font-family:Calibri,Arial,sans-serif;font-size:11pt;';
   const html = `<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:0 0 12px;"><b>Dear All,</b><br>
 I would like to send the report Daily Shipment. Pls check at the attached file.</p>
@@ -10388,10 +10430,10 @@ I would like to send the report Daily Shipment. Pls check at the attached file.<
     return `<tr><td style="${td}">${mm}/${dd}/${yy}</td><td style="${td}text-align:right;">${x.pcs}</td></tr>`; }).join('\n  ')}
   <tr style="background:#ddebf7;font-weight:bold;"><td style="${td}border-top:1px solid #9bc2e6;">Grand Total</td><td style="${td}border-top:1px solid #9bc2e6;text-align:right;">${grand}</td></tr>
 </table>
-${ngay.length ? xhBcBieuDo(ngay, `DAILY SHIPMENT – ISSUE QTY (PCS) – ${thang} ${y}`) : ''}
+${XH_BC.bieuDoTrongMail ? bieuDo : ''}
 ${xhBcChuKy()}`;
 
-  return { subject: `DAILY SHIPMENT REPORT - ${thang}.${y}`, html, grand,
+  return { subject: `DAILY SHIPMENT REPORT - ${thang}.${y}`, html, bieuDo, grand,
            tenFile: `${+m}.DAILY-SHIPMENT-${thang}.${y}.xlsx`, soNgay: ngay.length };
 }
 
@@ -10444,6 +10486,8 @@ function xhXemTruocMail(){
       </div>
       <div class="xh-bch">Nội dung mail</div>
       <iframe class="xh-bcmail" id="xhBcMail" title="Nội dung mail"></iframe>
+      ${!XH_BC.bieuDoTrongMail && mail.bieuDo ? `<div class="xh-bch">Biểu đồ — chỉ xem trên web, không gửi trong mail</div>
+      <iframe class="xh-bcmail" id="xhBcBieuDo" title="Biểu đồ ISSUE QTY"></iframe>` : ''}
       <div class="xh-bch">File đính kèm — ${dong.length} dòng</div>
       <div class="xh-bcxl"><table>
         <tr>${XH_BC.cot.map(c=>`<th>${esc(c)}</th>`).join('')}</tr>
@@ -10453,12 +10497,15 @@ function xhXemTruocMail(){
     m.body.querySelectorAll('[data-bcden]').forEach(b=>{
       b.onclick = ()=>{ XH_BC_DEN = Number(b.dataset.bcden); daGui = ''; ve(); };
     });
-    const fr = m.body.querySelector('#xhBcMail');
-    if(fr){
-      // iframe để CSS của app không lẫn vào — thấy y như trong hộp thư
-      fr.srcdoc = `<!doctype html><html><head><meta charset="utf-8"></head><body style="margin:12px;background:#fff;">${mail.html}</body></html>`;
+    // iframe để CSS của app không lẫn vào — thấy y như trong hộp thư
+    const veKhung = (id, html)=>{
+      const fr = m.body.querySelector('#' + id);
+      if(!fr) return;
+      fr.srcdoc = `<!doctype html><html><head><meta charset="utf-8"></head><body style="margin:12px;background:#fff;">${html}</body></html>`;
       fr.onload = ()=>{ try{ fr.style.height = (fr.contentDocument.body.scrollHeight + 28) + 'px'; }catch(e){} };
-    }
+    };
+    veKhung('xhBcMail', mail.html);
+    veKhung('xhBcBieuDo', mail.bieuDo);
     const tai = m.body.querySelector('#xhBcTai');
     if(tai) tai.onclick = ()=> xhBcTaiFile(dong, mail.tenFile);
     const gui = m.body.querySelector('#xhBcGui');
@@ -15944,8 +15991,9 @@ window.renderTraining = taoBoSuuTap({
 //
 // Dữ liệu nằm trong KHO[kho].hotroKK, rất nhẹ (cả năm vài KB) nên
 // đi chung KEY_KHO, không cần khoá Supabase riêng:
-//   { hotro:  { 'YYYY-MM-DD': [ {viec, gc, ids:[], gio}, … ] },   // NHIỀU buổi một ngày
+//   { hotro:  { 'YYYY-MM-DD': [ {viec, gc, ids:[], gio, ca}, … ] },   // NHIỀU buổi một ngày
 //            gio = số giờ đi hỗ trợ MỖI NGƯỜI của buổi đó (buổi cũ chưa có -> không tính giờ)
+//            ca  = 'HC' (trong giờ hành chính) | 'OT' (giờ tăng ca); buổi cũ chưa có -> HC
 //     kiemke: { 'YYYY-MM-DD': [ id, … ] },      // luôn là thứ Bảy
 //     boqua:  { 'YYYY-MM-DD': [ id, … ] },      // đã bấm "đổi người khác" cho buổi đó
 //     viec:   [ 'Kiểm cont', … ] }
@@ -16032,6 +16080,9 @@ window.renderTraining = taoBoSuuTap({
   // Giờ hỗ trợ: mỗi lượt người = số giờ của buổi; cả buổi = giờ × số người
   const gioMoi = b => Number(b && b.gio) || 0;
   function soGio(list){ return list.reduce((s,o)=> s + gioMoi(o.b) * o.b.ids.length, 0); }
+  // HC / OT: đi hỗ trợ trong giờ hành chính hay giờ tăng ca
+  const caCua = b => (b && b.ca === 'OT') ? 'OT' : 'HC';
+  function soGioOT(list){ return soGio(list.filter(o => caCua(o.b) === 'OT')); }
   function gioCua(id, y, loc){ return buoiList(y, loc).filter(o => o.b.ids.includes(id)).reduce((s,o)=> s + gioMoi(o.b), 0); }
   function htDem(id, y, loc){ return buoiList(y, loc).filter(o => o.b.ids.includes(id)).length; }
   function lanThu(key, i, viec, y){
@@ -16194,6 +16245,7 @@ window.renderTraining = taoBoSuuTap({
         <div><div class="v">${tongLuot}</div><div class="k">Lượt hỗ trợ${LOC_VIEC ? ' (đã lọc)' : ''}</div></div>
         <div><div class="v">${dsBuoi.length}</div><div class="k">Buổi đã đi</div></div>
         <div><div class="v">${fmtHours(soGio(dsBuoi))}</div><div class="k">Giờ đi hỗ trợ<br><small>(cộng mọi lượt · buổi có ghi giờ)</small></div></div>
+        <div class="ot"><div class="v">${fmtHours(soGioOT(dsBuoi))}</div><div class="k">Giờ SP OT<br><small>(support overtime · buổi ghi OT)</small></div></div>
       </div>
       <div class="hk-dbgrid">
         <section>
@@ -16271,6 +16323,7 @@ window.renderTraining = taoBoSuuTap({
             return `<div class="hk-nk">
               <div class="ngay">${pad(d.getDate())}/${pad(d.getMonth()+1)}<small>${DOW[d.getDay()]}</small></div>
               <div class="viec">${esc(b.viec || 'Chưa ghi việc')}</div>
+              <div class="ca ${caCua(b) === 'OT' ? 'ot' : ''}" title="${caCua(b) === 'OT' ? 'Hỗ trợ trong giờ tăng ca' : 'Hỗ trợ trong giờ hành chính'}">${caCua(b)}</div>
               ${b.viec ? `<div class="lan">lần thứ ${lan} trong năm</div>` : ''}
               <div class="ng">${b.ids.map(id=>`<b>${esc(tenNgan(id))}</b>`).join(', ')}
                 <span style="color:var(--ink-soft); font-weight:600;"> (${esc(b.ids.map(tenCua).join(', '))})</span></div>
@@ -16495,6 +16548,10 @@ window.renderTraining = taoBoSuuTap({
       <div class="btnrow" style="margin-top:7px; display:flex; gap:7px;">
         <button class="ghost sm" id="hkBThemViec">+ Thêm loại việc</button>
         <button class="danger sm" id="hkBXoaViec">✕ Xoá loại việc đang chọn</button></div>
+      <label class="field-label">Hỗ trợ trong giờ</label>
+      <div class="row2" id="hkBCa">
+        <button class="pick" data-ca="HC">HC — giờ hành chính</button>
+        <button class="pick" data-ca="OT">OT — giờ tăng ca</button></div>
       <label class="field-label">Số giờ hỗ trợ (mỗi người)</label>
       <input type="number" id="hkBGio" min="0.5" max="24" step="0.5" placeholder="VD: 2 hoặc 1.5">
       <label class="field-label">Ghi chú (không bắt buộc)</label>
@@ -16515,6 +16572,10 @@ window.renderTraining = taoBoSuuTap({
     veViec(cu ? cu.viec : D().viec[0]);
     m.body.querySelector('#hkBGc').value = cu ? (cu.gc || '') : '';
     m.body.querySelector('#hkBGio').value = cu && cu.gio ? cu.gio : '';
+    let ca = caCua(cu);
+    const veCa = ()=> m.body.querySelectorAll('#hkBCa [data-ca]').forEach(b=> b.classList.toggle('on', b.dataset.ca === ca));
+    m.body.querySelectorAll('#hkBCa [data-ca]').forEach(b=> b.onclick = ()=>{ ca = b.dataset.ca; veCa(); });
+    veCa();
 
     m.body.querySelector('#hkBThemViec').onclick = ()=>{
       const m2 = openModal('Thêm loại việc', `<label class="field-label" style="margin-top:0;">Tên loại việc</label>
@@ -16565,22 +16626,23 @@ window.renderTraining = taoBoSuuTap({
       h[k] = h[k] || [];
       // Cùng ngày mà khác việc thì thành một buổi riêng, không đè lên nhau.
       // Cùng ngày cùng việc thì cộng dồn người vào buổi đã có.
-      // (khác số giờ thì tách thành buổi riêng để tính giờ cho đúng từng lượt)
-      const j = h[k].findIndex(b => (b.viec || '') === viec && (!gioMoi(b) || gioMoi(b) === gio));
+      // (khác số giờ hoặc khác HC / OT thì tách thành buổi riêng để tính giờ cho đúng từng lượt)
+      const j = h[k].findIndex(b => (b.viec || '') === viec && caCua(b) === ca && (!gioMoi(b) || gioMoi(b) === gio));
       let loiNhan;
       if(j >= 0){
         const themMoi = ids.filter(id => !h[k][j].ids.includes(id)).length;
         const gop = new Set(h[k][j].ids.concat(ids));
         h[k][j].ids = dsNguoi().filter(e => gop.has(e.id)).map(e => e.id);
         h[k][j].gio = gio;
+        h[k][j].ca = ca;
         if(gc && gc !== h[k][j].gc) h[k][j].gc = h[k][j].gc ? h[k][j].gc + ' · ' + gc : gc;
         loiNhan = themMoi
-          ? `✓ Cộng dồn vào buổi “${viec}” cùng ngày — thêm ${themMoi} người, tổng ${h[k][j].ids.length}`
-          : `✓ Đã cập nhật buổi “${viec}” ngày ${k.split('-').reverse().join('/')}`;
+          ? `✓ Cộng dồn vào buổi “${viec}” (${ca}) cùng ngày — thêm ${themMoi} người, tổng ${h[k][j].ids.length}`
+          : `✓ Đã cập nhật buổi “${viec}” (${ca}) ngày ${k.split('-').reverse().join('/')}`;
       }else{
-        h[k].push({ viec, gc, ids, gio });
+        h[k].push({ viec, gc, ids, gio, ca });
         h[k].sort((a,b)=> (a.viec||'').localeCompare(b.viec||'','vi'));
-        loiNhan = `✓ Đã ghi ${ids.length} người · ${viec} · ${fmtHours(gio)}/người · ${k.split('-').reverse().join('/')}`;
+        loiNhan = `✓ Đã ghi ${ids.length} người · ${viec} · ${ca} · ${fmtHours(gio)}/người · ${k.split('-').reverse().join('/')}`;
       }
       const d = fromKey(k);
       CUR = new Date(d.getFullYear(), d.getMonth(), 1);
@@ -16678,14 +16740,14 @@ window.renderTraining = taoBoSuuTap({
     if(!window.XLSX){ toast('⚠ Chưa tải được thư viện Excel — kiểm tra mạng rồi tải lại trang'); return; }
     const y = CUR.getFullYear(), wb = XLSX.utils.book_new(), ng = dsNguoi(), kk = D().kiemke;
 
-    const a1 = [['NHẬT KÝ HỖ TRỢ ' + y], [], ['Ngày','Thứ','Loại việc','Số người','Danh sách','Ghi chú']];
+    const a1 = [['NHẬT KÝ HỖ TRỢ ' + y], [], ['Ngày','Thứ','Loại việc','HC/OT','Số người','Danh sách','Ghi chú']];
     buoiList(y, null).forEach(o=>{
       const d = fromKey(o.key);
-      a1.push([fmtVN(d), DOW[d.getDay()], o.b.viec || '', o.b.ids.length,
+      a1.push([fmtVN(d), DOW[d.getDay()], o.b.viec || '', caCua(o.b), o.b.ids.length,
                o.b.ids.map(tenCua).join(', '), o.b.gc || '']);
     });
     const ws1 = XLSX.utils.aoa_to_sheet(a1);
-    ws1['!cols'] = [{wch:12},{wch:6},{wch:20},{wch:9},{wch:56},{wch:30}];
+    ws1['!cols'] = [{wch:12},{wch:6},{wch:20},{wch:7},{wch:9},{wch:56},{wch:30}];
     XLSX.utils.book_append_sheet(wb, ws1, 'HỖ TRỢ');
 
     const viecs = D().viec;
