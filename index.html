@@ -4363,7 +4363,8 @@ function setUnsaved(which, err){
 const KHOA_PHIEN = 'appwh-auth';     // localStorage: { token, user } hoặc { khach: true }
 const VAI_TRO = { chu: 'Chủ trang', giamsat: 'Giám sát', congnhan: 'Công nhân', xem: 'Chỉ xem' };
 // Các tab trong 1 kho — dùng để cấp quyền từng tab cho công nhân.
-// khos: tab chỉ có ở những kho này; cha: (kho thành phẩm) tab nằm bên trong tab khác.
+// khos: tab chỉ có ở những kho này; cha: (kho thành phẩm) tab nằm bên trong tab khác;
+// tenKho: tên riêng của tab ở kho đó (không có thì dùng ten).
 // Danh sách này phải khớp với appwh__key_tab / appwh__kho_sub_tab trong supabase/appwh-auth.sql.
 const TAB_KHO = [
   { id:'dashboard', ten:'Tổng quan' },
@@ -4376,14 +4377,14 @@ const TAB_KHO = [
   { id:'scanos',    ten:'SCAN OS',           khos:['thanhpham'] },
   { id:'scan',      ten:'SCAN',              khos:['thanhpham'], cha:'scanos' },
   { id:'donghang',  ten:'Đóng hàng',         khos:['thanhpham'] },
-  { id:'hotrokk',   ten:'Hỗ trợ / KK',       khos:['thanhpham'] },
+  { id:'hotrokk',   ten:'Hỗ trợ / KK',       tenKho:{ vai:'Hỗ trợ', phulieu:'Hỗ trợ' } },
   { id:'tangca',    ten:'Tăng ca/Nghỉ phép' },
   { id:'wi',        ten:'WI',                khos:['thanhpham'], cha:'dashboard' },
   { id:'training',  ten:'Training',          khos:['vai','phulieu'] },
   { id:'ghichu',    ten:'Ghi chú',           khos:['vai','phulieu'] },
 ];
 const tabCuaKho = khoId => TAB_KHO.filter(t => !t.khos || t.khos.includes(khoId))
-  .map(t => ({ ...t, cha: khoId === 'thanhpham' ? t.cha : undefined }));
+  .map(t => ({ ...t, ten: (t.tenKho && t.tenKho[khoId]) || t.ten, cha: khoId === 'thanhpham' ? t.cha : undefined }));
 // Các mục sidebar có thể cấp quyền xem
 const MUC_XEM = [
   { id: 'tong3kho', ten: 'Tổng quan 3 kho' },
@@ -4827,8 +4828,8 @@ function defaultKhoConfig(id){
     board: isVai ? { assign: {...B5_DEFAULT_ASSIGN}, note: B5_DEFAULT_NOTE, labels: {...B5_DEFAULT_LABELS} } : null,
     tpBoard: isTp ? defaultTpBoard() : null,
     xuathang: isTp ? {} : null,        // { 'YYYY-MM-DD': [ {customer,id,ctn,pcs,...}, ... ] }
-    // Hỗ trợ / Kiểm kê kho vải — chỉ kho thành phẩm, xem mục 20
-    hotroKK: isTp ? { hotro:{}, kiemke:{}, boqua:{}, viec:['Kiểm cont','Load cont','Nhập hàng','Xuất hàng','Dọn kho / 5S','Đóng gói lại'] } : null,
+    // Hỗ trợ / Kiểm kê kho vải — cả 3 kho (mục kiểm kê chỉ dùng ở kho thành phẩm), xem mục 20
+    hotroKK: { hotro:{}, kiemke:{}, boqua:{}, viec:['Kiểm cont','Load cont','Nhập hàng','Xuất hàng','Dọn kho / 5S','Đóng gói lại'] },
     current: null, history: [], ca2Log: [], notes: [],
   };
 }
@@ -5515,10 +5516,9 @@ function applyTabVisibility(){
     if(b) b.style.display = isTp ? '' : 'none';
     if(!isTp && activeTab === t) activeTab = 'dashboard';
   });
-  // Tab Hỗ trợ / KK: chỉ có ở kho thành phẩm
+  // Tab Hỗ trợ / KK: có ở cả 3 kho; kho vải, kho phụ liệu không có mục kiểm kê nên chỉ ghi "Hỗ trợ"
   const btnHkk = document.querySelector('#tabNav button[data-tab="hotrokk"]');
-  if(btnHkk) btnHkk.style.display = isTp ? '' : 'none';
-  if(!isTp && activeTab === 'hotrokk') activeTab = 'dashboard';
+  if(btnHkk) btnHkk.innerHTML = isTp ? '🤝 Hỗ trợ / KK' : '🤝 Hỗ trợ';
   // Tab WI: chỉ có ở kho thành phẩm
   const btnWi = document.querySelector('#tabNav button[data-tab="wi"]');
   if(btnWi) btnWi.style.display = isTp ? '' : 'none';
@@ -11087,11 +11087,11 @@ async function catTenNghiViec(e){
   });
   const ghi = typeof rotBoNguoi === 'function' ? rotBoNguoi(e.warehouseId, e.id) : [];
   if(ghi.length) applyRotation(e.warehouseId);          // người trực thay nhận ca / vị trí ngay
-  const hk = (e.warehouseId === 'thanhpham' && typeof hkBoNguoi === 'function') ? hkBoNguoi(e.id, ngay) : 0;
+  const hk = typeof hkBoNguoi === 'function' ? hkBoNguoi(e.id, ngay, e.warehouseId) : 0;
   // 5S: gỡ tên, các ô vào hàng chờ cho người mới (thay-nguoi-5s.js)
   const s5 = typeof bo5sNguoiNghi === 'function' ? bo5sNguoiNghi(e.warehouseId, e) : { n:0 };
   await saveHr(); await saveKho();
-  return ghi.concat(hk ? [`Hỗ trợ / KK: gỡ khỏi ${hk} buổi đã xếp sau ngày nghỉ`] : [])
+  return ghi.concat(hk ? [`${e.warehouseId === 'thanhpham' ? 'Hỗ trợ / KK' : 'Hỗ trợ'}: gỡ khỏi ${hk} buổi đã xếp sau ngày nghỉ`] : [])
     .concat(s5.n ? [`5S: ${s5.n} ô chờ người mới`] : s5.trung ? ['5S: trùng tên ngắn với người khác — sửa sơ đồ 5S bằng tay'] : []);
 }
 async function hoanTacNghiViec(e){
@@ -11121,11 +11121,11 @@ async function vangGoKhoi(e, ngay){
   if(ghi.length) applyRotation(e.warehouseId);
   // Hỗ trợ / KK: gỡ khỏi các buổi từ ngày bắt đầu trở đi (hkBoNguoi giữ các buổi <= ngày truyền vào)
   const truoc = new Date(fromKey(ngay)); truoc.setDate(truoc.getDate() - 1);
-  const hk = (e.warehouseId === 'thanhpham' && typeof hkBoNguoi === 'function') ? hkBoNguoi(e.id, toKey(truoc)) : 0;
+  const hk = typeof hkBoNguoi === 'function' ? hkBoNguoi(e.id, toKey(truoc), e.warehouseId) : 0;
   // 5S: gỡ tên, ô giữ chỗ cho chính người này (thay-nguoi-5s.js)
   const s5 = typeof bo5sNguoiNghi === 'function' ? bo5sNguoiNghi(e.warehouseId, e) : { n:0 };
   await saveHr(); await saveKho();
-  return ghi.concat(hk ? [`Hỗ trợ / KK: gỡ khỏi ${hk} buổi đã xếp`] : [])
+  return ghi.concat(hk ? [`${e.warehouseId === 'thanhpham' ? 'Hỗ trợ / KK' : 'Hỗ trợ'}: gỡ khỏi ${hk} buổi đã xếp`] : [])
     .concat(s5.n ? [`5S: tạm gỡ ${s5.n} ô`] : s5.trung ? ['5S: trùng tên ngắn với người khác — sửa sơ đồ 5S bằng tay'] : []);
 }
 async function vangTraVe(e){
@@ -11153,7 +11153,7 @@ function vangHoiBatDau(e, cfg){
       <label class="field-label">${cfg.nhanGc} <span style="font-weight:600;color:var(--ink-soft)">— không bắt buộc</span></label>
       <input type="text" data-noi placeholder="${cfg.goiYGc}">
       <ul class="nv-xn-ds">
-        <li><b>Vẫn tính trong Tổng nhân sự</b>${cfg.hienTongQuan ? ' và hiện ô <b>màu hồng</b> ở mục "Nhân sự kho" (Tổng quan 3 kho)' : ''}; ẩn khỏi phân công, 5S, Đổi ca${tp ? ', Hỗ trợ / KK' : ''}, tăng ca / nghỉ phép.</li>
+        <li><b>Vẫn tính trong Tổng nhân sự</b>${cfg.hienTongQuan ? ' và hiện ô <b>màu hồng</b> ở mục "Nhân sự kho" (Tổng quan 3 kho)' : ''}; ẩn khỏi phân công, 5S, Đổi ca, ${tp ? 'Hỗ trợ / KK' : 'Hỗ trợ'}, tăng ca / nghỉ phép.</li>
         <li>Bảng công Excel: từ ngày bắt đầu, mỗi ngày tính <b>0h</b> (tới ngày quay lại).</li>
         <li>5S: gỡ tên khỏi các ô đang phụ trách; các ô đó giữ chỗ, quay lại sẽ nhận lại (người mới không nhận).</li>
         <li>Khi quay lại: bấm <b>↺ Hoàn tác</b>, chọn ngày đi làm lại — trở lại kho như bình thường.</li>
@@ -15934,12 +15934,15 @@ window.renderTraining = taoBoSuuTap({
 // Tab Hỗ trợ / KK
 // (tách từ index.html dòng 9634-10394)
 // =====================================================================
-// 20. TAB HỖ TRỢ / KK  (chỉ kho thành phẩm)
+// 20. TAB HỖ TRỢ / KK  (cả 3 kho)
 //
 // Bọc trong IIFE để không đụng tên với phần còn lại của app; chỉ lộ ra
 // window.hkRender cho hàm render() tổng gọi.
 //
-// Dữ liệu nằm trong KHO.thanhpham.hotroKK, rất nhẹ (cả năm vài KB) nên
+// Kho thành phẩm: tab "Hỗ trợ / KK" gồm 2 mục Hỗ trợ + Kiểm kê kho vải.
+// Kho vải, kho phụ liệu: tab "Hỗ trợ", chỉ có mục Hỗ trợ — cùng cách làm, dữ liệu riêng từng kho.
+//
+// Dữ liệu nằm trong KHO[kho].hotroKK, rất nhẹ (cả năm vài KB) nên
 // đi chung KEY_KHO, không cần khoá Supabase riêng:
 //   { hotro:  { 'YYYY-MM-DD': [ {viec, gc, ids:[], gio}, … ] },   // NHIỀU buổi một ngày
 //            gio = số giờ đi hỗ trợ MỖI NGƯỜI của buổi đó (buổi cũ chưa có -> không tính giờ)
@@ -15947,7 +15950,7 @@ window.renderTraining = taoBoSuuTap({
 //     boqua:  { 'YYYY-MM-DD': [ id, … ] },      // đã bấm "đổi người khác" cho buổi đó
 //     viec:   [ 'Kiểm cont', … ] }
 //
-// Danh sách người KHÔNG lưu ở đây: đọc thẳng khoEmployees('thanhpham')
+// Danh sách người KHÔNG lưu ở đây: đọc thẳng khoEmployees(kho đang xem)
 // và bỏ vị trí Giám sát. Thêm hoặc xoá người ở tab Tăng ca / Nghỉ phép
 // là tab này đổi theo ngay, không phải đồng bộ gì.
 // =====================================================================
@@ -15966,10 +15969,14 @@ window.renderTraining = taoBoSuuTap({
   const NK_MO = new Set();           // nhật ký: các tháng đang MỞ (mặc định thu gọn hết)
   let KK_NGAY = null;                // thứ Bảy đang thao tác ở mục kiểm kê
   let KK_CHI_HC = true;              // lưới kiểm kê chỉ hiện người ca hành chính
+  let KHO_VE = null;                 // kho vẽ lần trước — đổi kho thì bỏ lọc / chọn cũ
+
+  // Mục kiểm kê (đi kiểm kê kho vải thứ Bảy) chỉ có ở kho thành phẩm
+  const coKiemKe = () => CUR_KHO === 'thanhpham';
 
   // ---------- Kho dữ liệu, tự vá nếu thiếu ----------
-  function D(){
-    const K = KHO && KHO.thanhpham;
+  function D(kho){
+    const K = KHO && KHO[kho || CUR_KHO];
     if(!K) return null;
     if(!K.hotroKK || typeof K.hotroKK !== 'object') K.hotroKK = {};
     const d = K.hotroKK;
@@ -15992,7 +15999,7 @@ window.renderTraining = taoBoSuuTap({
 
   // ---------- Người ----------
   // Bỏ Giám sát. Nguồn duy nhất là HR.employees nên luôn khớp tab Tăng ca.
-  function dsNguoi(){ return khoEmployees('thanhpham').filter(e => e.position !== 'Giám sát'); }
+  function dsNguoi(){ return khoEmployees(CUR_KHO).filter(e => e.position !== 'Giám sát'); }
   // Ứng viên đi kiểm kê vào NGÀY key: ca hành chính đúng tuần đó theo lịch
   // tab Đổi ca, bỏ ca 1, ca 2 và vị trí Stock. Không truyền key thì xét theo
   // ca đang ghi hiện tại.
@@ -16055,8 +16062,8 @@ window.renderTraining = taoBoSuuTap({
     const don = (HR.leave || []).filter(l => l.date === key && l.type === 'nghi').map(l => l.employeeId);
     return { don: new Set(don), qua: new Set(D().boqua[key] || []) };
   }
-  function datBoQua(key, id, bo){
-    const d = D(), a = d.boqua[key] || [], i = a.indexOf(id);
+  function datBoQua(key, id, bo, kho){
+    const d = D(kho), a = d.boqua[key] || [], i = a.indexOf(id);
     if(bo && i < 0) a.push(id);
     if(!bo && i >= 0) a.splice(i, 1);
     if(a.length) d.boqua[key] = a; else delete d.boqua[key];
@@ -16064,8 +16071,8 @@ window.renderTraining = taoBoSuuTap({
   // Người nghỉ việc: gỡ khỏi các buổi kiểm kê / hỗ trợ đã xếp SAU ngày làm việc cuối cùng
   // (buổi đã qua giữ nguyên để còn đếm lượt). Buổi kiểm kê bị trống chỗ thì ô
   // "Người tiếp theo đi kiểm kê" tự đề xuất người khác. Trả về số buổi đã gỡ.
-  window.hkBoNguoi = function(id, ngayCuoi){
-    const d = D(); if(!d) return 0;
+  window.hkBoNguoi = function(id, ngayCuoi, kho){
+    const d = D(kho); if(!d) return 0;
     let n = 0;
     Object.keys(d.kiemke).forEach(k=>{
       if(k <= ngayCuoi || !d.kiemke[k].includes(id)) return;
@@ -16078,7 +16085,7 @@ window.renderTraining = taoBoSuuTap({
       d.hotro[k] = d.hotro[k].filter(b=>(b.ids || []).length);
       if(!d.hotro[k].length) delete d.hotro[k];
     });
-    Object.keys(d.boqua).forEach(k=>{ if(k > ngayCuoi) datBoQua(k, id, false); });
+    Object.keys(d.boqua).forEach(k=>{ if(k > ngayCuoi) datBoQua(k, id, false, kho); });
     return n;
   };
 
@@ -16087,7 +16094,7 @@ window.renderTraining = taoBoSuuTap({
   // tuần đó đội nào cầm ca nào. Ai không nằm trong nhóm đổi ca nào thì giữ
   // nguyên ca đang ghi ở tab Tăng ca / Nghỉ phép.
   function caNgay(emp, key){
-    const K = KHO.thanhpham;
+    const K = KHO[CUR_KHO];
     if(!K || !K.rotation || typeof rotationPlan !== 'function') return { shift: emp.shift, position: emp.position };
     try{
       const moc = getMonday(fromKey(K.rotation.anchor));
@@ -16203,7 +16210,7 @@ window.renderTraining = taoBoSuuTap({
       </div>
       <div class="hk-dbrow">
         <div class="hk-dbt">Số buổi hỗ trợ theo người <span class="g">· xếp từ nhiều đến ít</span></div>
-        ${theoNguoi.length ? thap(theoNguoi, 'nguoi') : '<p class="empty-msg">Chưa có ai trong danh sách nhân sự kho thành phẩm.</p>'}
+        ${theoNguoi.length ? thap(theoNguoi, 'nguoi') : `<p class="empty-msg">Chưa có ai trong danh sách nhân sự ${esc(khoName(CUR_KHO).toLowerCase())}.</p>`}
       </div>`;
 
     const bl = $('hkBoLoc'); if(bl) bl.onclick = ()=>{ LOC_VIEC = null; NK_THANG = null; render(); };
@@ -16638,24 +16645,27 @@ window.renderTraining = taoBoSuuTap({
 
   // ---------- Thêm người: chỉ hỏi tên, ca và vị trí để mặc định ----------
   function themNguoiModal(){
-    const m = openModal('Thêm người vào kho thành phẩm', `
+    const kho = CUR_KHO, ten = khoName(kho);
+    // kho thành phẩm: vị trí Xuất như trước; kho khác: vị trí đầu tiên của kho (bỏ Giám sát)
+    const viTri = kho === 'thanhpham' ? 'Xuất' : (khoJobs(kho).find(p => p !== 'Giám sát') || 'Xuất');
+    const m = openModal('Thêm người vào ' + ten.toLowerCase(), `
       <label class="field-label" style="margin-top:0;">Họ và tên</label>
       <input type="text" id="hkNsTen" placeholder="VD: Nguyễn Văn A">
-      <div class="note">Người mới vào <b>Ca HC — vị trí Xuất</b>. Muốn đổi ca hoặc vị trí thì sửa ở
+      <div class="note">Người mới vào <b>Ca HC — vị trí ${esc(viTri)}</b>. Muốn đổi ca hoặc vị trí thì sửa ở
         tab Tăng ca / Nghỉ phép, tab này tự cập nhật theo.</div>
       <div style="margin-top:16px;"><button data-ok style="width:100%">Thêm vào kho</button></div>`);
     m.body.querySelector('[data-ok]').onclick = async ()=>{
       const t = m.body.querySelector('#hkNsTen').value.trim();
       if(!t){ toast('⚠ Nhập tên trước'); return; }
-      if(HR.employees.some(e => e.warehouseId === 'thanhpham' && normName(e.name) === normName(t))){
-        if(!await confirmBox(`Kho thành phẩm đã có người tên “${t}”. Vẫn thêm?`)) return;
+      if(HR.employees.some(e => e.warehouseId === kho && normName(e.name) === normName(t))){
+        if(!await confirmBox(`${ten} đã có người tên “${t}”. Vẫn thêm?`)) return;
       }
-      const e = { id: nextEmployeeId(), name: t, warehouseId:'thanhpham',
-                  shift:'Ca HC', position:'Xuất', otOpeningBalance:0, forklift:false, skills:{} };
+      const e = { id: nextEmployeeId(), name: t, warehouseId:kho,
+                  shift:'Ca HC', position:viTri, otOpeningBalance:0, forklift:false, skills:{} };
       HR.employees.push(e);
       // người mới tự vào nhóm đổi ca / vòng luân phiên hợp với ca + vị trí
-      const doi = typeof rotThemNguoi === 'function' ? rotThemNguoi('thanhpham', e) : [];
-      const s5 = typeof nhan5sNguoiMoi === 'function' ? nhan5sNguoiMoi('thanhpham', e) : null;   // nhận ô 5S của người nghỉ
+      const doi = typeof rotThemNguoi === 'function' ? rotThemNguoi(kho, e) : [];
+      const s5 = typeof nhan5sNguoiMoi === 'function' ? nhan5sNguoiMoi(kho, e) : null;   // nhận ô 5S của người nghỉ
       await saveHr(); if(doi.length || s5) await saveKho();
       m.close(); render();
       toast('✓ Đã thêm ' + t + (doi.length ? ' · Đổi ca: ' + doi.join('; ') : '')
@@ -16692,6 +16702,13 @@ window.renderTraining = taoBoSuuTap({
     ws2['!cols'] = [{wch:22},{wch:24},{wch:12}].concat(viecs.map(()=>({wch:15})));
     XLSX.utils.book_append_sheet(wb, ws2, 'TỔNG HỢP HỖ TRỢ');
 
+    // Kho vải, kho phụ liệu không có mục kiểm kê: chỉ 2 sheet hỗ trợ
+    if(!coKiemKe()){
+      XLSX.writeFile(wb, `ho-tro-${CUR_KHO}-${y}.xlsx`);
+      toast('✓ Đã xuất Excel — 2 sheet');
+      return;
+    }
+
     const t7 = [0,1,2,3].reduce((a,q)=> a.concat(thu7TrongQuy(y, q)), []);
     const a3 = [['KIỂM KÊ KHO VẢI ' + y + ' — chỉ ngày thứ Bảy'], [],
                 ['STT','TÊN','SỐ LẦN'].concat(t7.map(o=>`${o.d}/${o.m+1}`))];
@@ -16709,6 +16726,11 @@ window.renderTraining = taoBoSuuTap({
   // ---------- Vẽ tab ----------
   function hkRender(){
     if(!D()){ $('hkChinh').innerHTML = '<div class="panel"><p class="empty-msg">Chưa tải được dữ liệu kho.</p></div>'; return; }
+    // Đổi kho: bỏ lọc việc / tháng / thứ Bảy đang chọn của kho trước
+    if(KHO_VE !== CUR_KHO){ KHO_VE = CUR_KHO; LOC_VIEC = null; NK_THANG = null; KK_NGAY = null; NK_MO.clear(); }
+    // Kho vải, kho phụ liệu: chỉ có mục Hỗ trợ, ẩn luôn nút chuyển mục
+    if(!coKiemKe()) MUC = 'hotro';
+    $('hkMuc').style.display = coKiemKe() ? '' : 'none';
     const y = CUR.getFullYear(), q = Math.floor(CUR.getMonth() / 3);
     document.querySelectorAll('#hkMuc button').forEach(b=> b.classList.toggle('on', b.dataset.muc === MUC));
     $('hkKy').textContent = MUC === 'hotro' ? ('Năm ' + y) : `Quý ${q+1} / ${y}`;
