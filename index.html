@@ -2245,6 +2245,18 @@
   .sc-db-so span{font-size:12px; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.05em;}
   .sc-db-ngay{display:flex; align-items:center; gap:10px; margin-top:12px; font-size:13.5px; font-weight:700; color:var(--ink);}
   .sc-db-ngay input{width:auto; flex:0 0 auto;}
+  /* nút ADDLINE + hộp kết quả */
+  #tab-scan .sc-add{background:#fff; color:#0b6e7f; box-shadow:inset 0 0 0 2px #0e9fb5;}
+  #tab-scan .sc-add:hover{background:#ecfbfd;}
+  .sc-al-kq{display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin:12px 0;}
+  .sc-al-kq div{display:flex; flex-direction:column; align-items:center; text-align:center; padding:10px 6px; border-radius:10px; border:1px solid;}
+  .sc-al-kq b{font-size:24px; font-weight:800; line-height:1.15; font-variant-numeric:tabular-nums;}
+  .sc-al-kq span{font-size:11.5px; font-weight:700; line-height:1.3;}
+  .sc-al-kq .ok{background:#e9f7ef; border-color:#a6dbbd; color:#1e7a46;}
+  .sc-al-kq .sai{background:#fdecec; border-color:#f1b5b5; color:#c92a2a;}
+  .sc-al-kq .khac{background:#eaf2fe; border-color:#b5cdf5; color:#1d5fc4;}
+  .sc-al-kq .trung{background:#fff6e0; border-color:#f0d08a; color:#9a6700;}
+  @media(max-width:520px){ .sc-al-kq{grid-template-columns:1fr 1fr;} }
 
   /* ---------- Màn hình hẹp: xếp chồng ---------- */
   @media(max-width:1180px){
@@ -3492,6 +3504,7 @@
       <div class="sc-act">
         <button class="sc-btn sc-sb" id="scBtnSb" title="Ẩn/hiện danh sách kho">☰</button>
         <button class="sc-btn sc-back" id="scBtnBack" title="Quay lại tab SCAN OS">← Quay lại</button>
+        <button class="sc-btn sc-add" id="scBtnAdd" title="Hàng đã scan bên ngoài: chọn file notepad (.txt, mỗi dòng 1 UCC) — so với JO / PO / STYLE đang chọn, UCC đúng vào UCC ĐÃ SCAN ĐÚNG, sai / trùng vào BÁO TRÙNG / SAI">📄 ADDLINE</button>
         <button class="sc-btn sc-copy" id="scBtnCopy" title="Copy toàn bộ UCC của JO / PO / STYLE đang chọn ở bảng bên trái — mỗi dòng 1 UCC">📋 COPY</button>
         <label class="sc-vt sc-gc" id="scGcBox" title="Ghi chú cho các thùng của phiên này (không bắt buộc) — có trong file Excel khi xuất">
           <span>📝 GHI CHÚ</span><input type="text" id="scGc" placeholder="VD: bẩn" autocomplete="off" maxlength="200">
@@ -15320,23 +15333,72 @@ function timUcc(ma){
 //   trung (vàng)     : đã scan trong phiên này / đã lưu
 //   chon  (xám)      : chưa chọn dòng nào ở bảng bên trái
 const TEN_NGAN = { job:'JO', po:'PO', sty:'STYLE' };
+// Xét 1 mã (đã bỏ khoảng trắng / ngoặc) với dòng đang chọn -> { o } nếu đúng, hoặc { loai, ucc, msg }.
+// Dùng chung cho ô quét và nút ADDLINE. dangCo = Set UCC đã có trong phiên.
+function kiemMa(ma, dangCo){
+  const o = timUcc(ma);
+  if(!SEL) return { loai:'chon', ucc:ma, msg:`chưa chọn ${TEN_NGAN[MODE]} bên trái` };
+  if(!o) return { loai:'sai', ucc:ma, msg:'' };
+  if(dangCo.has(o.ucc)) return { loai:'trung', ucc:o.ucc, msg:'phiên này' };
+  if(daLuu(o.ucc)){ const vt = SAVED.get(o.ucc).vt; return { loai:'trung', ucc:o.ucc, msg: vt ? 'vị trí ' + vt : 'đã lưu' }; }
+  if(!thuocNhom(o, MODE, SEL)){
+    const thuoc = [...new Set(o.rows.map(r=>giaTri(r, MODE)))].join(', ');
+    return { loai:'khac', ucc:o.ucc, msg:`${TEN_NGAN[MODE]} ${thuoc}` };
+  }
+  return { o };
+}
 function xuLyMa(raw){
   const ma = String(raw||'').replace(/[\s()]/g,'').trim();
   if(!ma) return;
-  const o = timUcc(ma);
-  if(!SEL){ baoLoi('chon', ma, `chưa chọn ${TEN_NGAN[MODE]} bên trái`); veTatCa(); return; }
-  if(!o){ baoLoi('sai', ma, ''); veTatCa(); return; }
-  if(phienSet().has(o.ucc)){ baoLoi('trung', o.ucc, 'phiên này'); veTatCa(); return; }
-  if(daLuu(o.ucc)){ const vt = SAVED.get(o.ucc).vt; baoLoi('trung', o.ucc, vt ? 'vị trí ' + vt : 'đã lưu'); veTatCa(); return; }
-  if(!thuocNhom(o, MODE, SEL)){
-    const thuoc = [...new Set(o.rows.map(r=>giaTri(r, MODE)))].join(', ');
-    baoLoi('khac', o.ucc, `${TEN_NGAN[MODE]} ${thuoc}`); veTatCa(); return;
-  }
-  PHIEN.push({ ucc:o.ucc, at:Date.now() });
+  const k = kiemMa(ma, phienSet());
+  if(!k.o){ baoLoi(k.loai, k.ucc, k.msg); veTatCa(); return; }
+  PHIEN.push({ ucc:k.o.ucc, at:Date.now() });
   luuPhien();
   beep('ok');
   nhayO('scInBox', 'f-ok');
   veTatCa();
+}
+
+// Nút "ADDLINE": hàng đã scan BÊN NGOÀI (máy quét lưu ra file notepad .txt, mỗi dòng 1 UCC)
+// -> chọn file -> từng UCC đi qua đúng luật như quét tay với dòng JO / PO / STYLE đang chọn:
+//    đúng -> UCC ĐÃ SCAN ĐÚNG (phiên, chưa lưu — kiểm tra rồi bấm 💾 LƯU SCAN như thường)
+//    sai / khác / trùng (kể cả trùng ngay trong file) -> ô BÁO TRÙNG / SAI.
+// 1 dòng file có thể kèm thứ khác (số lượng, giờ quét…): lấy cả dòng nếu khớp UCC,
+// không thì lấy chữ đầu tiên khớp UCC, không khớp gì thì báo sai cả dòng.
+function maTrongDong(dong){
+  const ca = dong.replace(/[\s()]/g, '');
+  if(timUcc(ca)) return ca;
+  const chu = dong.split(/[\s,;|]+/).map(t=>t.replace(/[()"']/g, '')).filter(Boolean);
+  return chu.find(t=>timUcc(t)) || ca;
+}
+function addLine(txt, tenFile){
+  const dong = String(txt||'').replace(/^﻿/, '').split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+  if(!dong.length){ toast(`⚠ File ${tenFile} không có dòng UCC nào`); return; }
+  const dangCo = phienSet(), dem = { ok:0, sai:0, khac:0, trung:0 }, loi = [];
+  const at = Date.now();
+  dong.forEach(d=>{
+    const k = kiemMa(maTrongDong(d), dangCo);
+    if(k.o){ PHIEN.push({ ucc:k.o.ucc, at }); dangCo.add(k.o.ucc); dem.ok++; }
+    else { loi.push({ loai:k.loai, ucc:k.ucc, msg:k.msg, at }); dem[k.loai]++; }
+  });
+  // báo mới nhất nằm trên cùng, giữ đúng thứ tự dòng trong file
+  LOI = loi.reverse().concat(LOI);
+  if(LOI.length > 300) LOI.length = 300;
+  luuPhien();
+  const coLoi = dem.sai + dem.khac + dem.trung;
+  beep(coLoi ? (dem.sai ? 'sai' : dem.khac ? 'khac' : 'trung') : 'ok');
+  nhayO('scInBox', coLoi ? 'f-sai' : 'f-ok');
+  veTatCa();
+  openModal('ADDLINE — kết quả', `
+    <div class="sc-xoa-file"><b>📄 ${esc(tenFile)}</b><span>${soVN(dong.length)} dòng · ${esc(tenMode())} ${esc(SEL)}</span></div>
+    <div class="sc-al-kq">
+      <div class="ok"><b>${soVN(dem.ok)}</b><span>đúng → UCC đã scan đúng</span></div>
+      <div class="sai"><b>${soVN(dem.sai)}</b><span>sai (không có trong file)</span></div>
+      <div class="khac"><b>${soVN(dem.khac)}</b><span>khác ${esc(TEN_NGAN[MODE])}</span></div>
+      <div class="trung"><b>${soVN(dem.trung)}</b><span>trùng</span></div>
+    </div>
+    <div class="note">${dem.ok ? `Các thùng đúng <b>chưa được lưu</b> — kiểm tra rồi bấm <b>💾 LƯU SCAN</b> như khi quét tay.` : 'Không có UCC nào đúng để thêm.'}
+      ${coLoi ? ' Chi tiết sai / trùng xem ở ô <b>BÁO TRÙNG / SAI</b>.' : ''}</div>`);
 }
 
 // =====================================================================
@@ -15671,6 +15733,20 @@ $('scBtnLai').onclick = async ()=>{
   veTatCa();
   toast(`↺ Đã trả ${soVN(n)} thùng về UCC CHƯA SCAN — quét lại`);
   inp.focus();
+};
+$('scBtnAdd').onclick = ()=>{
+  if(!DATA) return;
+  if(!SEL){ toast(`👈 Bấm chọn 1 dòng ${tenMode()} ở bảng bên trái trước khi addline`); return; }
+  const f = document.createElement('input');
+  f.type = 'file'; f.accept = '.txt,.csv,text/plain';
+  f.onchange = async ()=>{
+    const file = f.files && f.files[0];
+    if(!file) return;
+    let txt = '';
+    try{ txt = await file.text(); }catch(e){ toast('⚠ Không đọc được file ' + file.name); return; }
+    addLine(txt, file.name);
+  };
+  f.click();
 };
 // Nút "📋 COPY": copy toàn bộ UCC (cả đã scan lẫn chưa) của dòng đang chọn ở bảng bên trái, mỗi dòng 1 UCC
 $('scBtnCopy').onclick = async ()=>{
