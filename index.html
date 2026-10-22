@@ -1756,12 +1756,13 @@
     <button data-tab="lichsu">🕘 Lịch sử</button>
     <button data-tab="so5s">🗺 Phụ trách 5S</button>
     <button data-tab="doica">🔁 Đổi ca</button>
-    <!-- 5 tab của app Kho thành phẩm (D:WEB_APP_KHO_TP, máy chủ nội bộ): bấm là chuyển sang LAN_URL, xem js/core/navigation.js -->
+    <!-- Các tab của app Kho thành phẩm (D:WEB_APP_KHO_TP, máy chủ nội bộ): bấm là chuyển sang LAN_URL, xem js/core/navigation.js -->
     <button data-tab="xuathang">🚚 Xuất hàng</button>
     <button data-tab="checkct">🔎 CHECK CT</button>
     <button data-tab="scanos">📦 SCAN OS</button>
     <button data-tab="scan">📲 SCAN</button>
     <button data-tab="donghang">🚛 Đóng hàng</button>
+    <button data-tab="rack">🗄️ Sơ đồ T2 CT</button>
     <button data-tab="hotrokk">🤝 Hỗ trợ / KK</button>
     <button data-tab="tangca">⏱ Tăng ca/Nghỉ phép</button>
     <button data-tab="wi">📄 WI</button>
@@ -2290,7 +2291,7 @@ const API_BASE = ((window.APP_CONFIG && window.APP_CONFIG.API_BASE) || '').repla
 const KHOA_NOI_BO = /^appwh-(checkct|scan|donghang)/;
 // Địa chỉ app Kho thành phẩm trong mạng công ty (khai trong js/env.js) — 5 tab dưới đây mở ở đó
 const LAN_URL = ((window.APP_CONFIG && window.APP_CONFIG.LAN_URL) || '').replace(/\/+$/, '');
-const TAB_KHO_TP = ['xuathang', 'checkct', 'scanos', 'scan', 'donghang'];
+const TAB_KHO_TP = ['xuathang', 'checkct', 'scanos', 'scan', 'donghang', 'rack'];
 
 const KEY_HR  = "appwh-data-v3";        // DÙNG CHUNG với app trên điện thoại (nhân sự, tăng ca, nghỉ phép, sự kiện, gia công)
 const KEY_KHO = "appwh-kho-v2";         // Dữ liệu phân công / 5S / ghi chú của 3 kho
@@ -3912,6 +3913,27 @@ function moAppKhoTP(tab){
   if(!LAN_URL){ toast('⚠ Chưa khai địa chỉ app Kho thành phẩm (LAN_URL trong js/env.js)'); return; }
   toast('Đang mở app Kho thành phẩm… (chỉ mở được trong mạng công ty, khi máy chủ nội bộ đang bật)');
   location.href = LAN_URL + '/#tab=' + encodeURIComponent(tab) + (AUTH.token ? '&t=' + encodeURIComponent(AUTH.token) : '');
+}
+// Chuyển về từ app Kho thành phẩm (menu bên trái bên đó): #view=…&kho=…&tab=…&t=<token>
+// -> mở đúng trang / tab, dùng luôn phiên đăng nhập. Đọc xong xoá khỏi thanh địa chỉ (token không nằm lại).
+let TU_KHO_TP = null;
+function nhanTuKhoTP(){
+  const p = new URLSearchParams(location.hash.slice(1));
+  if(!p.has('view') && !p.has('t')) return;
+  if(p.get('t')){ try{ localStorage.setItem(KHOA_PHIEN, JSON.stringify({ token: p.get('t') })); }catch(e){} }
+  TU_KHO_TP = { view: p.get('view'), kho: p.get('kho'), tab: p.get('tab') };
+  history.replaceState(null, '', location.pathname + location.search);
+}
+// Gọi sau chonTrangDauTien(): trang không được xem thì giữ trang mặc định
+function apTrangTuKhoTP(){
+  const d = TU_KHO_TP;
+  TU_KHO_TP = null;
+  if(!d || !d.view) return;
+  if(d.view === 'kho'){
+    if(!WAREHOUSES.some(w => w.id === d.kho) || !coXem(d.kho)) return;
+    VIEW = 'kho'; CUR_KHO = d.kho; SB_MO = d.kho;
+    activeTab = d.tab && !TAB_KHO_TP.includes(d.tab) ? d.tab : 'dashboard';
+  }else if(coXem(d.view)) VIEW = d.view;
 }
 function switchTab(name){
   if(typeof flushEmpSave === 'function') flushEmpSave();       // lưu nốt bảng năng lực trước khi rời tab
@@ -12497,9 +12519,11 @@ function xuatExcel(){
 // 18. KHỞI ĐỘNG
 // =====================================================================
 (async function init(){
+  nhanTuKhoTP();       // chuyển về từ app Kho thành phẩm: nhận phiên đăng nhập + trang cần mở
   // Đăng nhập (hoặc chọn vào xem kiểu khách) trước khi tải dữ liệu
   await batDauPhien();
   chonTrangDauTien();
+  apTrangTuKhoTP();
   buildSidebar();
   veNutTaiKhoan();
   $('noteDate').value = todayKey();
