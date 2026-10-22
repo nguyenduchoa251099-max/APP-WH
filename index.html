@@ -239,8 +239,10 @@
   #tab-dashboard .stat-lines > div:first-child .v{font-size:28px;}
 
   /* Con số có danh sách khi rê chuột (Tổng quan kho + Tổng quan 3 kho): gạch chân chấm để biết rê vào được */
-  .stat-lines .v[data-ovtip]{cursor:help; text-decoration:underline dotted; text-decoration-thickness:1.5px;
+  .stat-lines .v[data-ovtip], .tg-tom [data-ovtip]{cursor:help; text-decoration:underline dotted; text-decoration-thickness:1.5px;
     text-underline-offset:4px; text-decoration-color:color-mix(in srgb, currentColor 45%, transparent);}
+  /* rê vào chữ bên trái của dòng cũng hiện danh sách */
+  .stat-lines > div:has(> .v[data-ovtip]) > .k, .bd-ns:has(> .v[data-ovtip]) > .k{cursor:help;}
   .ov-tip{position:fixed; z-index:9000; min-width:200px; max-width:340px; background:#fff; border:1px solid var(--line);
     border-radius:10px; box-shadow:0 10px 28px rgba(16,24,40,.18); padding:9px 12px 10px; pointer-events:none; font-size:13px;}
   .ov-tip .th{display:flex; align-items:center; gap:8px; font-size:12px; font-weight:800; letter-spacing:.04em; text-transform:uppercase;
@@ -298,6 +300,10 @@
     align-items:center; justify-content:center; gap:4px;}
   .wi-file .ic{font-size:42px; line-height:1;}
   .wi-file .ex{font-size:12px; font-weight:800; color:var(--ink-soft); letter-spacing:.06em;}
+  /* link (video / file lớn trên OneDrive, SharePoint…): bấm vào ô là mở */
+  a.wi-link{text-decoration:none; color:inherit; cursor:pointer;}
+  a.wi-link:hover{background:var(--blue-bg);}
+  .wi-link .ex{letter-spacing:0; max-width:90%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--blue-dark, var(--blue));}
   .bst-icons{display:grid; grid-template-columns:repeat(8,1fr); gap:6px;}
   .bst-icons button{font-size:20px; padding:7px 0; border-radius:8px; cursor:pointer;
     background:#fff; border:1px solid var(--line);}
@@ -378,6 +384,117 @@
   .hist-del-btn{font-family:inherit; font-size:11px; font-weight:700; padding:4px 10px; border-radius:var(--radius); border:1px solid var(--red); background:var(--red-bg); color:var(--red); cursor:pointer;}
 
   footer.actions{display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-start; margin-top:6px;}
+
+</style>
+<style>/* css/chung.css */
+/* Phần dùng chung (nút "!", thống kê Đăng ký nhanh, lý do nghỉ, toast, thanh báo lỗi lưu, chẩn đoán,
+   danh sách trống, sơ đồ kệ / vị trí 5S, xem trước thư mời Họp kho...)
+   Trước đây nằm cuối css/modules/xuathang.css — khi tách tab Xuất hàng sang app Kho TP (2026-10-16)
+   file đó bị bỏ nên mất theo; tách ra đây (2026-10-22), nạp đúng vị trí cũ (sau components.css). */
+  /* Nút "!" bật/tắt dòng hướng dẫn cho khỏi rối mắt */
+  .hintbar{display:flex; justify-content:flex-end; margin-top:8px;}
+  .hint-btn{width:26px; height:26px; min-height:0; padding:0; border-radius:50%;
+    border:1.5px solid var(--blue); background:var(--blue-bg); color:var(--blue);
+    font-size:14px; font-weight:900; line-height:1; cursor:pointer;}
+  .hint-btn:hover{background:var(--blue); color:#fff;}
+  .hint-btn.on{background:var(--blue); color:#fff;}
+  .hint-box{margin-top:6px;}
+  .hint-box[hidden]{display:none !important;}   /* phải có, nếu không display khác sẽ ghi đè hidden */
+  body:not(.phone) #otHint, body:not(.phone) #otHintBar{display:none !important;}  /* hướng dẫn vuốt chỉ dành cho điện thoại */
+  body.phone #otHintBar{display:none !important;}      /* nút ! đã dời lên thanh tiêu đề */
+  body.phone #otHint{margin:0 0 8px;}
+  body.phone .headright{flex-wrap:wrap; justify-content:flex-end; row-gap:5px; max-width:58%;}
+  body.phone .headright #btnBulkOT{background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.34);
+    color:#fff; font-size:11.5px; font-weight:800; padding:5px 9px; min-height:0; border-radius:9px;}
+  body.phone .headright .hint-btn{width:26px; height:26px; background:rgba(255,255,255,.18);
+    border:1px solid rgba(255,255,255,.34); color:#fff;}
+  body.phone .headright .hint-btn.on{background:#fff; color:var(--blue); border-color:#fff;}
+  /* bảng bắt đầu ngay, không còn khoảng trống thừa */
+  body.phone #sub-ds > .panel{padding-top:10px;}
+  body.phone #qkStat:empty{display:none;}
+  /* Số liệu trong tháng của người được chọn (tab Đăng ký) */
+  .qk-stat{border:1px solid var(--line-soft); border-radius:10px; background:var(--paper); padding:10px 12px; margin-top:10px;}
+  .qk-stat .hd{font-size:11.5px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-soft); margin-bottom:7px;}
+  .qk-stat .rows{display:grid; grid-template-columns:1fr 1fr; gap:8px 12px;}
+  .qk-stat .it{display:flex; flex-direction:column; gap:1px;}
+  .qk-stat .it .k{font-size:11.5px; color:var(--ink-soft); font-weight:700;}
+  .qk-stat .it .v{font-size:17px; font-weight:800; color:var(--ink);}
+  .qk-stat .it .v.hot{color:#c8102e;}
+  .qk-stat .it .v.ok{color:var(--blue);}
+  .qk-stat .it .v.warn, .qk-stat .it .s b.warn{color:var(--amber);}
+  .qk-stat .it .s b.hot{color:#c8102e;} .qk-stat .it .s b.ok{color:var(--blue);}
+  /* Lý do nghỉ không trừ phép (không lương, ốm, việc riêng) */
+  select.ld-khongtru, option.ld-khongtru{color:var(--teal); font-weight:700;}
+  select.ld-khongtru option:not(.ld-khongtru){color:var(--ink); font-weight:400;}
+  .ld-txt{color:#888; font-size:12px;}
+  .ld-txt.ld-khongtru{color:var(--teal); font-weight:700;}
+  .qk-stat .it .s{font-size:12px; font-weight:600; color:var(--ink-soft);}
+  .qk-stat .it .s b, .lv-ton .s b{color:var(--ink);}
+  .qk-stat .it .s b.am, .lv-ton .s b.am{color:#c8102e;}
+  .lv-ton{flex:1; min-width:0; font-size:13px; line-height:1.35;}
+  .lv-ton .k{font-weight:700; color:var(--ink-soft);}
+  .lv-ton .v{font-size:17px; font-weight:800; color:var(--blue);}
+  .lv-ton .v.hot{color:#c8102e;}
+  .lv-ton .s{display:block; font-size:12px; font-weight:600; color:var(--ink-soft);}
+  /* Nghỉ nhiều ngày: "Đến ngày" + bỏ Chủ nhật */
+  .lbl-phu{font-weight:600; color:var(--ink-soft);}
+  .chk-dong{display:flex; align-items:center; gap:8px; margin-top:8px; font-size:13.5px; font-weight:600; color:var(--ink); cursor:pointer;}
+  .chk-dong input{width:auto; margin:0;}
+  .range-info{font-size:13px; margin-top:6px; color:var(--ink);}
+  .range-info:empty{display:none;}
+  .range-info .phu{color:var(--ink-soft);}
+  .range-info .loi{color:#c8102e; font-weight:700;}
+  .toast.bad{background:#FF2020; font-weight:800;}
+  .save-alert{position:sticky; top:0; z-index:60; display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+    background:#FF2020; color:#fff; padding:11px 16px; border-radius:10px; margin:10px 0 2px;
+    box-shadow:0 6px 18px rgba(255,32,32,.35); font-size:14px;}
+  .save-alert .sa-txt{flex:1; min-width:240px; line-height:1.45;}
+  .save-alert .sa-txt span{display:block; font-size:12.5px; opacity:.95; font-weight:600;}
+  .save-alert .sa-btns{display:flex; gap:8px;}
+  .save-alert button{background:#fff; border-color:#fff; color:#c8102e; font-weight:800;}
+  .diag-line{display:flex; justify-content:space-between; gap:10px; padding:7px 0; border-bottom:1px dashed var(--line-soft); font-size:13.5px;}
+  .diag-line:last-child{border-bottom:0;}
+  .diag-line .st{font-weight:800; white-space:nowrap;}
+  .diag-ok{color:#1f7a4f;} .diag-bad{color:#c8102e;}
+  .toast{position:fixed; bottom:20px; right:20px; background:var(--blue); color:#fff; padding:10px 16px; border-radius:var(--radius); font-size:13px; opacity:0; transform:translateY(8px); transition:all .25s; pointer-events:none; z-index:999;}
+  .toast.show{opacity:1; transform:translateY(0);}
+
+  .status-line{display:flex; gap:14px; flex-wrap:wrap; font-size:14px; color:var(--ink-soft); margin:10px 0;}
+  .status-line b{color:var(--ink);}
+
+  .list{display:grid; gap:8px;}
+  .list-item{border:1px solid var(--line-soft); border-radius:var(--radius); padding:10px 12px; background:#fff; font-size:13px;}
+  .empty-msg{text-align:center; color:var(--ink-soft); padding:20px; font-size:13px;}
+
+  .shelf-map{display:flex; flex-direction:column; gap:10px; margin-bottom:16px;}
+  .shelf-row{display:flex; align-items:center; gap:10px; background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:10px 12px; flex-wrap:wrap;}
+  .shelf-row .shelf-label{font-family:var(--mono); font-weight:800; font-size:16px; color:var(--blue); min-width:34px; display:flex; align-items:center;}
+  .shelf-row .shelf-tag{font-family:inherit; font-weight:700; font-size:11px; color:var(--amber); background:var(--amber-bg); border:1px solid var(--amber-line); padding:3px 8px; border-radius:6px; white-space:nowrap;}
+  .shelf-row .shelf-cellsgroup{display:flex; flex-direction:column; gap:4px; flex:1; min-width:220px;}
+  .shelf-row .shelf-cells{display:flex; gap:4px; flex-wrap:wrap; align-items:center;}
+  .shelf-row .shelf-cells .cell{background:var(--blue-bg); border:1px solid var(--line-soft); border-radius:4px; width:34px; height:28px; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; font-family:var(--mono); color:var(--blue); flex:0 0 auto;}
+  .shelf-row .shelf-owner{min-width:170px; display:flex; align-items:center;}
+  .shelf-row .shelf-owner input{padding:7px 9px; font-size:14px; background:var(--amber-bg); border-color:var(--amber-line); color:#6b4a10; font-weight:700;}
+  .shelf-row.empty-owner .shelf-owner input{background:var(--red-bg); border-color:var(--red); color:var(--red);}
+  .zone-del{flex:0 0 auto;}
+
+  .ops-map{display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:10px; margin-bottom:16px;}
+  .ops-card{border:1px solid var(--line); border-radius:var(--radius); padding:10px 12px; background:#fff;}
+  .ops-card .op-title{font-weight:700; font-size:13px; margin-bottom:6px; display:flex; justify-content:space-between; gap:6px; align-items:center;}
+  .ops-card input{padding:6px 8px; font-size:12.5px; background:var(--amber-bg); border-color:var(--amber-line); color:#6b4a10; font-weight:700;}
+  .ops-card.empty-owner input{background:var(--red-bg); border-color:var(--red); color:var(--red);}
+
+  .unassigned-zone-list{border:1px solid var(--red); background:var(--red-bg); border-radius:var(--radius); padding:12px 14px; color:#7a2c1c; font-size:13px;}
+  .unassigned-zone-list ul{margin:6px 0 0; padding-left:18px;}
+
+  /* Xem trước thư mời Họp kho (dùng lại kiểu xem trước mail Daily Shipment cũ) */
+  .xh-bcmeta{font-size:14px; line-height:2; margin:6px 0 12px;}
+  .xh-bcmeta b{display:inline-block; width:84px; color:var(--ink-soft);}
+  .xh-bcfile{display:inline-flex; align-items:center; gap:7px; border:1px solid var(--line); border-radius:6px; padding:2px 9px; margin-right:8px; font-size:13px;}
+  .xh-bcfile i{background:#1d6f42; color:#fff; font-style:normal; font-weight:800; border-radius:3px; padding:0 5px; font-size:11px;}
+  .xh-bch{font-size:12.5px; font-weight:800; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.03em; margin:14px 0 6px;}
+  .xh-bcmail{display:block; width:100%; min-height:420px; border:1px solid var(--line); border-radius:8px; background:#fff;}
+  .note.ok{background:var(--teal-bg); border-left-color:var(--teal); color:#1f5c3a;}
 
 </style>
 <style>/* css/modules/nhansu.css */
@@ -527,9 +644,27 @@
   /* ======== LỊCH THÁNG ======== */
   .cal-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;}
   .cal-title{font-weight:800; font-size:17px;}
-  .cal-dow{display:grid; grid-template-columns:repeat(7,1fr); text-align:center; font-size:11.5px; color:var(--ink-soft); font-weight:700; margin-bottom:4px;}
+  /* hàng thứ: thanh nền xanh đậm, chữ trắng; Chủ nhật đỏ */
+  .cal-dow{display:grid; grid-template-columns:repeat(7,1fr); gap:4px; text-align:center; margin-bottom:6px;}
+  .cal-dow > div{background:#173b57; color:#fff; font-size:13px; font-weight:800; letter-spacing:.06em; padding:7px 0; border-radius:8px;}
+  .cal-dow > div:last-child{background:#c8102e;}
   .cal-grid{display:grid; grid-template-columns:repeat(7,1fr); gap:4px;}
-  .cal-cell{min-height:74px; background:#fff; border:1px solid var(--line-soft); border-radius:8px; padding:4px;}
+  .cal-cell{min-height:74px; background:#fff; border:1px solid var(--line-soft); border-radius:8px; padding:4px; display:flex; flex-direction:column; min-width:0;}
+  /* ngày nghỉ: tô nền + tên ngày nghỉ ở đáy ô */
+  .cal-cell.nghi-cn{background:#fdf1f1; border-color:#f3cccc;}
+  .cal-cell.nghi-le{background:#fff0dc; border-color:#f2bf7c;}
+  .cal-cell.nghi-cn .dnum{color:#b42318;} .cal-cell.nghi-le .dnum{color:#a15c00;}
+  .cal-nghi{margin-top:auto; padding-top:3px; font-size:11px; font-weight:800; line-height:1.25; text-align:center;
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
+  .nghi-cn .cal-nghi{color:#c95a5a;} .nghi-le .cal-nghi{color:#a15c00;}
+  /* hộp Ngày nghỉ lễ */
+  .le-ds{border:1px solid var(--line); border-radius:10px; margin:10px 0 4px; max-height:min(46vh, 380px); overflow:auto;}
+  .le-r{display:grid; grid-template-columns:128px 1fr auto; align-items:center; gap:10px; padding:6px 10px; border-top:1px solid var(--line-soft); font-size:14px;}
+  .le-r:first-child{border-top:0;}
+  .le-r .d{font-weight:700; font-variant-numeric:tabular-nums; color:#a15c00;}
+  .le-r .t{font-weight:600;} .le-r .t i{font-style:normal; font-weight:500; font-size:12.5px; color:var(--ink-soft);}
+  .le-r.bo .d, .le-r.bo .t{color:var(--ink-soft);}
+  .le-r button{margin:0;}
   .cal-cell.out{opacity:.35;}
   .cal-cell.today{border:1.5px solid var(--blue);}
   .cal-cell.has{cursor:pointer;}
@@ -581,6 +716,11 @@
   .otc-phu{font-size:10.5px; fill:#98a1ad;}
   .otc-val{font-size:11px; font-weight:800; fill:var(--ink); font-family:var(--font);}
   .otc-val.khong{fill:#98a1ad; font-weight:700;}
+  .otc-val.gon{font-size:9.5px;}
+  /* ô chọn năm (2026: T10–T12 · từ 2027: cả năm) + nút Tổng giờ / Bình quân: 1 cụm, hết chỗ thì cả cụm xuống dòng, nằm bên phải */
+  .otc-dk{display:inline-flex; align-items:center; gap:8px; margin-left:auto; text-transform:none; letter-spacing:0;}
+  select.otc-nam{width:auto; margin:0; padding:5px 8px; font-size:12.5px; font-weight:700; border:1px solid var(--line);
+    border-radius:9px; background:var(--panel); color:var(--ink); cursor:pointer;}
   .otc-band{fill:transparent; cursor:pointer;}
   .otc-band.on{fill:rgba(0,150,190,.06);}
   .otc-bar{pointer-events:none;}
@@ -838,6 +978,8 @@
      minmax(0,1fr): 7 cột luôn CHIA ĐỀU, không phình ra theo độ dài chữ trong ô
      -> hàng thứ (T2..CN) khớp thẳng cột với hàng ngày. Cùng gap 3px cho 2 lưới. */
   body.phone .cal-dow{grid-template-columns:repeat(7,minmax(0,1fr)); gap:3px; font-size:11px;}
+  body.phone .cal-dow > div{font-size:11px; padding:5px 0; border-radius:6px;}
+  body.phone .cal-nghi{font-size:8.5px; -webkit-line-clamp:1;}       /* ô hẹp: tên ngày nghỉ cắt bớt, rê / chạm giữ để xem đủ */
   body.phone .cal-grid{grid-template-columns:repeat(7,minmax(0,1fr)); gap:3px;}
   body.phone .cal-cell{min-height:52px; font-size:11px; min-width:0; overflow:hidden; padding:3px;}
   body.phone .cal-tags{min-width:0;}
@@ -1080,6 +1222,16 @@
   .od-kpi{display:grid; grid-template-columns:1.4fr 1fr; gap:12px;}
   .od-the{background:#fff; border:1px solid var(--line); border-top:4px solid var(--od-ot); border-radius:12px; box-shadow:var(--bong); padding:14px 16px 12px;}
   .od-the.hm{border-top-color:#173b57;}
+  /* thẻ Tổng giờ: bên phải có 2 nút lối tắt Đăng ký nhanh / Đăng ký hàng loạt */
+  .od-the.ot{display:flex; align-items:center; gap:14px;}
+  .od-the-l{flex:1; min-width:0;}
+  .od-dk{display:flex; gap:8px; flex:0 0 auto;}
+  .od-dk button{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; width:104px; min-height:74px; margin:0;
+    padding:8px 6px; border:1.5px solid #f0cf8a; border-radius:10px; background:#fffbea; color:#7a4d00;
+    font-size:13px; font-weight:800; line-height:1.2; text-align:center; cursor:pointer; box-shadow:none;}
+  .od-dk button i{font-style:normal; font-size:18px; line-height:1;}
+  .od-dk button:hover{background:#fff1c2; border-color:#e0a930; opacity:1;}
+  @media(max-width:560px){ .od-the.ot{flex-wrap:wrap;} .od-dk{width:100%;} .od-dk button{flex:1; width:auto; min-height:52px;} }
   .od-the .k{display:flex; align-items:baseline; gap:8px; font-size:13px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:var(--ink);}
   .od-the .k small{margin-left:auto; font-size:12px; font-weight:600; text-transform:none; letter-spacing:0; color:var(--ink-soft);}
   .od-the .v{display:flex; align-items:baseline; flex-wrap:wrap; gap:6px 14px; margin-top:6px;}
@@ -1107,7 +1259,7 @@
   .od-card{background:#fff; border:1px solid var(--line); border-radius:12px; box-shadow:var(--bong); padding:14px 16px; min-width:0;}
   .od-h{display:flex; flex-wrap:wrap; align-items:center; gap:6px 14px; margin-bottom:8px;}
   .od-h b{font-size:14.5px;}
-  .od-lg{display:flex; gap:12px; margin-left:auto; font-size:12.5px; font-weight:700; color:var(--ink-soft);}
+  .od-lg{display:flex; flex-wrap:wrap; gap:4px 12px; margin-left:auto; font-size:12.5px; font-weight:700; color:var(--ink-soft);}
   .od-lg span{display:inline-flex; align-items:center; gap:6px;} .od-lg i{width:11px; height:11px; border-radius:3px;}
   .od-ghi{margin-left:auto; font-size:12px; color:var(--ink-soft);}
   .od-trong{display:flex; align-items:center; justify-content:center; min-height:200px; color:var(--ink-soft); font-size:13.5px;}
@@ -1182,7 +1334,18 @@
   .od-khoten{font-weight:800; fill:var(--ink);}
   .od-hm-line{stroke-width:1.5; stroke-dasharray:5 4;}
   .od-hm-line.bad{stroke:var(--od-bad);} .od-hm-line.warn{stroke:var(--od-warn);}
-  .od-hm-txt{font-size:10.5px; font-weight:700;} .od-hm-txt.bad{fill:#b42318;} .od-hm-txt.warn{fill:#a15c00;}
+  /* nhãn số giờ của vạch ở lề phải (ngoài vùng cột) */
+  .od-hm-tag text{font-size:10.5px; font-weight:800; font-variant-numeric:tabular-nums;}
+  .od-hm-tag.bad rect{fill:#fde8e8; stroke:var(--od-bad); stroke-width:1;} .od-hm-tag.bad text{fill:#b42318;}
+  .od-hm-tag.warn rect{fill:#fff6e0; stroke:var(--od-warn); stroke-width:1;} .od-hm-tag.warn text{fill:#8a5a00;}
+  /* số trên đầu cột có viền trắng -> vẫn đọc được khi đè lên vạch nét đứt */
+  .od-val{paint-order:stroke; stroke:#fff; stroke-width:3px; stroke-linejoin:round;}
+  /* tầng "tuần này" (tím) trên cột tháng: số giờ tuần ghi bên trong; chạm mốc tuần thì viền vàng / đỏ */
+  .od-val-tuan{font-size:10px; font-weight:800; fill:#fff; font-variant-numeric:tabular-nums; pointer-events:none;}
+  .od-tuan.warn{stroke:var(--od-warn); stroke-width:2;} .od-tuan.bad{stroke:var(--od-bad); stroke-width:2;}
+  /* chú thích vạch nét đứt */
+  .od-lg .vach i{width:16px; height:0; border-radius:0; border-top:2px dashed;}
+  .od-lg .vach i.bad{border-color:var(--od-bad);} .od-lg .vach i.warn{border-color:var(--od-warn);}
 
 </style>
 <style>/* css/modules/hotrokk.css */
@@ -1685,7 +1848,7 @@
 
   .tsw-bang{overflow-x:auto; border:1px solid var(--line); border-radius:10px; background:#fff;}
   .tsw-bang table{width:100%; border-collapse:collapse; font-size:13.5px;}
-  .tsw-bang th{background:var(--blue-bg); color:var(--ink-soft); font-size:12px; letter-spacing:.03em; text-align:left; padding:8px 10px; white-space:nowrap; position:sticky; top:0;}
+  .tsw-bang th{background:var(--blue-bg); color:var(--ink-soft); font-size:12px; letter-spacing:.03em; text-align:left; padding:8px 10px; position:sticky; top:0;}
   .tsw-bang td{padding:6px 10px; border-top:1px solid var(--line-soft); white-space:nowrap;}
   .tsw-bang td.so{text-align:right; color:var(--ink-soft); width:40px;}
   .tsw-bang td.m{font-family:var(--mono); font-size:13px;}
@@ -1698,6 +1861,30 @@
   .tsw-bang tr.tsw-nhom.chua td{background:#fff6e0; color:#8a5a00;}
   .tsw-bang tr.tsw-nhom i{font-style:normal; font-weight:700; opacity:.65; margin-left:4px;}
   .tsw-trong{padding:28px; text-align:center; color:var(--ink-soft); margin:0;}
+
+  /* Người sử dụng (nhiều người, không bắt buộc) */
+  .tsw-bang td.ng{white-space:normal; min-width:130px; max-width:260px;}
+  .tsw-ng{display:inline-block; margin:1px 4px 1px 0; padding:1px 8px; border-radius:9px; background:#eef4f8; color:#173b57;
+    font-size:12.5px; font-weight:600;}
+  .tsw-ng.nghi{background:#fde8e8; color:#b42318;}
+  .tsw-ng.khac{background:#fff6e0; color:#8a5a00;}
+  .tsw-ng-trong{font-size:13px; color:var(--ink-soft); margin-right:8px;}
+  button.tsw-ngbtn{padding:1px 8px; font-size:12px; font-weight:700; border-radius:7px; background:#fff; color:var(--ink-soft);
+    border:1px dashed var(--line); cursor:pointer; vertical-align:1px;}
+  button.tsw-ngbtn:hover{color:var(--blue); border-color:var(--blue); opacity:1;}
+  .tsw-form-ng{display:flex; flex-wrap:wrap; align-items:center; gap:4px 0; min-height:30px;}
+  /* hộp chọn người */
+  .tsw-chon-phu{font-size:13px; color:var(--ink-soft); margin-bottom:8px;}
+  .tsw-chon{max-height:min(52vh, 420px); overflow:auto; border:1px solid var(--line); border-radius:10px; margin-top:8px;}
+  .tsw-chon-r{display:flex; align-items:center; gap:10px; padding:7px 12px; border-top:1px solid var(--line-soft); cursor:pointer; font-size:14px; margin:0;}
+  .tsw-chon-r:first-child{border-top:0;}
+  .tsw-chon-r:hover{background:var(--blue-bg);}
+  .tsw-chon-r input{flex:0 0 auto; margin:0;}
+  .tsw-chon-r span{display:flex; flex-direction:column; line-height:1.3;}
+  .tsw-chon-r small{font-size:12px; color:var(--ink-soft);}
+  .tsw-chon-r.ngoai{background:#fff6f5;}
+  .tsw-chon-r.ngoai small{color:#b42318;}
+  .tsw-chon-f{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:8px; font-size:13px; color:var(--ink-soft);}
 
   /* hộp xác nhận up file (trong modal chung) */
   .tsw-up{display:flex; flex-direction:column; gap:4px; padding:10px 12px; background:var(--paper); border:1px solid var(--line-soft); border-radius:10px; font-size:13.5px;}
@@ -1799,8 +1986,11 @@
     </div>
     <div class="panel tg" data-tg="otc" style="margin-top:18px;">
       <h2><span class="tg-mui" aria-hidden="true">▸</span><span class="n">📊</span>Giờ tăng ca theo tháng — 3 kho<span class="tg-tom" id="tgTomOtc"></span><span class="h2spacer"></span>
-        <span class="otc-seg tg-mo-chi" id="otcMode" role="group" aria-label="Cách tính">
-          <button data-m="tong" class="on">Tổng giờ</button><button data-m="bq">Bình quân / người</button>
+        <span class="otc-dk tg-mo-chi">
+          <select class="otc-nam" id="otcNam" aria-label="Năm"></select>
+          <span class="otc-seg" id="otcMode" role="group" aria-label="Cách tính">
+            <button data-m="tong" class="on">Tổng giờ</button><button data-m="bq">Bình quân / người</button>
+          </span>
         </span>
       </h2>
       <div class="otc-kpi" id="otcKpi"></div>
@@ -2182,9 +2372,10 @@
         <div class="btnrow" style="margin-top:14px;">
           <button class="secondary" id="btnAddEvent">+ Lịch họp / sự kiện</button>
           <button class="secondary" id="btnAddGiaCong">+ Gia công</button>
+          <button class="secondary" id="btnNgayLe" hidden>🗓 Ngày nghỉ lễ</button>
         </div>
         <div class="hintbar"><button class="hint-btn" data-hint="calHint" title="Xem ký hiệu">!</button></div>
-        <div class="note hint-box" id="calHint" hidden>Ô có dữ liệu bấm vào để xem chi tiết và xoá. Ký hiệu: <b>N</b> nghỉ · <b>S</b> về sớm · <b>M</b> đi muộn · <b>OT</b> tăng ca · <b>OS…</b> chuyến gia công.</div>
+        <div class="note hint-box" id="calHint" hidden>Ô có dữ liệu bấm vào để xem chi tiết và xoá. Ký hiệu: <b>N</b> nghỉ · <b>S</b> về sớm · <b>M</b> đi muộn · <b>OT</b> tăng ca · <b>OS…</b> chuyến gia công. Nền đỏ nhạt = Chủ nhật · nền cam = ngày nghỉ lễ (theo Bộ luật Lao động, lễ trùng Chủ nhật có ngày nghỉ bù).</div>
       </div>
     </div>
 
@@ -4249,7 +4440,9 @@ function ovTipGan(el, tieuDe, dong){
   document.body.appendChild(tip);
   const TOI_DA = 15;
   document.addEventListener('mouseover', e=>{
-    const el = e.target.closest && e.target.closest('[data-ovtip]');
+    let el = e.target.closest && e.target.closest('[data-ovtip]');
+    // rê vào cả dòng của thẻ số (chữ bên trái hay con số) đều hiện, không phải trỏ đúng con số
+    if(!el && e.target.closest){ const dong = e.target.closest('.bd-ns, .stat-lines > div'); el = dong && dong.querySelector(':scope > [data-ovtip]'); }
     const d = el && OV_TIP.get(el.dataset.ovtip);
     if(!d){ tip.hidden = true; return; }
     tip.innerHTML = `<div class="th">${esc(d.tieuDe)}${d.khongDem ? '' : ` <i>${d.dong.length}</i>`}</div>`
@@ -4313,7 +4506,10 @@ function tgApDung(){
       if(on && p.dataset.tg === 'otc') renderOtChart();             // vẽ lại biểu đồ cho vừa bề ngang
     };
     h.addEventListener('click', doi);
-    h.addEventListener('keydown', e=>{ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); doi(e); } });
+    h.addEventListener('keydown', e=>{
+      if(e.target.closest('button, a, input, select')) return;      // bàn phím trên nút / ô chọn năm trong thanh: để nút tự xử lý
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); doi(e); }
+    });
   });
 }
 // Dòng tóm tắt trên thanh tiêu đề khối (cls: 'xau' đỏ · 'vua' cam · 'tot' xanh)
@@ -4401,8 +4597,12 @@ function renderAll3ViPham(ref){
   const ds = [];
   WAREHOUSES.forEach(w=>ds.push(...otViPham(w.id, ref)));
   ds.sort((a, b)=>(thuTu[a.kind] - thuTu[b.kind]) || (b.val - a.val));
-  const nVp = new Set(ds.map(a=>a.emp.id)).size;
-  tgTom('tgTomCb', nVp ? `⚠ ${nVp} người vượt hạn mức` : '✓ Không ai vượt hạn mức', nVp ? 'xau' : 'tot');
+  // Rê chuột vào "⚠ N người vượt hạn mức" trên thanh tiêu đề (kể cả khi khối đang đóng) -> tên, kho, vi phạm
+  const theoNguoi = new Map();
+  ds.forEach(a=>{ const o = theoNguoi.get(a.emp.id) || { e:a.emp, khoId:a.khoId, vp:[] }; o.vp.push(`${a.title} (${fmtHours(a.val)})`); theoNguoi.set(a.emp.id, o); });
+  const nVp = theoNguoi.size;
+  tgTom('tgTomCb', nVp ? `<span${ovTipAttr('Người vượt hạn mức', [...theoNguoi.values()].map(o=>({ t:o.e.name, s:`${khoName(o.khoId)} · ${o.vp.join(' · ')}` })))}>⚠ ${nVp} người vượt hạn mức</span>`
+    : '✓ Không ai vượt hạn mức', nVp ? 'xau' : 'tot');
   $('all3LimitRule').textContent = `Tháng ${pad(ref.getMonth() + 1)}/${ref.getFullYear()} · Ngày >${OT_VI_PHAM.ngay}h · Tuần >${OT_VI_PHAM.tuan}h · Tháng >${OT_VI_PHAM.thang}h · Năm ≥${OT_VI_PHAM.nam}h`;
   $('all3Limit').innerHTML = ds.length
     ? `<thead><tr><th>Họ tên</th><th>Kho</th><th>Vi phạm</th><th>Chi tiết</th><th style="text-align:right">Số giờ</th><th style="text-align:right">Quy định</th></tr></thead>
@@ -4440,12 +4640,19 @@ function renderAll3Ton24(){
 }
 
 // ---------------------------------------------------------------------
-// BIỂU ĐỒ GIỜ TĂNG CA THEO THÁNG — 3 kho, 08/2026 → 12/2026
+// BIỂU ĐỒ GIỜ TĂNG CA THEO THÁNG — 3 kho
+// Năm 2026 chỉ tính quý 4 (T10 → T12); từ năm 2027 tính đủ 12 tháng. Ô chọn năm (mặc định năm
+// hiện tại) để xem lại năm cũ.
 // Cột nhóm theo tháng, mỗi kho một màu (trùng màu thẻ kho). Có 2 cách xem:
 // tổng giờ, hoặc bình quân mỗi người (chia cho số người hiện có của kho) để
 // so được giữa các kho đông/ít người. Rê chuột vào tháng để xem số chi tiết.
 // ---------------------------------------------------------------------
-const OTC_THANG = ['2026-08','2026-09','2026-10','2026-11','2026-12'];
+const OTC_NAM_DAU = 2026;
+const otcThangCuaNam = y => y === OTC_NAM_DAU ? ['10', '11', '12'].map(m=>`${y}-${m}`)
+                                               : Array.from({ length:12 }, (_, i)=>`${y}-${pad(i + 1)}`);
+let OTC_NAM = null;                                   // năm đang xem (null = năm hiện tại)
+let OTC_THANG = otcThangCuaNam(OTC_NAM_DAU);
+const otcKy = () => `${OTC_THANG[0].slice(5)}–${OTC_THANG[OTC_THANG.length - 1].slice(5)}/${OTC_THANG[0].slice(0, 4)}`;
 let OTC_MODE = 'tong';
 function otcSoLieu(){
   const nay = thangKey(new Date());
@@ -4479,7 +4686,7 @@ function otcSoLieu(){
 }
 function thangKey(d){ return d.getFullYear() + '-' + pad(d.getMonth() + 1); }
 function otcTenThang(m){ const [y, mm] = m.split('-'); return `T${Number(mm)}/${y}`; }
-function otcNhan(v){ return (OTC_MODE === 'bq' ? fmtNumShort(v) : Math.round(v)) + 'h'; }
+function otcNhan(v, gon){ return (OTC_MODE === 'bq' ? fmtNumShort(v) : Math.round(v)) + (gon ? '' : 'h'); }
 function otcFmt(v){ return OTC_MODE === 'bq' ? fmtNumShort(v) + 'h' : fmtHours(v); }
 function otcTronTren(v){            // làm tròn trục lên số đẹp gần nhất: 12, 15, 20, 25, 30, 40, 50...
   if(v <= 0) return 10;
@@ -4488,6 +4695,16 @@ function otcTronTren(v){            // làm tròn trục lên số đẹp gần 
 }
 function renderOtChart(){
   const wrap = $('otcChart'); if(!wrap) return;
+  // Năm đang xem: mặc định năm hiện tại; ô chọn có các năm từ 2026 tới năm nay
+  const namNay = Math.max(OTC_NAM_DAU, new Date().getFullYear());
+  if(!OTC_NAM || OTC_NAM < OTC_NAM_DAU || OTC_NAM > namNay) OTC_NAM = namNay;
+  OTC_THANG = otcThangCuaNam(OTC_NAM);
+  const chonNam = $('otcNam');
+  if(chonNam){
+    chonNam.innerHTML = Array.from({ length: namNay - OTC_NAM_DAU + 1 }, (_, i)=>namNay - i)
+      .map(y=>`<option value="${y}"${y === OTC_NAM ? ' selected' : ''}>Năm ${y}</option>`).join('');
+    chonNam.onchange = ()=>{ OTC_NAM = Number(chonNam.value); renderOtChart(); };
+  }
   const S = otcSoLieu();
   const khos = WAREHOUSES.map(w=>w.id);
 
@@ -4514,7 +4731,7 @@ function renderOtChart(){
     }
     return `<div class="otc-the" style="--kho:${KHO_MAU[k]}">
       <div class="k"><span class="sw"></span>${esc(khoName(k))} <small>· ${S.soNguoi[k]} người</small></div>
-      <div class="v">${otcFmt(kyHien)}<small>${OTC_MODE === 'bq' ? 'mỗi người · ' : ''}08–12/2026</small></div>
+      <div class="v">${otcFmt(kyHien)}<small>${OTC_MODE === 'bq' ? 'mỗi người · ' : ''}${otcKy()}</small></div>
       ${mNay ? `<div class="d">${otcTenThang(mNay)} (đến hôm nay): <b>${otcFmt(S.giaTri(k, mNay))}</b></div>` : ''}
       ${mDu ? `<div class="d">${otcTenThang(mDu)}: <b>${otcFmt(S.giaTri(k, mDu))}</b> ${ss}</div>` : ''}
       ${(()=>{ const ms = OTC_THANG.filter(m=>S.nguoi[k][m] != null); if(ms.length < 2) return '';
@@ -4527,13 +4744,16 @@ function renderOtChart(){
     + `<span class="phu">Cột: ${OTC_MODE === 'bq' ? 'giờ tăng ca bình quân mỗi người / tháng' : 'tổng giờ tăng ca / tháng'} · <span class="otc-lg-ng">◯ - -</span> số người cuối tháng (trục phải)</span>`;
 
   // ---- Vẽ SVG ----
-  const W = Math.max(560, wrap.clientWidth || 900), H = 300;
+  // 12 tháng mà khung hẹp: giữ mỗi tháng tối thiểu 80px, khung tự cuộn ngang (3 tháng thì co theo khung như cũ)
+  const rong = wrap.clientWidth || 900, toiThieu = OTC_THANG.length * 80;
+  const W = Math.max(560, rong, toiThieu), H = 300;
   const L = 52, R = 46, T = 18, B = 44;
   const pw = W - L - R, ph = H - T - B;
   const maxV = Math.max(0, ...khos.flatMap(k=>OTC_THANG.map(m=>S.giaTri(k, m))));
   const top = otcTronTren(maxV * 1.12);
   const yOf = v => T + ph - (v / top) * ph;
   const band = pw / OTC_THANG.length;
+  const gon = band < 90;                                            // cột hẹp (12 tháng): số trên cột bỏ chữ "h", chữ nhỏ lại
   const KHE = 8;                                                    // chừa chỗ cho số trên đầu cột
   const bw = Math.max(10, Math.min(24, (band * 0.7 - 2 * KHE) / 3)); // cột tối đa 24px
   const gw = bw * 3 + 2 * KHE;
@@ -4541,7 +4761,7 @@ function renderOtChart(){
   const maxN = Math.max(1, ...khos.flatMap(k=>OTC_THANG.map(m=>S.nguoi[k][m] || 0)));
   const topN = Math.max(5, Math.ceil(maxN * 1.25 / 5) * 5);     // chia hết cho 5 vạch -> trục người là số nguyên
   const yN = v => T + ph - (v / topN) * ph;
-  let svg = `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" role="img" aria-label="Giờ tăng ca theo tháng của 3 kho, tháng 8 đến tháng 12 năm 2026">`;
+  let svg = `<svg viewBox="0 0 ${W} ${H}" width="${toiThieu > rong ? W : '100%'}" height="${H}" role="img" aria-label="Giờ tăng ca theo tháng của 3 kho, ${otcKy()}">`;
   // lưới + nhãn trục
   for(let i = 0; i <= SO_VACH; i++){
     const v = top * i / SO_VACH, y = yOf(v);
@@ -4563,7 +4783,7 @@ function renderOtChart(){
       }
       // Số giờ trên đầu mọi cột (kể cả 0h để thấy kho không tăng ca). Số làm tròn
       // cho gọn; số chính xác xem ở bảng chi tiết khi rê chuột / bảng số liệu.
-      svg += `<text x="${x + bw / 2}" y="${y - 6}" text-anchor="middle" class="otc-val${v ? '' : ' khong'}">${otcNhan(v)}</text>`;
+      svg += `<text x="${x + bw / 2}" y="${y - 6}" text-anchor="middle" class="otc-val${v ? '' : ' khong'}${gon ? ' gon' : ''}">${otcNhan(v, gon)}</text>`;
     });
   });
   // ---- Đường xu hướng SỐ NGƯỜI (trục phải): mỗi kho 1 đường nét đứt, số người ghi trong vòng tròn ----
@@ -4592,11 +4812,12 @@ function renderOtChart(){
         + `<div class="r tong"><span>Tổng 3 kho</span><b>${fmtHours(tongThang)}</b></div>`;
       tip.hidden = false;
       // Đặt cạnh tháng đang xem (bên phải, hết chỗ thì bên trái) để không che cột
-      const tyLe = wrap.clientWidth / W;
+      // (khung cuộn ngang: toạ độ tính theo cả bề rộng biểu đồ, không chỉ phần đang thấy)
+      const tyLe = (wrap.querySelector('svg').getBoundingClientRect().width || W) / W;
       const trai = Number(b.getAttribute('x')) * tyLe, phai = trai + Number(b.getAttribute('width')) * tyLe;
       const giua = (trai + phai) / 2, nuaCum = (gw / 2 + 10) * tyLe;
       let x = giua + nuaCum;
-      if(x + tip.offsetWidth > wrap.clientWidth - 4) x = giua - nuaCum - tip.offsetWidth;
+      if(x + tip.offsetWidth > Math.max(wrap.clientWidth, wrap.scrollWidth) - 4) x = giua - nuaCum - tip.offsetWidth;
       tip.style.left = Math.max(4, x) + 'px';
     };
     b.addEventListener('mouseenter', hien);
@@ -4606,6 +4827,7 @@ function renderOtChart(){
 
   const mT = OTC_THANG.find(m=>S.trangThai(m) === 'nay');
   if(mT) tgTom('tgTomOtc', `${otcTenThang(mT)} (đến hôm nay): ${fmtHours(khos.reduce((t, k)=>t + S.tong[k][mT], 0))} · ${khos.reduce((t, k)=>t + (S.nguoi[k][mT] || 0), 0)} người`);
+  else tgTom('tgTomOtc', `Năm ${OTC_NAM} (${otcKy()}): ${fmtHours(khos.reduce((t, k)=>t + OTC_THANG.reduce((a, m)=>a + S.tong[k][m], 0), 0))}`);
   $('otcNote').textContent = OTC_MODE === 'bq'
     ? 'Bình quân = tổng giờ tăng ca của kho ÷ số người của kho trong tháng đó. Tháng chưa tới để trống.'
     : 'Tính theo kho hiện tại của từng người. Tháng chưa tới để trống.';
@@ -4961,9 +5183,9 @@ function renderDashboard(){
   const ref = new Date(), tKey = todayKey();
   const s = khoStats(CUR_KHO, ref);
   ovTipXoa();
-  // Nhân sự — rê chuột vào con số: Nghỉ hôm nay · Chờ nghỉ việc · Thai sản (hiện tên người)
+  // Nhân sự — rê chuột vào dòng: Nghỉ hôm nay · Chờ nghỉ việc · Đã nghỉ việc · Hỗ trợ bộ phận khác · Thai sản (hiện tên người)
   $('dTotalCnv').textContent = s.total;
-  if($('dBienDongNs')) $('dBienDongNs').innerHTML = dongBienDongNs(CUR_KHO, ['cho','ts']);   // chờ nghỉ / đã nghỉ / hỗ trợ / thai sản
+  if($('dBienDongNs')) $('dBienDongNs').innerHTML = dongBienDongNs(CUR_KHO, ['cho','da','ht','ts']);   // chờ nghỉ / đã nghỉ / hỗ trợ / thai sản
   $('dWorkingToday').textContent = s.working;
   $('dOffToday').textContent = s.nghi;
   ovTipGan($('dOffToday'), 'Nghỉ hôm nay', dsNghiHomNay(CUR_KHO));
@@ -8646,6 +8868,151 @@ async function qkSubmit(){
 }
 
 </script>
+<script>/* js/modules/tangca/ngay-le.js */
+// Ngày nghỉ trong năm cho Lịch tháng: Chủ nhật + ngày lễ theo Bộ luật Lao động 2019 (Điều 112)
+//   Tết Dương lịch 1/1 · Tết Nguyên đán 5 ngày (mặc định: ngày cuối năm âm + mùng 1 – 4)
+//   Giỗ Tổ Hùng Vương 10/3 âm · 30/4 · 1/5 · Quốc khánh 2/9 + 1 ngày liền kề (mặc định 1/9, trùng Chủ nhật thì 3/9)
+//   Lễ trùng Chủ nhật -> nghỉ bù vào ngày làm việc kế tiếp (Điều 111)
+// Ngày Tết / Quốc khánh cụ thể do Chính phủ / công ty chốt từng năm -> quản lý sửa được:
+//   HR.ngayLe = { 'YYYY-MM-DD': 'Tên' (thêm / đổi tên) | '' (bỏ ngày mặc định) }
+// =====================================================================
+
+// Đổi âm lịch -> dương lịch (thuật toán Hồ Ngọc Đức, múi giờ +7)
+const amSangDuong = (()=>{
+  const INT = Math.floor, PI = Math.PI, TZ = 7;
+  const jdTuNgay = (dd, mm, yy)=>{
+    const a = INT((14 - mm) / 12), y = yy + 4800 - a, m = mm + 12 * a - 3;
+    let j = dd + INT((153 * m + 2) / 5) + 365 * y + INT(y / 4) - INT(y / 100) + INT(y / 400) - 32045;
+    if(j < 2299161) j = dd + INT((153 * m + 2) / 5) + 365 * y + INT(y / 4) - 32083;
+    return j;
+  };
+  const ngayTuJd = j=>{
+    let a, b, c;
+    if(j > 2299160){ a = j + 32044; b = INT((4 * a + 3) / 146097); c = a - INT(b * 146097 / 4); }
+    else { b = 0; c = j + 32082; }
+    const d = INT((4 * c + 3) / 1461), e = c - INT(1461 * d / 4), m = INT((5 * e + 2) / 153);
+    return [e - INT((153 * m + 2) / 5) + 1, m + 3 - 12 * INT(m / 10), b * 100 + d - 4800 + INT(m / 10)];
+  };
+  const soc = k=>{                                           // ngày Sóc (trăng mới) thứ k
+    const T = k / 1236.85, T2 = T * T, T3 = T2 * T, dr = PI / 180;
+    let J = 2415020.75933 + 29.53058868 * k + 0.0001178 * T2 - 0.000000155 * T3;
+    J += 0.00033 * Math.sin((166.56 + 132.87 * T - 0.009173 * T2) * dr);
+    const M = 359.2242 + 29.10535608 * k - 0.0000333 * T2 - 0.00000347 * T3;
+    const Mp = 306.0253 + 385.81691806 * k + 0.0107306 * T2 + 0.00001236 * T3;
+    const F = 21.2964 + 390.67050646 * k - 0.0016528 * T2 - 0.00000239 * T3;
+    let C = (0.1734 - 0.000393 * T) * Math.sin(M * dr) + 0.0021 * Math.sin(2 * dr * M);
+    C += -0.4068 * Math.sin(Mp * dr) + 0.0161 * Math.sin(dr * 2 * Mp) - 0.0004 * Math.sin(dr * 3 * Mp);
+    C += 0.0104 * Math.sin(dr * 2 * F) - 0.0051 * Math.sin(dr * (M + Mp)) - 0.0074 * Math.sin(dr * (M - Mp));
+    C += 0.0004 * Math.sin(dr * (2 * F + M)) - 0.0004 * Math.sin(dr * (2 * F - M)) - 0.0006 * Math.sin(dr * (2 * F + Mp));
+    C += 0.0010 * Math.sin(dr * (2 * F - Mp)) + 0.0005 * Math.sin(dr * (2 * Mp + M));
+    const dt = T < -11 ? 0.001 + 0.000839 * T + 0.0002261 * T2 - 0.00000845 * T3 - 0.000000081 * T * T3
+                       : -0.000278 + 0.000265 * T + 0.000262 * T2;
+    return INT(J + C - dt + 0.5 + TZ / 24);
+  };
+  const kinhDoMatTroi = jd=>{                                // 0..11 (mỗi 30°)
+    const T = (jd - 2451545.5 - TZ / 24) / 36525, T2 = T * T, dr = PI / 180;
+    const M = 357.52910 + 35999.05030 * T - 0.0001559 * T2 - 0.00000048 * T * T2;
+    const L0 = 280.46645 + 36000.76983 * T + 0.0003032 * T2;
+    const DL = (1.914600 - 0.004817 * T - 0.000014 * T2) * Math.sin(dr * M)
+             + (0.019993 - 0.000101 * T) * Math.sin(dr * 2 * M) + 0.000290 * Math.sin(dr * 3 * M);
+    let L = (L0 + DL) * dr; L -= PI * 2 * INT(L / (PI * 2));
+    return INT(L / PI * 6);
+  };
+  const thang11 = yy=>{
+    const k = INT((jdTuNgay(31, 12, yy) - 2415021) / 29.530588853);
+    const nm = soc(k);
+    return kinhDoMatTroi(nm) >= 9 ? soc(k - 1) : nm;
+  };
+  const viTriNhuan = a11=>{
+    const k = INT((a11 - 2415021.076998695) / 29.530588853 + 0.5);
+    let truoc, i = 1, arc = kinhDoMatTroi(soc(k + i));
+    do { truoc = arc; i++; arc = kinhDoMatTroi(soc(k + i)); } while(arc !== truoc && i < 14);
+    return i - 1;
+  };
+  return (dd, mm, yy)=>{
+    let a11, b11;
+    if(mm < 11){ a11 = thang11(yy - 1); b11 = thang11(yy); } else { a11 = thang11(yy); b11 = thang11(yy + 1); }
+    const k = INT(0.5 + (a11 - 2415021.076998695) / 29.530588853);
+    let off = mm - 11; if(off < 0) off += 12;
+    if(b11 - a11 > 365 && off >= viTriNhuan(a11)) off += 1;    // năm có tháng nhuận (ngày lễ không rơi vào tháng nhuận)
+    const [d, m, y] = ngayTuJd(soc(k + off) + dd - 1);
+    return new Date(y, m - 1, d);
+  };
+})();
+
+// Ngày lễ mặc định của 1 năm: { 'YYYY-MM-DD': 'Tên' }
+const LE_MD_CACHE = {};
+function ngayLeMacDinh(y){
+  if(LE_MD_CACHE[y]) return LE_MD_CACHE[y];
+  const ds = {}, them = (d, ten)=>{ ds[toKey(d)] = ten; };
+  them(new Date(y, 0, 1), 'Tết Dương lịch');
+  const tet = amSangDuong(1, 1, y);
+  for(let i = -1; i <= 3; i++) them(addDays(tet, i), 'Tết Nguyên đán');
+  them(amSangDuong(10, 3, y), 'Giỗ Tổ Hùng Vương');
+  them(new Date(y, 3, 30), 'Giải phóng 30/4');
+  them(new Date(y, 4, 1), 'Quốc tế Lao động');
+  const kq = new Date(y, 8, 2);
+  them(kq, 'Quốc khánh');
+  them(new Date(y, 8, 1).getDay() === 0 ? new Date(y, 8, 3) : new Date(y, 8, 1), 'Quốc khánh');
+  return (LE_MD_CACHE[y] = ds);
+}
+// Ngày lễ đang dùng của 1 năm (mặc định + phần quản lý sửa) + nghỉ bù khi lễ trùng Chủ nhật
+function ngayLeCuaNam(y){
+  const ds = { ...ngayLeMacDinh(y) }, sua = HR.ngayLe || {};
+  Object.keys(sua).forEach(k=>{ if(k.slice(0, 4) !== String(y)) return; if(sua[k]) ds[k] = sua[k]; else delete ds[k]; });
+  Object.keys(ds).sort().forEach(k=>{
+    const d = fromKey(k); if(d.getDay() !== 0) return;
+    let b = addDays(d, 1);
+    while(b.getDay() === 0 || ds[toKey(b)]) b = addDays(b, 1);
+    if(b.getFullYear() === y) ds[toKey(b)] = 'Nghỉ bù ' + ds[k];
+  });
+  return ds;
+}
+// Ngày nghỉ của 1 ngày: { loai:'le'|'cn', ten } hoặc null
+function ngayNghi(k){
+  const le = ngayLeCuaNam(Number(k.slice(0, 4)))[k];
+  if(le) return { loai:'le', ten:le.startsWith('Nghỉ bù') ? le : 'Nghỉ ' + le };
+  return fromKey(k).getDay() === 0 ? { loai:'cn', ten:'Nghỉ Chủ nhật' } : null;
+}
+
+// Quản lý sửa ngày lễ của năm đang xem
+function ngayLeModal(y){
+  const m = openModal(`Ngày nghỉ lễ năm ${y}`, `<div id="mLeBox"></div>`);
+  const ve = ()=>{
+    const md = ngayLeMacDinh(y), sua = HR.ngayLe || {};
+    const tat = new Set([...Object.keys(md), ...Object.keys(sua).filter(k=>k.slice(0, 4) === String(y))]);
+    const ds = [...tat].sort().map(k=>({ k, ten:k in sua ? sua[k] : md[k], md:k in md, bo:k in sua && !sua[k] }));
+    const thu = k => ['CN','T2','T3','T4','T5','T6','T7'][fromKey(k).getDay()];
+    $('mLeBox').innerHTML = `
+      <div class="note">Mặc định theo Bộ luật Lao động: Tết Dương lịch, Tết Nguyên đán (5 ngày), Giỗ Tổ, 30/4, 1/5, Quốc khánh (2 ngày).
+        Ngày Tết / Quốc khánh cụ thể mỗi năm có thể khác — sửa lại cho đúng lịch công ty. Lễ trùng Chủ nhật tự có ngày nghỉ bù.</div>
+      <div class="le-ds">${ds.map(x=>`<div class="le-r${x.bo ? ' bo' : ''}">
+          <span class="d">${thu(x.k)} ${fmtVN(fromKey(x.k))}</span>
+          <span class="t">${x.bo ? `<s>${esc(md[x.k])}</s> <i>(không nghỉ)</i>` : esc(x.ten)}${x.md ? '' : ' <i>(thêm)</i>'}</span>
+          ${x.bo ? `<button class="ghost sm" data-le-lai="${x.k}">Nghỉ lại</button>` : `<button class="danger sm" data-le-bo="${x.k}" title="${x.md ? 'Không nghỉ ngày này' : 'Xoá ngày này'}">✕</button>`}
+        </div>`).join('')}</div>
+      <label class="field-label">Thêm ngày nghỉ</label>
+      <div class="row2"><input type="date" id="mLeNgay" min="${y}-01-01" max="${y}-12-31"><input type="text" id="mLeTen" placeholder="VD: Tết Nguyên đán, Nghỉ bù..."></div>
+      <div class="btnrow" style="margin-top:12px;"><button id="mLeThem">+ Thêm</button></div>`;
+    const luu = async (k, v)=>{
+      HR.ngayLe = { ...(HR.ngayLe || {}) };
+      if(v === undefined) delete HR.ngayLe[k]; else HR.ngayLe[k] = v;
+      if(!Object.keys(HR.ngayLe).length) delete HR.ngayLe;
+      await saveHr(); ve(); renderCalendar();
+    };
+    m.body.querySelectorAll('[data-le-bo]').forEach(b=>b.onclick=()=>{ const k = b.dataset.leBo; luu(k, k in md ? '' : undefined); });
+    m.body.querySelectorAll('[data-le-lai]').forEach(b=>b.onclick=()=>luu(b.dataset.leLai, undefined));
+    $('mLeThem').onclick = ()=>{
+      const k = $('mLeNgay').value, ten = $('mLeTen').value.trim();
+      if(!k || k.slice(0, 4) !== String(y)){ toast(`⚠ Chọn ngày trong năm ${y}`); return; }
+      if(!ten){ toast('⚠ Nhập tên ngày nghỉ'); return; }
+      luu(k, md[k] === ten ? undefined : ten);
+    };
+  };
+  ve();
+}
+
+</script>
 <script>/* js/modules/tangca/calendar.js */
 // Tăng ca: lịch tháng
 // (tách từ index.html dòng 7492-7604)
@@ -8687,10 +9054,13 @@ function renderCalendar(){
       tags.push(`<span class="cal-tag gc-tag" style="background:#6d28d9" title="${code}"><span class="gc-full">${code}</span><span class="gc-short">OS</span></span>`);
     });
     if(ev.length) tags.push(`<span class="cal-tag" style="background:#2a5f8f">●${ev.length} sự kiện</span>`);
-    html += `<div class="cal-cell ${d.getMonth()!==mo?'out':''} ${k===today?'today':''} ${has?'has':''}" ${has?`data-day="${k}"`:''}>
-      <div class="dnum">${d.getDate()}</div><div class="cal-tags">${tags.join('')}</div></div>`;
+    // ngày nghỉ (Chủ nhật / lễ): tô nền + ghi tên ngày nghỉ ở đáy ô
+    const ng = ngayNghi(k);
+    html += `<div class="cal-cell ${d.getMonth()!==mo?'out':''} ${k===today?'today':''} ${has?'has':''}${ng ? ' nghi-' + ng.loai : ''}" ${has?`data-day="${k}"`:''}${ng ? ` title="${esc(ng.ten)}"` : ''}>
+      <div class="dnum">${d.getDate()}</div><div class="cal-tags">${tags.join('')}</div>${ng ? `<div class="cal-nghi">${esc(ng.ten)}</div>` : ''}</div>`;
   }
   $('calGrid').innerHTML = html;
+  if($('btnNgayLe')){ $('btnNgayLe').hidden = !laChuTrang(); $('btnNgayLe').onclick = ()=>ngayLeModal(y); }
   $('calGrid').querySelectorAll('[data-day]').forEach(el=>el.onclick=()=>dayDetailModal(el.dataset.day));
 }
 function dayDetailModal(k){
@@ -9110,6 +9480,15 @@ function odTronTren(v){
   return 10 * mu;
 }
 const odMauKho = k => (typeof KHO_MAU !== 'undefined' && KHO_MAU[k]) || OD_MAU;
+const OD_MAU_TUAN = '#7c5cd6';                              // tầng "tuần này" trong cột tháng
+// Xem Tháng hiện tại: tuần này (T2 – T7) -> { tu, den, ten, vi:[chỉ số cột ngày thuộc tuần] }; tháng khác: null
+function odTuanNay(S){
+  if(OD.ky !== 'thang') return null;
+  const mon = getMonday(new Date()), sat = addDays(mon, 5), tu = toKey(mon), den = toKey(sat);
+  const vi = S.cot.map((c, i)=>c.tu >= tu && c.tu <= den ? i : -1).filter(i=>i >= 0);
+  if(!vi.length) return null;
+  return { tu, den, vi, ten:`${pad(mon.getDate())}/${pad(mon.getMonth() + 1)} – ${pad(sat.getDate())}/${pad(sat.getMonth() + 1)}` };
+}
 
 // ---------------------------------------------------------------------
 // VẼ
@@ -9144,11 +9523,17 @@ function renderOtDash(){
     ${kyNay ? '' : `<button class="od-nay" data-od-doi="0">Hôm nay</button>`}
   </div>
   <div class="od-kpi">
-    <div class="od-the">
+    <div class="od-the ot"><div class="od-the-l">
       <div class="k">Tổng giờ tăng ca<small>${esc(odTen(OD.ky, OD.moc))}</small></div>
       <div class="v"><b>${fmtHours(S.tong)}</b><span>${coOT.length} người tăng ca</span></div>
       <div class="d">${ss}</div>${(()=>{ const dk = S.nguoi.reduce((s, p)=>s + p.dauKy, 0);
         return dk ? `<div class="d">Chưa gồm <b>${fmtHours(dk)}</b> tăng ca đầu kỳ (trước khi dùng app) — có tính khi so hạn mức năm</div>` : ''; })()}${theoKho}
+    </div>
+      <!-- lối tắt: giống hệt tab con "✍ Đăng ký nhanh" và nút "OT hàng loạt" -->
+      <div class="od-dk">
+        <button data-od-dk="nhanh" title="Mở tab Đăng ký nhanh"><i>✍</i>Đăng ký<br>nhanh</button>
+        <button data-od-dk="loat" title="Giống nút OT hàng loạt"><i>⏱</i>Đăng ký<br>hàng loạt</button>
+      </div>
     </div>
     <div class="od-the hm">
       <div class="k">Hạn mức ${hm.ten}<small>${hm.lim}h / người · cảnh báo từ ${hm.y}h</small></div>
@@ -9162,7 +9547,9 @@ function renderOtDash(){
     <div class="od-card">
       <div class="od-h"><b>Giờ tăng ca theo người</b>
         <span class="od-lg"><span><i style="background:${OD_MAU}"></i>bình thường</span><span><i style="background:var(--od-warn)"></i>sắp hết</span>
-          <span><i style="background:var(--od-bad)"></i>hết hạn mức</span>${S.nguoi.some(p=>p.dauKy) ? '<span><i style="background:#c9d4e0"></i>đầu kỳ</span>' : ''}</span></div>
+          <span><i style="background:var(--od-bad)"></i>hết hạn mức</span>${S.nguoi.some(p=>p.dauKy) ? '<span><i style="background:#c9d4e0"></i>đầu kỳ</span>' : ''}${(()=>{ const t = odTuanNay(S);
+            return t ? `<span title="Phần dưới đáy mỗi cột = giờ tăng ca tuần này (T2 – T7); số trong đoạn tím = giờ tuần, so hạn mức tuần ${LIMITS.week}h"><i style="background:${OD_MAU_TUAN}"></i>tuần này ${t.ten}</span>` : ''; })()}
+          <span class="vach"><i class="bad"></i>hạn mức ${hm.lim}h</span><span class="vach"><i class="warn"></i>cảnh báo ${hm.y}h</span></span></div>
       <div class="od-chart" id="odChart"></div>
     </div>
     <div class="od-card">
@@ -9211,7 +9598,7 @@ function odVeCot(S, khos){
   if(ba) ds = khos.flatMap(k=>ds.filter(p=>p.e.warehouseId === k));      // giữ thứ tự nhiều giờ nhất trong từng kho
   // mỗi cột rộng tối thiểu 20px để tên không chồng nhau; không đủ chỗ thì khung cuộn ngang
   const n = ds.length, rong = box.clientWidth || 800, W = Math.max(480, rong, 116 + n * 20);
-  const L = 46, R = 12, TOP = 18, B = ba ? 112 : 92, H = 250 + B;
+  const L = 46, R = 48, TOP = 18, B = ba ? 112 : 92, H = 250 + B;      // lề phải R: nhãn số giờ của vạch hạn mức / cảnh báo
   const pw = W - L - R, ph = H - TOP - B;
   const top = odTronTren(Math.max(hm.lim, ...ds.map(p=>p.soHM)));
   const yOf = v => TOP + ph - v / top * ph;
@@ -9223,23 +9610,36 @@ function odVeCot(S, khos){
     const v = top * k / vach, y = yOf(v);
     svg += `<line x1="${L}" x2="${W - R}" y1="${y}" y2="${y}" class="${k ? 'od-grid' : 'od-base'}"/><text x="${L - 7}" y="${y + 4}" text-anchor="end" class="od-ax">${odSo(v)}h</text>`;
   }
-  // vạch hạn mức + mốc cảnh báo (ghi chữ ở lề phải)
-  [[hm.lim, 'bad', `hạn mức ${hm.lim}h`], [hm.y, 'warn', `cảnh báo ${hm.y}h`]].forEach(([v, cls, chu])=>{
-    const y = yOf(v);
-    svg += `<line x1="${L}" x2="${W - R}" y1="${y}" y2="${y}" class="od-hm-line ${cls}"/><text x="${L + 6}" y="${y - 4}" class="od-hm-txt ${cls}">${chu}</text>`;
+  // vạch hạn mức + mốc cảnh báo: nhãn số giờ nằm ở lề phải, ngoài vùng cột -> không che số trên đầu cột
+  // (2 nhãn quá gần nhau thì đẩy nhãn cảnh báo xuống cho khỏi chồng)
+  const yHm = yOf(hm.lim), yCb = Math.max(yOf(hm.y), yHm + 17);
+  [[yOf(hm.lim), yHm, 'bad', hm.lim, 'Hạn mức'], [yOf(hm.y), yCb, 'warn', hm.y, 'Mốc cảnh báo']].forEach(([y, yn, cls, v, ten])=>{
+    svg += `<line x1="${L}" x2="${W - R}" y1="${y}" y2="${y}" class="od-hm-line ${cls}"/>
+      <g class="od-hm-tag ${cls}"><title>${ten} ${hm.ten}: ${v}h</title><rect x="${W - R + 4}" y="${yn - 8}" width="${R - 6}" height="16" rx="8"/>
+      <text x="${W - R + 4 + (R - 6) / 2}" y="${yn + 3.5}" text-anchor="middle">${v}h</text></g>`;
   });
+  // Tháng hiện tại: cột chia 2 tầng — dưới = giờ tuần này (tím), trên = giờ tháng trước tuần này (màu theo hạn mức tháng)
+  const tuan = odTuanNay(S), homNay = new Date();
   ds.forEach((p, i)=>{
     const cx = L + band * i + band / 2, x = cx - bw / 2;
+    const gTuan = tuan ? tuan.vi.reduce((s, k)=>s + p.o[k], 0) : 0;           // phần tuần này nằm trong tháng đang xem
+    const duTuan = tuan ? sumOT(HR.ot, p.e.id, inCurrentWeek, homNay) : 0;  // cả tuần T2 – T7 (để so hạn mức tuần)
+    p.gTuan = gTuan; p.duTuan = duTuan;
     const phan = [];
     if(p.dauKy > 0) phan.push({ v:p.dauKy, mau:'#c9d4e0' });               // giờ đầu kỳ (trước khi dùng app)
-    if(p.tong > 0) phan.push({ v:p.tong, mau:mauCot(p) });
+    // đoạn tuần (tím) nằm ở đáy cột, bắt đầu từ 0h -> đọc được giờ tuần thẳng theo trục bên trái
+    if(gTuan > 0) phan.push({ v:gTuan, mau:OD_MAU_TUAN, tuan:true });
+    if(p.tong - gTuan > 0) phan.push({ v:p.tong - gTuan, mau:mauCot(p) });
     let tich = 0;
     phan.forEach((s, j)=>{
       const yb = yOf(tich) - (j ? 2 : 0); tich += s.v;
       const y = yOf(tich), hh = yb - y; if(hh <= 0) return;
       const r = j === phan.length - 1 ? Math.min(4, hh, bw / 2) : 0;
-      svg += r ? `<path d="M${x},${yb} V${y + r} Q${x},${y} ${x + r},${y} H${x + bw - r} Q${x + bw},${y} ${x + bw},${y + r} V${yb} Z" fill="${s.mau}"/>`
-               : `<rect x="${x}" y="${y}" width="${bw}" height="${hh}" fill="${s.mau}"/>`;
+      const vuot = s.tuan ? (duTuan >= LIMITS.week ? ' od-tuan bad' : duTuan >= TH.week.y ? ' od-tuan warn' : ' od-tuan') : '';
+      svg += r ? `<path d="M${x},${yb} V${y + r} Q${x},${y} ${x + r},${y} H${x + bw - r} Q${x + bw},${y} ${x + bw},${y + r} V${yb} Z" fill="${s.mau}" class="${vuot.trim()}"/>`
+               : `<rect x="${x}" y="${y}" width="${bw}" height="${hh}" fill="${s.mau}" class="${vuot.trim()}"/>`;
+      // số giờ tuần ghi trong đoạn tím (đủ cao mới ghi)
+      if(s.tuan && hh >= 14 && bw >= 16) svg += `<text x="${cx}" y="${(y + yb) / 2 + 3.5}" text-anchor="middle" class="od-val-tuan">${odSo(duTuan)}</text>`;
     });
     if(band >= 30) svg += `<text x="${cx}" y="${yOf(p.soHM) - 5}" text-anchor="middle" class="od-val">${odSo(p.soHM)}</text>`;
     // tên người dưới chân cột, nghiêng 45° (2 chữ cuối của tên; tên đủ ở khung rê chuột)
@@ -9247,6 +9647,7 @@ function odVeCot(S, khos){
     svg += `<text x="${cx}" y="${ty}" transform="rotate(-45 ${cx} ${ty})" text-anchor="end" class="od-ten">${esc(odTenNgan(p.e.name))}</text>`;
     const chiTiet = [{ t:`${fmtHours(p.tong)} tăng ca · ${odTen(OD.ky, OD.moc)}`, s:`${Math.round(p.soHM / hm.lim * 100)}% hạn mức ${hm.ten} ${hm.lim}h` }];
     if(p.dauKy) chiTiet.push({ t:`+ ${fmtHours(p.dauKy)} đầu kỳ`, s:`tổng so hạn mức: ${fmtHours(p.soHM)}` });
+    if(tuan) chiTiet.push({ t:`Tuần này ${tuan.ten}: ${fmtHours(p.duTuan)}`, s:`hạn mức tuần ${LIMITS.week}h` });
     chiTiet.push({ t:[p.e.shift, p.e.position].filter(Boolean).join(' — ') || '—', s:(ba ? khoName(p.e.warehouseId) + ' · ' : '') + 'bấm để xem lịch sử OT' });
     // khung chi tiết khi rê chuột: chỉ khi xem Cả 3 kho (xem từng kho thì không hiện) — bấm cột vẫn mở lịch sử OT
     svg += `<rect x="${L + band * i}" y="${TOP}" width="${band}" height="${ph + B - 10}" class="od-hit" data-od-ng="${esc(p.e.id)}"${ba ? ovTipAttr(p.e.name, chiTiet, true) : ''}/>`;
@@ -9306,6 +9707,8 @@ function odBanDoNhiet(S, hm, khos){
 (function(){
   const box = $('odBox'); if(!box) return;
   box.addEventListener('click', e=>{
+    const dk = e.target.closest('[data-od-dk]');
+    if(dk){ if(dk.dataset.odDk === 'nhanh') switchSub('dk'); else if(typeof bulkOtModal === 'function') bulkOtModal(); return; }
     const p = e.target.closest('[data-od-pham]'); if(p){ OD.pham = p.dataset.odPham; renderOtDash(); return; }
     const k = e.target.closest('[data-od-ky]'); if(k){ OD.ky = k.dataset.odKy; renderOtDash(); return; }
     const d = e.target.closest('[data-od-doi]');
@@ -9806,13 +10209,15 @@ $('btnExportPdf').onclick = ()=>exportImage('pdf');
 // (tách từ index.html dòng 9271-9633)
 // ===== Kho tài liệu dùng chung: tab WI (kho thành phẩm) và tab Training (kho vải / phụ liệu) =====
 // =====================================================================
-// 19. KHO TÀI LIỆU (ảnh + file PDF), xuất ra PDF
+// 19. KHO TÀI LIỆU (ảnh + mọi loại file + link), xuất ảnh ra PDF
 // ---------------------------------------------------------------------
 // Một bộ khung dùng cho nhiều tab. Mỗi tab tự khai báo:
 //   prefix()   : tiền tố khoá lưu trên máy chủ, ví dụ 'appwh-wi' hoặc 'appwh-training-vai'
 //   nhomMacDinh: các mục có sẵn khi chưa ai tạo mục nào
 // Cách lưu: mỗi mục một khoá riêng (<prefix>-<mã mục>), cộng một khoá mục lục nhẹ
 // (<prefix>-index) chỉ chứa danh sách mục và số file. Vào mục nào mới tải mục đó.
+// Mỗi phần tử trong mục: loai 'anh' (ảnh đã nén) · 'file' (file gốc: PDF, Excel, Word, video…)
+//   · 'link' (video / file lớn để trên OneDrive, SharePoint… — chỉ lưu đường link)
 // =====================================================================
 (function(){
 'use strict';
@@ -9825,6 +10230,30 @@ const BIEU_TUONG  = ['📄','🗃','📦','📥','🚚','🗺','📋','🧑‍�
 
 const kb = b => b < 1024*1024 ? (b/1024).toFixed(0) + ' KB' : (b/1024/1024).toFixed(1) + ' MB';
 const maMoi = () => 'm' + Date.now().toString(36) + Math.random().toString(36).slice(2,5);
+
+// ---- Loại file / link ----
+const loaiCua = a => (a.loai === 'file' || a.loai === 'link') ? a.loai : 'anh';   // bản cũ không ghi loai = ảnh
+const duoi = ten => (String(ten || '').split('.').pop() || '').toLowerCase();
+function bieuTuong(ten){
+  const d = duoi(ten);
+  if(d === 'pdf') return '📕';
+  if(/^(xlsx?|xlsm|xlsb|csv|ods)$/.test(d)) return '📊';
+  if(/^(docx?|rtf|odt|txt)$/.test(d)) return '📝';
+  if(/^(pptx?|ppsx?|odp)$/.test(d)) return '📽';
+  if(/^(mp4|mov|avi|mkv|wmv|webm|m4v|3gp)$/.test(d)) return '🎬';
+  if(/^(mp3|wav|m4a|aac|ogg|wma)$/.test(d)) return '🎵';
+  if(/^(zip|rar|7z|gz|tar)$/.test(d)) return '🗜';
+  if(/^(jpe?g|png|gif|bmp|webp|heic|heif|tiff?|svg)$/.test(d)) return '🖼';
+  return '📄';
+}
+// Máy không báo loại file -> đoán theo đuôi (để trình duyệt mở xem được)
+const MIME_DUOI = { pdf:'application/pdf', txt:'text/plain', mp4:'video/mp4', webm:'video/webm', mp3:'audio/mpeg', wav:'audio/wav' };
+// File trình duyệt mở xem được ngay; còn lại (Excel, Word, PowerPoint…) thì tải về rồi mở
+const xemDuoc = mime => /^(application\/pdf|text\/plain|video\/(mp4|webm|ogg)|audio\/|image\/(png|jpe?g|gif|webp|bmp|svg\+xml))/.test(mime || '');
+// Chỉ nhận link http(s) — chặn link "javascript:…"
+const linkHopLe = u => /^https?:\/\/\S+$/i.test(String(u || ''));
+function tenMien(u){ try{ return new URL(u).hostname.replace(/^www\./, ''); }catch(e){ return 'link'; } }
+function moLink(u){ if(linkHopLe(u)) window.open(u, '_blank', 'noopener'); }
 
 // ---------------------------------------------------------------------
 // Đọc / ghi
@@ -9875,22 +10304,21 @@ async function luuTep(p, id, tep){
 }
 
 // ---------------------------------------------------------------------
-// Đọc file người dùng chọn. Ảnh thì thu nhỏ, PDF thì giữ nguyên.
+// Đọc file người dùng chọn. Ảnh thì thu nhỏ, file khác (PDF, Excel, Word, video…) giữ nguyên.
 // ---------------------------------------------------------------------
 function docFile(file){
   return new Promise((res, rej)=>{
-    if(file.size > TEP_TOI_DA) return rej(new Error(`"${file.name}" nặng ${kb(file.size)} — vượt giới hạn 8 MB`));
+    if(file.size > TEP_TOI_DA) return rej(new Error(`"${file.name}" nặng ${kb(file.size)} — vượt giới hạn 8 MB. File lớn / video: để trên OneDrive hoặc SharePoint rồi bấm 🔗 Thêm link`));
     const laAnh = /^image\//.test(file.type);
     const fr = new FileReader();
     fr.onerror = ()=>rej(new Error('Không đọc được ' + file.name));
+    // Giữ nguyên file gốc, chỉ để mở / tải về
+    const giuNguyen = ()=>res({ id:maMoi(), ten:file.name, loai:'file',
+      mime:file.type || MIME_DUOI[duoi(file.name)] || 'application/octet-stream', data:fr.result, w:0, h:0 });
     fr.onload = ()=>{
-      if(!laAnh){
-        // PDF hoặc file khác: giữ nguyên, chỉ để mở / tải về
-        return res({ id:maMoi(), ten:file.name, loai:'file',
-                     mime:file.type || 'application/octet-stream', data:fr.result, w:0, h:0 });
-      }
+      if(!laAnh) return giuNguyen();
       const im = new Image();
-      im.onerror = ()=>rej(new Error(file.name + ' không phải ảnh hợp lệ'));
+      im.onerror = giuNguyen;                 // ảnh trình duyệt không đọc được (HEIC, TIFF…) -> giữ nguyên file
       im.onload = ()=>{
         let w = im.naturalWidth, h = im.naturalHeight;
         const r = Math.min(1, RONG_TOI_DA / Math.max(w, h));
@@ -9998,34 +10426,40 @@ function taoBoSuuTap(cf){
   function veMuc(idx){
     const id = MUC_DANG_MO;
     const tong = TEP.reduce((t, a)=>t + (a.data ? a.data.length : 0), 0);
-    const soAnh = TEP.filter(x=>x.loai !== 'file').length;
+    const soAnh = TEP.filter(x=>loaiCua(x) === 'anh').length, soLink = TEP.filter(x=>loaiCua(x) === 'link').length;
     $c().innerHTML = `
       <button class="ghost sm" data-ve>‹ Tất cả mục</button>
       <button class="secondary sm" data-them>＋ Thêm file</button>
+      <button class="secondary sm" data-link title="Video / file lớn để trên OneDrive, SharePoint… — chỉ lưu link">🔗 Thêm link</button>
       <button class="sm" data-pdf>⬇ Xuất PDF</button>`;
     $b().innerHTML = `
-      <input type="file" data-inp accept="image/*,application/pdf" multiple hidden>
-      <div class="note">${TEP.length} file (${soAnh} ảnh) · ${kb(tong)}. Thứ tự dưới đây cũng là thứ tự trang trong file PDF.
+      <input type="file" data-inp multiple hidden>
+      <div class="note">${TEP.length} file (${soAnh} ảnh${soLink ? `, ${soLink} link` : ''}) · ${kb(tong)}. Nhận mọi loại file (ảnh, PDF, Excel, Word, PowerPoint, video…), tối đa 8 MB/file.
+        Thứ tự dưới đây cũng là thứ tự trang khi xuất PDF (chỉ gồm ảnh).
         ${tong > NGUONG_NHAC ? '<br><b>⚠ Mục này đã nặng hơn 4 MB — nên tách bớt sang mục khác.</b>' : ''}</div>
-      ${TEP.length ? `<div class="wi-imgs">${TEP.map((a, i)=>`
-        <figure class="wi-img" data-i="${i}">
-          ${a.loai === 'file'
-            ? `<div class="wi-file"><div class="ic">📄</div><div class="ex">${esc((String(a.ten).split('.').pop() || 'FILE').toUpperCase())}</div></div>`
+      ${TEP.length ? `<div class="wi-imgs">${TEP.map((a, i)=>{
+        const loai = loaiCua(a), xem = loai !== 'file' || xemDuoc(a.mime);
+        return `<figure class="wi-img" data-i="${i}">
+          ${loai === 'link'
+            ? `<a class="wi-file wi-link" href="${esc(linkHopLe(a.url) ? a.url : '#')}" target="_blank" rel="noopener noreferrer" title="${esc(a.url)}"><div class="ic">🔗</div><div class="ex">${esc(tenMien(a.url))}</div></a>`
+            : loai === 'file'
+            ? `<div class="wi-file"><div class="ic">${bieuTuong(a.ten)}</div><div class="ex">${esc(duoi(a.ten).toUpperCase() || 'FILE')}</div></div>`
             : `<img src="${a.data}" alt="${esc(a.ten)}" loading="lazy">`}
           <figcaption>${i+1}. ${esc(a.ten)}</figcaption>
           <div class="wi-act">
             <button data-lui="${i}" title="Lùi lên trước"${i === 0 ? ' disabled' : ''}>◀</button>
             <button data-tien="${i}" title="Đẩy xuống sau"${i === TEP.length-1 ? ' disabled' : ''}>▶</button>
-            <button data-xem="${i}" title="${a.loai === 'file' ? 'Mở file' : 'Xem to'}">${a.loai === 'file' ? '↗' : '🔍'}</button>
-            <button data-tai="${i}" title="Tải về">⬇</button>
+            ${xem ? `<button data-xem="${i}" title="${loai === 'anh' ? 'Xem to' : loai === 'link' ? 'Mở link' : 'Mở xem'}">${loai === 'anh' ? '🔍' : '↗'}</button>` : ''}
+            ${loai === 'link' ? '' : `<button data-tai="${i}" title="Tải về">⬇</button>`}
             <button data-xoa="${i}" class="x" title="Xoá">✕</button>
           </div>
-        </figure>`).join('')}</div>`
-        : '<p class="empty-msg">Chưa có file nào. Bấm <b>＋ Thêm file</b> để tải ảnh hoặc PDF lên.</p>'}`;
+        </figure>`; }).join('')}</div>`
+        : '<p class="empty-msg">Chưa có file nào. Bấm <b>＋ Thêm file</b> để tải ảnh, PDF, Excel, Word, video… lên (tối đa 8 MB/file), hoặc <b>🔗 Thêm link</b> cho video / file lớn.</p>'}`;
 
     const inp = $b().querySelector('[data-inp]');
     $c().querySelector('[data-ve]').onclick   = ()=>{ MUC_DANG_MO = null; SUA_MUC = false; veLuoi(idx); };
     $c().querySelector('[data-them]').onclick = ()=>{ inp.value = ''; inp.click(); };
+    $c().querySelector('[data-link]').onclick = ()=>hopLink(idx);
     $c().querySelector('[data-pdf]').onclick  = ()=>xuatPdf(idx, id);
     inp.onchange = e => themFile(idx, [...e.target.files]);
 
@@ -10033,8 +10467,9 @@ function taoBoSuuTap(cf){
     $b().querySelectorAll('[data-lui]').forEach(b=>b.onclick = ()=>{ const i = +b.dataset.lui; lam(()=>{ [TEP[i-1], TEP[i]] = [TEP[i], TEP[i-1]]; }); });
     $b().querySelectorAll('[data-tien]').forEach(b=>b.onclick = ()=>{ const i = +b.dataset.tien; lam(()=>{ [TEP[i+1], TEP[i]] = [TEP[i], TEP[i+1]]; }); });
     $b().querySelectorAll('[data-xem]').forEach(b=>b.onclick = ()=>{
-      const a = TEP[+b.dataset.xem];
-      if(a.loai === 'file'){
+      const a = TEP[+b.dataset.xem], loai = loaiCua(a);
+      if(loai === 'link') moLink(a.url);
+      else if(loai === 'file'){
         const u = URL.createObjectURL(base64Blob(a.data, a.mime));
         window.open(u, '_blank'); setTimeout(()=>URL.revokeObjectURL(u), 60000);
       } else openModal(a.ten, `<img src="${a.data}" style="width:100%; border-radius:8px;">`);
@@ -10072,6 +10507,28 @@ function taoBoSuuTap(cf){
       if(n){ n.className = 'note warn'; n.innerHTML = '⚠ ' + loi.map(esc).join('<br>⚠ '); }
     } else toast(`✓ Đã thêm ${files.length} file`);
   }
+  // Video / file lớn: để trên OneDrive, SharePoint… rồi dán link vào đây (không tốn dung lượng máy chủ)
+  function hopLink(idx){
+    const m = openModal('Thêm link', `
+      <label class="field-label">Link</label>
+      <input type="text" inputmode="url" data-url placeholder="https://… (OneDrive, SharePoint, YouTube…)" autocomplete="off">
+      <label class="field-label">Tên hiển thị <span style="font-weight:400">(không bắt buộc)</span></label>
+      <input type="text" data-ten placeholder="VD: Video hướng dẫn lái xe nâng" autocomplete="off">
+      <div class="note" style="margin-top:12px">File trên OneDrive / SharePoint: bấm <b>Chia sẻ → Sao chép liên kết</b> rồi dán vào ô Link.
+        Người xem cần có quyền mở link đó.</div>
+      <div class="btnrow" style="margin-top:16px"><button data-luu>Thêm link</button></div>`);
+    const oUrl = m.body.querySelector('[data-url]'), oTen = m.body.querySelector('[data-ten]');
+    oUrl.focus();
+    m.body.querySelector('[data-luu]').onclick = async ()=>{
+      let u = oUrl.value.trim();
+      if(u && !/^[a-z][a-z0-9+.-]*:/i.test(u)) u = 'https://' + u;        // dán thiếu https:// thì tự thêm
+      if(!linkHopLe(u)){ toast('⚠ Dán link bắt đầu bằng https://'); oUrl.focus(); return; }
+      TEP.push({ id:maMoi(), ten: oTen.value.trim() || tenMien(u), loai:'link', url:u });
+      m.close();
+      await luuTep(cf.prefix(), MUC_DANG_MO, TEP);
+      veMuc(idx); toast('✓ Đã thêm link');
+    };
+  }
 
   // ---------- Xuất PDF: mỗi ảnh 1 trang A4 ----------
   // jsPDF không có font tiếng Việt nên tiêu đề được VẼ RA ẢNH rồi ghép vào, dấu mới đúng.
@@ -10087,8 +10544,8 @@ function taoBoSuuTap(cf){
     return cv.toDataURL('image/jpeg', 0.85);
   }
   function xuatPdf(idx, id){
-    const anh = TEP.filter(x=>x.loai !== 'file' && x.w && x.h);
-    if(!anh.length){ toast('Mục này chưa có ảnh nào để xuất PDF — file PDF thì bấm ↗ để mở'); return; }
+    const anh = TEP.filter(x=>loaiCua(x) === 'anh' && x.w && x.h);
+    if(!anh.length){ toast('Mục này chưa có ảnh nào để xuất PDF — file / link thì bấm ↗ hoặc ⬇ để mở'); return; }
     if(!(window.jspdf && window.jspdf.jsPDF)){ toast('⚠ Chưa tải được thư viện PDF — kiểm tra mạng rồi tải lại trang'); return; }
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ unit:'mm', format:'a4', orientation:'p' });
@@ -10145,7 +10602,7 @@ async function napAnhMau(p, idx){
 window.renderWI = taoBoSuuTap({
   prefix: ()=>'appwh-wi',
   tieuDe: 'WI — Hướng dẫn công việc',
-  moTa: 'Mỗi ô là một mục hướng dẫn. Bấm vào ô để tải ảnh / file PDF lên, hoặc xuất ra file PDF.',
+  moTa: 'Mỗi ô là một mục hướng dẫn. Bấm vào ô để tải ảnh / file (PDF, Excel, Word, video…) lên hoặc thêm link, rồi xuất ảnh ra file PDF khi cần.',
   tenFile: 'WI',
   idTitle:'wiTitle', idTools:'wiTools', idBody:'wiBody',
   nhomMacDinh: WI_NHOM,
@@ -10158,7 +10615,7 @@ window.renderWI = taoBoSuuTap({
 window.renderTraining = taoBoSuuTap({
   prefix: ()=>'appwh-training-' + CUR_KHO,
   tieuDe: 'Training — Tài liệu đào tạo',
-  moTa: 'Tạo mục theo nội dung đào tạo, rồi tải ảnh hoặc file PDF vào từng mục. Mỗi kho có bộ tài liệu riêng.',
+  moTa: 'Tạo mục theo nội dung đào tạo, rồi tải ảnh / file (PDF, Excel, Word, PowerPoint, video…) hoặc thêm link vào từng mục. Mỗi kho có bộ tài liệu riêng.',
   tenFile: 'Training',
   idTitle:'trTitle', idTools:'trTools', idBody:'trBody',
   nhomMacDinh: [],
@@ -12234,8 +12691,10 @@ async function hopGuiN8n(buoi){
 // (đã được giao kho) thêm / sửa / xoá / up file Excel. Khoá riêng appwh-taisan-v1 (máy chủ cho giám
 // sát ghi khoá này — xem supabase/appwh-taisan.sql).
 //
-// TSWH = { v:1, ds:[ { id, so, mota, coa, model, serial, kho } ] }
+// TSWH = { v:1, ds:[ { id, so, mota, coa, model, serial, kho, nguoi } ] }
 //   so = Asset Number (duy nhất) · kho = 'vai' | 'phulieu' | 'thanhpham' | '' (chưa chọn kho = DEPT)
+//   nguoi = người sử dụng (không bắt buộc, nhiều người): [{ id, ten }] — mã nhân viên + tên lúc chọn,
+//           chọn trong thành viên của đúng kho đó. Người đã nghỉ việc mà còn giữ tài sản: hiện đỏ để thu hồi.
 // Bảng xếp theo kho: chưa chọn kho trên cùng -> kho vải -> kho phụ liệu -> kho thành phẩm;
 // trong 1 kho xếp theo Asset Number. Cột No đánh lại theo thứ tự đang hiện.
 // Mỗi lần ghi: đọc bản mới nhất trên máy chủ -> sửa -> ghi (2 người cùng sửa không mất của nhau).
@@ -12245,7 +12704,7 @@ async function hopGuiN8n(buoi){
 
 const KEY = 'appwh-taisan-v1';
 const THU_TU = ['', 'vai', 'phulieu', 'thanhpham'];
-const COT = ['No', 'Asset Number', 'Asset Description', 'COA', 'Model number', 'Serial number', 'DEPT'];
+const COT = ['No', 'Asset Number', 'Asset Description', 'COA', 'Model number', 'Serial number', 'DEPT', 'Người sử dụng'];
 let TS = null, TAI = false, LOC = '*', TIM = '';
 
 const tenKho = k => k ? khoName(k) : 'Chưa chọn kho';
@@ -12253,6 +12712,30 @@ const soSanh = (a, b) => String(a).localeCompare(String(b), 'vi', { numeric:true
 const chuan = o => ({ v:1, ds: Array.isArray(o && o.ds) ? o.ds.filter(x=>x && x.so) : [] });
 const moiId = () => 't' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 const soVN = n => Number(n || 0).toLocaleString('vi-VN');
+
+// ---- Người sử dụng ----
+const dsNguoi = x => Array.isArray(x && x.nguoi) ? x.nguoi.filter(n=>n && n.id) : [];
+// Thành viên 1 kho để chọn: mọi người chưa cắt tên (kể cả chờ nghỉ việc, đi hỗ trợ, thai sản)
+const thanhVienKho = kho => HR.employees.filter(e=>e.warehouseId === kho && !e.nghiViec)
+  .sort((a, b)=>a.name.localeCompare(b.name, 'vi'));
+// '' bình thường · 'nghi' đã nghỉ việc (hoặc không còn trong app) · 'khac' đã sang kho khác
+function tinhTrang(n, kho){
+  const e = empById(n.id);
+  if(!e || e.nghiViec) return 'nghi';
+  return kho && e.warehouseId !== kho ? 'khac' : '';
+}
+const tenNguoi = n => { const e = empById(n.id); return e ? e.name : (n.ten || '—'); };
+function nhanNguoi(n, kho){
+  const tt = tinhTrang(n, kho);
+  return tenNguoi(n) + (tt === 'nghi' ? ' (đã nghỉ)' : tt === 'khac' ? ` (${khoName(empById(n.id).warehouseId)})` : '');
+}
+function chipNguoi(ds, kho){
+  return ds.map(n=>{
+    const tt = tinhTrang(n, kho);
+    const goiY = tt === 'nghi' ? ' title="Đã nghỉ việc — nhớ thu hồi tài sản"' : tt === 'khac' ? ' title="Đã chuyển sang kho khác"' : '';
+    return `<span class="tsw-ng${tt ? ' ' + tt : ''}"${goiY}>${esc(nhanNguoi(n, kho))}</span>`;
+  }).join('');
+}
 
 // Ai được sửa: chủ trang, giám sát đã được giao kho (giống máy chủ)
 function duocSua(){
@@ -12293,7 +12776,7 @@ function khop(x){
   if(LOC !== '*' && (x.kho || '') !== LOC) return false;
   if(!TIM) return true;
   const t = normName(TIM);
-  return [x.so, x.mota, x.coa, x.model, x.serial].some(v=>normName(v || '').includes(t));
+  return [x.so, x.mota, x.coa, x.model, x.serial, ...dsNguoi(x).map(tenNguoi)].some(v=>normName(v || '').includes(t));
 }
 
 // ---- Vẽ ----
@@ -12312,7 +12795,7 @@ async function renderTaiSan(){
         ${sua ? '<button class="sm" id="tswThem">＋ Thêm tài sản</button><button class="secondary sm" id="tswUp" title="Cột: Asset Number · Asset Description · COA · Model number · Serial number · DEPT">⬆ Up file Excel</button>' : ''}
         <button class="ghost sm" id="tswXuat">⬇ Xuất Excel</button></span></div>
     <div class="tsw-loc">
-      <input type="search" id="tswTim" placeholder="🔍 Tìm mã / tên / model / serial…" autocomplete="off" value="${esc(TIM)}">
+      <input type="search" id="tswTim" placeholder="🔍 Tìm mã / tên / model / serial / người sử dụng…" autocomplete="off" value="${esc(TIM)}">
       <div class="tsw-chip" id="tswChip"></div>
     </div>
     <div class="tsw-bang" id="tswBang"></div>
@@ -12346,7 +12829,7 @@ function veBang(){
   let nhom = null;
   const dong = ds.map((x, i)=>{
     const k = x.kho || '';
-    const dau = k !== nhom ? `<tr class="tsw-nhom${k ? '' : ' chua'}"><td colspan="${sua ? 8 : 7}">${esc(tenKho(k))} <i>${soVN(ds.filter(y=>(y.kho || '') === k).length)}</i></td></tr>` : '';
+    const dau = k !== nhom ? `<tr class="tsw-nhom${k ? '' : ' chua'}"><td colspan="${sua ? 9 : 8}">${esc(tenKho(k))} <i>${soVN(ds.filter(y=>(y.kho || '') === k).length)}</i></td></tr>` : '';
     nhom = k;
     return dau + `<tr>
       <td class="so">${i + 1}</td>
@@ -12358,6 +12841,7 @@ function veBang(){
       <td>${sua
         ? `<select data-kho="${esc(x.id)}" class="${k ? '' : 'chua'}">${THU_TU.map(v=>`<option value="${v}"${v === k ? ' selected' : ''}>${v ? esc(khoName(v)) : '— Chọn kho —'}</option>`).join('')}</select>`
         : esc(k ? khoName(k) : '')}</td>
+      <td class="ng">${chipNguoi(dsNguoi(x), k)}${sua ? `<button class="tsw-ngbtn" data-nguoi="${esc(x.id)}" title="Chọn người sử dụng (chọn được nhiều người)">${dsNguoi(x).length ? '✎' : '＋ Chọn'}</button>` : ''}</td>
       ${sua ? `<td class="nut"><button class="secondary sm" data-sua="${esc(x.id)}">Sửa</button><button class="danger sm" data-xoa="${esc(x.id)}">✕</button></td>` : ''}
     </tr>`;
   }).join('');
@@ -12378,6 +12862,17 @@ async function onBangClick(e){
   // chỉ nút trong bảng (không lấy nhầm thuộc tính data-* của khung trang bên ngoài)
   const s = e.target.closest('button[data-sua]');
   if(s){ const x = TS.ds.find(y=>y.id === s.dataset.sua); if(x) moForm(x); return; }
+  const ng = e.target.closest('button[data-nguoi]');
+  if(ng){
+    const x = TS.ds.find(y=>y.id === ng.dataset.nguoi); if(!x) return;
+    chonNguoi(x.kho || '', dsNguoi(x), `Người sử dụng — ${x.so}`, x.mota, async ds=>{
+      const ok = await ghi(o=>{ const y = o.ds.find(z=>z.id === x.id); if(y){ if(ds.length) y.nguoi = ds; else delete y.nguoi; } });
+      if(!ok) return false;
+      veBang();
+      toast(ds.length ? `✓ ${x.so}: ${ds.length} người sử dụng` : `✓ ${x.so}: đã bỏ người sử dụng`);
+    });
+    return;
+  }
   const d = e.target.closest('button[data-xoa]'); if(!d) return;
   const x = TS.ds.find(y=>y.id === d.dataset.xoa); if(!x) return;
   if(!await confirmBox(`Xoá tài sản ${x.so} — ${x.mota || ''}?`)) return;
@@ -12385,9 +12880,57 @@ async function onBangClick(e){
   veBang();
 }
 
+// ---- Hộp chọn người sử dụng (chọn nhiều người, để trống được) ----
+// kho: kho của tài sản (danh sách người lấy theo kho này) · chon: [{ id, ten }] đang chọn
+// xong(ds) khi bấm Lưu — trả false thì giữ hộp lại (VD chưa lưu được lên máy chủ)
+function chonNguoi(kho, chon, tieuDe, phu, xong){
+  const daChon = new Map(chon.map(n=>[n.id, n]));
+  const tv = kho ? thanhVienKho(kho) : [], coTrongKho = new Set(tv.map(e=>e.id));
+  // người đang giữ nhưng không còn trong danh sách kho (đã nghỉ / chuyển kho) -> hiện trên cùng để bỏ chọn được
+  const ngoai = chon.filter(n=>!coTrongKho.has(n.id));
+  const ghiChu = e => [e.position, e.shift, laChoNghi(e) ? 'chờ nghỉ việc' : '', e.diHoTro ? 'đang đi hỗ trợ' : '', e.thaiSan ? 'thai sản' : '']
+    .filter(Boolean).join(' · ');
+  const dong = (id, ten, chu, cls) => `<label class="tsw-chon-r${cls ? ' ' + cls : ''}" data-ten="${esc(normName(ten))}">
+      <input type="checkbox" value="${esc(id)}"${daChon.has(id) ? ' checked' : ''}><span><b>${esc(ten)}</b>${chu ? `<small>${esc(chu)}</small>` : ''}</span></label>`;
+  const m = openModal(tieuDe, `
+    ${phu ? `<div class="tsw-chon-phu">${esc(phu)}</div>` : ''}
+    ${kho ? `<input type="text" data-tim placeholder="🔍 Tìm tên trong ${esc(khoName(kho).toLowerCase())}…" autocomplete="off">`
+          : `<div class="note warn">Tài sản chưa chọn DEPT — chọn kho trước, danh sách người lấy theo kho đó.</div>`}
+    <div class="tsw-chon">
+      ${ngoai.map(n=>{ const tt = tinhTrang(n, kho);
+        return dong(n.id, tenNguoi(n), tt === 'nghi' ? 'Đã nghỉ việc — bỏ chọn khi đã thu hồi tài sản'
+          : tt === 'khac' ? 'Đang ở ' + khoName(empById(n.id).warehouseId) : 'Không thuộc kho này', 'ngoai'); }).join('')}
+      ${tv.map(e=>dong(e.id, tenKemMaSo(e), ghiChu(e))).join('')}
+      ${tv.length || ngoai.length ? '' : `<p class="tsw-trong">${kho ? 'Kho này chưa có thành viên nào' : 'Chưa có danh sách người'}</p>`}
+    </div>
+    <div class="tsw-chon-f"><span data-dem></span><button class="ghost sm" data-bo>Bỏ chọn hết</button></div>
+    <div class="row2" style="margin-top:12px;"><button class="ghost" data-no>Huỷ</button><button data-yes>Lưu</button></div>`);
+  const hop = [...m.body.querySelectorAll('.tsw-chon input[type=checkbox]')];
+  const dem = ()=>{ const n = hop.filter(c=>c.checked).length;
+    m.body.querySelector('[data-dem]').textContent = n ? `Đã chọn ${n} người` : 'Chưa chọn ai (để trống được)'; };
+  hop.forEach(c=>c.onchange = dem); dem();
+  const tim = m.body.querySelector('[data-tim]');
+  if(tim){
+    tim.oninput = ()=>{ const t = normName(tim.value);
+      m.body.querySelectorAll('.tsw-chon-r').forEach(r=>{ r.style.display = !t || r.dataset.ten.includes(t) ? '' : 'none'; }); };
+    tim.focus();
+  }
+  m.body.querySelector('[data-bo]').onclick = ()=>{ hop.forEach(c=>c.checked = false); dem(); };
+  m.body.querySelector('[data-no]').onclick = m.close;
+  m.body.querySelector('[data-yes]').onclick = async ()=>{
+    const ds = hop.filter(c=>c.checked).map(c=>{ const e = empById(c.value), cu = daChon.get(c.value);
+      return { id:c.value, ten: e ? e.name : ((cu && cu.ten) || '') }; });
+    m.body.querySelectorAll('button').forEach(b=>b.disabled = true);
+    const kq = await xong(ds);
+    if(kq === false){ m.body.querySelectorAll('button').forEach(b=>b.disabled = false); return; }
+    m.close();
+  };
+}
+
 // ---- Thêm / sửa 1 tài sản ----
 function moForm(x){
   const o = x || { so:'', mota:'', coa:'', model:'', serial:'', kho: LOC !== '*' ? LOC : '' };
+  let nguoi = dsNguoi(o).slice();
   const o5 = [['so', 'Asset Number', 'VD: 1002472'], ['mota', 'Asset Description', 'VD: BARCODE PRINTER /MAY IN MA VACH'],
               ['coa', 'COA', 'VD: 2003'], ['model', 'Model number', 'VD: SLP TX403'], ['serial', 'Serial number', 'VD: TANVZKA22060372']];
   const m = openModal(x ? 'Sửa tài sản' : 'Thêm tài sản', `
@@ -12395,11 +12938,24 @@ function moForm(x){
       <input type="text" data-f="${k}" value="${esc(o[k] || '')}" placeholder="${esc(g)}" autocomplete="off">`).join('')}
     <label class="field-label">DEPT — tài sản của kho nào</label>
     <select data-f="kho">${THU_TU.map(v=>`<option value="${v}"${v === (o.kho || '') ? ' selected' : ''}>${v ? esc(khoName(v)) : '— Chưa chọn kho —'}</option>`).join('')}</select>
+    <label class="field-label">Người sử dụng <span style="font-weight:400">(không bắt buộc · chọn được nhiều người)</span></label>
+    <div class="tsw-form-ng" data-ng></div>
     <div class="row2" style="margin-top:16px;"><button class="ghost" data-no>Huỷ</button><button data-yes>${x ? 'Lưu thay đổi' : 'Thêm tài sản'}</button></div>`);
   const f = k => m.body.querySelector(`[data-f="${k}"]`).value.trim();
+  // danh sách người theo DEPT đang chọn trong form (đổi kho thì chọn lại trong kho mới)
+  const veNg = ()=>{
+    const k = f('kho');
+    m.body.querySelector('[data-ng]').innerHTML = (chipNguoi(nguoi, k) || '<span class="tsw-ng-trong">Chưa chọn</span>')
+      + `<button class="tsw-ngbtn" data-chonng>${nguoi.length ? '✎ Sửa' : '＋ Chọn người'}</button>`;
+    m.body.querySelector('[data-chonng]').onclick = ()=>chonNguoi(k, nguoi, 'Người sử dụng',
+      [f('so'), f('mota')].filter(Boolean).join(' — '), ds=>{ nguoi = ds; veNg(); });
+  };
+  veNg();
+  m.body.querySelector('[data-f="kho"]').addEventListener('change', veNg);
   m.body.querySelector('[data-no]').onclick = m.close;
   m.body.querySelector('[data-yes]').onclick = async ()=>{
-    const moi = { so:f('so'), mota:f('mota'), coa:f('coa'), model:f('model'), serial:f('serial'), kho:f('kho') };
+    const moi = { so:f('so'), mota:f('mota'), coa:f('coa'), model:f('model'), serial:f('serial'), kho:f('kho'),
+                  nguoi: nguoi.length ? nguoi : undefined };          // trống thì không lưu trường này
     if(!moi.so){ toast('⚠ Nhập Asset Number'); return; }
     const kq = await ghi(d=>{
       if(d.ds.some(y=>normName(y.so) === normName(moi.so) && (!x || y.id !== x.id))) return 'trung';
@@ -12471,7 +13027,7 @@ async function upExcel(file){
       ${laDept.length ? `<span class="canh">DEPT không nhận ra (để "Chưa chọn kho"): ${esc(laDept.slice(0, 5).join(', '))}${laDept.length > 5 ? '…' : ''}</span>` : ''}
     </div>
     <ul class="nv-xn-ds">
-      <li>Tài sản đã có: cập nhật mô tả / COA / model / serial theo file; DEPT trong file trống thì giữ kho đang chọn.</li>
+      <li>Tài sản đã có: cập nhật mô tả / COA / model / serial theo file; DEPT trong file trống thì giữ kho đang chọn. Người sử dụng giữ nguyên.</li>
       <li>DEPT nhận chữ: kho vải / fabric, phụ liệu / trim, thành phẩm / finished goods.</li>
     </ul>
     <div class="row2" style="margin-top:16px;"><button class="ghost" data-no>Huỷ</button><button data-yes>⬆ Cập nhật ${soVN(ds.length)} tài sản</button></div>`);
@@ -12502,9 +13058,10 @@ function xuatExcel(){
   if(!window.XLSX){ toast('⚠ Chưa tải được thư viện Excel — kiểm tra mạng rồi tải lại trang'); return; }
   const ds = xep(TS.ds.filter(khop));
   if(!ds.length){ toast('Không có tài sản nào để xuất'); return; }
-  const aoa = [COT].concat(ds.map((x, i)=>[i + 1, x.so, x.mota, x.coa, x.model, x.serial, x.kho ? khoName(x.kho) : '']));
+  const aoa = [COT].concat(ds.map((x, i)=>[i + 1, x.so, x.mota, x.coa, x.model, x.serial, x.kho ? khoName(x.kho) : '',
+    dsNguoi(x).map(n=>nhanNguoi(n, x.kho || '')).join(', ')]));
   const ws = XLSX.utils.aoa_to_sheet(aoa);
-  ws['!cols'] = [{wch:5}, {wch:14}, {wch:52}, {wch:8}, {wch:26}, {wch:22}, {wch:18}];
+  ws['!cols'] = [{wch:5}, {wch:14}, {wch:52}, {wch:8}, {wch:26}, {wch:22}, {wch:18}, {wch:40}];
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'TAI SAN WH');
   XLSX.writeFile(wb, `TAI_SAN_WH_${todayKey()}.xlsx`);
