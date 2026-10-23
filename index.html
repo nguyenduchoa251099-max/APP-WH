@@ -1902,6 +1902,256 @@
   }
 
 </style>
+<style>/* css/modules/kiemke.css */
+/* Tab "📋 Kiểm kê" — kho thành phẩm (js/modules/kiemke/kiemke.js)
+   Màu theo LOẠI LỖI: xanh dương = cất sai vị trí · cam = nhập sai · xanh ngọc = chuyển vị trí sai · xám = khác.
+   Ô từng tháng ở bảng xếp hạng người dùng thang xanh giống bản đồ nhiệt tab Tăng ca. */
+  .kk{display:flex; flex-direction:column; gap:14px; -webkit-print-color-adjust:exact; print-color-adjust:exact;}
+
+  /* ---------- thanh lọc + nút ---------- */
+  .kk-bar{display:flex; flex-wrap:wrap; align-items:center; gap:8px 10px;}
+  .kk-seg{display:inline-flex; background:#eef1f6; border-radius:10px; padding:3px; gap:2px;}
+  .kk-seg button{border:0; background:transparent; color:var(--ink-soft); font-weight:700; font-size:13px; padding:7px 13px; border-radius:8px; white-space:nowrap;}
+  .kk-seg button:hover{color:var(--ink); opacity:1;}
+  .kk-seg button.on{background:#fff; color:var(--ink); box-shadow:0 1px 3px rgba(16,24,40,.12);}
+  .kk-bar select{width:auto; padding:7px 10px; font-size:13px; font-weight:700; background:#fff; border-color:var(--line); border-radius:10px;}
+  .kk-chip{display:inline-flex; align-items:center; gap:6px; background:#fff; border:1px solid var(--line); border-radius:999px;
+    padding:3px 4px 3px 11px; font-size:12.5px; font-weight:700; max-width:260px;}
+  .kk-chip i{flex:0 0 10px; height:10px; border-radius:3px;}
+  .kk-chip button{border:0; background:var(--paper); color:var(--ink-soft); width:22px; height:22px; padding:0; border-radius:50%; font-size:11px; line-height:1; flex:0 0 auto;}
+  .kk-sp{flex:1;}
+  .kk-bar > button{white-space:nowrap;}
+  button.kk-can{background:#fff8e6; color:#8a5a00; border-color:#f0cf8a;}
+  button.kk-can:hover{background:#fff1c2; opacity:1;}
+
+  /* ---------- tiêu đề báo cáo ---------- */
+  .kk-tieude{display:flex; flex-wrap:wrap; align-items:baseline; gap:2px 14px;}
+  .kk-tieude h2{margin:0; font-size:17px; font-weight:800; color:var(--ink);}
+  .kk-tieude span{font-size:13px; color:var(--ink-soft); font-weight:600;}
+
+  /* ---------- 4 thẻ số ---------- */
+  .kk-kpi{display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:12px;}
+  .kk-the{background:#fff; border:1px solid var(--line); border-top:4px solid #173b57; border-radius:12px; box-shadow:var(--bong);
+    padding:13px 15px 12px; min-width:0; display:flex; flex-direction:column;}
+  .kk-the .k{font-size:12.5px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:var(--ink);}
+  .kk-the .v{display:flex; align-items:baseline; gap:7px; margin-top:4px;}
+  .kk-the .v b{font-size:32px; font-weight:800; line-height:1.1; color:var(--ink);}
+  .kk-the .v span{font-size:13px; font-weight:700; color:var(--ink-soft);}
+  .kk-the .d{font-size:12.5px; margin-top:3px; color:var(--ink-soft);}
+  .kk-ss{font-weight:800; color:var(--ink);}
+  .kk-ss.tot{color:#067647;} .kk-ss.xau{color:#b42318;}
+  .kk-the .l{margin-top:auto; padding-top:8px; display:flex; flex-direction:column; gap:3px;}
+  .kk-the .l > div:first-child{border-top:1px dashed var(--line-soft); padding-top:7px;}
+  .kk-the .l div{display:flex; justify-content:space-between; align-items:baseline; gap:8px; font-size:12.5px; color:var(--ink-soft);}
+  .kk-the .l div b{color:var(--ink); font-variant-numeric:tabular-nums; white-space:nowrap;}
+  .kk-the.cx.tot{border-top-color:#0ca30c;} .kk-the.cx.kha{border-top-color:#fab219;} .kk-the.cx.kem{border-top-color:#d03b3b;}
+  .kk-muc{align-self:flex-start; margin-top:6px; font-size:11.5px; font-weight:800; padding:2px 9px; border-radius:999px;}
+  .kk-muc.tot{background:#ecfdf3; color:#067647;} .kk-muc.kha{background:#fff8e6; color:#8a5a00;} .kk-muc.kem{background:#fef3f2; color:#b42318;}
+  .kk-the-nut{align-self:flex-start; margin-top:8px;}
+  .kk-the-ghi{font-size:11.5px; color:var(--ink-soft); margin-top:5px; font-style:italic;}
+
+  /* ---------- điểm chính ---------- */
+  .kk-diem{background:#fff; border:1px solid var(--line); border-left:4px solid var(--blue); border-radius:10px; padding:10px 16px 11px; box-shadow:var(--bong);}
+  .kk-diem > b{font-size:12.5px; text-transform:uppercase; letter-spacing:.05em;}
+  .kk-diem ul{margin:6px 0 0; padding-left:20px; display:flex; flex-direction:column; gap:3px; font-size:14px; line-height:1.45;}
+
+  /* ---------- thẻ biểu đồ ---------- */
+  .kk-hang{display:grid; grid-template-columns:minmax(0, 1.5fr) minmax(0, 1fr); gap:12px;}
+  .kk-card{background:#fff; border:1px solid var(--line); border-radius:12px; box-shadow:var(--bong); padding:14px 16px; min-width:0;}
+  .kk-h{display:flex; flex-wrap:wrap; align-items:center; gap:6px 14px; margin-bottom:10px;}
+  .kk-h > b{font-size:14.5px;}
+  .kk-lg{display:flex; flex-wrap:wrap; gap:4px 12px; margin-left:auto; font-size:12px; font-weight:700; color:var(--ink-soft);}
+  .kk-lg span{display:inline-flex; align-items:center; gap:6px;}
+  .kk-lg i{width:11px; height:11px; border-radius:3px;}
+  .kk-lg i.truoc{width:14px; background:#e3e8ef;}
+  .kk-ghi{font-size:12px; color:var(--ink-soft);}
+  .kk-card > .kk-ghi{margin-top:4px;}
+  .kk-phai{margin-left:auto;}
+  .kk-chart{overflow-x:auto;}
+  .kk-chart svg{display:block; overflow:visible;}
+  .kk-hit{cursor:pointer;}
+  .kk-hit:hover{fill:rgba(23,59,87,.05);}
+  .kk-trong{display:flex; align-items:center; justify-content:center; min-height:110px; color:var(--ink-soft); font-size:13.5px; margin:0; text-align:center;}
+
+  /* ---------- xếp hạng loại lỗi ---------- */
+  .kk-loai-ds{display:flex; flex-direction:column; gap:1px;}
+  .kk-lr{display:grid; grid-template-columns:22px minmax(0, 1.5fr) minmax(36px, 1fr) 36px 36px 46px; align-items:center; gap:8px;
+    width:100%; margin:0; background:transparent; border:0; border-radius:8px; padding:7px 6px; color:var(--ink);
+    font-size:13px; font-weight:600; text-align:left; cursor:pointer;}
+  button.kk-lr:hover{background:#f3f7fb; opacity:1;}
+  .kk-lr.on{background:#eaf2fc; box-shadow:inset 0 0 0 1.5px #2a78d6;}
+  .kk-lr.mo{opacity:.45;}
+  .kk-lr .h{font-size:12px; font-weight:800; color:var(--ink-soft); text-align:center;}
+  .kk-lr .t{display:flex; align-items:center; gap:7px; min-width:0;}
+  .kk-lr .t span{line-height:1.25; overflow-wrap:anywhere;}          /* tên loại lỗi dài thì xuống dòng, không cắt chữ */
+  .kk-lr .t i{flex:0 0 10px; height:10px; border-radius:3px;}
+  .kk-lr .bar{height:10px; background:#f1f4f8; border-radius:4px; overflow:hidden;}
+  .kk-lr .bar i{display:block; height:100%; border-radius:0 4px 4px 0;}
+  .kk-lr b{text-align:right; font-size:14px; font-variant-numeric:tabular-nums;}
+  .kk-lr small{text-align:right; font-size:12px; color:var(--ink-soft); font-variant-numeric:tabular-nums;}
+  .kk-lr.kk-lr-dau{cursor:default; padding-top:0; padding-bottom:5px; border-bottom:1px solid var(--line-soft); border-radius:0; margin-bottom:3px;
+    font-size:10.5px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-soft);}
+  .kk-lr.kk-lr-dau b, .kk-lr.kk-lr-dau small{font-size:10.5px; font-weight:800; color:var(--ink-soft);}
+  .kk-80{margin:3px 6px 5px; padding:6px 10px; border-radius:8px; background:#f3f7fb; font-size:12.5px; color:var(--ink); line-height:1.4;}
+
+  /* ---------- xếp hạng người + ô từng tháng ---------- */
+  .kk-ng-wrap{overflow-x:auto;}
+  table.kk-ng{width:100%; border-collapse:separate; border-spacing:2px; font-variant-numeric:tabular-nums;}
+  /* bỏ kiểu bảng chung của app (đệm 9px, chữ 15px, tiêu đề in hoa, gạch dưới) */
+  .kk-ng th, .kk-ng td{padding:0; border-bottom:0; font-size:12px; text-transform:none; letter-spacing:0; vertical-align:middle;}
+  .kk-ng thead th{font-size:11px; font-weight:700; color:var(--ink-soft); padding:2px 0 5px; text-align:center; white-space:nowrap;}
+  .kk-ng thead th i{font-style:normal; font-weight:500;}
+  .kk-ng thead th.ten{text-align:left; padding-left:8px;}
+  .kk-ng thead th.chon{color:var(--ink); text-decoration:underline; text-underline-offset:3px;}
+  .kk-ng thead th.nay{color:var(--blue-dark);}
+  .kk-ng thead th.tong{text-align:left; padding-left:10px;}
+  .kk-ng thead th.phu{text-align:right; padding-right:8px;}
+  .kk-ng thead th.hay{text-align:left;}
+  .kk-ng tbody tr{cursor:pointer;}
+  .kk-ng tbody tr:hover td{background:transparent;}
+  .kk-ng tbody tr:hover td.ten, .kk-ng tbody tr:hover td.h{background:#f3f7fb;}
+  .kk-ng tr.on td.ten, .kk-ng tr.on td.h{background:#eaf2fc;}
+  .kk-ng tr.on td.ten{box-shadow:inset 3px 0 0 #2a78d6;}
+  .kk-ng tr.mo{opacity:.5;}
+  .kk-ng td.h{width:28px; text-align:center; font-weight:800; color:var(--ink-soft); font-size:12.5px; border-radius:6px;}
+  .kk-ng td.ten{min-width:210px; padding:4px 34px 4px 8px; border-radius:6px; text-align:left; position:relative;}
+  .kk-ng td.ten .n{display:flex; align-items:center; gap:6px; flex-wrap:wrap;}
+  .kk-ng td.ten b{font-size:13px;}
+  .kk-ng td.ten small{display:block; font-size:11px; color:var(--ink-soft); line-height:1.25; margin-top:1px;}
+  .kk-ng td.o{width:32px; min-width:30px; height:30px; border-radius:4px; text-align:center; font-weight:700; background:#f1f4f8;}
+  .kk-ng .l1{background:#dbe9fb !important; color:#174f96;} .kk-ng .l2{background:#a9cbf3 !important; color:#123c73;}
+  .kk-ng .l3{background:#5f9ee6 !important; color:#fff;} .kk-ng .l4{background:#2a78d6 !important; color:#fff;}
+  .kk-ng .l5{background:#174f96 !important; color:#fff;}
+  .kk-ng td.o.chon{box-shadow:inset 0 0 0 2px #1c2024;}
+  .kk-ng td.o[data-ovtip]:hover{box-shadow:0 0 0 2px var(--ink);}
+  .kk-ng td.tong{min-width:120px; padding:0 4px 0 10px;}
+  .kk-ng .tb{display:flex; align-items:center; gap:8px;}
+  .kk-ng .tb .bar{flex:1; height:8px; background:#f1f4f8; border-radius:4px; overflow:hidden;}
+  .kk-ng .tb .bar i{display:block; height:100%; background:#2a78d6; border-radius:0 4px 4px 0;}
+  .kk-ng .tb b{min-width:28px; text-align:right; font-size:13px;}
+  .kk-ng td.phu{width:64px; text-align:right; color:var(--ink-soft); padding-right:8px;}
+  .kk-ng td.hay{min-width:150px; font-size:11.5px; color:var(--ink-soft); white-space:nowrap; padding-left:4px;}
+  .kk-ng td.hay i{display:inline-block; width:9px; height:9px; border-radius:2px; margin-right:5px;}
+  .kk-ng td.hay span{color:#98a1ad;}
+  .kk-ng tr.nhom td.ten b{color:var(--ink-soft);}
+  .kk-ng tr.tach{cursor:default;}
+  .kk-ng tr.tach td{padding:10px 8px 3px; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-soft);}
+  .kk-ng tr.tach:hover td{background:transparent !important;}
+  .kk-tt{display:inline-block; font-size:10.5px; font-weight:800; padding:0 7px; border-radius:999px; line-height:1.65; white-space:nowrap;
+    background:#f1f4f8; color:var(--ink-soft); font-style:normal;}
+  .kk-tt.nghi{background:#e5e7eb; color:#374151;}
+  .kk-tt.ngoai{background:#fff; border:1px dashed #c3c9d2; color:#5b6470;}
+  .kk-tt.cho{background:#111827; color:#fff;}
+  .kk-tt.ht{background:#ffedd5; color:#7c2d12;}
+  .kk-tt.ts{background:#fce7f3; color:#831843;}
+  .kk-doiten{position:absolute; right:5px; top:50%; transform:translateY(-50%); border:1px solid var(--line); background:#fff; color:var(--ink-soft);
+    width:24px; height:24px; padding:0; border-radius:6px; font-size:12px; line-height:1; visibility:hidden;}
+  .kk-ng tr:hover .kk-doiten{visibility:visible;}
+  .kk-doiten:hover{color:var(--blue-dark); border-color:var(--blue); opacity:1;}
+  .kk-ng-f{display:flex; flex-wrap:wrap; align-items:center; gap:6px 12px; margin-top:10px; font-size:12px; color:var(--ink-soft);}
+  .kk-ng-f .m{display:inline-flex; align-items:center; gap:4px;}
+  .kk-ng-f i.o{display:inline-block; width:16px; height:12px; border-radius:3px;}
+  .kk-ng-f .l1{background:#dbe9fb;} .kk-ng-f .l2{background:#a9cbf3;} .kk-ng-f .l3{background:#5f9ee6;} .kk-ng-f .l4{background:#2a78d6;} .kk-ng-f .l5{background:#174f96;}
+
+  /* ---------- danh sách lỗi ---------- */
+  .kk-ds .kk-h input[type=search]{width:min(320px, 100%); margin-left:auto; padding:7px 10px; font-size:13px; background:#fff; border:1px solid var(--line); border-radius:8px;}
+  .kk-bang-wrap{overflow-x:auto;}
+  table.kk-bang{min-width:900px;}
+  .kk-bang th{font-size:10.5px; padding:6px 6px; vertical-align:bottom; line-height:1.3;}
+  .kk-bang td{font-size:12.5px; padding:6px 6px; vertical-align:top; line-height:1.4;}
+  .kk-bang td.m{font-family:var(--mono); font-size:12px; white-space:nowrap;}
+  .kk-mui{color:var(--ink-soft); font-family:var(--font);}
+  .kk-cung{font-family:var(--font); font-size:11px; color:var(--ink-soft);}
+  .kk-bang td.nw{white-space:nowrap;}
+  .kk-bang td.so, .kk-bang th.so{text-align:right; font-variant-numeric:tabular-nums;}
+  .kk-bang td.gc{min-width:180px; color:var(--ink-soft); font-size:12px;}
+  .kk-bang td.nut{white-space:nowrap; text-align:right;}
+  .kk-bang td.nut button{margin-left:4px; padding:3px 8px;}
+  .kk-loai{display:inline-flex; align-items:baseline; gap:5px; font-weight:600; font-size:12px; min-width:110px;}
+  .kk-loai i{flex:0 0 9px; height:9px; border-radius:2px;}
+  .kk-thieu{display:inline-block; min-width:17px; padding:0 4px; border-radius:4px; background:#fff1c2; color:#8a5a00; font-weight:800; text-align:center; cursor:help;}
+  .kk-them{margin-top:10px;}
+
+  /* ---------- chưa có dữ liệu ---------- */
+  .kk-trong-lon{background:#fff; border:1px dashed var(--line); border-radius:14px; padding:34px 24px; text-align:center; max-width:720px; margin:10px auto;}
+  .kk-trong-lon .ic{font-size:38px;}
+  .kk-trong-lon h3{margin:8px 0 6px; font-size:18px;}
+  .kk-trong-lon p{color:var(--ink-soft); font-size:14px; margin:0 auto 14px; max-width:560px;}
+  .kk-trong-lon .nut{display:flex; justify-content:center; gap:10px; flex-wrap:wrap;}
+
+  /* ---------- bảng bật lên ---------- */
+  .modal-card.kk-rong{max-width:780px;}
+  .kk-bb{color:var(--red);}
+  .kk-row3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;}
+  .kk-form textarea{resize:vertical;}
+  .kk-form input[data-f2]{margin-top:6px;}
+  .kk-form input[data-f="vtTT"], .kk-form input[data-f="vtHT"]{text-transform:uppercase;}   /* lưu in hoa như sổ */
+  .kk-goc{display:block; font-size:11.5px; color:var(--ink-soft); margin-top:3px;}
+  .kk-form-nut{display:flex; justify-content:flex-end; gap:8px; margin-top:16px; flex-wrap:wrap;}
+  .kk-doi{font-size:14px; line-height:1.6; margin-bottom:6px;}
+  .kk-buoi > .kk-ghi{margin:0 0 10px;}
+  .kk-buoi-form{display:grid; grid-template-columns:150px 90px 150px minmax(0, 1fr) auto; gap:8px; align-items:end; padding:10px;
+    background:var(--paper); border:1px solid var(--line-soft); border-radius:10px;}
+  .kk-buoi-form label{display:flex; flex-direction:column; gap:4px; font-size:12px; font-weight:700; color:var(--ink-soft);}
+  .kk-buoi-form input{padding:7px 8px; font-size:14px;}
+  .kk-buoi-nut{display:flex; gap:6px;}
+  .kk-buoi-nut button{padding:8px 14px; font-size:13.5px; white-space:nowrap;}
+  .kk-buoi-thieu{margin:10px 0; padding:8px 10px; border-radius:8px; background:#fff8e6; color:#7a4d00; font-size:12.5px; line-height:1.9;}
+  .kk-ngay-btn{border:1px solid #f0cf8a; background:#fff; color:#7a4d00; padding:1px 8px; border-radius:6px; font-size:12px; font-weight:700; margin:0 2px;}
+  .kk-ngay-btn:hover{background:#fff1c2; opacity:1;}
+  table.kk-buoi-bang{margin-top:10px;}
+  .kk-buoi-bang th, .kk-buoi-bang td{font-size:13px; padding:5px 8px;}
+  .kk-buoi-bang th.so, .kk-buoi-bang td.so{text-align:right; font-variant-numeric:tabular-nums;}
+  .kk-buoi-bang tr.th td{background:var(--paper); font-size:12px; font-weight:800; color:var(--ink-soft); padding-top:8px;}
+  .kk-buoi-bang tr.dang td{background:#eaf2fc;}
+  .kk-buoi-bang td.nut{white-space:nowrap; text-align:right;}
+  .kk-buoi-bang td.nut button{margin-left:4px;}
+  .kk-buoi-tong{margin-top:10px; font-size:13.5px; text-align:right;}
+  .kk-kt h4{display:flex; align-items:center; gap:8px; margin:14px 0 4px; font-size:14px;}
+  .kk-kt h4:first-child{margin-top:0;}
+  .kk-kt h4 i{font-style:normal; background:#fff1c2; color:#7a4d00; border-radius:99px; padding:0 8px; font-size:12px;}
+  .kk-kt > .kk-ghi{margin:0 0 6px;}
+  .kk-kt-r{display:flex; justify-content:space-between; align-items:center; gap:10px; padding:7px 0; border-bottom:1px dashed var(--line-soft); font-size:13px;}
+  .kk-kt-r small{display:block; color:var(--ink-soft); font-size:12px;}
+  .kk-nap-f{margin-bottom:10px;}
+  .kk-nap-f > b{display:block; font-size:14px; margin-bottom:4px;}
+  .kk-nap-s{display:flex; align-items:center; gap:10px; padding:6px 10px; border:1px solid var(--line-soft); border-radius:8px; margin-bottom:4px; font-size:13px; cursor:pointer;}
+  .kk-nap-s.mo{color:var(--ink-soft); background:var(--paper);}
+  .kk-nap-s span{flex:1;}
+  .kk-nap-s span i{color:var(--ink-soft);}
+  .kk-nap-s select{width:auto; padding:4px 8px; font-size:12.5px;}
+  table.kk-nap-kq{margin-top:8px;}
+  .kk-nap-kq th, .kk-nap-kq td{font-size:13px; padding:6px 8px;}
+  .kk-nap-kq .so{text-align:right; font-variant-numeric:tabular-nums;}
+  .kk-nap-kq td.moi{font-weight:800; color:#067647;}
+  .kk-nap-thay{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:12px; padding-top:10px; border-top:1px dashed var(--line-soft); font-size:12px; color:var(--ink-soft);}
+  .kk-nap-thay span{flex:1; min-width:220px;}
+
+  @media(max-width:1100px){ .kk-kpi{grid-template-columns:repeat(2, minmax(0, 1fr));} .kk-hang{grid-template-columns:minmax(0, 1fr);} }
+  @media(max-width:620px){
+    .kk-kpi{grid-template-columns:minmax(0, 1fr);}
+    .kk-row3, .kk-buoi-form{grid-template-columns:1fr 1fr;}
+    .kk-ds .kk-h input[type=search]{margin-left:0; width:100%;}
+  }
+
+  /* ---------- in / lưu PDF (nút 🖨): chỉ in phần báo cáo, khổ A4 ngang ---------- */
+  @media print{
+    @page{size:A4 landscape; margin:9mm;}
+    body.kk-in, body.kk-in #shell, body.kk-in #main{background:#fff;}
+    body.kk-in #sidebar, body.kk-in header.top, body.kk-in #tabNav, body.kk-in .save-alert, body.kk-in .toast, body.kk-in #modalHost,
+    body.kk-in .mobnav, body.kk-in .ov-tip, body.kk-in #loginGate, body.kk-in .kk-bar, body.kk-in .kk-ds, body.kk-in .kk-doiten,
+    body.kk-in .kk-ng-f button, body.kk-in .kk-the-nut, body.kk-in .tp-crumb, body.kk-in .kk-phai{display:none !important;}
+    body.kk-in #inner{max-width:none; padding:0;}
+    body.kk-in #tabLayout{padding-top:0;}
+    /* thu nhỏ vừa 2 trang: trang 1 = thẻ số + điểm chính + biểu đồ, trang 2 = xếp hạng người */
+    body.kk-in .kk{gap:10px; zoom:.84;}
+    body.kk-in .kk-kpi{grid-template-columns:repeat(4, minmax(0, 1fr));}
+    body.kk-in .kk-hang{grid-template-columns:minmax(0, 1.5fr) minmax(0, 1fr);}
+    body.kk-in .kk-card, body.kk-in .kk-the, body.kk-in .kk-diem{box-shadow:none; break-inside:avoid;}
+    body.kk-in .kk-ng-wrap, body.kk-in .kk-chart{overflow:visible;}
+  }
+
+</style>
 </head>
 <body>
 <div id="shell">
@@ -1954,6 +2204,7 @@
     <button data-tab="scan">📲 SCAN</button>
     <button data-tab="donghang">🚛 Đóng hàng</button>
     <button data-tab="rack">🗄️ Sơ đồ T2 CT</button>
+    <button data-tab="kiemke">📋 Kiểm kê</button>
     <button data-tab="hotrokk">🤝 Hỗ trợ / KK</button>
     <button data-tab="tangca">⏱ Tăng ca/Nghỉ phép</button>
     <button data-tab="wi">🎓 Training</button>
@@ -2229,6 +2480,9 @@
       <div class="unassigned-zone-list" id="unassignedZoneList"></div>
     </div>
   </main>
+
+  <!-- ============ TAB: KIỂM KÊ (kho thành phẩm) — js/modules/kiemke ============ -->
+  <main class="tabpage" id="tab-kiemke"><div class="kk" id="kkBox"></div></main>
 
   <!-- ============ TAB: TĂNG CA / NGHỈ PHÉP ============ -->
 <main class="tabpage" id="tab-hotrokk">
@@ -3111,6 +3365,7 @@ const TAB_KHO = [
   { id:'scan',      ten:'SCAN',              khos:['thanhpham'], cha:'scanos' },
   { id:'donghang',  ten:'Đóng hàng',         khos:['thanhpham'] },
   { id:'rack',      ten:'Sơ đồ T2 CT',       khos:['thanhpham'] },
+  { id:'kiemke',    ten:'Kiểm kê',           khos:['thanhpham'] },
   { id:'hotrokk',   ten:'Hỗ trợ / KK',       tenKho:{ vai:'Hỗ trợ', phulieu:'Hỗ trợ' } },
   { id:'tangca',    ten:'Tăng ca/Nghỉ phép' },
   { id:'wi',        ten:'Training',          khos:['thanhpham'], cha:'dashboard' },
@@ -3194,7 +3449,7 @@ function coXem(muc){
 function khoCuaKhoa(key){
   const m = /^appwh-training-(vai|phulieu|thanhpham)/.exec(key);
   if(m) return m[1];
-  if(/^appwh-(wi|checkct|scan|donghang|sodo)/.test(key)) return 'thanhpham';
+  if(/^appwh-(wi|checkct|scan|donghang|sodo|kiemke)/.test(key)) return 'thanhpham';
   return null;
 }
 // Khoá lưu trữ riêng do tab nào ghi (giống appwh__key_tab trên máy chủ).
@@ -3207,6 +3462,7 @@ function tabCuaKhoa(key){
   if(/^appwh-scan/.test(key)) return ['scan'];
   if(/^appwh-donghang/.test(key)) return ['donghang'];
   if(/^appwh-sodo/.test(key)) return ['rack'];                 // Sơ đồ T2 CT (app Kho TP)
+  if(/^appwh-kiemke/.test(key)) return ['kiemke'];             // Kiểm kê kho thành phẩm
   return [];
 }
 function coSuaKhoa(key){
@@ -4160,6 +4416,7 @@ function switchTab(name){
   if(typeof flushEmpSave === 'function') flushEmpSave();       // lưu nốt bảng năng lực trước khi rời tab
   if(TAB_KHO_TP.includes(name)){ moAppKhoTP(name); return; }
   if(name === 'tangca' && activeTab !== 'tangca') vaoTangCa();
+  if(name === 'kiemke' && activeTab !== 'kiemke' && window.kiemKeTaiLai) kiemKeTaiLai();   // mở tab thì tải sổ kiểm kê mới nhất
   activeTab = name;
   document.querySelectorAll('.tabpage').forEach(el=>el.classList.remove('active'));
   $('tab-' + name).classList.add('active');
@@ -4286,6 +4543,10 @@ function applyTabVisibility(){
   // Tab Hỗ trợ / KK: có ở cả 3 kho; kho vải, kho phụ liệu không có mục kiểm kê nên chỉ ghi "Hỗ trợ"
   const btnHkk = document.querySelector('#tabNav button[data-tab="hotrokk"]');
   if(btnHkk) btnHkk.innerHTML = isTp ? '🤝 Hỗ trợ / KK' : '🤝 Hỗ trợ';
+  // Tab Kiểm kê: chỉ có ở kho thành phẩm (khách xem được, như các tab khác của kho)
+  const btnKk = document.querySelector('#tabNav button[data-tab="kiemke"]');
+  if(btnKk) btnKk.style.display = isTp ? '' : 'none';
+  if(!isTp && activeTab === 'kiemke') activeTab = 'dashboard';
   // Tab WI: chỉ có ở kho thành phẩm
   const btnWi = document.querySelector('#tabNav button[data-tab="wi"]');
   if(btnWi) btnWi.style.display = isTp ? '' : 'none';
@@ -4374,6 +4635,7 @@ function render(){
   if(activeTab === 'lichsu'){ renderHistoryFilterOptions(); renderHistory(); }
   if(activeTab === 'so5s') renderZones();
   if(activeTab === 'hotrokk') hkRender();
+  if(activeTab === 'kiemke') renderKiemKe();
   if(activeTab === 'wi') renderWI();
   if(activeTab === 'training') renderTraining();
   if(activeTab === 'doica') renderRotation();
@@ -12298,6 +12560,7 @@ function lsTenKhoa(key){
   if(/^appwh-wi/.test(key)) return 'Training kho thành phẩm';
   const t = /^appwh-training-(\w+)/.exec(key); if(t) return 'Training ' + khoName(t[1]).toLowerCase();
   if(/^appwh-checkct/.test(key)) return 'Check hàng';
+  if(/^appwh-kiemke/.test(key)) return 'Kiểm kê kho thành phẩm (sổ lỗi)';
   if(/^appwh-donghang/.test(key)) return 'Đóng hàng (danh mục mã hàng / xe)';
   if(/^appwh-scanos/.test(key)) return 'SCAN OS';
   if(/^appwh-scan/.test(key)) return 'SCAN';
@@ -13165,6 +13428,1307 @@ function xuatExcel(){
   toast(`✓ Đã xuất ${soVN(ds.length)} tài sản`);
 }
 })();
+
+</script>
+<script>/* js/modules/kiemke/kiemke-xuly.js */
+// Tab "📋 Kiểm kê" (kho thành phẩm) — phần XỬ LÝ DỮ LIỆU, không vẽ gì: chuẩn hoá tên người / loại lỗi,
+// đọc ngày, đọc file Excel sổ lỗi kiểm kê, so trùng khi nạp, lọc theo kỳ. Giao diện ở kiemke.js (nạp sau file này).
+// =====================================================================
+// Dữ liệu: khoá appwh-kiemke-v1 trên Supabase (giám sát kho thành phẩm, công nhân được cấp tab Kiểm kê = Sửa
+// ghi được — xem supabase/appwh-kiemke.sql):
+//   KK = { v:1, loi:[…], buoi:[…] }
+//   loi  : 1 dòng sổ lỗi = { id, ngay (ngày kiểm kê 'YYYY-MM-DD'), vtTT (vị trí thực tế), vtHT (vị trí hệ thống),
+//          sl (số thùng lệch, null = chưa ghi), ngayNhap ('YYYY-MM-DD' | ''), ngayNhapGoc (chữ gốc khi không đọc được ngày),
+//          nguoiNhap, nguoiCat, nguoiLoi (mã người mắc lỗi như trong sổ: N.Đ.CHÍ · APP LỖI · X), ghiChu,
+//          loai (loại lỗi, chữ in hoa), tt (thứ tự trong ngày), nguoiTao, lucTao, nguoiSua, lucSua }
+//   buoi : 1 lần kiểm kê = { id, ngay, nhan (AM / PM / (1)…), thung (số thùng đã kiểm), ghiChu }
+//          -> độ chính xác tồn kho = 1 − thùng sai / thùng đã kiểm
+// Người mắc lỗi KHÔNG lưu mã nhân viên: lúc vẽ mới so mã "N.Đ.CHÍ" với danh sách kho thành phẩm (viết tắt họ tên).
+// Có trong danh sách -> hiện họ tên đầy đủ; không có (người đã nghỉ trước khi dùng app) -> giữ nguyên mã như sổ.
+// =====================================================================
+const KK_KEY = 'appwh-kiemke-v1';
+// 3 loại lỗi chính (nhập / cất / chuyển vị trí) có màu riêng, các loại còn lại gộp "Khác" màu xám.
+// Màu theo LOẠI LỖI (không theo hạng) — lọc thế nào thì mỗi loại vẫn giữ đúng màu của nó.
+const KK_LOAI_CHINH = ['CẤT SAI VỊ TRÍ', 'NHẬP SAI', 'CHUYỂN VỊ TRÍ SAI'];
+const KK_MAU_LOAI = ['#2a78d6', '#eb6834', '#1baf7a'];       // xanh dương · cam · xanh ngọc (đã kiểm phân biệt được với người mù màu)
+const KK_MAU_KHAC = '#a3acb9';
+const KK_LOAI_MD = [...KK_LOAI_CHINH, 'KIỂM KÊ SAI', 'STOCK SAI', 'HẠ HÀNG XUẤT SAI', 'KO RÕ'];   // gợi ý ở form ghi lỗi
+const KK_CHUA_LOAI = 'CHƯA PHÂN LOẠI';
+// Người mắc lỗi không phải 1 cá nhân: tách riêng, không đưa vào bảng xếp hạng người
+const KK_NHOM_TEN = { app:'⚙ Lỗi app / hệ thống', khongro:'Không rõ người', bophan:'Bộ phận khác' };
+
+const kkChu = v => String(v == null ? '' : v).replace(/\s+/g, ' ').trim();
+const kkHoa = v => kkChu(v).normalize('NFC').toLocaleUpperCase('vi');
+const kkLoaiCua = r => r.loai || KK_CHUA_LOAI;
+const kkMauLoai = loai => { const i = KK_LOAI_CHINH.indexOf(loai); return i >= 0 ? KK_MAU_LOAI[i] : KK_MAU_KHAC; };
+const kkMoiId = () => 'k' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+// Số trong ô Excel: 7 · "7" · "1.234" · "1,234" -> số; trống / chữ -> null
+function kkSo(v){
+  if(typeof v === 'number') return isFinite(v) ? v : null;
+  const s = kkChu(v).replace(/[.,\s](?=\d{3}\b)/g, '');
+  if(!s) return null;
+  const n = Number(s.replace(',', '.'));
+  return isFinite(n) ? n : null;
+}
+
+// ---------------------------------------------------------------------
+// NGƯỜI MẮC LỖI
+// ---------------------------------------------------------------------
+// "Nguyễn Đình Chí" -> "N.Đ.CHÍ" (chữ đầu họ + đệm, tên viết hoa — đúng kiểu ghi trong sổ kiểm kê)
+function kkVietTat(ten){
+  const p = kkChu(ten).normalize('NFC').split(' ').filter(Boolean);
+  if(!p.length) return '';
+  const goi = p.pop().toLocaleUpperCase('vi');
+  return p.map(w => w[0].toLocaleUpperCase('vi')).concat(goi).join('.');
+}
+// Tên gọi in hoa (cột Người nhập / Người cất trong sổ): "Nguyễn Đình Chí" -> "CHÍ"
+const kkTenGoi = ten => { const p = kkChu(ten).normalize('NFC').split(' '); return (p[p.length - 1] || '').toLocaleUpperCase('vi'); };
+// Khoá so mã: bỏ khoảng trắng, dấu thanh dời về cuối từng chữ -> "HOÀ" = "HÒA", "N.Đ. CHÍ" = "N.Đ.CHÍ"
+const KK_THANH = { '̀':'2', '́':'1', '̃':'4', '̉':'3', '̣':'5' };
+function kkKhoa(s){
+  return kkHoa(s).replace(/\s+/g, '').split('.').filter(Boolean).map(w=>{
+    let t = '';
+    const goc = w.normalize('NFD').replace(/[̣̀́̃̉]/g, m=>{ t = KK_THANH[m]; return ''; }).normalize('NFC');
+    return goc + t;
+  }).join('.');
+}
+// 'nguoi' | 'app' (lỗi app / hệ thống) | 'khongro' (X, /, 0, KO RÕ, để trống) | 'bophan' (LINE, KIỂM ẨM…)
+function kkLoaiNguoi(ma){
+  const t = normName(ma);
+  if(!t || /^(x|\/|0|-|\?|k(o|hong)? ?ro|chua ro)$/.test(t)) return 'khongro';
+  if(/^app\b|he thong|phan mem|\bwms\b/.test(t)) return 'app';
+  if(/^(line|kiem am|kiem kim|qc|kcs|san xuat|xuong|bo phan)\b/.test(t)) return 'bophan';
+  return 'nguoi';
+}
+// Bảng tra viết tắt -> nhân viên kho thành phẩm (gồm cả người đã cắt tên: hồ sơ vẫn nằm trong HR)
+function kkBangNV(){
+  const m = new Map();
+  (HR.employees || []).filter(e=>e.warehouseId === 'thanhpham' && e.name).forEach(e=>{
+    const k = kkKhoa(kkVietTat(e.name));
+    if(!m.has(k)) m.set(k, []);
+    m.get(k).push(e);
+  });
+  return m;
+}
+// Mã người mắc lỗi -> { key, loai, ma, e (nhân viên | null), ten }
+//   key: 'nv:<mã NV>' (có trong danh sách) · 'ma:<khoá mã>' (ngoài danh sách) · 'app' / 'khongro' / 'bophan'
+function kkNguoi(ma, bang){
+  const loai = kkLoaiNguoi(ma), hoa = kkHoa(ma);
+  if(loai !== 'nguoi') return { key:loai, loai, ma:hoa, e:null, ten:KK_NHOM_TEN[loai] };
+  const k = kkKhoa(ma), ds = bang.get(k) || [];
+  // 2 người trùng viết tắt: lấy người đang làm (nếu chỉ có 1 người đang làm)
+  const dang = ds.filter(e=>!e.nghiViec);
+  const e = ds.length === 1 ? ds[0] : dang.length === 1 ? dang[0] : null;
+  return e ? { key:'nv:' + e.id, loai, ma:hoa, e, ten:e.name } : { key:'ma:' + k, loai, ma:hoa, e:null, ten:hoa };
+}
+
+// ---------------------------------------------------------------------
+// ĐỌC NGÀY
+// ---------------------------------------------------------------------
+function kkNgayHopLe(y, m, d){
+  if(!(y >= 2000 && y <= 2100 && m >= 1 && m <= 12 && d >= 1 && d <= new Date(y, m, 0).getDate())) return '';
+  return `${y}-${pad(m)}-${pad(d)}`;
+}
+// Ô Excel -> 'YYYY-MM-DD' ('' nếu không đọc được). Nhận: số (ngày kiểu Excel) · Date · chữ "7/4/26",
+// "07/04/2026 7:52:01 AM", "03/072026" (thiếu dấu /), "30/12/2025", "09/07 16:07" (không có năm).
+// moc ('YYYY-MM-DD', tuỳ chọn): ngày không được sau mốc (ngày nhập luôn trước ngày kiểm kê) — chữ đọc được
+// 2 cách (tháng/ngày hay ngày/tháng) thì lấy cách gần mốc nhất. Không có mốc: ưu tiên tháng/ngày (kiểu Excel
+// tiếng Anh của sổ hiện tại), trừ khi ra ngày ở tương lai.
+function kkDocNgay(v, moc){
+  if(v == null || v === '') return '';
+  if(v instanceof Date) return isNaN(v) ? '' : toKey(v);
+  if(typeof v === 'number'){
+    if(!(v >= 1) || !(window.XLSX && XLSX.SSF)) return '';
+    const d = XLSX.SSF.parse_date_code(v);
+    return d ? kkNgayHopLe(d.y, d.m, d.d) : '';
+  }
+  const s = kkChu(v);
+  let m = /^(\d{4})-(\d{1,2})-(\d{1,2})/.exec(s);
+  if(m) return kkNgayHopLe(+m[1], +m[2], +m[3]);
+  m = /^(\d{1,2})\s*[\/.\-]\s*(\d{1,2})(?:[\/.\-]?(\d{4})|[\/.\-](\d{2}))?(?!\d)/.exec(s);
+  if(!m) return '';
+  const a = +m[1], b = +m[2];
+  const nam = m[3] ? [+m[3]] : m[4] ? [2000 + +m[4]] : moc ? [+moc.slice(0, 4), +moc.slice(0, 4) - 1] : [new Date().getFullYear()];
+  const ung = [];
+  nam.forEach(y=>[kkNgayHopLe(y, a, b), kkNgayHopLe(y, b, a)].forEach(k=>{ if(k && !ung.includes(k)) ung.push(k); }));
+  if(!ung.length) return '';
+  const truoc = ung.filter(k=>k <= (moc || toKey(addDays(new Date(), 1))));
+  if(moc) return truoc.length ? truoc.sort().pop() : ung[0];
+  return truoc.length ? truoc[0] : ung[0];
+}
+const kkSoNgay = (tu, den) => Math.round((fromKey(den) - fromKey(tu)) / 864e5);
+
+// ---------------------------------------------------------------------
+// ĐỌC FILE EXCEL
+//   Sheet sổ lỗi: dòng tiêu đề (trong 15 dòng đầu) có "NGÀY KIỂM KÊ" + "NGƯỜI MẮC LỖI" / "LỖI" + "VỊ TRÍ…".
+//   Sheet "SỐ LƯỢNG": hàng "THÁNG 1 … THÁNG 12", dưới mỗi tháng 2 cột "NGÀY" / "TỔNG" (số thùng đã kiểm),
+//                     ngày ghi "1/23", "12/24 AM", "12/31 (1)" — không có năm: lấy năm ở tên sheet / tên file.
+//   Sheet danh sách buổi (file app xuất ra): tiêu đề "NGÀY KIỂM KÊ" + "SỐ THÙNG ĐÃ KIỂM".
+// ---------------------------------------------------------------------
+const kkGon = v => normName(v).replace(/[^a-z0-9]/g, '');
+const KK_COT = [
+  ['ngay',      g=>g.includes('ngaykiemke')],
+  ['vtTT',      g=>g.includes('vitrithucte')],
+  ['vtHT',      g=>g.includes('vitrihethong')],
+  ['sl',        g=>g.startsWith('soluong')],
+  ['ngayNhap',  g=>/^ngay(nhap|chuyen)/.test(g)],
+  ['nguoiNhap', g=>/^nguoi(nhap|chuyen)/.test(g)],
+  ['nguoiCat',  g=>g.startsWith('nguoicat')],
+  ['nguoiLoi',  g=>g.includes('nguoimacloi')],
+  ['ghiChu',    g=>g === 'ghichu'],
+  ['loai',      g=>g === 'loi' || g === 'loailoi'],
+  ['thung',     g=>/^(sothung|tongthung)/.test(g)],
+  ['nhan',      g=>g === 'nhan' || g === 'luot'],
+];
+function kkTimTieuDe(aoa){
+  for(let i = 0; i < Math.min(15, aoa.length); i++){
+    const vt = {}, dong = aoa[i] || [];
+    dong.forEach((v, j)=>{ const g = kkGon(v); if(g) KK_COT.forEach(([k, f])=>{ if(vt[k] == null && f(g)) vt[k] = j; }); });
+    // sheet cũ: loại lỗi ghi ở cột "GHI CHÚ 1"
+    if(vt.loai == null) dong.forEach((v, j)=>{ if(vt.loai == null && kkGon(v) === 'ghichu1') vt.loai = j; });
+    if(vt.ngay == null) continue;
+    if((vt.nguoiLoi != null || vt.loai != null) && (vt.vtTT != null || vt.vtHT != null)) return { dong:i, vt, loai:'loi' };
+    if(vt.thung != null) return { dong:i, vt, loai:'buoi' };
+  }
+  return null;
+}
+// Năm ghi trong chữ: "TOTAL 2025" · "LỖI KIỂM KÊ 2026.xlsx" -> 2025 / 2026 (không có thì null)
+const kkNamTrong = s => { const m = /(?:^|\D)(20\d{2})(?!\d)/.exec(String(s || '')); return m ? +m[1] : null; };
+
+// Bảng "SỐ LƯỢNG": [{ thang, ngayTrongThang, nhan, thung }] (chưa có năm) hoặc null
+function kkDocBangSoLuong(aoa){
+  for(let i = 0; i < Math.min(15, aoa.length - 1); i++){
+    const dau = aoa[i] || [], duoi = aoa[i + 1] || [], cot = [];
+    dau.forEach((v, j)=>{
+      const m = /^thang\s*0?(\d{1,2})$/.exec(normName(v));
+      if(m && +m[1] >= 1 && +m[1] <= 12 && kkGon(duoi[j]) === 'ngay' && kkGon(duoi[j + 1]) === 'tong') cot.push({ thang:+m[1], c:j });
+    });
+    if(cot.length < 2) continue;
+    const ds = [];
+    aoa.slice(i + 2).forEach(r=>cot.forEach(({ thang, c })=>{
+      const nv = r[c], chu = kkChu(nv);
+      if(!chu || /^tong/.test(normName(chu))) return;              // dòng "TỔNG T1", "TỔNG CẢ NĂM"
+      const thung = kkSo(r[c + 1]);
+      if(thung == null || thung <= 0) return;
+      let ngay = 0, nhan = '';
+      if(typeof nv === 'number'){ const k = kkDocNgay(nv); if(k) ngay = +k.slice(8); }
+      else{
+        const m = /^(\d{1,2})\s*[\/.\-]\s*(\d{1,2})\s*(.*)$/.exec(chu);
+        if(m){ const a = +m[1], b = +m[2]; ngay = a === thang ? b : b === thang ? a : b; nhan = kkChu(m[3]); }
+      }
+      if(ngay) ds.push({ thang, ngayTrongThang:ngay, nhan, thung });
+    }));
+    return ds;
+  }
+  return null;
+}
+
+// 1 sheet -> { ten, loai:'loi'|'buoi', nam (năm đoán được), ds, hong:[{ dong, ly }], canNam } hoặc null (không phải sổ)
+//   namGoiY: năm đoán từ tên file / sheet khác — dùng cho bảng SỐ LƯỢNG (ngày không ghi năm)
+function kkDocSheet(aoa, ten, namGoiY){
+  const hong = [];
+  const so = kkDocBangSoLuong(aoa);
+  if(so){
+    const nam = kkNamTrong(ten) || namGoiY || null;
+    return { ten, loai:'buoi', nam, tho:so, canNam:!kkNamTrong(ten), hong, ds: nam ? kkBuoiTheoNam(so, nam) : [] };
+  }
+  const td = kkTimTieuDe(aoa);
+  if(!td) return null;
+  const { vt } = td, lay = (r, k) => vt[k] == null ? '' : r[vt[k]];
+  const ds = [];
+  aoa.slice(td.dong + 1).forEach((r, i)=>{
+    r = r || [];
+    const dongEx = td.dong + 2 + i;                               // số dòng trong Excel (dòng 1 = dòng đầu)
+    const coGi = ['ngay', 'vtTT', 'vtHT', 'nguoiLoi', 'loai', 'ghiChu', 'thung'].some(k=>kkChu(lay(r, k)));
+    if(!coGi) return;
+    const ngay = kkDocNgay(lay(r, 'ngay'));
+    if(!ngay){ hong.push({ dong:dongEx, ly:`không đọc được ngày kiểm kê "${kkChu(lay(r, 'ngay')) || 'trống'}"` }); return; }
+    if(td.loai === 'buoi'){
+      const thung = kkSo(lay(r, 'thung'));
+      if(thung == null || thung <= 0){ hong.push({ dong:dongEx, ly:'không có số thùng đã kiểm' }); return; }
+      ds.push({ ngay, nhan:kkChu(lay(r, 'nhan')), thung, ghiChu:kkChu(lay(r, 'ghiChu')) });
+      return;
+    }
+    const nn = lay(r, 'ngayNhap'), ngayNhap = kkDocNgay(nn, ngay), nnChu = kkChu(nn);
+    ds.push({
+      ngay, vtTT:kkHoa(lay(r, 'vtTT')), vtHT:kkHoa(lay(r, 'vtHT')), sl:kkSo(lay(r, 'sl')),
+      ngayNhap, ngayNhapGoc: ngayNhap || /^[\/\-x0]?$/i.test(nnChu) ? '' : nnChu,
+      nguoiNhap:kkHoa(lay(r, 'nguoiNhap')), nguoiCat:kkHoa(lay(r, 'nguoiCat')), nguoiLoi:kkHoa(lay(r, 'nguoiLoi')),
+      ghiChu:kkChu(lay(r, 'ghiChu')), loai:kkHoa(lay(r, 'loai')), tt:dongEx,
+    });
+  });
+  const nams = [...new Set(ds.map(r=>+r.ngay.slice(0, 4)))].sort();
+  return { ten, loai:td.loai, nam:nams.length === 1 ? nams[0] : null, nams, ds, hong };
+}
+function kkBuoiTheoNam(tho, nam){
+  return tho.map(b=>({ ngay:kkNgayHopLe(nam, b.thang, b.ngayTrongThang), nhan:b.nhan, thung:b.thung, ghiChu:'' })).filter(b=>b.ngay);
+}
+// Sheet tổng của 1 năm ("2025", "TOTAL 2026", "TỔNG 2025"…) -> nạp mặc định. Sheet lẻ của từng buổi
+// (VD "11 09 2024", hay "TỔNG" chép lại vài dòng) mặc định bỏ qua — người nạp tự tick nếu muốn.
+const kkLaSheetNam = ten => /^(total|tong|tong hop|nam)? ?20\d{2}$/.test(normName(ten));
+// Cả workbook -> các sheet đọc được (sheet không phải sổ lỗi / bảng số lượng thì bỏ qua).
+// s.chon = có nạp mặc định không: bảng số lượng + sheet năm; file không có sheet năm nào thì nạp mọi sheet sổ lỗi.
+function kkDocWorkbook(wb, tenFile){
+  const namGoiY = kkNamTrong(tenFile) || wb.SheetNames.map(kkNamTrong).find(Boolean) || null;
+  const ds = wb.SheetNames.map(ten=>{
+    const aoa = XLSX.utils.sheet_to_json(wb.Sheets[ten], { header:1, raw:true, defval:'' });
+    const s = kkDocSheet(aoa, ten, namGoiY);
+    return s && (s.ds.length || s.hong.length || (s.loai === 'buoi' && s.tho.length)) ? s : null;
+  }).filter(Boolean);
+  const coSheetNam = ds.some(s=>s.loai === 'loi' && kkLaSheetNam(s.ten));
+  ds.forEach(s=>{ s.chon = s.loai === 'buoi' || kkLaSheetNam(s.ten) || !coSheetNam; });
+  return ds;
+}
+
+// ---------------------------------------------------------------------
+// SO TRÙNG KHI NẠP
+//   1 dòng lỗi = ngày kiểm kê + 2 vị trí + số lượng + người mắc lỗi. KHÔNG xét loại lỗi / ghi chú (2 cột hay được
+//   sửa lại cho gọn): nạp lại file cũ hơn không sinh dòng trùng.
+// ---------------------------------------------------------------------
+const kkKhoaLoi = r => [r.ngay, kkKhoa(r.vtTT), kkKhoa(r.vtHT), r.sl == null ? '' : r.sl, kkKhoa(r.nguoiLoi)].join('|');
+const kkKhoaBuoi = b => [b.ngay, kkKhoa(b.nhan), b.thung].join('|');
+// Gộp nhiều sheet / file: dòng có ở nhiều nơi (VD sheet "TỔNG" chép lại vài dòng của sheet năm) chỉ tính 1 lần —
+// mỗi khoá lấy số lần xuất hiện nhiều nhất trong 1 sheet; bản giữ lại là bản ở nguồn đứng trước (file mới sửa nhất)
+function kkGopNguon(dsTheoNguon, khoa){
+  const dem = new Map(), mau = new Map();
+  dsTheoNguon.forEach(ds=>{
+    const d = new Map();
+    ds.forEach(r=>{
+      const k = khoa(r), n = (d.get(k) || 0) + 1;
+      d.set(k, n);
+      if(!mau.has(k)) mau.set(k, []);
+      if(mau.get(k).length < n) mau.get(k).push(r);
+    });
+    d.forEach((n, k)=>dem.set(k, Math.max(dem.get(k) || 0, n)));
+  });
+  const kq = [];
+  mau.forEach((arr, k)=>arr.slice(0, dem.get(k)).forEach(r=>kq.push(r)));
+  return kq;
+}
+// File so với app (chỉ những năm có trong file): { moi:[dòng file chưa có], cap:[[dòng app, dòng file]], chiApp:[dòng app không có trong file] }
+function kkSoSanh(dsFile, dsApp, khoa){
+  const con = new Map();
+  dsApp.forEach(r=>{ const k = khoa(r); if(!con.has(k)) con.set(k, []); con.get(k).push(r); });
+  const moi = [], cap = [];
+  dsFile.forEach(r=>{ const arr = con.get(khoa(r)); if(arr && arr.length) cap.push([arr.shift(), r]); else moi.push(r); });
+  return { moi, cap, chiApp:[].concat(...con.values()) };
+}
+
+// ---------------------------------------------------------------------
+// LỌC / KỲ
+// ---------------------------------------------------------------------
+// Kỳ đang xem: cả năm hoặc 1 tháng; kỳ đang chạy thì tính tới hôm nay -> { tu, den, dangChay, soThang }
+function kkKy(nam, thang){
+  const homNay = todayKey();
+  let tu = thang ? `${nam}-${pad(thang)}-01` : `${nam}-01-01`;
+  let den = thang ? toKey(new Date(nam, thang, 0)) : `${nam}-12-31`;
+  const dangChay = tu <= homNay && homNay < den;
+  if(dangChay) den = homNay;
+  const soThang = thang ? 1 : tu > homNay ? 0 : dangChay ? Number(homNay.slice(5, 7)) : 12;
+  return { tu, den, dangChay, soThang };
+}
+// Cùng kỳ năm trước (29/02 -> 28/02)
+function kkKyTruoc(ky){
+  const lui = k => { const y = +k.slice(0, 4) - 1, m = +k.slice(5, 7), d = Math.min(+k.slice(8), new Date(y, m, 0).getDate()); return `${y}-${pad(m)}-${pad(d)}`; };
+  return { tu:lui(ky.tu), den:lui(ky.den), dangChay:false, soThang:ky.soThang };
+}
+// o: { tu, den, loai, nguoi } (bỏ trống = không lọc) · keyNguoi(r): key người mắc lỗi của dòng (xem kkNguoi)
+function kkLoc(ds, o, keyNguoi){
+  return ds.filter(r=>(!o.tu || r.ngay >= o.tu) && (!o.den || r.ngay <= o.den)
+    && (!o.loai || kkLoaiCua(r) === o.loai) && (!o.nguoi || keyNguoi(r) === o.nguoi));
+}
+const kkTongSl = ds => ds.reduce((s, r)=>s + (Number(r.sl) || 0), 0);
+// Trung vị số ngày từ lúc nhập / chuyển tới lúc kiểm kê phát hiện lỗi (bỏ dòng không có ngày nhập)
+function kkTreTrungVi(ds){
+  const a = ds.filter(r=>r.ngayNhap && r.ngayNhap <= r.ngay).map(r=>kkSoNgay(r.ngayNhap, r.ngay)).sort((x, y)=>x - y);
+  if(!a.length) return null;
+  const g = Math.floor(a.length / 2);
+  return a.length % 2 ? a[g] : (a[g - 1] + a[g]) / 2;
+}
+
+</script>
+<script>/* js/modules/kiemke/kiemke.js */
+// Tab "📋 Kiểm kê" (kho thành phẩm) — báo cáo sổ lỗi kiểm kê theo năm / tháng + danh sách lỗi.
+// Đọc / chuẩn hoá / so trùng dữ liệu: kiemke-xuly.js (nạp trước file này).
+// =====================================================================
+// Bố cục từ trên xuống:
+//   Thanh lọc  : Năm · Tháng · Đo theo (số lỗi / số thùng sai) · lọc loại lỗi / người (bấm vào biểu đồ để chọn)
+//   4 thẻ số   : Tổng số lỗi · Thùng sai lệch · Ngày kiểm kê · Độ chính xác tồn kho — so với cùng kỳ năm trước
+//   📌 Điểm chính: vài câu tóm tắt tự sinh
+//   Lỗi theo tháng (cột chồng theo loại lỗi, bóng xám = cùng kỳ năm trước, dưới tháng = số ngày kiểm kê)
+//     + Xếp hạng loại lỗi (kiểu Pareto: vài loại đầu chiếm phần lớn số lỗi)
+//   Xếp hạng người mắc lỗi, kèm ô màu từng tháng (đậm = nhiều lỗi) để thấy ai đang tiến bộ
+//   Danh sách lỗi (tìm, sửa, xoá)
+// Lọc chéo: bấm cột tháng / loại lỗi / người = lọc cả trang. Riêng biểu đồ của chính chiều đó không bị lọc mà tô
+// đậm mục đang chọn (VD đang lọc 1 người: bảng xếp hạng người vẫn đủ người, dòng người đó được tô).
+// Ngày kiểm kê = ngày có buổi kiểm kê (số thùng đã kiểm) hoặc có ghi lỗi — tính cho cả kho, không theo bộ lọc.
+// Độ chính xác tồn kho = 1 − thùng sai / thùng đã kiểm (cả kho). Chuẩn ngành: 97 – 99% là tốt, từ 99,5% là xuất sắc.
+// Quyền sửa: coSuaTab('thanhpham', 'kiemke'). Khách và tài khoản chỉ xem: xem được, không có nút sửa / nạp.
+// Mỗi lần ghi: đọc bản mới nhất trên máy chủ -> sửa -> ghi + đọc lại (2 người cùng sửa không mất của nhau).
+// =====================================================================
+let KK = null, KK_TAI = false, KK_DANG_TAI = false;
+const KKL = { nam:null, thang:0, loai:'', nguoi:'', do:'loi', tim:'', hetNguoi:false, soDong:30 };
+let KK_NG = new Map();                  // id dòng lỗi -> người mắc lỗi (kkNguoi), tính lại mỗi lần vẽ
+let KK_BANG = [];                       // dòng lỗi của danh sách (đủ bộ lọc, chưa lọc chữ tìm)
+let KK_NGAY_CUOI = '';                  // ngày kiểm kê vừa ghi — lần ghi lỗi sau lấy sẵn ngày này
+const KK_MAU_TRUOC = '#e3e8ef';         // bóng cột cùng kỳ năm trước
+const KK_COT_XUAT = ['STT', 'NGÀY KIỂM KÊ', 'VỊ TRÍ THỰC TẾ', 'VỊ TRÍ HỆ THỐNG', 'SỐ LƯỢNG + & -', 'NGÀY NHẬP / CHUYỂN',
+  'NGƯỜI NHẬP / CHUYỂN', 'NGƯỜI CẤT', 'NGƯỜI MẮC LỖI', 'GHI CHÚ', 'LỖI'];
+
+const kkSoVN = (n, so, du) => Number(n || 0).toLocaleString('vi-VN', { minimumFractionDigits:du ? so : 0, maximumFractionDigits:so || 0 });
+const kkNgayVN = k => k ? fmtVN(fromKey(k)) : '';
+const kkThung = () => KKL.do === 'thung';
+const kkGT = r => kkThung() ? (Number(r.sl) || 0) : 1;             // giá trị 1 dòng theo cách đo đang chọn
+const kkDV = () => kkThung() ? 'thùng sai' : 'lỗi';
+const kkNg = r => KK_NG.get(r.id) || kkNguoi(r.nguoiLoi, kkBangNV());
+const kkKeyNg = r => kkNg(r).key;
+const kkLocDs = o => kkLoc(KK.loi, o, kkKeyNg);
+const kkCuaNam = (ds, y) => ds.filter(x=>x.ngay.startsWith(y + '-'));
+const kkDuocSua = () => coSuaTab('thanhpham', 'kiemke');
+const kkDau = () => ({ nguoiTao:(AUTH.user && AUTH.user.username) || '', lucTao:new Date().toISOString() });
+const kkDauSua = () => ({ nguoiSua:(AUTH.user && AUTH.user.username) || '', lucSua:new Date().toISOString() });
+
+// ---------------------------------------------------------------------
+// TẢI / GHI
+// ---------------------------------------------------------------------
+function kkChuan(o){
+  return { v:1, loi:Array.isArray(o && o.loi) ? o.loi.filter(r=>r && r.id && r.ngay) : [],
+           buoi:Array.isArray(o && o.buoi) ? o.buoi.filter(b=>b && b.id && b.ngay) : [] };
+}
+async function kkDocServer(){ const raw = await sbGet(KK_KEY); return kkChuan(raw ? JSON.parse(raw) : null); }
+async function kkTai(){
+  try{ KK = await kkDocServer(); lsSet(KK_KEY, JSON.stringify(KK)); }
+  catch(e){
+    try{ KK = kkChuan(JSON.parse(lsGet(KK_KEY) || 'null')); }catch(_){ KK = kkChuan(null); }
+    toast('⚠ Không tải được sổ kiểm kê từ máy chủ — đang xem bản lưu trên máy này');
+  }
+  KK_TAI = true;
+}
+// sua(o) chỉnh thẳng bản mới nhất trên máy chủ; trả false = huỷ (không ghi)
+async function kkGhi(sua){
+  try{
+    const o = await kkDocServer();
+    const kq = sua(o);
+    if(kq === false) return false;
+    const raw = JSON.stringify(o);
+    await sbSetVerified(KK_KEY, raw);
+    lsSet(KK_KEY, raw); KK = o;
+    return kq === undefined ? true : kq;
+  }catch(e){
+    toast('⚠ Chưa lưu được lên máy chủ: ' + (e.message || e));
+    return false;
+  }
+}
+
+// ---------------------------------------------------------------------
+// SỐ LIỆU
+// ---------------------------------------------------------------------
+const kkCoDL = y => KK.loi.some(r=>r.ngay.startsWith(y + '-')) || KK.buoi.some(b=>b.ngay.startsWith(y + '-'));
+function kkCacNam(){
+  const s = new Set([new Date().getFullYear()]);
+  KK.loi.concat(KK.buoi).forEach(x=>s.add(+x.ngay.slice(0, 4)));
+  return [...s].sort((a, b)=>a - b);
+}
+// Cả kho trong 1 kỳ (không theo bộ lọc người / loại): ngày kiểm kê, số thùng đã kiểm, thùng sai
+function kkKho(ky){
+  const loi = KK.loi.filter(r=>r.ngay >= ky.tu && r.ngay <= ky.den);
+  const buoi = KK.buoi.filter(b=>b.ngay >= ky.tu && b.ngay <= ky.den);
+  return { loi, buoi, ngay:new Set(loi.map(r=>r.ngay).concat(buoi.map(b=>b.ngay))),
+           kiem:buoi.reduce((s, b)=>s + (Number(b.thung) || 0), 0), sai:kkTongSl(loi) };
+}
+// Đếm theo loại lỗi -> [{ loai, v, n, thung }] nhiều nhất trước
+function kkDemLoai(ds){
+  const m = new Map();
+  ds.forEach(r=>{ const l = kkLoaiCua(r); const x = m.get(l) || { loai:l, v:0, n:0, thung:0 }; x.v += kkGT(r); x.n++; x.thung += Number(r.sl) || 0; m.set(l, x); });
+  return [...m.values()].sort((a, b)=>b.v - a.v || b.n - a.n);
+}
+// 12 tháng của 1 năm (lọc loại / người, không lọc tháng): cột chồng theo loại + cùng kỳ năm trước + số ngày kiểm kê
+function kkSoThang(nam){
+  const lo = { loai:KKL.loai, nguoi:KKL.nguoi };
+  const Y = kkLocDs({ tu:`${nam}-01-01`, den:`${nam}-12-31`, ...lo }), YT = kkLocDs({ tu:`${nam - 1}-01-01`, den:`${nam - 1}-12-31`, ...lo });
+  const ngay = Array.from({ length:12 }, ()=>new Set());
+  kkCuaNam(KK.loi.concat(KK.buoi), nam).forEach(x=>ngay[+x.ngay.slice(5, 7) - 1].add(x.ngay));
+  return Array.from({ length:12 }, (_, i)=>{
+    const m = i + 1, trong = Y.filter(r=>+r.ngay.slice(5, 7) === m);
+    const nhom = KK_LOAI_CHINH.map((l, j)=>({ ten:l, mau:KK_MAU_LOAI[j], v:0 })).concat([{ ten:'Khác', mau:KK_MAU_KHAC, v:0 }]);
+    trong.forEach(r=>{ const j = KK_LOAI_CHINH.indexOf(kkLoaiCua(r)); nhom[j >= 0 ? j : 3].v += kkGT(r); });
+    return { m, nhom, tong:nhom.reduce((s, g)=>s + g.v, 0), n:trong.length, thung:kkTongSl(trong), ngay:ngay[i].size,
+             truoc:YT.filter(r=>+r.ngay.slice(5, 7) === m).reduce((s, r)=>s + kkGT(r), 0) };
+  });
+}
+// Theo người: N = dòng trong kỳ (lọc loại), NY = cả năm (lọc loại) cho ô từng tháng
+function kkNhomNguoi(N, NY){
+  const m = new Map();
+  const lay = r=>{ const ng = kkNg(r); let p = m.get(ng.key);
+    if(!p){ p = { ng, v:0, n:0, thung:0, loai:new Map(), thang:Array(12).fill(0), ma:new Set() }; m.set(ng.key, p); }
+    p.ma.add(kkHoa(r.nguoiLoi) || '(trống)'); return p; };
+  N.forEach(r=>{ const p = lay(r), l = kkLoaiCua(r); p.v += kkGT(r); p.n++; p.thung += Number(r.sl) || 0; p.loai.set(l, (p.loai.get(l) || 0) + 1); });
+  NY.forEach(r=>{ lay(r).thang[+r.ngay.slice(5, 7) - 1] += kkGT(r); });
+  const ds = [...m.values()];
+  return {
+    nguoi:ds.filter(p=>p.ng.loai === 'nguoi' && p.n > 0).sort((a, b)=>b.v - a.v || b.n - a.n || a.ng.ten.localeCompare(b.ng.ten, 'vi')),
+    nhom:['app', 'khongro', 'bophan'].map(k=>m.get(k)).filter(p=>p && p.n > 0),
+  };
+}
+// STT theo thứ tự thời gian trong năm (giống cột STT của sổ)
+function kkStt(){
+  const m = new Map(), dem = {};
+  KK.loi.slice().sort((a, b)=>a.ngay.localeCompare(b.ngay) || (a.tt || 0) - (b.tt || 0)).forEach(r=>{
+    const y = r.ngay.slice(0, 4); dem[y] = (dem[y] || 0) + 1; m.set(r.id, dem[y]); });
+  return m;
+}
+// Mã chưa khớp ai, không có chữ viết tắt (VD "TUYỀN") mà trùng tên gọi đúng 1 người kho thành phẩm -> gợi ý gộp
+function kkGoiYGop(ng){
+  if(ng.loai !== 'nguoi' || ng.e || ng.ma.includes('.')) return null;
+  const k = kkKhoa(ng.ma);
+  const ds = (HR.employees || []).filter(e=>e.warehouseId === 'thanhpham' && e.name && kkKhoa(kkTenGoi(e.name)) === k);
+  return ds.length === 1 ? ds[0] : null;
+}
+// Dữ liệu cần xem lại: ngày nhập sau ngày kiểm kê (hay gõ nhầm ngày / tháng), chưa ghi số lượng, tên ghi thiếu
+function kkCanXem(){
+  const sauNgay = KK.loi.filter(r=>r.ngayNhap && r.ngayNhap > r.ngay);
+  const thieuSl = KK.loi.filter(r=>r.sl == null);
+  const ten = new Map();
+  KK.loi.forEach(r=>{ const ng = kkNg(r), g = kkGoiYGop(ng);
+    if(g){ const x = ten.get(ng.key) || { key:ng.key, ma:ng.ma, n:0, e:g }; x.n++; ten.set(ng.key, x); } });
+  return { sauNgay, thieuSl, ten:[...ten.values()], tong:sauNgay.length + thieuSl.length + ten.size };
+}
+
+// ---------------------------------------------------------------------
+// VẼ
+// ---------------------------------------------------------------------
+async function renderKiemKe(){
+  const box = $('kkBox'); if(!box) return;
+  if(!KK_TAI){
+    if(KK_DANG_TAI) return;
+    KK_DANG_TAI = true;
+    box.innerHTML = '<p class="empty-msg">Đang tải sổ lỗi kiểm kê…</p>';
+    try{ await kkTai(); }finally{ KK_DANG_TAI = false; }
+    if(VIEW !== 'kho' || activeTab !== 'kiemke') return;
+  }
+  kkVe();
+}
+window.renderKiemKe = renderKiemKe;
+window.kiemKeTaiLai = ()=>{ KK_TAI = false; };
+
+function kkVe(){
+  const box = $('kkBox'); if(!box || !KK) return;
+  ovTipXoa();
+  const bang = kkBangNV();
+  KK_NG = new Map(KK.loi.map(r=>[r.id, kkNguoi(r.nguoiLoi, bang)]));
+  const sua = kkDuocSua(), nams = kkCacNam();
+  if(!nams.includes(KKL.nam)){ const nay = new Date().getFullYear(); KKL.nam = kkCoDL(nay) ? nay : (nams.filter(kkCoDL).pop() || nay); }
+  if(!KK.loi.length && !KK.buoi.length){ box.innerHTML = kkHtmlTrong(sua); return; }
+  const nam = KKL.nam, ky = kkKy(nam, KKL.thang), kyT = kkKyTruoc(ky), coTruoc = kkCoDL(nam - 1);
+  const lo = { loai:KKL.loai, nguoi:KKL.nguoi };
+  const S = kkLocDs({ tu:ky.tu, den:ky.den, ...lo });
+  const T = coTruoc ? kkLocDs({ tu:kyT.tu, den:kyT.den, ...lo }) : null;
+  const kho = kkKho(ky), khoT = coTruoc ? kkKho(kyT) : null;
+  const M = kkSoThang(nam);
+  const P = kkLocDs({ tu:ky.tu, den:ky.den, nguoi:KKL.nguoi });                    // loại lỗi: không lọc loại
+  const G = kkNhomNguoi(kkLocDs({ tu:ky.tu, den:ky.den, loai:KKL.loai }),          // người: không lọc người
+                        kkLocDs({ tu:`${nam}-01-01`, den:`${nam}-12-31`, loai:KKL.loai }));
+  KK_BANG = S;
+  const tenNg = KKL.nguoi ? ([...KK_NG.values()].find(n=>n.key === KKL.nguoi) || { ten:'(người này không còn lỗi nào)' }).ten : '';
+  const C = { nam, ky, S, T, kho, khoT, M, P, G, coTruoc, sua, tenNg };
+  const can = sua ? kkCanXem().tong : 0;
+  const tenKy = (KKL.thang ? `Tháng ${KKL.thang}/${nam}` : `Năm ${nam}`) + ` · ${kkNgayVN(ky.tu)} – ${kkNgayVN(ky.den)}${ky.dangChay ? ' (tới hôm nay)' : ''}`;
+  box.innerHTML = `
+    ${kkHtmlThanh(nams, sua, can, tenNg)}
+    <div class="kk-tieude"><h2>Báo cáo lỗi kiểm kê — Kho thành phẩm</h2><span>${esc(tenKy)}${KKL.loai ? ' · loại lỗi ' + esc(KKL.loai) : ''}${tenNg ? ' · ' + esc(tenNg) : ''}</span></div>
+    ${kkHtmlKpi(C)}
+    ${kkHtmlDiem(C)}
+    <div class="kk-hang">
+      <section class="kk-card">
+        <div class="kk-h"><b>${kkThung() ? 'Thùng sai' : 'Số lỗi'} theo tháng — ${nam}</b>
+          <span class="kk-lg">${KK_LOAI_CHINH.map((l, i)=>`<span><i style="background:${KK_MAU_LOAI[i]}"></i>${esc(l)}</span>`).join('')}
+            <span><i style="background:${KK_MAU_KHAC}"></i>Khác</span>${coTruoc ? `<span><i class="truoc"></i>Cùng kỳ ${nam - 1}</span>` : ''}</span></div>
+        <div class="kk-chart" id="kkThang"></div>
+        <div class="kk-ghi">Dưới tên tháng = số ngày kiểm kê trong tháng · bấm 1 cột để xem riêng tháng đó</div>
+      </section>
+      <section class="kk-card">
+        <div class="kk-h"><b>Xếp hạng loại lỗi</b><span class="kk-ghi kk-phai">bấm 1 loại để lọc</span></div>
+        ${kkHtmlLoai(P)}
+      </section>
+    </div>
+    <section class="kk-card">
+      <div class="kk-h"><b>Xếp hạng người mắc lỗi</b><span class="kk-ghi kk-phai">ô màu = ${kkDV()} từng tháng ${nam} · bấm 1 người để lọc cả trang</span></div>
+      ${kkHtmlNguoi(G, sua)}
+    </section>
+    <section class="kk-card kk-ds">
+      <div class="kk-h"><b>Danh sách lỗi</b><span class="kk-ghi" id="kkDem"></span>
+        <input type="search" id="kkTim" placeholder="🔍 Tìm vị trí, người, ghi chú…" autocomplete="off" value="${esc(KKL.tim)}"></div>
+      <div id="kkBang"></div>
+    </section>`;
+  $('kkTim').oninput = ()=>{ KKL.tim = $('kkTim').value.trim(); KKL.soDong = 30; kkVeBang(); };
+  kkVeThang(M, coTruoc);
+  kkVeBang();
+}
+
+function kkHtmlTrong(sua){
+  return `<div class="kk-trong-lon"><div class="ic">📋</div><h3>Chưa có dữ liệu kiểm kê</h3>
+    ${sua ? `<p>Bấm <b>⬆ Nạp Excel</b> rồi chọn file <b>LỖI KIỂM KÊ.xlsx</b> (sheet 2025, 2026). Muốn có <b>độ chính xác tồn kho</b>
+      thì chọn thêm các file có sheet <b>SỐ LƯỢNG</b> (số thùng đã kiểm mỗi buổi). Chọn nhiều file 1 lần được — dòng trùng tự bỏ qua.</p>
+      <div class="nut"><button data-kk-act="nap">⬆ Nạp Excel</button><button class="secondary" data-kk-act="them">＋ Ghi lỗi</button></div>`
+      : '<p>Người quản lý kho chưa nạp sổ lỗi kiểm kê.</p>'}</div>`;
+}
+
+function kkHtmlThanh(nams, sua, can, tenNg){
+  const nut = (k, v, cur, txt) => `<button data-kk-${k}="${esc(v)}" class="${String(v) === String(cur) ? 'on' : ''}">${txt}</button>`;
+  const chip = (bo, mau, txt) => `<span class="kk-chip">${mau ? `<i style="background:${mau}"></i>` : ''}${esc(txt)}<button data-kk-bo="${bo}" title="Bỏ lọc">✕</button></span>`;
+  return `<div class="kk-bar">
+    <div class="kk-seg" role="group" aria-label="Năm">${nams.map(y=>nut('nam', y, KKL.nam, y)).join('')}</div>
+    <select data-kk-chon="thang" aria-label="Tháng"><option value="0">Cả năm</option>${Array.from({ length:12 }, (_, i)=>
+      `<option value="${i + 1}"${KKL.thang === i + 1 ? ' selected' : ''}>Tháng ${i + 1}</option>`).join('')}</select>
+    <div class="kk-seg" role="group" aria-label="Đo theo" title="Đếm theo số lỗi hay số thùng sai lệch">${nut('do', 'loi', KKL.do, 'Số lỗi')}${nut('do', 'thung', KKL.do, 'Số thùng sai')}</div>
+    ${KKL.loai ? chip('loai', kkMauLoai(KKL.loai), KKL.loai) : ''}${KKL.nguoi ? chip('nguoi', '', tenNg) : ''}
+    <span class="kk-sp"></span>
+    ${sua ? '<button class="sm" data-kk-act="them">＋ Ghi lỗi</button>' : ''}
+    <button class="secondary sm" data-kk-act="buoi" title="Số thùng đã kiểm của từng buổi — để tính độ chính xác tồn kho">📅 Buổi kiểm kê</button>
+    ${sua ? '<button class="secondary sm" data-kk-act="nap" title="Nạp file Excel sổ lỗi kiểm kê (chọn được nhiều file)">⬆ Nạp Excel</button>' : ''}
+    ${can ? `<button class="sm kk-can" data-kk-act="kiemtra" title="Dòng có ngày nhập sau ngày kiểm kê, chưa ghi số lượng, tên người ghi thiếu">⚠ Cần xem lại · ${can}</button>` : ''}
+    <button class="ghost sm" data-kk-act="xuat" title="Xuất báo cáo năm đang xem ra Excel">⬇ Excel</button>
+    <button class="ghost sm" data-kk-act="in" title="In báo cáo / lưu PDF">🖨 In / PDF</button>
+  </div>`;
+}
+
+// ---- 4 thẻ số ----
+// Mức chênh so với cùng kỳ: nền nhỏ (dưới 10) thì ghi số chênh — % dễ gây hiểu lầm (1 -> 10 lỗi = +900%)
+const kkChenh = (nay, truoc, dv) => truoc < 10 ? `${kkSoVN(Math.abs(nay - truoc))} ${dv}` : `${Math.abs(Math.round((nay - truoc) / truoc * 100))}%`;
+// So với cùng kỳ: ít hơn = tốt (▼ xanh), nhiều hơn = xấu (▲ đỏ) — luôn kèm mũi tên + chữ, không chỉ dựa vào màu
+function kkSS(nay, truoc, ten, dv){
+  if(truoc == null) return '';
+  if(nay === truoc) return `<span class="kk-ss">= bằng ${ten}</span> (${kkSoVN(truoc)})`;
+  const tang = nay > truoc;
+  return `<span class="kk-ss ${tang ? 'xau' : 'tot'}">${tang ? '▲ tăng' : '▼ giảm'} ${kkChenh(nay, truoc, dv)}</span> so với ${ten} (${kkSoVN(truoc)})`;
+}
+function kkThe(k, v, dv, ss, dong, cls, them){
+  return `<div class="kk-the${cls ? ' ' + cls : ''}">
+    <div class="k">${k}</div>
+    <div class="v"><b>${v}</b>${dv ? `<span>${dv}</span>` : ''}</div>
+    ${ss ? `<div class="d">${ss}</div>` : ''}${them || ''}
+    <div class="l">${dong.filter(Boolean).map(([a, b])=>`<div><span>${a}</span><b>${b}</b></div>`).join('')}</div>
+  </div>`;
+}
+function kkHtmlKpi(C){
+  const { nam, ky, S, T, kho, khoT, sua } = C, ten = `cùng kỳ ${nam - 1}`;
+  const tb = (a, b) => b ? kkSoVN(a / b, 1) : '—';
+  const nLoi = S.length, sai = kkTongSl(S), ngay = kho.ngay.size, thieu = S.filter(r=>r.sl == null).length;
+  const the1 = kkThe('Tổng số lỗi', kkSoVN(nLoi), 'lỗi', kkSS(nLoi, T && T.length, ten, 'lỗi'), [
+    !KKL.thang && ky.soThang ? ['TB mỗi tháng', tb(nLoi, ky.soThang) + ' lỗi'] : null,
+    ['TB mỗi ngày kiểm kê', ngay ? tb(nLoi, ngay) + ' lỗi' : '—'] ]);
+  const the2 = kkThe('Thùng sai lệch', kkSoVN(sai), 'thùng', kkSS(sai, T && kkTongSl(T), ten, 'thùng'), [
+    ['TB mỗi lỗi', nLoi - thieu ? tb(sai, nLoi - thieu) + ' thùng' : '—'],
+    thieu ? ['Chưa ghi số lượng', thieu + ' lỗi'] : null ]);
+  const tre = kkTreTrungVi(S);
+  const the3 = kkThe('Ngày kiểm kê', kkSoVN(ngay), 'ngày', khoT ? `${ten}: ${kkSoVN(khoT.ngay.size)} ngày` : '', [
+    !KKL.thang && ky.soThang ? ['TB mỗi tháng', tb(ngay, ky.soThang) + ' ngày'] : null,
+    ['Buổi có số thùng đã kiểm', kkSoVN(kho.buoi.length) + ' buổi'],
+    tre != null ? ['Lỗi phát hiện sau (trung vị)', kkSoVN(tre, 1) + ' ngày'] : null ]);
+  // độ chính xác: cả kho, không theo bộ lọc người / loại lỗi
+  const kc = kho.kiem ? (1 - kho.sai / kho.kiem) * 100 : null;
+  const kcT = khoT && khoT.kiem ? (1 - khoT.sai / khoT.kiem) * 100 : null;
+  const muc = kc == null ? '' : kc >= 99.5 ? 'tot' : kc >= 97 ? 'kha' : 'kem';
+  const nhanMuc = { tot:'✓ Xuất sắc · chuẩn ≥ 99,5%', kha:'• Đạt · chuẩn 97 – 99,5%', kem:'⚠ Dưới chuẩn 97%' }[muc];
+  let ss4 = '';
+  if(kc != null && kcT != null){ const d = kc - kcT, cu = `(${kkSoVN(kcT, 2, true)}%)`;
+    ss4 = Math.abs(d) < 0.005 ? `<span class="kk-ss">≈ bằng ${ten}</span> ${cu}`
+      : `<span class="kk-ss ${d > 0 ? 'tot' : 'xau'}">${d > 0 ? '▲ tăng' : '▼ giảm'} ${kkSoVN(Math.abs(d), 2, true)} điểm %</span> so với ${ten} ${cu}`; }
+  const the4 = kkThe('Độ chính xác tồn kho', kc == null ? '—' : kkSoVN(kc, 2, true) + '%', '', ss4, kc == null
+    ? [['Chưa nhập số thùng đã kiểm', '']]
+    : [['Thùng sai / 10.000 thùng kiểm', kkSoVN(kho.sai / kho.kiem * 1e4, 1)], ['Thùng đã kiểm', kkSoVN(kho.kiem)]],
+    'cx ' + muc,
+    (nhanMuc ? `<span class="kk-muc ${muc}">${nhanMuc}</span>` : '')
+    + (kc == null && sua ? '<button class="secondary sm kk-the-nut" data-kk-act="buoi">＋ Nhập số thùng đã kiểm</button>' : '')
+    + (KKL.loai || KKL.nguoi ? '<div class="kk-the-ghi">Tính cho cả kho (không theo bộ lọc)</div>' : ''));
+  return `<div class="kk-kpi">${the1}${the2}${the3}${the4}</div>`;
+}
+
+// ---- 📌 Điểm chính (câu tóm tắt tự sinh) ----
+function kkHtmlDiem(C){
+  const { nam, S, T, M, G } = C;
+  if(!S.length) return '';
+  const dv = kkDV(), tong = S.reduce((s, r)=>s + kkGT(r), 0), y = [];
+  const pt = v => tong ? Math.round(v / tong * 100) : 0;
+  const L = kkDemLoai(S);
+  if(L.length > 1 && tong){
+    let luy = 0, k = 0; while(k < L.length && luy / tong < .8){ luy += L[k].v; k++; }
+    y.push(k === 1 ? `Riêng lỗi <b>${esc(L[0].loai)}</b> đã chiếm <b>${pt(L[0].v)}%</b> ${dv}`
+      : `<b>${k} loại lỗi</b> chiếm <b>${pt(luy)}%</b> ${dv}: ${L.slice(0, k).map(x=>`${esc(x.loai)} (${kkSoVN(x.v)})`).join(', ')} — ưu tiên xử lý trước`);
+  }
+  if(!KKL.thang){
+    const dinh = M.slice().sort((a, b)=>b.tong - a.tong)[0];
+    if(dinh && dinh.tong) y.push(`Tháng nhiều ${dv} nhất: <b>T${dinh.m}</b> — ${kkSoVN(dinh.tong)} ${dv}${dinh.ngay ? ` trong ${dinh.ngay} ngày kiểm kê` : ''}`);
+  }
+  if(!KKL.nguoi){
+    const p = G.nguoi[0];
+    if(p && p.v){ const hay = [...p.loai.entries()].sort((a, b)=>b[1] - a[1])[0];
+      y.push(`Mắc nhiều nhất: <b>${esc(p.ng.ten)}</b> — ${kkSoVN(p.v)} ${dv} (${pt(p.v)}%)${hay ? `, hay mắc <i>${esc(hay[0])}</i>` : ''}`); }
+    const app = G.nhom.find(p=>p.ng.key === 'app');
+    if(app && app.v) y.push(`<b>${kkSoVN(app.v)} ${dv} do app / hệ thống</b> (${pt(app.v)}%) — không tính cho cá nhân nào`);
+    const kr = G.nhom.find(p=>p.ng.key === 'khongro');
+    if(kr && kr.v) y.push(`${kkSoVN(kr.v)} ${dv} chưa rõ người mắc (${pt(kr.v)}%)`);
+  }
+  if(T && T.length){
+    const a = S.reduce((s, r)=>s + kkGT(r), 0), b = T.reduce((s, r)=>s + kkGT(r), 0);
+    if(b) y.push(`So với cùng kỳ ${nam - 1}: ${dv} ${a < b ? 'giảm' : a > b ? 'tăng' : 'không đổi'}${a !== b ? ` <b>${kkChenh(a, b, dv)}</b>` : ''} (${kkSoVN(b)} → ${kkSoVN(a)})`);
+  }
+  return y.length ? `<div class="kk-diem"><b>📌 Điểm chính</b><ul>${y.map(x=>`<li>${x}</li>`).join('')}</ul></div>` : '';
+}
+
+// ---- Biểu đồ cột theo tháng ----
+// Mỗi tháng: bóng xám (cùng kỳ năm trước) phía sau + cột chồng theo loại lỗi (3 loại chính + Khác), số trên đầu cột
+// = tổng tháng, dưới tên tháng = số ngày kiểm kê. Đang lọc 1 tháng thì các tháng khác mờ đi. Bấm cột = lọc tháng.
+function kkTronTren(v){
+  if(v <= 0) return 4;
+  const mu = Math.pow(10, Math.floor(Math.log10(v)));
+  for(const b of [1, 1.2, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10]) if(b * mu >= v - 1e-9) return Math.max(4, b * mu);
+  return 10 * mu;
+}
+function kkCot(x, y, w, h, mau, bo){
+  if(h <= 0) return '';
+  const r = bo ? Math.min(4, h, w / 2) : 0;
+  return r ? `<path d="M${x},${y + h} V${y + r} Q${x},${y} ${x + r},${y} H${x + w - r} Q${x + w},${y} ${x + w},${y + r} V${y + h} Z" fill="${mau}"/>`
+           : `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${mau}"/>`;
+}
+function kkVeThang(M, coTruoc){
+  const box = $('kkThang'); if(!box) return;
+  const nam = KKL.nam, dv = kkDV();
+  if(!M.some(t=>t.tong || t.truoc || t.ngay)){ box.innerHTML = `<p class="kk-trong">Năm ${nam} chưa có ${dv} nào.</p>`; return; }
+  const rong = box.clientWidth || 720, W = Math.max(520, rong);
+  const L = 40, R = 8, TOP = 20, B = 44, H = 260, pw = W - L - R, ph = H - TOP - B;
+  const top = kkTronTren(Math.max(...M.map(t=>Math.max(t.tong, coTruoc ? t.truoc : 0))));
+  const yOf = v => TOP + ph - v / top * ph;
+  const band = pw / 12, gw = Math.min(30, band * .72), bw = Math.min(18, band * .44);
+  const homNay = new Date(), namNay = homNay.getFullYear();
+  let svg = `<svg viewBox="0 0 ${W} ${H}" width="${W > rong ? W : '100%'}" height="${H}" role="img" aria-label="${esc(dv)} theo tháng năm ${nam}" font-family="inherit">`;
+  const vach = [4, 5, 3, 2].find(k=>Number.isInteger(top / k)) || 4;      // vạch trục là số nguyên: 5 -> 1,2,3,4,5 · 12 -> 3,6,9,12
+  for(let k = 0; k <= vach; k++){
+    const v = top * k / vach, y = yOf(v);
+    svg += `<line x1="${L}" x2="${W - R}" y1="${y}" y2="${y}" stroke="${k ? '#eef1f5' : '#c9d2de'}" stroke-width="1"/>`
+         + `<text x="${L - 7}" y="${y + 4}" text-anchor="end" font-size="11" fill="#7b8592">${kkSoVN(v, 1)}</text>`;
+  }
+  M.forEach((t, i)=>{
+    const cx = L + band * i + band / 2, mo = KKL.thang && KKL.thang !== t.m;
+    const nay = nam === namNay && t.m === homNay.getMonth() + 1, sau = nam > namNay || (nam === namNay && t.m > homNay.getMonth() + 1);
+    svg += `<g opacity="${mo ? .3 : 1}">`;
+    if(coTruoc && t.truoc > 0) svg += kkCot(cx - gw / 2, yOf(t.truoc), gw, yOf(0) - yOf(t.truoc), KK_MAU_TRUOC, true);
+    // khe trắng 2px giữa các đoạn chồng, đoạn trên cùng bo góc
+    const phan = t.nhom.filter(g=>g.v > 0);
+    let tich = 0;
+    phan.forEach((g, j)=>{
+      const yb = yOf(tich) - (j ? 2 : 0); tich += g.v;
+      svg += kkCot(cx - bw / 2, yOf(tich), bw, yb - yOf(tich), g.mau, j === phan.length - 1);
+    });
+    if(t.tong > 0) svg += `<text x="${cx}" y="${yOf(t.tong) - 6}" text-anchor="middle" font-size="11" font-weight="700" fill="#1c2024" stroke="#fff" stroke-width="3" paint-order="stroke">${kkSoVN(t.tong)}</text>`;
+    svg += `</g>`;
+    const y1 = TOP + ph + 16;
+    svg += `<text x="${cx}" y="${y1}" text-anchor="middle" font-size="12" font-weight="${nay || KKL.thang === t.m ? 800 : 600}" fill="${nay ? '#00789A' : sau ? '#b0b7c2' : '#1c2024'}">T${t.m}</text>`
+         + `<text x="${cx}" y="${y1 + 15}" text-anchor="middle" font-size="10.5" fill="#7b8592">${t.ngay ? t.ngay + ' ngày' : '–'}</text>`;
+    const tip = [{ t:`${kkSoVN(t.n)} lỗi · ${kkSoVN(t.thung)} thùng sai`, s:t.ngay ? `${t.ngay} ngày kiểm kê` : 'Không có ngày kiểm kê' }]
+      .concat(t.nhom.filter(g=>g.v).map(g=>({ t:`${g.ten}: ${kkSoVN(g.v)} ${dv}` })))
+      .concat(coTruoc ? [{ t:`Cùng kỳ ${nam - 1}: ${kkSoVN(t.truoc)} ${dv}` }] : [])
+      .concat([{ t:'', s:KKL.thang === t.m ? 'Bấm để bỏ lọc tháng' : 'Bấm để xem riêng tháng này' }]);
+    svg += `<rect x="${L + band * i}" y="${TOP - 10}" width="${band}" height="${ph + B + 6}" fill="transparent" class="kk-hit" data-kk-thang="${t.m}"${ovTipAttr(`Tháng ${t.m}/${nam}`, tip, true)}/>`;
+  });
+  box.innerHTML = svg + '</svg>';
+}
+
+// ---- Xếp hạng loại lỗi (kiểu Pareto) ----
+function kkHtmlLoai(P){
+  const L = kkDemLoai(P), dv = kkDV();
+  if(!L.length) return '<p class="kk-trong">Không có lỗi nào trong kỳ này.</p>';
+  const tong = L.reduce((s, x)=>s + x.v, 0) || 1, max = Math.max(1, L[0].v);
+  let luy = 0, daDu = false, k = 0;
+  const dong = L.map((x, i)=>{
+    luy += x.v;
+    const lk = Math.round(luy / tong * 100), chon = KKL.loai === x.loai, mau = kkMauLoai(x.loai);
+    let html = `<button class="kk-lr${chon ? ' on' : KKL.loai ? ' mo' : ''}" data-kk-loai="${esc(x.loai)}"
+        title="${esc(`${x.loai}: ${x.n} lỗi · ${x.thung} thùng sai`)}">
+      <span class="h">${i + 1}</span><span class="t"><i style="background:${mau}"></i><span>${esc(x.loai)}</span></span>
+      <span class="bar"><i style="width:${(x.v / max * 100).toFixed(1)}%; background:${mau}"></i></span>
+      <b>${kkSoVN(x.v)}</b><small>${Math.round(x.v / tong * 100)}%</small><small>${lk}%</small></button>`;
+    if(!daDu && luy / tong >= .8){ daDu = true; k = i + 1;
+      if(k < L.length) html += `<div class="kk-80">↑ ${k === 1 ? 'Riêng loại này' : k + ' loại đầu'} = <b>${lk}%</b> ${dv} — xử lý nhóm này là giảm được phần lớn lỗi</div>`; }
+    return html;
+  }).join('');
+  return `<div class="kk-loai-ds"><div class="kk-lr kk-lr-dau"><span class="h">#</span><span>Loại lỗi</span><span></span><b>${kkThung() ? 'Thùng' : 'Lỗi'}</b><small>Tỷ lệ</small><small>Lũy kế</small></div>${dong}</div>`;
+}
+
+// ---- Xếp hạng người mắc lỗi + ô màu từng tháng ----
+function kkTenNguoiHtml(p){
+  const ng = p.ng, e = ng.e;
+  if(ng.loai !== 'nguoi') return `<div class="n"><b>${esc(ng.ten)}</b></div><small>Sổ ghi: ${esc([...p.ma].join(' · '))}</small>`;
+  if(!e) return `<div class="n"><b>${esc(ng.ma)}</b><span class="kk-tt ngoai" title="Người đã nghỉ trước khi dùng app, hoặc tên ghi chưa đủ — chủ trang / giám sát bấm ✎ để gộp với người trong danh sách">ngoài DS</span></div>`
+    + `<small>Không có trong danh sách kho thành phẩm</small>`;
+  const tt = e.nghiViec ? ['nghi', 'đã nghỉ', 'Nghỉ việc — làm tới ' + kkNgayVN(e.nghiViec)] : laChoNghi(e) ? ['cho', 'chờ nghỉ', nhanChoNghi(e)]
+    : e.diHoTro ? ['ht', 'đi hỗ trợ', 'Đang đi hỗ trợ'] : e.thaiSan ? ['ts', 'thai sản', 'Đang nghỉ thai sản'] : null;
+  return `<div class="n"><b>${esc(e.name)}</b>${tt ? `<span class="kk-tt ${tt[0]}" title="${esc(tt[2])}">${tt[1]}</span>` : ''}</div>`
+    + `<small>${esc([[...p.ma].join(' · '), e.shift, e.position].filter(Boolean).join(' · '))}</small>`;
+}
+function kkHtmlNguoi(G, sua){
+  const ds = G.nguoi, nhom = G.nhom, nam = KKL.nam, dv = kkDV();
+  if(!ds.length && !nhom.length) return '<p class="kk-trong">Không có lỗi nào trong kỳ này.</p>';
+  const hien = KKL.hetNguoi ? ds : ds.slice(0, 10);
+  const tat = ds.concat(nhom);
+  const maxV = Math.max(1, ...tat.map(p=>p.v)), maxO = Math.max(1, ...tat.flatMap(p=>p.thang));
+  const muc = v => v <= 0 ? 0 : Math.max(1, Math.min(5, Math.ceil(v / maxO * 5)));
+  const homNay = new Date(), thangNay = nam === homNay.getFullYear() ? homNay.getMonth() + 1 : 0;
+  const dong = (p, hang) => {
+    const ng = p.ng, chon = KKL.nguoi === ng.key;
+    const hay = [...p.loai.entries()].sort((a, b)=>b[1] - a[1])[0];
+    return `<tr class="${chon ? 'on' : KKL.nguoi ? 'mo' : ''}${ng.loai !== 'nguoi' ? ' nhom' : ''}" data-kk-nguoi="${esc(ng.key)}">
+      <td class="h">${hang || ''}</td>
+      <td class="ten">${kkTenNguoiHtml(p)}${sua && ng.loai === 'nguoi' ? `<button class="kk-doiten" data-kk-doiten="${esc(ng.key)}" title="Sửa / gộp tên người mắc lỗi">✎</button>` : ''}</td>
+      ${p.thang.map((v, i)=>`<td class="o l${muc(v)}${KKL.thang === i + 1 ? ' chon' : ''}" data-kk-o="${i + 1}"${v
+        ? ovTipAttr(ng.ten, [{ t:`Tháng ${i + 1}/${nam}: ${kkSoVN(v)} ${dv}`, s:'Bấm để xem lỗi tháng này của người này' }], true) : ''}>${v ? kkSoVN(v) : ''}</td>`).join('')}
+      <td class="tong"><div class="tb"><span class="bar"><i style="width:${(p.v / maxV * 100).toFixed(1)}%"></i></span><b>${kkSoVN(p.v)}</b></div></td>
+      <td class="phu">${kkSoVN(kkThung() ? p.n : p.thung)}</td>
+      <td class="hay">${hay ? `<i style="background:${kkMauLoai(hay[0])}"></i>${esc(hay[0])} <span>(${hay[1]})</span>` : ''}</td>
+    </tr>`;
+  };
+  return `<div class="kk-ng-wrap"><table class="kk-ng">
+    <thead><tr><th class="h">#</th><th class="ten">Người mắc lỗi <i>(${ds.length} người)</i></th>
+      ${Array.from({ length:12 }, (_, i)=>`<th class="o${KKL.thang === i + 1 ? ' chon' : ''}${thangNay === i + 1 ? ' nay' : ''}">T${i + 1}</th>`).join('')}
+      <th class="tong">${KKL.thang ? `Tháng ${KKL.thang}` : 'Cả năm'} <i>(${dv})</i></th><th class="phu">${kkThung() ? 'Số lỗi' : 'Thùng sai'}</th><th class="hay">Hay mắc nhất</th></tr></thead>
+    <tbody>${hien.map((p, i)=>dong(p, i + 1)).join('')}
+      ${nhom.length ? `<tr class="tach"><td></td><td colspan="16">Không quy cho cá nhân</td></tr>${nhom.map(p=>dong(p, '')).join('')}` : ''}</tbody>
+  </table></div>
+  <div class="kk-ng-f">
+    ${ds.length > 10 ? `<button class="ghost sm" data-kk-act="hetnguoi">${KKL.hetNguoi ? '▴ Chỉ hiện 10 người đầu' : `▾ Xem tất cả ${ds.length} người`}</button>` : ''}
+    <span>${dv[0].toUpperCase() + dv.slice(1)} / tháng:</span>${['ít', '', '', '', 'nhiều'].map((t, i)=>`<span class="m"><i class="o l${i + 1}"></i>${t}</span>`).join('')}
+    <span>· Tên in đậm = có trong danh sách kho thành phẩm · <span class="kk-tt ngoai">ngoài DS</span> = người đã nghỉ trước khi dùng app (giữ nguyên tên như sổ)</span>
+  </div>`;
+}
+
+// ---- Danh sách lỗi ----
+function kkVeBang(){
+  const host = $('kkBang'); if(!host) return;
+  const t = normName(KKL.tim);
+  const ds = (t ? KK_BANG.filter(r=>normName([r.ngay, kkNgayVN(r.ngay), r.vtTT, r.vtHT, r.nguoiNhap, r.nguoiCat, r.nguoiLoi,
+      kkNg(r).ten, r.ghiChu, r.loai].join(' ')).includes(t)) : KK_BANG)
+    .slice().sort((a, b)=>b.ngay.localeCompare(a.ngay) || (b.tt || 0) - (a.tt || 0));
+  const dem = $('kkDem');
+  if(dem) dem.textContent = `${kkSoVN(ds.length)} dòng${t ? ' khớp' : ''} · mới nhất trước`;
+  if(!ds.length){ host.innerHTML = `<p class="kk-trong">${t ? 'Không có dòng nào khớp chữ tìm' : 'Không có lỗi nào trong kỳ này'}</p>`; return; }
+  const stt = kkStt(), sua = kkDuocSua(), hien = ds.slice(0, KKL.soDong);
+  // gộp "vị trí thực tế → hệ thống" và "người nhập / người cất" cho bảng vừa bề ngang (file Excel xuất ra vẫn tách cột như sổ)
+  host.innerHTML = `<div class="kk-bang-wrap"><table class="kk-bang"><thead><tr>
+      <th class="so">STT</th><th>Ngày KK</th><th>Vị trí thực tế → hệ thống</th><th class="so">SL</th><th>Ngày nhập / chuyển</th>
+      <th>Nhập / Cất</th><th>Người mắc lỗi</th><th>Lỗi</th><th>Ghi chú</th>${sua ? '<th></th>' : ''}</tr></thead>
+    <tbody>${hien.map(r=>{ const ng = kkNg(r), l = kkLoaiCua(r);
+      return `<tr>
+        <td class="so" title="STT trong năm ${r.ngay.slice(0, 4)}">${stt.get(r.id) || ''}</td>
+        <td class="nw">${kkNgayVN(r.ngay)}</td>
+        <td class="m">${esc(r.vtTT)}${r.vtHT && r.vtHT !== r.vtTT ? ` <span class="kk-mui">→</span> ${esc(r.vtHT)}`
+          : r.vtHT ? ' <span class="kk-cung" title="Vị trí hệ thống trùng vị trí thực tế (VD 2 đơn trên 1 vị trí)">= hệ thống</span>' : ''}</td>
+        <td class="so">${r.sl == null ? '<span class="kk-thieu" title="Chưa ghi số lượng">?</span>' : kkSoVN(r.sl)}</td>
+        <td class="nw">${r.ngayNhap ? kkNgayVN(r.ngayNhap) : esc(r.ngayNhapGoc || '')}${r.ngayNhap && r.ngayNhap > r.ngay
+          ? ' <span class="kk-thieu" title="Ngày nhập / chuyển SAU ngày kiểm kê — có thể gõ nhầm ngày / tháng">!</span>' : ''}</td>
+        <td class="nw">${esc(r.nguoiNhap || '—')} / ${esc(r.nguoiCat || '—')}</td>
+        <td class="nw" title="${esc(ng.e ? ng.e.name : ng.loai !== 'nguoi' ? ng.ten : 'Không có trong danh sách kho thành phẩm')}">${esc(r.nguoiLoi)}</td>
+        <td><span class="kk-loai"><i style="background:${kkMauLoai(l)}"></i>${esc(l)}</span></td>
+        <td class="gc">${esc(r.ghiChu)}</td>
+        ${sua ? `<td class="nut"><button class="ghost sm" data-kk-sua="${esc(r.id)}" title="Sửa dòng này">✎</button><button class="danger sm" data-kk-xoa="${esc(r.id)}" title="Xoá dòng này">✕</button></td>` : ''}
+      </tr>`; }).join('')}</tbody></table></div>
+    ${ds.length > hien.length ? `<button class="ghost sm kk-them" data-kk-act="xemthem">▾ Xem thêm (còn ${kkSoVN(ds.length - hien.length)} dòng)</button>` : ''}`;
+}
+
+// ---------------------------------------------------------------------
+// SỰ KIỆN (gắn 1 lần — #kkBox có sẵn trong index.html, chỉ nội dung bên trong được vẽ lại)
+// ---------------------------------------------------------------------
+function kkHanhDong(a){
+  if(a === 'them') kkMoForm(null);
+  else if(a === 'buoi') kkMoBuoi();
+  else if(a === 'nap') kkChonFile();
+  else if(a === 'kiemtra') kkMoKiemTra();
+  else if(a === 'xuat') kkXuatExcel();
+  else if(a === 'in') kkIn();
+  else if(a === 'hetnguoi'){ KKL.hetNguoi = !KKL.hetNguoi; kkVe(); }
+  else if(a === 'xemthem'){ KKL.soDong += 50; kkVeBang(); }
+}
+(function(){
+  const box = $('kkBox'); if(!box) return;
+  const ve = ()=>{ KKL.soDong = 30; kkVe(); };
+  box.addEventListener('click', e=>{
+    const g = s => e.target.closest(s);
+    let b;
+    if((b = g('[data-kk-nam]'))){ KKL.nam = +b.dataset.kkNam; KKL.thang = 0; ve(); return; }
+    if((b = g('[data-kk-do]'))){ KKL.do = b.dataset.kkDo; kkVe(); return; }
+    if((b = g('[data-kk-bo]'))){ KKL[b.dataset.kkBo] = ''; ve(); return; }
+    if((b = g('[data-kk-act]'))){ kkHanhDong(b.dataset.kkAct); return; }
+    if((b = g('[data-kk-doiten]'))){ kkMoDoiTen(b.dataset.kkDoiten); return; }
+    if((b = g('[data-kk-sua]'))){ const r = KK.loi.find(x=>x.id === b.dataset.kkSua); if(r) kkMoForm(r); return; }
+    if((b = g('[data-kk-xoa]'))){ kkXoa(b.dataset.kkXoa); return; }
+    if((b = g('[data-kk-thang]'))){ const m = +b.dataset.kkThang; KKL.thang = KKL.thang === m ? 0 : m; ve(); return; }
+    if((b = g('[data-kk-loai]'))){ const l = b.dataset.kkLoai; KKL.loai = KKL.loai === l ? '' : l; ve(); return; }
+    const hang = g('tr[data-kk-nguoi]');
+    if(hang){
+      const k = hang.dataset.kkNguoi, o = g('td[data-kk-o]');
+      if(o && o.textContent.trim()){             // ô 1 tháng của 1 người: lọc người + tháng
+        const m = +o.dataset.kkO, cung = KKL.nguoi === k && KKL.thang === m;
+        KKL.nguoi = cung ? '' : k; KKL.thang = cung ? 0 : m;
+      }else KKL.nguoi = KKL.nguoi === k ? '' : k;
+      ve();
+    }
+  });
+  box.addEventListener('change', e=>{
+    const s = e.target.closest('[data-kk-chon="thang"]');
+    if(s){ KKL.thang = +s.value; ve(); }
+  });
+  let t = null;
+  window.addEventListener('resize', ()=>{ clearTimeout(t); t = setTimeout(()=>{
+    if(VIEW === 'kho' && activeTab === 'kiemke' && KK_TAI && $('kkThang') && $('kkThang').offsetParent) kkVe(); }, 200); });
+})();
+
+// ---------------------------------------------------------------------
+// GHI / SỬA 1 DÒNG LỖI
+// ---------------------------------------------------------------------
+// Ô chọn có sẵn danh sách + "Khác — tự gõ…" (hiện ô gõ). ds: [{ v, t }]; giá trị đang có mà không nằm trong danh sách thì thêm lên đầu
+function kkOChon(f, ds, giaTri, trong){
+  const coSan = !giaTri || ds.some(x=>x.v === giaTri);
+  return `<select data-f="${f}">${trong != null ? `<option value="">${esc(trong)}</option>` : ''}
+      ${(coSan ? [] : [{ v:giaTri, t:giaTri + ' (đang ghi)' }]).concat(ds).map(x=>
+        `<option value="${esc(x.v)}"${x.v === giaTri ? ' selected' : ''}>${esc(x.t)}</option>`).join('')}
+      <option value="__khac">Khác — tự gõ…</option></select>
+    <input type="text" data-f2="${f}" placeholder="Gõ tên…" autocomplete="off" hidden>`;
+}
+function kkGanOChon(host){
+  host.querySelectorAll('select[data-f]').forEach(s=>s.addEventListener('change', ()=>{
+    const i = host.querySelector(`[data-f2="${s.dataset.f}"]`);
+    if(i){ i.hidden = s.value !== '__khac'; if(!i.hidden) i.focus(); }
+  }));
+}
+function kkLayO(host, f){
+  const el = host.querySelector(`[data-f="${f}"]`); if(!el) return '';
+  if(el.tagName === 'SELECT' && el.value === '__khac') return kkHoa(host.querySelector(`[data-f2="${f}"]`).value);
+  return el.value;
+}
+// Danh sách chọn: thành viên kho thành phẩm (chưa cắt tên) theo mã viết tắt / tên gọi
+function kkThanhVien(caNguoiNghi){
+  return (HR.employees || []).filter(e=>e.warehouseId === 'thanhpham' && e.name && (caNguoiNghi || !e.nghiViec))
+    .sort((a, b)=>(!!a.nghiViec - !!b.nghiViec) || a.name.localeCompare(b.name, 'vi'));
+}
+function kkDsMa(caNguoiNghi){
+  return kkThanhVien(caNguoiNghi).map(e=>({ v:kkVietTat(e.name), t:`${e.name} — ${kkVietTat(e.name)}${e.nghiViec ? ' (đã nghỉ)' : ''}` }))
+    .concat([{ v:'APP LỖI', t:KK_NHOM_TEN.app }, { v:'X', t:'Không rõ người (X)' }]);
+}
+function kkDsLoai(){
+  const dem = new Map();
+  KK.loi.forEach(r=>{ if(r.loai) dem.set(r.loai, (dem.get(r.loai) || 0) + 1); });
+  KK_LOAI_MD.forEach(l=>{ if(!dem.has(l)) dem.set(l, 0); });
+  return [...dem.entries()].sort((a, b)=>(KK_LOAI_CHINH.includes(b[0]) - KK_LOAI_CHINH.includes(a[0])) || b[1] - a[1])
+    .map(([l])=>({ v:l, t:l }));
+}
+function kkMoForm(r){
+  const sua = !!r;
+  const o = r || { ngay:KK_NGAY_CUOI || todayKey(), vtTT:'', vtHT:'', sl:null, ngayNhap:'', nguoiNhap:'', nguoiCat:'', nguoiLoi:'', loai:'', ghiChu:'' };
+  const goi = [];
+  kkThanhVien(false).forEach(e=>{ const g = kkTenGoi(e.name); if(!goi.some(x=>x.v === g)) goi.push({ v:g, t:`${g} — ${e.name}` }); });
+  const m = openModal(sua ? 'Sửa dòng lỗi kiểm kê' : 'Ghi lỗi kiểm kê', `<div class="kk-form">
+    <div class="row2">
+      <div><label class="field-label">Ngày kiểm kê <span class="kk-bb">*</span></label><input type="date" data-f="ngay" value="${esc(o.ngay)}"></div>
+      <div><label class="field-label">Số thùng lệch (+ / −)</label><input type="number" min="0" step="1" data-f="sl" value="${o.sl == null ? '' : esc(o.sl)}" placeholder="VD: 3"></div>
+    </div>
+    <div class="row2">
+      <div><label class="field-label">Vị trí thực tế <span class="kk-bb">*</span></label><input type="text" data-f="vtTT" value="${esc(o.vtTT)}" placeholder="VD: FA03A" autocomplete="off"></div>
+      <div><label class="field-label">Vị trí hệ thống</label><input type="text" data-f="vtHT" value="${esc(o.vtHT)}" placeholder="VD: A01A" autocomplete="off"></div>
+    </div>
+    <div class="row2">
+      <div><label class="field-label">Loại lỗi <span class="kk-bb">*</span></label>${kkOChon('loai', kkDsLoai(), o.loai, '— Chọn loại lỗi —')}</div>
+      <div><label class="field-label">Người mắc lỗi <span class="kk-bb">*</span></label>${kkOChon('nguoiLoi', kkDsMa(false), o.nguoiLoi, '— Chọn người —')}</div>
+    </div>
+    <div class="kk-row3">
+      <div><label class="field-label">Ngày nhập / chuyển</label><input type="date" data-f="ngayNhap" value="${esc(o.ngayNhap || '')}">
+        ${o.ngayNhapGoc ? `<small class="kk-goc">Sổ ghi: ${esc(o.ngayNhapGoc)}</small>` : ''}</div>
+      <div><label class="field-label">Người nhập / chuyển</label>${kkOChon('nguoiNhap', goi, o.nguoiNhap, '—')}</div>
+      <div><label class="field-label">Người cất</label>${kkOChon('nguoiCat', goi, o.nguoiCat, '—')}</div>
+    </div>
+    <label class="field-label">Ghi chú</label>
+    <textarea data-f="ghiChu" rows="2" placeholder="VD: CẤT SAI VỊ TRÍ TỪ K01A SANG K04A">${esc(o.ghiChu || '')}</textarea>
+    <div class="kk-form-nut">
+      <button class="ghost" data-no>Huỷ</button>
+      ${sua ? '' : '<button class="secondary" data-tiep title="Lưu dòng này, giữ ngày kiểm kê để ghi tiếp dòng sau">Lưu &amp; ghi tiếp</button>'}
+      <button data-yes>${sua ? 'Lưu thay đổi' : 'Lưu'}</button>
+    </div></div>`, { esc:true });
+  m.el.querySelector('.modal-card').classList.add('kk-rong');
+  const host = m.body;
+  kkGanOChon(host);
+  const v = f => kkLayO(host, f);
+  const nut = [...host.querySelectorAll('.kk-form-nut button')];
+  const luu = async tiep=>{
+    const x = { ngay:v('ngay'), vtTT:kkHoa(v('vtTT')), vtHT:kkHoa(v('vtHT')), sl:kkSo(v('sl')), ngayNhap:v('ngayNhap'), ngayNhapGoc:'',
+      nguoiNhap:kkHoa(v('nguoiNhap')), nguoiCat:kkHoa(v('nguoiCat')), nguoiLoi:kkHoa(v('nguoiLoi')), loai:kkHoa(v('loai')), ghiChu:kkChu(v('ghiChu')) };
+    if(!x.ngay){ toast('⚠ Chọn ngày kiểm kê'); return; }
+    if(!x.vtTT && !x.vtHT){ toast('⚠ Nhập vị trí thực tế (hoặc vị trí hệ thống)'); return; }
+    if(!x.loai){ toast('⚠ Chọn loại lỗi'); return; }
+    if(!x.nguoiLoi){ toast('⚠ Chọn người mắc lỗi — không rõ thì chọn "Không rõ người (X)"'); return; }
+    if(x.ngayNhap && x.ngayNhap > x.ngay && !await confirmBox('Ngày nhập / chuyển đang SAU ngày kiểm kê — vẫn lưu?')) return;
+    if(r && !x.ngayNhap && r.ngayNhapGoc) x.ngayNhapGoc = r.ngayNhapGoc;        // giữ chữ ngày gốc của sổ cũ
+    nut.forEach(b=>b.disabled = true);
+    const ok = await kkGhi(d=>{
+      if(r){
+        const y = d.loi.find(z=>z.id === r.id);
+        if(!y){ toast('⚠ Dòng này vừa bị người khác xoá'); return false; }
+        Object.assign(y, x, kkDauSua());
+      }else{
+        const tt = d.loi.reduce((mx, z)=>z.ngay === x.ngay ? Math.max(mx, z.tt || 0) : mx, 0) + 1;
+        d.loi.push({ id:kkMoiId(), ...x, tt, ...kkDau() });
+      }
+    });
+    nut.forEach(b=>b.disabled = false);
+    if(!ok) return;
+    KK_NGAY_CUOI = x.ngay;
+    kkVe();
+    if(tiep){
+      // giữ ngày kiểm kê, xoá các ô còn lại để ghi dòng sau
+      ['vtTT', 'vtHT', 'sl', 'ngayNhap', 'ghiChu', 'loai', 'nguoiLoi', 'nguoiNhap', 'nguoiCat'].forEach(f=>{ host.querySelector(`[data-f="${f}"]`).value = ''; });
+      host.querySelectorAll('[data-f2]').forEach(i=>{ i.value = ''; i.hidden = true; });
+      host.querySelector('[data-f="vtTT"]').focus();
+      toast('✓ Đã lưu — ghi tiếp dòng sau (cùng ngày kiểm kê)');
+    }else{ m.close(); toast(sua ? '✓ Đã lưu thay đổi' : '✓ Đã ghi lỗi kiểm kê'); }
+  };
+  host.querySelector('[data-no]').onclick = m.close;
+  host.querySelector('[data-yes]').onclick = ()=>luu(false);
+  const t = host.querySelector('[data-tiep]'); if(t) t.onclick = ()=>luu(true);
+  host.querySelector('[data-f="vtTT"]').focus();
+}
+async function kkXoa(id){
+  const r = KK.loi.find(x=>x.id === id); if(!r) return;
+  if(!await confirmBox(`Xoá dòng lỗi ngày ${kkNgayVN(r.ngay)} · ${r.vtTT || r.vtHT} · ${r.nguoiLoi || '?'} · ${kkLoaiCua(r)}?`)) return;
+  const ok = await kkGhi(d=>{
+    const n = d.loi.length; d.loi = d.loi.filter(x=>x.id !== id);
+    if(d.loi.length === n){ toast('Dòng này đã được người khác xoá'); return false; }
+  });
+  if(ok) toast('✓ Đã xoá dòng lỗi');
+  kkVe();
+}
+
+// ---------------------------------------------------------------------
+// BUỔI KIỂM KÊ (số thùng đã kiểm -> độ chính xác tồn kho)
+// ---------------------------------------------------------------------
+function kkMoBuoi(ngayGoiY){
+  const sua = kkDuocSua(), nam = KKL.nam;
+  let dangSua = null;
+  const m = openModal(`📅 Buổi kiểm kê — năm ${nam}`, '<div class="kk-buoi" data-buoi></div>', { esc:true });
+  m.el.querySelector('.modal-card').classList.add('kk-rong');
+  const host = m.body.querySelector('[data-buoi]');
+  const ve = goiY=>{
+    const ds = kkCuaNam(KK.buoi, nam).sort((a, b)=>a.ngay.localeCompare(b.ngay) || kkChu(a.nhan).localeCompare(kkChu(b.nhan)));
+    const coBuoi = new Set(ds.map(b=>b.ngay));
+    const thieu = [...new Set(kkCuaNam(KK.loi, nam).filter(r=>!coBuoi.has(r.ngay)).map(r=>r.ngay))].sort();
+    const x = dangSua ? KK.buoi.find(b=>b.id === dangSua) : null;
+    const theoThang = Array.from({ length:12 }, (_, i)=>ds.filter(b=>+b.ngay.slice(5, 7) === i + 1)).map((d, i)=>({ m:i + 1, d })).filter(g=>g.d.length);
+    host.innerHTML = `
+      <p class="kk-ghi">Mỗi buổi ghi <b>số thùng đã kiểm</b> để tính độ chính xác tồn kho (1 − thùng sai / thùng đã kiểm).
+        Một ngày kiểm nhiều lượt thì mỗi lượt 1 dòng, ghi nhãn AM / PM / (1)…</p>
+      ${sua ? `<div class="kk-buoi-form">
+        <label>Ngày<input type="date" data-b="ngay" value="${esc(x ? x.ngay : goiY || '')}"></label>
+        <label>Nhãn<input type="text" data-b="nhan" value="${esc(x ? x.nhan || '' : '')}" placeholder="AM / PM…" autocomplete="off"></label>
+        <label>Số thùng đã kiểm<input type="number" min="1" step="1" data-b="thung" value="${x ? esc(x.thung) : ''}" placeholder="VD: 45000"></label>
+        <label>Ghi chú<input type="text" data-b="ghiChu" value="${esc(x ? x.ghiChu || '' : '')}" autocomplete="off"></label>
+        <span class="kk-buoi-nut"><button data-b-luu>${x ? 'Lưu' : '＋ Thêm'}</button>${x ? '<button class="ghost" data-b-huy>Huỷ</button>' : ''}</span>
+      </div>` : ''}
+      ${thieu.length ? `<div class="kk-buoi-thieu">⚠ Ngày có ghi lỗi nhưng chưa có số thùng đã kiểm:
+        ${thieu.map(k=>sua ? `<button class="kk-ngay-btn" data-b-ngay="${k}" title="Bấm để điền ngày này">${kkNgayVN(k).slice(0, 5)}</button>` : `<span>${kkNgayVN(k).slice(0, 5)}</span>`).join(' ')}</div>` : ''}
+      ${ds.length ? `<table class="kk-buoi-bang"><thead><tr><th>Ngày</th><th>Nhãn</th><th class="so">Số thùng đã kiểm</th><th>Ghi chú</th>${sua ? '<th></th>' : ''}</tr></thead>
+        <tbody>${theoThang.map(g=>`<tr class="th"><td colspan="${sua ? 5 : 4}">Tháng ${g.m} · ${g.d.length} buổi · ${kkSoVN(g.d.reduce((s, b)=>s + b.thung, 0))} thùng</td></tr>`
+          + g.d.map(b=>`<tr${b.id === dangSua ? ' class="dang"' : ''}><td>${kkNgayVN(b.ngay)}</td><td>${esc(b.nhan || '')}</td><td class="so">${kkSoVN(b.thung)}</td><td>${esc(b.ghiChu || '')}</td>
+            ${sua ? `<td class="nut"><button class="ghost sm" data-b-sua="${esc(b.id)}">Sửa</button><button class="danger sm" data-b-xoa="${esc(b.id)}">✕</button></td>` : ''}</tr>`).join('')).join('')}</tbody></table>`
+        : `<p class="kk-trong">Năm ${nam} chưa có buổi kiểm kê nào.</p>`}
+      <div class="kk-buoi-tong">Cả năm ${nam}: <b>${kkSoVN(ds.length)}</b> buổi · <b>${kkSoVN(ds.reduce((s, b)=>s + b.thung, 0))}</b> thùng đã kiểm</div>`;
+    if(!sua) return;
+    const b = k => host.querySelector(`[data-b="${k}"]`);
+    host.querySelector('[data-b-luu]').onclick = async ()=>{
+      const moi = { ngay:b('ngay').value, nhan:kkChu(b('nhan').value), thung:kkSo(b('thung').value), ghiChu:kkChu(b('ghiChu').value) };
+      if(!moi.ngay){ toast('⚠ Chọn ngày kiểm kê'); return; }
+      if(!(moi.thung > 0)){ toast('⚠ Nhập số thùng đã kiểm'); return; }
+      const id = dangSua;
+      const ok = await kkGhi(d=>{
+        if(id){ const y = d.buoi.find(z=>z.id === id); if(!y){ toast('⚠ Buổi này vừa bị người khác xoá'); return false; } Object.assign(y, moi, kkDauSua()); }
+        else d.buoi.push({ id:kkMoiId(), ...moi, ...kkDau() });
+      });
+      if(!ok) return;
+      dangSua = null; ve(); kkVe();
+      toast(id ? '✓ Đã lưu buổi kiểm kê' : `✓ Đã thêm buổi ${kkNgayVN(moi.ngay)} · ${kkSoVN(moi.thung)} thùng`);
+    };
+    const huy = host.querySelector('[data-b-huy]'); if(huy) huy.onclick = ()=>{ dangSua = null; ve(); };
+    host.querySelectorAll('[data-b-ngay]').forEach(n=>n.onclick = ()=>{ dangSua = null; ve(n.dataset.bNgay); b('thung').focus(); });
+    host.querySelectorAll('[data-b-sua]').forEach(n=>n.onclick = ()=>{ dangSua = n.dataset.bSua; ve(); b('thung').focus(); });
+    host.querySelectorAll('[data-b-xoa]').forEach(n=>n.onclick = async ()=>{
+      const x = KK.buoi.find(z=>z.id === n.dataset.bXoa); if(!x) return;
+      if(!await confirmBox(`Xoá buổi kiểm kê ${kkNgayVN(x.ngay)}${x.nhan ? ' ' + x.nhan : ''} (${kkSoVN(x.thung)} thùng)?`)) return;
+      if(await kkGhi(d=>{ d.buoi = d.buoi.filter(z=>z.id !== x.id); })){ if(dangSua === x.id) dangSua = null; ve(); kkVe(); toast('✓ Đã xoá buổi kiểm kê'); }
+    });
+  };
+  ve(ngayGoiY);
+}
+
+// ---------------------------------------------------------------------
+// GỘP / ĐỔI TÊN NGƯỜI MẮC LỖI (đổi ở mọi năm)
+// ---------------------------------------------------------------------
+function kkMoDoiTen(key){
+  const ds = KK.loi.filter(r=>kkKeyNg(r) === key);
+  if(!ds.length) return;
+  const ng = kkNg(ds[0]), cacMa = [...new Set(ds.map(r=>kkHoa(r.nguoiLoi)))];
+  const goiY = kkGoiYGop(ng);
+  const nams = [...new Set(ds.map(r=>r.ngay.slice(0, 4)))].sort();
+  const m = openModal('Sửa / gộp tên người mắc lỗi', `
+    <div class="kk-doi">Sổ đang ghi: <b>${esc(cacMa.join(' · '))}</b> — <b>${ds.length}</b> lỗi (năm ${nams.join(', ')})<br>
+      ${ng.e ? `Đang khớp với: <b>${esc(ng.e.name)}</b>` : 'Không khớp ai trong danh sách kho thành phẩm.'}</div>
+    ${goiY ? `<div class="note">Gợi ý: trùng tên gọi với <b>${esc(goiY.name)}</b>${goiY.nghiViec ? ' (đã nghỉ)' : ''} trong danh sách kho thành phẩm — có thể sổ ghi thiếu chữ viết tắt.</div>` : ''}
+    <label class="field-label">Đổi tất cả ${ds.length} lỗi thành</label>
+    ${kkOChon('ma', kkDsMa(true), goiY ? kkVietTat(goiY.name) : '', '— Chọn người —')}
+    <p class="kk-ghi">Chọn người có trong danh sách để gộp lỗi về đúng người đó. Đổi ở mọi năm, không xoá dòng nào.</p>
+    <div class="row2" style="margin-top:14px;"><button class="ghost" data-no>Huỷ</button><button data-yes>Đổi tên ${ds.length} lỗi</button></div>`, { esc:true });
+  kkGanOChon(m.body);
+  m.body.querySelector('[data-no]').onclick = m.close;
+  m.body.querySelector('[data-yes]').onclick = async ()=>{
+    const moi = kkHoa(kkLayO(m.body, 'ma'));
+    if(!moi){ toast('⚠ Chọn tên mới'); return; }
+    if(cacMa.length === 1 && kkKhoa(moi) === kkKhoa(cacMa[0])){ m.close(); return; }
+    const n = await kkGhi(d=>{
+      const bang = kkBangNV(); let dem = 0;
+      d.loi.forEach(r=>{ if(kkNguoi(r.nguoiLoi, bang).key === key){ r.nguoiLoi = moi; Object.assign(r, kkDauSua()); dem++; } });
+      return dem || false;
+    });
+    if(!n) return;
+    m.close();
+    if(KKL.nguoi === key) KKL.nguoi = '';
+    kkVe(); toast(`✓ Đã đổi ${n} lỗi sang ${moi}`);
+  };
+}
+
+// ---------------------------------------------------------------------
+// DỮ LIỆU CẦN XEM LẠI (chỉ người sửa được)
+// ---------------------------------------------------------------------
+function kkMoKiemTra(){
+  const c = kkCanXem();
+  const dongLoi = (r, ghi) => `<div class="kk-kt-r"><span><b>${kkNgayVN(r.ngay)}</b> · ${esc(r.vtTT || '')}${r.vtHT ? ' → ' + esc(r.vtHT) : ''} · ${esc(r.nguoiLoi || '?')} · ${esc(kkLoaiCua(r))}
+      <small>${ghi}</small></span><button class="ghost sm" data-kt-sua="${esc(r.id)}">Sửa</button></div>`;
+  const m = openModal('⚠ Dữ liệu cần xem lại', `<div class="kk-kt">
+    ${c.sauNgay.length ? `<h4>Ngày nhập / chuyển SAU ngày kiểm kê <i>${c.sauNgay.length}</i></h4>
+      <p class="kk-ghi">Thường do gõ nhầm ngày / tháng (VD 7/5 thành 5/7). Mở ra sửa lại ngày kiểm kê hoặc ngày nhập.</p>
+      ${c.sauNgay.map(r=>dongLoi(r, `ngày nhập / chuyển ${kkNgayVN(r.ngayNhap)}`)).join('')}` : ''}
+    ${c.thieuSl.length ? `<h4>Chưa ghi số lượng thùng <i>${c.thieuSl.length}</i></h4>
+      <p class="kk-ghi">Không có số lượng thì dòng này không được cộng vào "thùng sai lệch".</p>
+      ${c.thieuSl.map(r=>dongLoi(r, esc(r.ghiChu || ''))).join('')}` : ''}
+    ${c.ten.length ? `<h4>Tên người mắc lỗi có thể ghi thiếu <i>${c.ten.length}</i></h4>
+      ${c.ten.map(x=>`<div class="kk-kt-r"><span><b>${esc(x.ma)}</b> — ${x.n} lỗi<small>Trùng tên gọi với ${esc(x.e.name)}${x.e.nghiViec ? ' (đã nghỉ)' : ''}</small></span>
+        <button class="ghost sm" data-kt-gop="${esc(x.key)}">Gộp…</button></div>`).join('')}` : ''}
+    ${c.tong ? '' : '<p class="kk-trong">Không còn dòng nào cần xem lại 👍</p>'}
+  </div>`, { esc:true });
+  m.el.querySelector('.modal-card').classList.add('kk-rong');
+  m.body.querySelectorAll('[data-kt-sua]').forEach(b=>b.onclick = ()=>{ const r = KK.loi.find(x=>x.id === b.dataset.ktSua); m.close(); if(r) kkMoForm(r); });
+  m.body.querySelectorAll('[data-kt-gop]').forEach(b=>b.onclick = ()=>{ m.close(); kkMoDoiTen(b.dataset.ktGop); });
+}
+
+// ---------------------------------------------------------------------
+// NẠP FILE EXCEL (chọn được nhiều file một lần)
+// ---------------------------------------------------------------------
+function kkChonFile(){
+  if(!window.XLSX){ toast('⚠ Chưa tải được thư viện Excel — kiểm tra mạng rồi tải lại trang'); return; }
+  let f = $('kkFile');
+  if(!f){
+    f = document.createElement('input');
+    Object.assign(f, { type:'file', id:'kkFile', accept:'.xlsx,.xls,.xlsm', multiple:true, hidden:true });
+    document.body.appendChild(f);
+    f.onchange = ()=>{ const ds = [...f.files]; f.value = ''; if(ds.length) kkNapFile(ds); };
+  }
+  f.click();
+}
+function kkDocFileExcel(file){
+  return new Promise((res, rej)=>{
+    const r = new FileReader();
+    r.onload = ()=>{ try{ res(XLSX.read(new Uint8Array(r.result), { type:'array' })); }catch(e){ rej(e); } };
+    r.onerror = ()=>rej(r.error);
+    r.readAsArrayBuffer(file);
+  });
+}
+async function kkNapFile(files){
+  // file mới sửa gần nhất đứng trước: dòng có ở nhiều file thì giữ bản của file mới nhất
+  files = files.slice().sort((a, b)=>(b.lastModified || 0) - (a.lastModified || 0));
+  const nguon = [];
+  for(const f of files){
+    try{ nguon.push({ ten:f.name, sheets:kkDocWorkbook(await kkDocFileExcel(f), f.name) }); }
+    catch(e){ toast(`⚠ Không đọc được file ${f.name}: ${e.message || e}`); }
+  }
+  if(!nguon.some(n=>n.sheets.length)){ toast('⚠ Không thấy sổ lỗi kiểm kê trong file (cần cột NGÀY KIỂM KÊ, VỊ TRÍ, NGƯỜI MẮC LỖI / LỖI)'); return; }
+  kkMoNap(nguon);
+}
+function kkMoNap(nguon){
+  const m = openModal('⬆ Nạp file Excel sổ lỗi kiểm kê', '<div class="kk-nap" data-nap></div>', { esc:true });
+  m.el.querySelector('.modal-card').classList.add('kk-rong');
+  const host = m.body.querySelector('[data-nap]');
+  const tat = nguon.flatMap(n=>n.sheets);
+  const namNay = new Date().getFullYear();
+  let soLieu = null;
+  const tinh = ()=>{
+    tat.forEach(s=>{ if(s.loai === 'buoi' && s.tho) s.ds = s.nam ? kkBuoiTheoNam(s.tho, s.nam) : []; });
+    const fLoi = kkGopNguon(tat.filter(s=>s.chon && s.loai === 'loi').map(s=>s.ds), kkKhoaLoi);
+    const fBuoi = kkGopNguon(tat.filter(s=>s.chon && s.loai === 'buoi').map(s=>s.ds), kkKhoaBuoi);
+    const nams = [...new Set(fLoi.concat(fBuoi).map(x=>+x.ngay.slice(0, 4)))].sort();
+    const nam = nams.map(y=>{
+      const l = kkCuaNam(fLoi, y), b = kkCuaNam(fBuoi, y);
+      return { y, l, b, a:kkSoSanh(l, kkCuaNam(KK.loi, y), kkKhoaLoi), c:kkSoSanh(b, kkCuaNam(KK.buoi, y), kkKhoaBuoi) };
+    });
+    return { fLoi, fBuoi, nam };
+  };
+  const ve = ()=>{
+    soLieu = tinh();
+    const { nam } = soLieu;
+    const nMoi = nam.reduce((s, x)=>s + x.a.moi.length, 0), nBMoi = nam.reduce((s, x)=>s + x.c.moi.length, 0);
+    const nXoa = nam.reduce((s, x)=>s + (x.l.length ? x.a.chiApp.length : 0) + (x.b.length ? x.c.chiApp.length : 0), 0);
+    const hong = tat.filter(s=>s.chon).flatMap(s=>s.hong.map(h=>`Sheet "${s.ten}" dòng ${h.dong}: ${h.ly}`));
+    const tongBuoi = s => s.ds.reduce((t, b)=>t + b.thung, 0);
+    host.innerHTML = `
+      ${nguon.map(n=>`<div class="kk-nap-f"><b>📄 ${esc(n.ten)}</b>
+        ${n.sheets.length ? n.sheets.map(s=>{ const i = tat.indexOf(s);
+          return `<label class="kk-nap-s${s.chon ? '' : ' mo'}"><input type="checkbox" data-sheet="${i}"${s.chon ? ' checked' : ''}>
+            <span>Sheet <b>${esc(s.ten)}</b> — ${s.loai === 'loi'
+              ? `${kkSoVN(s.ds.length)} dòng lỗi${s.nams && s.nams.length ? ' · năm ' + s.nams.join(', ') : ''}${kkLaSheetNam(s.ten) ? '' : ' <i>· sheet lẻ — thường đã có trong sheet tổng của năm</i>'}`
+              : `${kkSoVN(s.ds.length)} buổi kiểm kê · ${kkSoVN(tongBuoi(s))} thùng đã kiểm`}</span>
+            ${s.loai === 'buoi' && s.tho ? `<select data-namsheet="${i}" title="Năm của bảng số lượng">${[...new Set([namNay - 2, namNay - 1, namNay, namNay + 1, s.nam].filter(Boolean))].sort()
+              .map(y=>`<option value="${y}"${y === s.nam ? ' selected' : ''}>Năm ${y}</option>`).join('')}</select>` : ''}
+          </label>`; }).join('') : '<div class="kk-nap-s mo">Không có sheet sổ lỗi / bảng số lượng</div>'}</div>`).join('')}
+      ${hong.length ? `<div class="note warn">⚠ ${hong.length} dòng không đọc được, sẽ bỏ qua:<br>${hong.slice(0, 6).map(esc).join('<br>')}${hong.length > 6 ? '<br>…' : ''}</div>` : ''}
+      ${nam.length ? `<table class="kk-nap-kq"><thead><tr><th>Năm</th><th class="so">Dòng lỗi trong file</th><th class="so">Mới</th><th class="so">Đã có</th><th class="so">Buổi kiểm kê</th><th class="so">Buổi mới</th></tr></thead>
+        <tbody>${nam.map(x=>`<tr><td><b>${x.y}</b></td><td class="so">${kkSoVN(x.l.length)}</td><td class="so moi">${kkSoVN(x.a.moi.length)}</td><td class="so">${kkSoVN(x.a.cap.length)}</td>
+          <td class="so">${kkSoVN(x.b.length)}</td><td class="so moi">${kkSoVN(x.c.moi.length)}</td></tr>`).join('')}</tbody></table>`
+        : '<p class="kk-trong">Chưa chọn sheet nào.</p>'}
+      <ul class="nv-xn-ds">
+        <li>Dòng trùng (cùng ngày kiểm kê, 2 vị trí, số lượng, người mắc lỗi) tự bỏ qua — nạp lại file cũ không sinh dòng trùng.</li>
+        <li>Người mắc lỗi giữ đúng như sổ. Ai có trong danh sách kho thành phẩm sẽ tự hiện họ tên đầy đủ.</li>
+        <li>Bảng <b>SỐ LƯỢNG</b> (số thùng đã kiểm mỗi buổi) dùng để tính độ chính xác tồn kho — ngày không ghi năm thì lấy năm chọn bên cạnh.</li>
+      </ul>
+      <div class="row2" style="margin-top:14px;"><button class="ghost" data-no>Huỷ</button>
+        <button data-them${nMoi + nBMoi ? '' : ' disabled'}>⬆ Thêm ${kkSoVN(nMoi)} dòng lỗi${nBMoi ? ` + ${kkSoVN(nBMoi)} buổi` : ''}</button></div>
+      ${nam.length ? `<div class="kk-nap-thay"><button class="danger sm" data-thay>Thay toàn bộ năm ${nam.map(x=>x.y).join(', ')} theo file…</button>
+        <span>Dùng khi đã sửa lại sổ trong Excel: app giống hệt file${nXoa ? `, <b>xoá ${kkSoVN(nXoa)} dòng</b> chỉ có trên app` : ''}.</span></div>` : ''}`;
+    host.querySelectorAll('[data-sheet]').forEach(c=>c.onchange = ()=>{ tat[+c.dataset.sheet].chon = c.checked; ve(); });
+    host.querySelectorAll('[data-namsheet]').forEach(s=>s.onchange = ()=>{ tat[+s.dataset.namsheet].nam = +s.value; ve(); });
+    host.querySelector('[data-no]').onclick = m.close;
+    host.querySelector('[data-them]').onclick = ()=>ghi(false, nMoi, nBMoi);
+    const thay = host.querySelector('[data-thay]'); if(thay) thay.onclick = ()=>ghi(true, nMoi, nBMoi, nXoa);
+  };
+  const ghi = async (thayHet, nMoi, nBMoi, nXoa)=>{
+    const { fLoi, fBuoi, nam } = soLieu;
+    if(thayHet && !await confirmBox(`Thay toàn bộ năm ${nam.map(x=>x.y).join(', ')} theo file?`
+      + (nXoa ? ` ${nXoa} dòng chỉ có trên app sẽ bị XOÁ.` : '') + ' Dòng đã có được cập nhật theo file.')) return;
+    host.querySelectorAll('button').forEach(b=>b.disabled = true);
+    const dem = { loi:0, buoi:0, xoa:0 };
+    const ok = await kkGhi(d=>{
+      const dau = kkDau();
+      // so lại với bản mới nhất trên máy chủ (có thể đã có người khác vừa ghi)
+      nam.forEach(({ y })=>{
+        const l = kkCuaNam(fLoi, y), b = kkCuaNam(fBuoi, y);
+        if(l.length){
+          const a = kkSoSanh(l, kkCuaNam(d.loi, y), kkKhoaLoi);
+          if(thayHet){
+            const giu = new Set(a.cap.map(([x])=>x.id));
+            a.cap.forEach(([x, f])=>Object.assign(x, f, kkDauSua()));
+            dem.xoa += a.chiApp.length;
+            d.loi = d.loi.filter(r=>!r.ngay.startsWith(y + '-') || giu.has(r.id));
+          }
+          a.moi.forEach(r=>{ d.loi.push({ id:kkMoiId(), ...r, ...dau }); dem.loi++; });
+        }
+        if(b.length){
+          const c = kkSoSanh(b, kkCuaNam(d.buoi, y), kkKhoaBuoi);
+          if(thayHet){
+            const giu = new Set(c.cap.map(([x])=>x.id));
+            c.cap.forEach(([x, f])=>Object.assign(x, f, kkDauSua()));
+            dem.xoa += c.chiApp.length;
+            d.buoi = d.buoi.filter(x=>!x.ngay.startsWith(y + '-') || giu.has(x.id));
+          }
+          c.moi.forEach(x=>{ d.buoi.push({ id:kkMoiId(), ...x, ...dau }); dem.buoi++; });
+        }
+      });
+      if(!thayHet && !dem.loi && !dem.buoi){ toast('Không có dòng mới — dữ liệu đã có đủ'); return false; }
+    });
+    if(!ok){ host.querySelectorAll('button').forEach(b=>b.disabled = false); return; }
+    m.close();
+    const nams = nam.map(x=>x.y);
+    if(!nams.includes(KKL.nam)) KKL.nam = nams[nams.length - 1];
+    kkVe();
+    toast(`✓ Đã nạp ${kkSoVN(dem.loi)} dòng lỗi${dem.buoi ? ` + ${kkSoVN(dem.buoi)} buổi kiểm kê` : ''}${dem.xoa ? ` · xoá ${kkSoVN(dem.xoa)} dòng không có trong file` : ''}`);
+  };
+  ve();
+}
+
+// ---------------------------------------------------------------------
+// XUẤT EXCEL (năm đang xem): Tổng hợp · danh sách lỗi đúng cột như sổ (nạp lại được) · buổi kiểm kê
+// ---------------------------------------------------------------------
+const kkSerial = k => { const [y, m, d] = k.split('-').map(Number); return (Date.UTC(y, m - 1, d) - Date.UTC(1899, 11, 30)) / 864e5; };
+function kkDinhDang(ws, cot, z, tuDong){
+  const r = XLSX.utils.decode_range(ws['!ref']);
+  for(let i = tuDong || 0; i <= r.e.r; i++) cot.forEach(c=>{ const o = ws[XLSX.utils.encode_cell({ r:i, c })]; if(o && o.t === 'n') o.z = z; });
+}
+function kkXuatExcel(){
+  if(!window.XLSX){ toast('⚠ Chưa tải được thư viện Excel — kiểm tra mạng rồi tải lại trang'); return; }
+  const nam = KKL.nam, ky = kkKy(nam, 0);
+  const loi = kkCuaNam(KK.loi, nam).sort((a, b)=>a.ngay.localeCompare(b.ngay) || (a.tt || 0) - (b.tt || 0));
+  const buoi = kkCuaNam(KK.buoi, nam).sort((a, b)=>a.ngay.localeCompare(b.ngay) || kkChu(a.nhan).localeCompare(kkChu(b.nhan)));
+  if(!loi.length && !buoi.length){ toast(`Năm ${nam} chưa có dữ liệu để xuất`); return; }
+  const kho = kkKho(ky), sai = kkTongSl(loi), kiem = kho.kiem;
+  const wb = XLSX.utils.book_new();
+  // 1. Tổng hợp
+  const a = [[`BÁO CÁO LỖI KIỂM KÊ — KHO THÀNH PHẨM — NĂM ${nam}`], [`Số liệu ${kkNgayVN(ky.tu)} – ${kkNgayVN(ky.den)} · xuất từ app ngày ${fmtVN(new Date())}`], [],
+    ['Tổng số lỗi', loi.length], ['Thùng sai lệch', sai], ['Số ngày kiểm kê', kho.ngay.size], ['Số buổi có số thùng', buoi.length],
+    ['Thùng đã kiểm', kiem || ''], ['Độ chính xác tồn kho', kiem ? 1 - sai / kiem : ''],
+    ['TB lỗi / tháng', ky.soThang ? +(loi.length / ky.soThang).toFixed(1) : ''], ['TB lỗi / ngày kiểm kê', kho.ngay.size ? +(loi.length / kho.ngay.size).toFixed(1) : ''], [],
+    ['THEO THÁNG'], ['Tháng', 'Số ngày KK', 'Số lỗi', 'Thùng sai', 'Thùng đã kiểm', 'Độ chính xác', ...KK_LOAI_CHINH, 'Khác']];
+  const dinh = [[7, 1, '#,##0'], [8, 1, '0.00%']];         // [dòng, cột, định dạng] — chỉ đúng những ô cần
+  for(let t = 1; t <= 12; t++){
+    const x = kkKho(kkKy(nam, t));
+    const c = KK_LOAI_CHINH.map(l=>x.loi.filter(r=>kkLoaiCua(r) === l).length);
+    dinh.push([a.length, 4, '#,##0'], [a.length, 5, '0.00%']);
+    a.push([`T${t}`, x.ngay.size, x.loi.length, x.sai, x.kiem || '', x.kiem ? 1 - x.sai / x.kiem : '', ...c, x.loi.length - c.reduce((s, n)=>s + n, 0)]);
+  }
+  a.push([]); a.push(['THEO LOẠI LỖI']); a.push(['Hạng', 'Loại lỗi', 'Số lỗi', 'Tỷ lệ', 'Lũy kế', 'Thùng sai']);
+  let luy = 0;
+  const L = kkDemLoai(loi).sort((p, q)=>q.n - p.n);
+  L.forEach((x, i)=>{ luy += x.n; dinh.push([a.length, 3, '0%'], [a.length, 4, '0%']); a.push([i + 1, x.loai, x.n, x.n / (loi.length || 1), luy / (loi.length || 1), x.thung]); });
+  a.push([]); a.push(['THEO NGƯỜI MẮC LỖI']);
+  a.push(['Hạng', 'Mã trong sổ', 'Họ tên', 'Tình trạng', 'Số lỗi', 'Thùng sai', ...Array.from({ length:12 }, (_, i)=>`T${i + 1}`), 'Hay mắc nhất']);
+  const doCu = KKL.do; KKL.do = 'loi';                 // bảng người trong file: luôn đếm theo số lỗi
+  const G = kkNhomNguoi(loi, loi);
+  KKL.do = doCu;
+  G.nguoi.concat(G.nhom).forEach((p, i)=>{
+    const e = p.ng.e, hay = [...p.loai.entries()].sort((x, y)=>y[1] - x[1])[0];
+    a.push([p.ng.loai === 'nguoi' ? i + 1 : '', [...p.ma].join(' · '), e ? e.name : p.ng.loai === 'nguoi' ? '' : p.ng.ten,
+      e ? (e.nghiViec ? 'Đã nghỉ việc' : 'Đang làm') : p.ng.loai === 'nguoi' ? 'Không có trong danh sách' : '',
+      p.n, p.thung, ...p.thang, hay ? hay[0] : '']);
+  });
+  const ws1 = XLSX.utils.aoa_to_sheet(a);
+  dinh.forEach(([r, c, z])=>{ const o = ws1[XLSX.utils.encode_cell({ r, c })]; if(o && o.t === 'n') o.z = z; });
+  ws1['!cols'] = [{ wch:24 }, { wch:18 }, { wch:22 }, { wch:20 }, { wch:14 }, { wch:13 }, ...Array(12).fill({ wch:6 }), { wch:22 }];
+  XLSX.utils.book_append_sheet(wb, ws1, `TỔNG HỢP ${nam}`);
+  // 2. Danh sách lỗi — đúng cột như sổ, ngày là ngày thật của Excel (nạp lại vào app được)
+  const ws2 = XLSX.utils.aoa_to_sheet([KK_COT_XUAT].concat(loi.map((r, i)=>[i + 1, kkSerial(r.ngay), r.vtTT, r.vtHT, r.sl == null ? '' : r.sl,
+    r.ngayNhap ? kkSerial(r.ngayNhap) : (r.ngayNhapGoc || ''), r.nguoiNhap, r.nguoiCat, r.nguoiLoi, r.ghiChu, r.loai])));
+  kkDinhDang(ws2, [1, 5], 'dd/mm/yyyy', 1);
+  ws2['!cols'] = [{ wch:5 }, { wch:12 }, { wch:11 }, { wch:11 }, { wch:9 }, { wch:12 }, { wch:12 }, { wch:11 }, { wch:13 }, { wch:60 }, { wch:20 }];
+  XLSX.utils.book_append_sheet(wb, ws2, String(nam));
+  // 3. Buổi kiểm kê
+  const ws3 = XLSX.utils.aoa_to_sheet([['NGÀY KIỂM KÊ', 'NHÃN', 'SỐ THÙNG ĐÃ KIỂM', 'GHI CHÚ']].concat(buoi.map(b=>[kkSerial(b.ngay), b.nhan || '', b.thung, b.ghiChu || ''])));
+  kkDinhDang(ws3, [0], 'dd/mm/yyyy', 1); kkDinhDang(ws3, [2], '#,##0', 1);
+  ws3['!cols'] = [{ wch:14 }, { wch:8 }, { wch:18 }, { wch:30 }];
+  XLSX.utils.book_append_sheet(wb, ws3, `SỐ LƯỢNG ${nam}`);
+  XLSX.writeFile(wb, `LOI_KIEM_KE_${nam}_${todayKey()}.xlsx`);
+  toast(`✓ Đã xuất báo cáo năm ${nam}`);
+}
+
+// ---------------------------------------------------------------------
+// IN / LƯU PDF: chỉ in phần báo cáo (bỏ menu, thanh lọc, danh sách lỗi), khổ A4 ngang
+// ---------------------------------------------------------------------
+function kkIn(){
+  const cu = document.title;
+  document.title = `Bao cao loi kiem ke ${KKL.thang ? 'T' + KKL.thang + '-' : ''}${KKL.nam}`;      // tên file PDF gợi ý
+  document.body.classList.add('kk-in');
+  const xong = ()=>{ document.body.classList.remove('kk-in'); document.title = cu; window.removeEventListener('afterprint', xong); };
+  window.addEventListener('afterprint', xong);
+  setTimeout(()=>window.print(), 60);
+}
 
 </script>
 <script>/* js/app/main.js */
