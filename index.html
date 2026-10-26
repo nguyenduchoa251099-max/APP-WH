@@ -1994,64 +1994,38 @@
   .kk-lr.kk-lr-dau b, .kk-lr.kk-lr-dau small{font-size:10.5px; font-weight:800; color:var(--ink-soft);}
   .kk-80{margin:3px 6px 5px; padding:6px 10px; border-radius:8px; background:#f3f7fb; font-size:12.5px; color:var(--ink); line-height:1.4;}
 
-  /* ---------- xếp hạng người + ô từng tháng ---------- */
-  .kk-ng-wrap{overflow-x:auto;}
-  table.kk-ng{width:100%; border-collapse:separate; border-spacing:2px; font-variant-numeric:tabular-nums;}
-  /* bỏ kiểu bảng chung của app (đệm 9px, chữ 15px, tiêu đề in hoa, gạch dưới) */
-  .kk-ng th, .kk-ng td{padding:0; border-bottom:0; font-size:12px; text-transform:none; letter-spacing:0; vertical-align:middle;}
-  .kk-ng thead th{font-size:11px; font-weight:700; color:var(--ink-soft); padding:2px 0 5px; text-align:center; white-space:nowrap;}
-  .kk-ng thead th i{font-style:normal; font-weight:500;}
-  .kk-ng thead th.ten{text-align:left; padding-left:8px;}
-  .kk-ng thead th.chon{color:var(--ink); text-decoration:underline; text-underline-offset:3px;}
-  .kk-ng thead th.nay{color:var(--blue-dark);}
-  .kk-ng thead th.tong{text-align:left; padding-left:10px;}
-  .kk-ng thead th.phu{text-align:right; padding-right:8px;}
-  .kk-ng thead th.hay{text-align:left;}
-  .kk-ng tbody tr{cursor:pointer;}
-  .kk-ng tbody tr:hover td{background:transparent;}
-  .kk-ng tbody tr:hover td.ten, .kk-ng tbody tr:hover td.h{background:#f3f7fb;}
-  .kk-ng tr.on td.ten, .kk-ng tr.on td.h{background:#eaf2fc;}
-  .kk-ng tr.on td.ten{box-shadow:inset 3px 0 0 #2a78d6;}
-  .kk-ng tr.mo{opacity:.5;}
-  .kk-ng td.h{width:28px; text-align:center; font-weight:800; color:var(--ink-soft); font-size:12.5px; border-radius:6px;}
-  .kk-ng td.ten{min-width:210px; padding:4px 34px 4px 8px; border-radius:6px; text-align:left; position:relative;}
-  .kk-ng td.ten .n{display:flex; align-items:center; gap:6px; flex-wrap:wrap;}
-  .kk-ng td.ten b{font-size:13px;}
-  .kk-ng td.ten small{display:block; font-size:11px; color:var(--ink-soft); line-height:1.25; margin-top:1px;}
-  .kk-ng td.o{width:32px; min-width:30px; height:30px; border-radius:4px; text-align:center; font-weight:700; background:#f1f4f8;}
-  .kk-ng .l1{background:#dbe9fb !important; color:#174f96;} .kk-ng .l2{background:#a9cbf3 !important; color:#123c73;}
-  .kk-ng .l3{background:#5f9ee6 !important; color:#fff;} .kk-ng .l4{background:#2a78d6 !important; color:#fff;}
-  .kk-ng .l5{background:#174f96 !important; color:#fff;}
-  .kk-ng td.o.chon{box-shadow:inset 0 0 0 2px #1c2024;}
-  .kk-ng td.o[data-ovtip]:hover{box-shadow:0 0 0 2px var(--ink);}
-  .kk-ng td.tong{min-width:120px; padding:0 4px 0 10px;}
-  .kk-ng .tb{display:flex; align-items:center; gap:8px;}
-  .kk-ng .tb .bar{flex:1; height:8px; background:#f1f4f8; border-radius:4px; overflow:hidden;}
-  .kk-ng .tb .bar i{display:block; height:100%; background:#2a78d6; border-radius:0 4px 4px 0;}
-  .kk-ng .tb b{min-width:28px; text-align:right; font-size:13px;}
-  .kk-ng td.phu{width:64px; text-align:right; color:var(--ink-soft); padding-right:8px;}
-  .kk-ng td.hay{min-width:150px; font-size:11.5px; color:var(--ink-soft); white-space:nowrap; padding-left:4px;}
-  .kk-ng td.hay i{display:inline-block; width:9px; height:9px; border-radius:2px; margin-right:5px;}
-  .kk-ng td.hay span{color:#98a1ad;}
-  .kk-ng tr.nhom td.ten b{color:var(--ink-soft);}
-  .kk-ng tr.tach{cursor:default;}
-  .kk-ng tr.tach td{padding:10px 8px 3px; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-soft);}
-  .kk-ng tr.tach:hover td{background:transparent !important;}
-  .kk-tt{display:inline-block; font-size:10.5px; font-weight:800; padding:0 7px; border-radius:999px; line-height:1.65; white-space:nowrap;
-    background:#f1f4f8; color:var(--ink-soft); font-style:normal;}
-  .kk-tt.nghi{background:#e5e7eb; color:#374151;}
-  .kk-tt.ngoai{background:#fff; border:1px dashed #c3c9d2; color:#5b6470;}
-  .kk-tt.cho{background:#111827; color:#fff;}
-  .kk-tt.ht{background:#ffedd5; color:#7c2d12;}
-  .kk-tt.ts{background:#fce7f3; color:#831843;}
-  .kk-doiten{position:absolute; right:5px; top:50%; transform:translateY(-50%); border:1px solid var(--line); background:#fff; color:var(--ink-soft);
+  /* ---------- xếp hạng người: thanh ngang chồng theo loại lỗi ---------- */
+  .kk-ng-lg{display:flex; flex-wrap:wrap; gap:4px 14px; margin:-2px 0 10px; font-size:12px; font-weight:700; color:var(--ink-soft);}
+  .kk-ng-lg span{display:inline-flex; align-items:center; gap:6px;}
+  .kk-ng-lg i{width:11px; height:11px; border-radius:3px;}
+  .kk-ng-ds{display:flex; flex-direction:column; gap:3px;}
+  .kk-nr{display:grid; grid-template-columns:28px minmax(150px, 210px) minmax(0, 1fr) 44px; align-items:center; gap:10px;
+    padding:4px 6px; border-radius:8px; cursor:pointer;}
+  .kk-nr:hover{background:#f3f7fb;}
+  .kk-nr.on{background:#eaf2fc; box-shadow:inset 3px 0 0 #2a78d6;}
+  .kk-nr.mo{opacity:.45;}
+  .kk-nr .h{text-align:center; font-weight:800; color:var(--ink-soft); font-size:12.5px;}
+  .kk-nr .ten{position:relative; font-size:13px; font-weight:700; padding-right:30px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .kk-nr.nhom .ten{color:var(--ink-soft);}
+  /* thanh: các đoạn nối nhau, khe trắng 2px giữa đoạn, đầu thanh bo tròn */
+  .kk-nr .thanh{display:flex; height:22px; gap:2px;}
+  .kk-nr .thanh i{display:flex; align-items:center; justify-content:center; min-width:3px; height:100%; overflow:hidden;}
+  .kk-nr .thanh i:last-child{border-radius:0 5px 5px 0;}
+  .kk-nr .thanh em{font-style:normal; font-size:11px; font-weight:800; font-variant-numeric:tabular-nums;}
+  .kk-nr > b{text-align:right; font-size:14px; font-variant-numeric:tabular-nums;}
+  .kk-nr-tach{margin:8px 0 2px 44px; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-soft);}
+  .kk-doiten{position:absolute; right:2px; top:50%; transform:translateY(-50%); border:1px solid var(--line); background:#fff; color:var(--ink-soft);
     width:24px; height:24px; padding:0; border-radius:6px; font-size:12px; line-height:1; visibility:hidden;}
-  .kk-ng tr:hover .kk-doiten{visibility:visible;}
+  .kk-nr:hover .kk-doiten{visibility:visible;}
   .kk-doiten:hover{color:var(--blue-dark); border-color:var(--blue); opacity:1;}
   .kk-ng-f{display:flex; flex-wrap:wrap; align-items:center; gap:6px 12px; margin-top:10px; font-size:12px; color:var(--ink-soft);}
-  .kk-ng-f .m{display:inline-flex; align-items:center; gap:4px;}
-  .kk-ng-f i.o{display:inline-block; width:16px; height:12px; border-radius:3px;}
-  .kk-ng-f .l1{background:#dbe9fb;} .kk-ng-f .l2{background:#a9cbf3;} .kk-ng-f .l3{background:#5f9ee6;} .kk-ng-f .l4{background:#2a78d6;} .kk-ng-f .l5{background:#174f96;}
+  /* mục Danh sách lỗi: ▾ / ▸ mở - thu */
+  .kk-mui{border:1px solid var(--line); background:#fff; color:var(--ink); width:28px; height:28px; padding:0; border-radius:7px;
+    font-size:17px; line-height:1; flex:none;}
+  .kk-mui:hover{background:var(--paper); opacity:1;}
+  .kk-ds-ten{cursor:pointer;}
+  .kk-ds.thu #kkBang, .kk-ds.thu #kkTim{display:none;}
+  .kk-ds.thu .kk-h{margin-bottom:0;}
 
   /* ---------- danh sách lỗi ---------- */
   .kk-ds .kk-h input[type=search]{width:min(320px, 100%); margin-left:auto; padding:7px 10px; font-size:13px; background:#fff; border:1px solid var(--line); border-radius:8px;}
@@ -13771,6 +13745,8 @@ const KKL = { nam:null, thang:0, loai:'', nguoi:'', do:'loi', tim:'', hetNguoi:f
 let KK_NG = new Map();                  // id dòng lỗi -> người mắc lỗi (kkNguoi), tính lại mỗi lần vẽ
 let KK_BANG = [];                       // dòng lỗi của danh sách (đủ bộ lọc, chưa lọc chữ tìm)
 let KK_NGAY_CUOI = '';                  // ngày kiểm kê vừa ghi — lần ghi lỗi sau lấy sẵn ngày này
+const KK_KHOA_DS = 'appwh-kk-ds-mo';    // mục "Danh sách lỗi" đang mở hay thu (nhớ trên máy này)
+let KK_DS_MO = lsGet(KK_KHOA_DS) !== '0';
 const KK_MAU_TRUOC = '#e3e8ef';         // bóng cột cùng kỳ năm trước
 const KK_COT_XUAT = ['STT', 'NGÀY KIỂM KÊ', 'VỊ TRÍ THỰC TẾ', 'VỊ TRÍ HỆ THỐNG', 'SỐ LƯỢNG + & -', 'NGÀY NHẬP / CHUYỂN',
   'NGƯỜI NHẬP / CHUYỂN', 'NGƯỜI CẤT', 'NGƯỜI MẮC LỖI', 'GHI CHÚ', 'LỖI'];
@@ -13856,13 +13832,15 @@ function kkSoThang(nam){
              truoc:YT.filter(r=>+r.ngay.slice(5, 7) === m).reduce((s, r)=>s + kkGT(r), 0) };
   });
 }
-// Theo người: N = dòng trong kỳ (lọc loại), NY = cả năm (lọc loại) cho ô từng tháng
+// Theo người: N = dòng trong kỳ (lọc loại), NY = cả năm (lọc loại) cho từng tháng (file Excel xuất ra)
+//   nhom = giá trị theo [3 loại chính…, Khác] cho thanh chồng ở bảng xếp hạng
 function kkNhomNguoi(N, NY){
   const m = new Map();
   const lay = r=>{ const ng = kkNg(r); let p = m.get(ng.key);
-    if(!p){ p = { ng, v:0, n:0, thung:0, loai:new Map(), thang:Array(12).fill(0), ma:new Set() }; m.set(ng.key, p); }
+    if(!p){ p = { ng, v:0, n:0, thung:0, loai:new Map(), nhom:[0, 0, 0, 0], thang:Array(12).fill(0), ma:new Set() }; m.set(ng.key, p); }
     p.ma.add(kkHoa(r.nguoiLoi) || '(trống)'); return p; };
-  N.forEach(r=>{ const p = lay(r), l = kkLoaiCua(r); p.v += kkGT(r); p.n++; p.thung += Number(r.sl) || 0; p.loai.set(l, (p.loai.get(l) || 0) + 1); });
+  N.forEach(r=>{ const p = lay(r), l = kkLoaiCua(r), j = KK_LOAI_CHINH.indexOf(l);
+    p.v += kkGT(r); p.n++; p.thung += Number(r.sl) || 0; p.loai.set(l, (p.loai.get(l) || 0) + 1); p.nhom[j >= 0 ? j : 3] += kkGT(r); });
   NY.forEach(r=>{ lay(r).thang[+r.ngay.slice(5, 7) - 1] += kkGT(r); });
   const ds = [...m.values()];
   return {
@@ -13952,11 +13930,12 @@ function kkVe(){
       </section>
     </div>
     <section class="kk-card">
-      <div class="kk-h"><b>Xếp hạng người mắc lỗi</b><span class="kk-ghi kk-phai">ô màu = ${kkDV()} từng tháng ${nam} · bấm 1 người để lọc cả trang</span></div>
+      <div class="kk-h"><b>Xếp hạng người mắc lỗi</b><span class="kk-ghi kk-phai">thanh dài = nhiều ${kkDV()} · màu theo loại lỗi · bấm 1 người để lọc cả trang</span></div>
       ${kkHtmlNguoi(G, sua)}
     </section>
-    <section class="kk-card kk-ds">
-      <div class="kk-h"><b>Danh sách lỗi</b><span class="kk-ghi" id="kkDem"></span>
+    <section class="kk-card kk-ds${KK_DS_MO ? '' : ' thu'}" id="kkDs">
+      <div class="kk-h"><button class="kk-mui" data-kk-act="ds" title="${KK_DS_MO ? 'Thu gọn' : 'Mở'} danh sách lỗi">${KK_DS_MO ? '▾' : '▸'}</button>
+        <b class="kk-ds-ten" data-kk-act="ds">Danh sách lỗi</b><span class="kk-ghi" id="kkDem"></span>
         <input type="search" id="kkTim" placeholder="🔍 Tìm vị trí, người, ghi chú…" autocomplete="off" value="${esc(KKL.tim)}"></div>
       <div id="kkBang"></div>
     </section>`;
@@ -14155,50 +14134,37 @@ function kkHtmlLoai(P){
   return `<div class="kk-loai-ds"><div class="kk-lr kk-lr-dau"><span class="h">#</span><span>Loại lỗi</span><span></span><b>${kkThung() ? 'Thùng' : 'Lỗi'}</b><small>Tỷ lệ</small><small>Lũy kế</small></div>${dong}</div>`;
 }
 
-// ---- Xếp hạng người mắc lỗi + ô màu từng tháng ----
-function kkTenNguoiHtml(p){
-  const ng = p.ng, e = ng.e;
-  if(ng.loai !== 'nguoi') return `<div class="n"><b>${esc(ng.ten)}</b></div><small>Sổ ghi: ${esc([...p.ma].join(' · '))}</small>`;
-  if(!e) return `<div class="n"><b>${esc(ng.ma)}</b><span class="kk-tt ngoai" title="Người đã nghỉ trước khi dùng app, hoặc tên ghi chưa đủ — chủ trang / giám sát bấm ✎ để gộp với người trong danh sách">ngoài DS</span></div>`
-    + `<small>Không có trong danh sách kho thành phẩm</small>`;
-  const tt = e.nghiViec ? ['nghi', 'đã nghỉ', 'Nghỉ việc — làm tới ' + kkNgayVN(e.nghiViec)] : laChoNghi(e) ? ['cho', 'chờ nghỉ', nhanChoNghi(e)]
-    : e.diHoTro ? ['ht', 'đi hỗ trợ', 'Đang đi hỗ trợ'] : e.thaiSan ? ['ts', 'thai sản', 'Đang nghỉ thai sản'] : null;
-  return `<div class="n"><b>${esc(e.name)}</b>${tt ? `<span class="kk-tt ${tt[0]}" title="${esc(tt[2])}">${tt[1]}</span>` : ''}</div>`
-    + `<small>${esc([[...p.ma].join(' · '), e.shift, e.position].filter(Boolean).join(' · '))}</small>`;
-}
+// ---- Xếp hạng người mắc lỗi: thanh ngang chồng theo loại lỗi (3 loại chính + Khác) ----
+// Chỉ ghi tên (người trong danh sách kho: họ tên; người đã nghỉ trước khi dùng app: mã như sổ). Màu theo LOẠI LỖI
+// giống biểu đồ tháng. Số trong đoạn màu chỉ ghi khi đoạn đủ rộng; số đủ từng loại ở khung rê chuột.
+const kkTenNguoi = p => p.ng.loai !== 'nguoi' ? p.ng.ten : p.ng.e ? p.ng.e.name : p.ng.ma;
 function kkHtmlNguoi(G, sua){
-  const ds = G.nguoi, nhom = G.nhom, nam = KKL.nam, dv = kkDV();
+  const ds = G.nguoi, nhom = G.nhom, dv = kkDV();
   if(!ds.length && !nhom.length) return '<p class="kk-trong">Không có lỗi nào trong kỳ này.</p>';
   const hien = KKL.hetNguoi ? ds : ds.slice(0, 10);
-  const tat = ds.concat(nhom);
-  const maxV = Math.max(1, ...tat.map(p=>p.v)), maxO = Math.max(1, ...tat.flatMap(p=>p.thang));
-  const muc = v => v <= 0 ? 0 : Math.max(1, Math.min(5, Math.ceil(v / maxO * 5)));
-  const homNay = new Date(), thangNay = nam === homNay.getFullYear() ? homNay.getMonth() + 1 : 0;
+  const maxV = Math.max(1, ...ds.concat(nhom).map(p=>p.v));
+  const tenNhom = KK_LOAI_CHINH.concat(['Khác']), mauNhom = KK_MAU_LOAI.concat([KK_MAU_KHAC]);
   const dong = (p, hang) => {
-    const ng = p.ng, chon = KKL.nguoi === ng.key;
-    const hay = [...p.loai.entries()].sort((a, b)=>b[1] - a[1])[0];
-    return `<tr class="${chon ? 'on' : KKL.nguoi ? 'mo' : ''}${ng.loai !== 'nguoi' ? ' nhom' : ''}" data-kk-nguoi="${esc(ng.key)}">
-      <td class="h">${hang || ''}</td>
-      <td class="ten">${kkTenNguoiHtml(p)}${sua && ng.loai === 'nguoi' ? `<button class="kk-doiten" data-kk-doiten="${esc(ng.key)}" title="Sửa / gộp tên người mắc lỗi">✎</button>` : ''}</td>
-      ${p.thang.map((v, i)=>`<td class="o l${muc(v)}${KKL.thang === i + 1 ? ' chon' : ''}" data-kk-o="${i + 1}"${v
-        ? ovTipAttr(ng.ten, [{ t:`Tháng ${i + 1}/${nam}: ${kkSoVN(v)} ${dv}`, s:'Bấm để xem lỗi tháng này của người này' }], true) : ''}>${v ? kkSoVN(v) : ''}</td>`).join('')}
-      <td class="tong"><div class="tb"><span class="bar"><i style="width:${(p.v / maxV * 100).toFixed(1)}%"></i></span><b>${kkSoVN(p.v)}</b></div></td>
-      <td class="phu">${kkSoVN(kkThung() ? p.n : p.thung)}</td>
-      <td class="hay">${hay ? `<i style="background:${kkMauLoai(hay[0])}"></i>${esc(hay[0])} <span>(${hay[1]})</span>` : ''}</td>
-    </tr>`;
+    const ng = p.ng, chon = KKL.nguoi === ng.key, ten = kkTenNguoi(p);
+    const tip = p.nhom.map((v, j)=>v ? { t:`${tenNhom[j]}: ${kkSoVN(v)} ${dv}` } : null).filter(Boolean)
+      .concat([{ t:`Tổng: ${kkSoVN(p.v)} ${dv}`, s:`${kkSoVN(p.n)} lỗi · ${kkSoVN(p.thung)} thùng sai · bấm để lọc cả trang` }]);
+    const doan = p.nhom.map((v, j)=>{
+      if(!v) return '';
+      const w = v / maxV * 100;
+      return `<i style="width:${w.toFixed(2)}%; background:${mauNhom[j]}">${w >= 5 ? `<em style="color:${j === 3 ? '#1c2024' : '#fff'}">${kkSoVN(v)}</em>` : ''}</i>`;
+    }).join('');
+    return `<div class="kk-nr${chon ? ' on' : KKL.nguoi ? ' mo' : ''}${ng.loai !== 'nguoi' ? ' nhom' : ''}" data-kk-nguoi="${esc(ng.key)}"${ovTipAttr(ten, tip, true)}>
+      <span class="h">${hang || ''}</span>
+      <span class="ten" title="${esc(ng.loai === 'nguoi' ? 'Sổ ghi: ' + [...p.ma].join(' · ') : '')}">${esc(ten)}${sua && ng.loai === 'nguoi'
+        ? `<button class="kk-doiten" data-kk-doiten="${esc(ng.key)}" title="Sửa / gộp tên người mắc lỗi">✎</button>` : ''}</span>
+      <span class="thanh">${doan}</span>
+      <b>${kkSoVN(p.v)}</b>
+    </div>`;
   };
-  return `<div class="kk-ng-wrap"><table class="kk-ng">
-    <thead><tr><th class="h">#</th><th class="ten">Người mắc lỗi <i>(${ds.length} người)</i></th>
-      ${Array.from({ length:12 }, (_, i)=>`<th class="o${KKL.thang === i + 1 ? ' chon' : ''}${thangNay === i + 1 ? ' nay' : ''}">T${i + 1}</th>`).join('')}
-      <th class="tong">${KKL.thang ? `Tháng ${KKL.thang}` : 'Cả năm'} <i>(${dv})</i></th><th class="phu">${kkThung() ? 'Số lỗi' : 'Thùng sai'}</th><th class="hay">Hay mắc nhất</th></tr></thead>
-    <tbody>${hien.map((p, i)=>dong(p, i + 1)).join('')}
-      ${nhom.length ? `<tr class="tach"><td></td><td colspan="16">Không quy cho cá nhân</td></tr>${nhom.map(p=>dong(p, '')).join('')}` : ''}</tbody>
-  </table></div>
-  <div class="kk-ng-f">
-    ${ds.length > 10 ? `<button class="ghost sm" data-kk-act="hetnguoi">${KKL.hetNguoi ? '▴ Chỉ hiện 10 người đầu' : `▾ Xem tất cả ${ds.length} người`}</button>` : ''}
-    <span>${dv[0].toUpperCase() + dv.slice(1)} / tháng:</span>${['ít', '', '', '', 'nhiều'].map((t, i)=>`<span class="m"><i class="o l${i + 1}"></i>${t}</span>`).join('')}
-    <span>· Tên in đậm = có trong danh sách kho thành phẩm · <span class="kk-tt ngoai">ngoài DS</span> = người đã nghỉ trước khi dùng app (giữ nguyên tên như sổ)</span>
-  </div>`;
+  return `<div class="kk-ng-lg">${tenNhom.map((t, j)=>`<span><i style="background:${mauNhom[j]}"></i>${esc(t)}</span>`).join('')}</div>
+  <div class="kk-ng-ds">${hien.map((p, i)=>dong(p, i + 1)).join('')}
+    ${nhom.length ? `<div class="kk-nr-tach">Không quy cho cá nhân</div>${nhom.map(p=>dong(p, '')).join('')}` : ''}</div>
+  ${ds.length > 10 ? `<div class="kk-ng-f"><button class="ghost sm" data-kk-act="hetnguoi">${KKL.hetNguoi ? '▴ Chỉ hiện 10 người đầu' : `▾ Xem tất cả ${ds.length} người`}</button></div>` : ''}`;
 }
 
 // ---- Danh sách lỗi ----
@@ -14245,6 +14211,12 @@ function kkHanhDong(a){
   else if(a === 'xuat') kkXuatExcel();
   else if(a === 'in') kkIn();
   else if(a === 'hetnguoi'){ KKL.hetNguoi = !KKL.hetNguoi; kkVe(); }
+  else if(a === 'ds'){                                    // mở / thu danh sách lỗi (nhớ trên máy này)
+    KK_DS_MO = !KK_DS_MO; lsSet(KK_KHOA_DS, KK_DS_MO ? '1' : '0');
+    const s = $('kkDs'); if(!s) return;
+    s.classList.toggle('thu', !KK_DS_MO);
+    const m = s.querySelector('.kk-mui'); m.textContent = KK_DS_MO ? '▾' : '▸'; m.title = (KK_DS_MO ? 'Thu gọn' : 'Mở') + ' danh sách lỗi';
+  }
   else if(a === 'xemthem'){ KKL.soDong += 50; kkVeBang(); }
 }
 (function(){
@@ -14262,15 +14234,8 @@ function kkHanhDong(a){
     if((b = g('[data-kk-xoa]'))){ kkXoa(b.dataset.kkXoa); return; }
     if((b = g('[data-kk-thang]'))){ const m = +b.dataset.kkThang; KKL.thang = KKL.thang === m ? 0 : m; ve(); return; }
     if((b = g('[data-kk-loai]'))){ const l = b.dataset.kkLoai; KKL.loai = KKL.loai === l ? '' : l; ve(); return; }
-    const hang = g('tr[data-kk-nguoi]');
-    if(hang){
-      const k = hang.dataset.kkNguoi, o = g('td[data-kk-o]');
-      if(o && o.textContent.trim()){             // ô 1 tháng của 1 người: lọc người + tháng
-        const m = +o.dataset.kkO, cung = KKL.nguoi === k && KKL.thang === m;
-        KKL.nguoi = cung ? '' : k; KKL.thang = cung ? 0 : m;
-      }else KKL.nguoi = KKL.nguoi === k ? '' : k;
-      ve();
-    }
+    const hang = g('[data-kk-nguoi]');
+    if(hang){ const k = hang.dataset.kkNguoi; KKL.nguoi = KKL.nguoi === k ? '' : k; ve(); }
   });
   box.addEventListener('change', e=>{
     const s = e.target.closest('[data-kk-chon="thang"]');
