@@ -4911,15 +4911,17 @@ function renderAll3(){
 
 // ---------------------------------------------------------------------
 // CẢNH BÁO HẠN MỨC TĂNG CA (Tổng quan 3 kho — cho giám đốc bộ phận)
-// Chỉ báo khi ĐÃ VƯỢT, không báo "sắp chạm". Ngưỡng cố định, không theo hạn
-// mức tháng cài trong app (cài 36h thì vượt 24h vẫn báo).
-//   Ngày  > 4h     Tuần (thứ 2 – thứ 7) > 12h     Tháng > 24h
+// Chỉ báo khi ĐÃ VƯỢT, không báo "sắp chạm". Ngưỡng tháng THEO HẠN MỨC THÁNG cài trong app
+// (LIMITS.month: cài 24h thì báo khi vượt 24h, cài 38h thì chỉ báo khi vượt 38h); ngày / tuần / năm cố định.
+//   Ngày  > 4h     Tuần (thứ 2 – thứ 7) > 12h     Tháng > hạn mức tháng (mặc định 24h)
 //   Năm  >= 250h   (quy định 280h, báo sớm từ 250h để theo dõi cuối năm)
 // Xét trong THÁNG HIỆN TẠI: các ngày của tháng này, các tuần có ngày nằm
 // trong tháng này, tổng tháng này và tổng năm nay (kể cả số đầu kỳ).
 // ---------------------------------------------------------------------
 const OT_VI_PHAM = { ngay:4, tuan:12, thang:24, nam:250, namQuyDinh:280 };
+const otHanThang = () => Number(LIMITS.month) || OT_VI_PHAM.thang;
 function otViPham(khoId, ref){
+  const hanThang = otHanThang();
   const out = [];
   const y = ref.getFullYear(), mo = ref.getMonth();
   const dauThang = new Date(y, mo, 1), cuoiThang = new Date(y, mo + 1, 0);
@@ -4949,7 +4951,7 @@ function otViPham(khoId, ref){
     }
     // Tháng
     const thang = Object.keys(theoNgay).filter(d=>inCurrentMonth(d, ref)).reduce((s, d)=>s + theoNgay[d], 0);
-    if(thang > OT_VI_PHAM.thang) add('thang', `Vượt ${OT_VI_PHAM.thang}h/tháng`, thang, OT_VI_PHAM.thang, `Tháng ${pad(mo + 1)}/${y}`);
+    if(thang > hanThang) add('thang', `Vượt ${hanThang}h/tháng`, thang, hanThang, `Tháng ${pad(mo + 1)}/${y}`);
     // Năm (kể cả số giờ đầu kỳ nhập tay)
     const nam = Object.keys(theoNgay).filter(d=>inCurrentYear(d, ref)).reduce((s, d)=>s + theoNgay[d], 0)
               + (Number(e.otOpeningBalance) || 0);
@@ -4969,7 +4971,7 @@ function renderAll3ViPham(ref){
   const nVp = theoNguoi.size;
   tgTom('tgTomCb', nVp ? `<span${ovTipAttr('Người vượt hạn mức', [...theoNguoi.values()].map(o=>({ t:o.e.name, s:`${khoName(o.khoId)} · ${o.vp.join(' · ')}` })))}>⚠ ${nVp} người vượt hạn mức</span>`
     : '✓ Không ai vượt hạn mức', nVp ? 'xau' : 'tot');
-  $('all3LimitRule').textContent = `Tháng ${pad(ref.getMonth() + 1)}/${ref.getFullYear()} · Ngày >${OT_VI_PHAM.ngay}h · Tuần >${OT_VI_PHAM.tuan}h · Tháng >${OT_VI_PHAM.thang}h · Năm ≥${OT_VI_PHAM.nam}h`;
+  $('all3LimitRule').textContent = `Tháng ${pad(ref.getMonth() + 1)}/${ref.getFullYear()} · Ngày >${OT_VI_PHAM.ngay}h · Tuần >${OT_VI_PHAM.tuan}h · Tháng >${otHanThang()}h (hạn mức tháng) · Năm ≥${OT_VI_PHAM.nam}h`;
   $('all3Limit').innerHTML = ds.length
     ? `<thead><tr><th>Họ tên</th><th>Kho</th><th>Vi phạm</th><th>Chi tiết</th><th style="text-align:right">Số giờ</th><th style="text-align:right">Quy định</th></tr></thead>
        <tbody>${ds.map(a=>`<tr class="row-hot-red">
