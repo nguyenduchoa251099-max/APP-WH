@@ -36,7 +36,7 @@
     --amber:#c98a1c; --amber-bg:#fbeecb; --amber-line:#e3b356;
     --blue:#0096BE; --blue-bg:#E6F6FA; --blue-dark:#00789A;
     /* Màu trạng thái nhân sự — thống nhất cả 3 kho */
-    --st-go:#2FAE59; --st-muon:#FDE68A; --st-muon-ink:#713f12; --st-som:#FDBA74; --st-som-ink:#7c2d12;
+    --st-go:#2FAE59; --st-muon:#FDE68A; --st-muon-ink:#713f12; --st-som:#FDBA74; --st-som-ink:#7c2d12; --st-giua:#BAE6FD; --st-giua-ink:#0c4a6e;
     --st-off:#FF2020; --st-nv:#111827; --st-ts:#F9A8D4; --st-ts-ink:#831843;
     --hot-yellow:#FFD400; --hot-yellow-ink:#5c4600; --hot-red:#FF2020;
     --teal:#2f7a4f; --teal-bg:#e6f2ea;
@@ -242,6 +242,8 @@
   label.field-label:first-child{margin-top:0;}
   .row2{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
   .row3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;}
+  .row4{display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:8px;}
+  @media(max-width:480px){.row4{grid-template-columns:1fr 1fr;}}
   @media(max-width:480px){.row2{grid-template-columns:1fr;}}
   .stat-lines .bd-ns:last-child{border-bottom:0; padding-bottom:0;}
 
@@ -446,6 +448,10 @@
   select.ld-khongtru option:not(.ld-khongtru){color:var(--ink); font-weight:400;}
   .ld-txt{color:#888; font-size:12px;}
   .ld-txt.ld-khongtru{color:var(--teal); font-weight:700;}
+  /* "Lý do khác": ô ghi lý do + 2 nút Phép năm / Không lương */
+  .ld-khac{margin-top:8px;}
+  .ld-khac .row2{margin-top:8px;}
+  .ld-khac .pick{padding:9px 6px;}
   .qk-stat .it .s{font-size:12px; font-weight:600; color:var(--ink-soft);}
   .qk-stat .it .s b, .lv-ton .s b{color:var(--ink);}
   .qk-stat .it .s b.am, .lv-ton .s b.am{color:#c8102e;}
@@ -574,6 +580,7 @@
   .sq.off{background:var(--st-off);}
   .sq.som{background:var(--st-som); color:var(--st-som-ink);}
   .sq.muon{background:var(--st-muon); color:var(--st-muon-ink);}
+  .sq.giua{background:var(--st-giua); color:var(--st-giua-ink);}
   .sq.ts{background:var(--st-ts); color:var(--st-ts-ink);}
   .sq.empty{background:#fff; border:1px dashed var(--line); color:var(--ink-soft);}
   /* ---- Bảng nhân sự tổng quan 3 kho (ô màu, không ghi tên) ---- */
@@ -989,6 +996,8 @@
   body.phone .row2{grid-template-columns:1fr 1fr; gap:8px;}
   body.phone .row3{grid-template-columns:1fr 1fr 1fr; gap:6px;}
   body.phone .row3 button{font-size:12.5px; padding:10px 2px;}
+  body.phone .row4{grid-template-columns:1fr 1fr; gap:6px;}
+  body.phone .row4 button{font-size:12.5px; padding:10px 2px;}
   body.phone .modal{width:100%; max-width:none; border-radius:14px 14px 0 0; max-height:92vh;}
   body.phone .modal-back{align-items:flex-end; padding:0;}
   body.phone .note{font-size:13px;}
@@ -1403,6 +1412,7 @@
   .cc-bang td.o.ot{background:#e3efff; color:#174f96;}
   .cc-bang td.o.m{background:#fff1d6; color:#8a5300;}
   .cc-bang td.o.s{background:#ffe6d5; color:#9a3d06;}
+  .cc-bang td.o.g{background:#e0f2fe; color:#0c4a6e;}
   .cc-bang td.o.p{background:#ece5ff; color:#5b3cc4;}
   .cc-bang td.o.kl{background:#fde2e1; color:#b42318;}
   .cc-bang td.o.le{background:#fbe2e3; color:#c4262c;}
@@ -1429,7 +1439,7 @@
   .cc-lg i{position:relative; display:inline-flex; align-items:center; justify-content:center; min-width:22px; height:18px; padding:0 3px; border-radius:4px;
     font-style:normal; font-size:10.5px; font-weight:800; border:1px solid #e6e9ef; background:#fff;}
   .cc-lg i.x{background:#e6f6ea; color:#1e7a3c; font-weight:900;} .cc-lg i.ot{background:#e3efff; color:#174f96;} .cc-lg i.m{background:#fff1d6; color:#8a5300;}
-  .cc-lg i.s{background:#ffe6d5; color:#9a3d06;} .cc-lg i.p{background:#ece5ff; color:#5b3cc4;} .cc-lg i.kl{background:#fde2e1; color:#b42318;}
+  .cc-lg i.s{background:#ffe6d5; color:#9a3d06;} .cc-lg i.g{background:#e0f2fe; color:#0c4a6e;} .cc-lg i.p{background:#ece5ff; color:#5b3cc4;} .cc-lg i.kl{background:#fde2e1; color:#b42318;}
   .cc-lg i.le{background:#fbe2e3; color:#c4262c;} .cc-lg i.cn{background:#fff3b0;} .cc-lg i.ht, .cc-lg i.ts{background:#f1f4f8;}
 
 </style>
@@ -2162,6 +2172,28 @@
   .kk-buoi-bang td.nut{white-space:nowrap; text-align:right;}
   .kk-buoi-bang td.nut button{margin-left:4px;}
   .kk-buoi-tong{margin-top:10px; font-size:13.5px; text-align:right;}
+  .kk-buoi-bang td.nk{font-size:12.5px; color:var(--ink-soft); max-width:280px;}
+  /* Người kiểm · trang (trong form buổi) */
+  .kk-kiem{grid-column:1 / -1; display:flex; flex-direction:column; gap:6px; padding-top:4px; border-top:1px dashed var(--line-soft);}
+  .kk-kiem-h{font-size:12px; font-weight:700; color:var(--ink-soft);}
+  .kk-kiem-dong{display:grid; grid-template-columns:minmax(0, 260px) minmax(0, 200px) auto; justify-content:start; gap:8px; align-items:center;}
+  .kk-kiem-dong select, .kk-kiem-dong input{padding:7px 8px; font-size:14px;}
+  .kk-kiem-them{align-self:flex-start;}
+  /* 👤 Người kiểm: ngày -> người -> trang */
+  .kk-nk{display:flex; flex-direction:column; gap:6px; min-width:min(460px, 80vw);}
+  .kk-nk-ngay{border:1px solid var(--line-soft); border-radius:10px; background:#fff;}
+  .kk-nk-ngay.mo{border-color:var(--blue);}
+  .kk-nk-h{display:flex; align-items:center; gap:10px; width:100%; padding:9px 12px; background:transparent; border:0; color:var(--ink); font-size:14px; text-align:left;}
+  .kk-nk-h:hover{background:var(--paper); opacity:1;}
+  .kk-nk-h small{color:var(--ink-soft); font-weight:600;}
+  .kk-nk-h .dem{margin-left:auto; font-size:12.5px; color:var(--ink-soft); font-weight:700;}
+  .kk-nk-ds{padding:2px 12px 10px 34px;}
+  .kk-nk-nhan{margin:6px 0 2px; font-size:12px; font-weight:800; color:var(--ink-soft);}
+  .kk-nk-dong{display:flex; justify-content:space-between; gap:12px; padding:5px 0; border-bottom:1px dashed var(--line-soft); font-size:13.5px;}
+  .kk-nk-dong:last-child{border-bottom:0;}
+  .kk-nk-dong .ten{font-weight:700;}
+  .kk-nk-dong .tr{color:var(--blue); font-weight:700; white-space:nowrap;}
+  .kk-nk-dong .tr i{color:var(--ink-soft); font-weight:400;}
   .kk-kt h4{display:flex; align-items:center; gap:8px; margin:14px 0 4px; font-size:14px;}
   .kk-kt h4:first-child{margin-top:0;}
   .kk-kt h4 i{font-style:normal; background:#fff1c2; color:#7a4d00; border-radius:99px; padding:0 8px; font-size:12px;}
@@ -2186,6 +2218,7 @@
   @media(max-width:620px){
     .kk-kpi{grid-template-columns:minmax(0, 1fr);}
     .kk-row3, .kk-buoi-form{grid-template-columns:1fr 1fr;}
+    .kk-kiem-dong{grid-template-columns:minmax(0, 1fr) 90px auto;}
     .kk-ds .kk-h input[type=search]{margin-left:0; width:100%;}
   }
 
@@ -2642,10 +2675,11 @@
             <button class="pick on" id="qkTypeOT" style="width:100%">Tăng ca</button>
             <button class="pick" id="qkTypeLeave" style="width:100%">Nghỉ phép</button>
           </div>
-          <div id="qkLeaveSub" style="display:none; margin-top:8px;" class="row3">
+          <div id="qkLeaveSub" style="display:none; margin-top:8px;" class="row4">
             <button class="pick on red" data-sub="nghi">Nghỉ cả ngày</button>
             <button class="pick" data-sub="som">Về sớm</button>
             <button class="pick" data-sub="muon">Đi muộn</button>
+            <button class="pick" data-sub="giua">Nghỉ giữa giờ</button>
           </div>
           <label class="field-label" id="qkDateLabel">Ngày</label>
           <input type="date" id="qkDate">
@@ -2662,9 +2696,12 @@
               <select id="qkMin"></select>
             </div>
           </div>
+          <!-- Nghỉ giữa giờ: chọn Từ / Đến (ot-list.js giuaHtml), số giờ tự tính, không tính nghỉ trưa -->
+          <div id="qkGiuaBox" style="display:none;"></div>
           <div id="qkReasonBox" style="display:none;">
             <label class="field-label" id="qkReasonLabel">Lý do nghỉ</label>
             <select id="qkReason"></select>
+            <div id="qkKhac" class="ld-khac" style="display:none;"></div>
           </div>
           <div id="qkWarn"></div>
           <div id="qkStat"></div>
@@ -2881,6 +2918,21 @@ function xhTieuDe(key){ const d = fromKey(key); return `${DOW_FULL[d.getDay()]} 
 const LEAVE_REASONS = ["Nghỉ phép", "Nghỉ không lương", "Nghỉ ốm", "Nghỉ việc riêng"];
 // Đi muộn / về sớm chỉ có hai lựa chọn: tính vào phép năm hay không
 const LEAVE_REASONS_GIO = ["Nghỉ phép", "Nghỉ không lương"];
+// Mọi loại nghỉ còn có "Lý do khác": tự ghi lý do (lưu vào reason) + chọn Phép năm / Không lương (lưu truPhep: true / false)
+const LY_DO_KHAC = 'Lý do khác';
+// Đơn nghỉ có trừ phép năm không: lý do tự ghi theo truPhep, còn lại chỉ lý do "Nghỉ phép"
+function truPhepNam(reason, truPhep){ return typeof truPhep === 'boolean' ? truPhep : String(reason || '').trim() === 'Nghỉ phép'; }
+// Nghỉ giữa giờ (type 'giua'): ra ngoài 1 khoảng trong ca, lưu thêm tu / den ('HH:MM'); hours = khoảng đó trừ phần trùng nghỉ trưa.
+// VD 10:00 → 12:00 = 2h; 10:00 → 12:30 cũng 2h (12:00 – 12:30 là nghỉ trưa).
+const NGHI_TRUA = ['12:00', '12:30'];
+const phutCua = s => { const m = /^(\d{1,2}):(\d{2})$/.exec(s || ''); return m ? +m[1] * 60 + +m[2] : null; };
+function gioNghiGiua(tu, den){
+  const a = phutCua(tu), b = phutCua(den);
+  if(a == null || b == null || b <= a) return null;
+  const trua = Math.max(0, Math.min(b, phutCua(NGHI_TRUA[1])) - Math.max(a, phutCua(NGHI_TRUA[0])));
+  return (b - a - trua) / 60;
+}
+const khungGiua = l => l.tu && l.den ? `${l.tu} – ${l.den}` : '';
 const LIMITS = { day: 4, week: 12, month: 24, year: 280 };
 // Tab Tăng ca / Nghỉ phép chỉ HIỆN dữ liệu từ ngày này (hiện từ quý 4/2026). Dữ liệu trước đó (T7–T9/2026)
 // KHÔNG xoá: vẫn nằm trên máy chủ và vẫn cộng vào giờ cả năm / kiểm tra hạn mức năm, chỉ không hiện ra.
@@ -4565,10 +4617,12 @@ function veMenuSidebar(){
 
     // 6 tab của app Kho thành phẩm (máy chủ nội bộ) tô nền riêng để người ngoài dễ phân biệt — chú thích ở cuối menu
     const ds = [...document.querySelectorAll('#tabNav button[data-tab]')].filter(b => b.style.display !== 'none');
+    // menu trái luôn dùng tên đầy đủ (giống kho vải / phụ liệu); tên ngắn TEN_TAB_TP chỉ cho hàng tab ngang
+    const ten = b => (TEN_TAB_TP[b.dataset.tab] && b.dataset.tenGoc) || b.innerHTML;
     const coNoiBo = ds.some(b => TAB_KHO_TP.includes(b.dataset.tab));
     box.innerHTML = ds
       .map(b => { const cls = [b.dataset.tab === tabCha(activeTab) ? 'on' : '', TAB_KHO_TP.includes(b.dataset.tab) ? 'noi-bo' : ''].filter(Boolean).join(' ');
-        return `<button data-tab="${b.dataset.tab}"${cls ? ` class="${cls}"` : ''}>${b.innerHTML}</button>`; })
+        return `<button data-tab="${b.dataset.tab}"${cls ? ` class="${cls}"` : ''}>${ten(b)}</button>`; })
       .join('')
       + (coNoiBo ? `<div class="sb-noi-bo" title="Các tab này chạy trên máy chủ nội bộ của kho — chỉ mở được trong mạng công ty"><i></i>Máy chủ nội bộ (mạng công ty)</div>` : '')
       + `<div class="sb-tools" id="sbTools"></div>`;
@@ -4583,7 +4637,8 @@ function veMenuSidebar(){
   // để lúc nào cũng còn đường chuyển tab.
   nav.style.display = dungMenu ? 'none' : (TRANG_RIENG[VIEW] ? 'none' : 'flex');
 }
-// Tên tab ngắn của kho thành phẩm (cùng tên với menu app Kho TP — TP_MENU trong js/core/sidebar.js bên đó)
+// Tên tab ngắn của kho thành phẩm — CHỈ dùng ở hàng tab ngang (menu trái giữ tên đầy đủ trong index.html, người dùng chốt 30/10).
+// Cùng tên với hàng tab ngang của app Kho TP (TP_MENU.ten trong js/core/sidebar.js bên đó)
 const TEN_TAB_TP = { dashboard:'🏠 Tổng quan', xuathang:'🚚 Shipment', checkct:'🔎 Check', scanos:'📦 SCAN OS',
   donghang:'🚛 Layout', rack:'🗄️ T2 CT', kiemke:'📋 Kiểm kê', hotrokk:'🤝 Hỗ trợ', tangca:'⏱ OT / Leave' };
 // Kho thành phẩm có tab "Đổi ca"; tab "Vị trí & Năng lực" đổi tên thành "Năng lực" và bỏ bảng phân công
@@ -4609,7 +4664,7 @@ function applyTabVisibility(){
     const b = document.querySelector(`#tabNav button[data-tab="${t}"]`);
     if(b){ b.style.display = isTp ? '' : 'none'; b.title = 'Mở ở app Kho thành phẩm (mạng nội bộ công ty)'; b.classList.add('noi-bo'); }
   });
-  // Kho thành phẩm nhiều tab -> tên ngắn (người dùng chốt 28/10); kho vải / phụ liệu giữ tên gốc trong index.html
+  // Kho thành phẩm nhiều tab -> hàng tab ngang dùng tên ngắn (người dùng chốt 28/10); kho vải / phụ liệu giữ tên gốc trong index.html
   document.querySelectorAll('#tabNav button[data-tab]').forEach(b=>{
     if(b.dataset.tenGoc == null) b.dataset.tenGoc = b.innerHTML;
     b.innerHTML = (isTp && TEN_TAB_TP[b.dataset.tab]) || b.dataset.tenGoc;
@@ -5317,10 +5372,10 @@ function ovBoardRows(khoId){
   }
   return rows;
 }
-const ST_LABEL_OV = { go:'Đi làm', off:'Nghỉ cả ngày', som:'Về sớm', muon:'Đi muộn', ts:'Nghỉ thai sản', ht:'Hỗ trợ bộ phận khác' };
+const ST_LABEL_OV = { go:'Đi làm', off:'Nghỉ cả ngày', som:'Về sớm', muon:'Đi muộn', giua:'Nghỉ giữa giờ', ts:'Nghỉ thai sản', ht:'Hỗ trợ bộ phận khác' };
 function renderAll3Boards(){
   const box = $('all3Boards'); if(!box) return;
-  const tg = { tong:0, go:0, muon:0, som:0, off:0, ht:0, nv:0, ts:0 };
+  const tg = { tong:0, go:0, muon:0, som:0, giua:0, off:0, ht:0, nv:0, ts:0 };
   box.innerHTML = WAREHOUSES.map(w=>{
     let rows = ovBoardRows(w.id);
     if(!rows) return `<div class="ovkho"><h3>${w.icon}<span>${esc(w.name)}</span></h3>
@@ -5349,13 +5404,13 @@ function renderAll3Boards(){
     all.forEach(p=>{ if(laChoNghi(p.emp)) tg.nv++; else if(tg[p.st] != null) tg[p.st]++; });
     return `<div class="ovkho">
       <h3>${w.icon}<span>${esc(w.name)}</span>
-        <span class="sub">${all.length} người · đi làm ${dem('go')}${dem('ts')?` · thai sản ${dem('ts')}`:''}${dem('muon')?` · muộn ${dem('muon')}`:''}${dem('som')?` · về sớm ${dem('som')}`:''}${dem('off')?` · nghỉ ${dem('off')}`:''}${dem('ht')?` · hỗ trợ ${dem('ht')}`:''}</span>
+        <span class="sub">${all.length} người · đi làm ${dem('go')}${dem('ts')?` · thai sản ${dem('ts')}`:''}${dem('muon')?` · muộn ${dem('muon')}`:''}${dem('som')?` · về sớm ${dem('som')}`:''}${dem('giua')?` · giữa giờ ${dem('giua')}`:''}${dem('off')?` · nghỉ ${dem('off')}`:''}${dem('ht')?` · hỗ trợ ${dem('ht')}`:''}</span>
       </h3>
       ${rows.map(r=>{
         const sorted = r.people.slice().sort((a,b)=>ST_ORDER[a.st] - ST_ORDER[b.st]);
         const thieu = r.target != null && r.people.length !== r.target;
         // hỗ trợ (ht) dùng ô màu đỏ như nghỉ làm
-        const o = sorted.map(p=>`<span class="sq mini ${p.st === 'ht' ? 'off' : p.st}${laChoNghi(p.emp)?' cho-nghi':''}" title="${esc(p.emp.name)} — ${laChoNghi(p.emp)?esc(nhanChoNghi(p.emp))+' · ':''}${esc(p.st === 'ht' ? p.extra : (ST_LABEL_OV[p.st] || ''))}${(p.st==='som'||p.st==='muon')?' '+fmtHours(p.hours):''}"></span>`).join('');
+        const o = sorted.map(p=>`<span class="sq mini ${p.st === 'ht' ? 'off' : p.st}${laChoNghi(p.emp)?' cho-nghi':''}" title="${esc(p.emp.name)} — ${laChoNghi(p.emp)?esc(nhanChoNghi(p.emp))+' · ':''}${esc(p.st === 'ht' ? p.extra : (ST_LABEL_OV[p.st] || ''))}${(p.st==='som'||p.st==='muon'||p.st==='giua')?' '+fmtHours(p.hours):''}"></span>`).join('');
         // ô viền đứt = suất còn thiếu so với số người dự kiến
         const trong = (r.target != null && r.people.length < r.target)
           ? Array.from({length: r.target - r.people.length}, ()=>`<span class="sq mini slot" title="Chưa có người"></span>`).join('') : '';
@@ -5368,7 +5423,7 @@ function renderAll3Boards(){
     </div>`;
   }).join('');
   // tóm tắt bằng ô màu + số người (thấy được cả khi khối đang đóng)
-  const O = [['go','Đi làm'],['muon','Đi muộn'],['som','Về sớm'],['off','Nghỉ làm'],['ht','Hỗ trợ bộ phận khác'],['nv','Nghỉ việc'],['ts','Thai sản']];
+  const O = [['go','Đi làm'],['muon','Đi muộn'],['som','Về sớm'],['giua','Nghỉ giữa giờ'],['off','Nghỉ làm'],['ht','Hỗ trợ bộ phận khác'],['nv','Nghỉ việc'],['ts','Thai sản']];
   tgTom('tgTomNs', `${tg.tong} người` + O.filter(([k])=>tg[k]).map(([k, t])=>`<span class="tg-o" title="${t}: ${tg[k]}"><i style="background:var(--st-${k === 'ht' ? 'off' : k})"></i>${tg[k]}</span>`).join(''));
 }
 
@@ -5397,11 +5452,13 @@ function positionBoardRows(khoId, ref){
     const nghi = lv.find(l=>l.type==='nghi');
     const som = lv.find(l=>l.type==='som');
     const muon = lv.find(l=>l.type==='muon');
+    const giua = lv.find(l=>l.type==='giua');
     let st = 'go', extra = '';
     if(nghi){ st = 'off'; extra = nghi.reason || 'Nghỉ cả ngày'; }
     else if(som){ st = 'som'; extra = 'Về sớm ' + fmtHours(som.hours || 0); }
     else if(muon){ st = 'muon'; extra = 'Đi muộn ' + fmtHours(muon.hours || 0); }
-    rows[key].people.push({emp:e, st, extra, hours:(som||muon) ? ((som||muon).hours||0) : 0});
+    else if(giua){ st = 'giua'; extra = 'Nghỉ giữa giờ ' + fmtHours(giua.hours || 0) + (khungGiua(giua) ? ' (' + khungGiua(giua) + ')' : ''); }
+    rows[key].people.push({emp:e, st, extra, hours:(som||muon||giua) ? ((som||muon||giua).hours||0) : 0});
   });
   const order = e => (e.position === 'Giám sát' ? 0 : (SHIFT_ORDER[e.shift] || 9));
   return Object.values(rows).sort((a,b)=>{
@@ -5411,33 +5468,34 @@ function positionBoardRows(khoId, ref){
     return (a.position||'').localeCompare(b.position||'','vi');
   });
 }
-// Trạng thái hôm nay của 1 nhân viên: đi làm / nghỉ / về sớm / đi muộn
+// Trạng thái hôm nay của 1 nhân viên: đi làm / nghỉ / về sớm / đi muộn / nghỉ giữa giờ
 function todayStatus(empId, tKey){
   const lv = HR.leave.filter(l=>l.employeeId===empId && l.date===tKey);
-  const nghi = lv.find(l=>l.type==='nghi'), som = lv.find(l=>l.type==='som'), muon = lv.find(l=>l.type==='muon');
+  const nghi = lv.find(l=>l.type==='nghi'), som = lv.find(l=>l.type==='som'), muon = lv.find(l=>l.type==='muon'), giua = lv.find(l=>l.type==='giua');
   if(nghi) return {st:'off', extra:nghi.reason || 'Nghỉ cả ngày', hours:0};
   if(som) return {st:'som', extra:'Về sớm ' + fmtHours(som.hours||0), hours:som.hours||0};
   if(muon) return {st:'muon', extra:'Đi muộn ' + fmtHours(muon.hours||0), hours:muon.hours||0};
+  if(giua) return {st:'giua', extra:'Nghỉ giữa giờ ' + fmtHours(giua.hours||0) + (khungGiua(giua) ? ' (' + khungGiua(giua) + ')' : ''), hours:giua.hours||0};
   return {st:'go', extra:'Đi làm', hours:0};
 }
 function posRowHtml(label, people){
   const off = people.filter(p=>p.st==='off').length;
   const sq = people.length ? people.map(p=>{
     const nm = esc(getEmployeeShortName(p.emp));
-    const lb = (p.st==='som' || p.st==='muon') ? `${nm} ${fmtHours(p.hours)}` : nm;
+    const lb = (p.st==='som' || p.st==='muon' || p.st==='giua') ? `${nm} ${fmtHours(p.hours)}` : nm;
     return `<span class="sq ${p.st}${laChoNghi(p.emp)?' cho-nghi':''}" title="${esc(p.emp.name)}${p.extra?' — '+esc(p.extra):''}${laChoNghi(p.emp)?' — '+esc(nhanChoNghi(p.emp)):''}">${lb}</span>`;
   }).join('') : `<span class="sq empty">— chưa xếp —</span>`;
   return `<div class="posrow">
     <div class="poslabel">${esc(label)}<span class="cnt">${people.length} người${off?` · nghỉ ${off}`:''}</span></div>
     <div class="sqwrap">${sq}</div></div>`;
 }
-const ST_ORDER = { go:0, muon:1, som:2, off:3, ht:3, ts:4 };   // xanh lá -> vàng nhạt -> cam nhạt -> đỏ -> hồng (thai sản)
+const ST_ORDER = { go:0, muon:1, som:2, giua:2, off:3, ht:3, ts:4 };   // xanh lá -> vàng nhạt -> cam nhạt -> đỏ -> hồng (thai sản)
 function posRowHtml2(label, people, posId, canEdit){
   const off = people.filter(p=>p.st==='off').length;
   const sorted = people.slice().sort((a,b)=>(ST_ORDER[a.st]-ST_ORDER[b.st]) || a.emp.name.localeCompare(b.emp.name,'vi'));
   const sq = sorted.length ? sorted.map(p=>{
     const nm = esc(getEmployeeShortName(p.emp));
-    const lb = (p.st==='som' || p.st==='muon') ? `${nm} ${fmtHours(p.hours)}` : nm;
+    const lb = (p.st==='som' || p.st==='muon' || p.st==='giua') ? `${nm} ${fmtHours(p.hours)}` : nm;
     return `<span class="sq ${p.st}${laChoNghi(p.emp)?' cho-nghi':''}" ${posId?`draggable="true" data-emp="${p.emp.id}" data-from="${posId}"`:''}
       title="${esc(p.emp.name)}${p.extra?' — '+esc(p.extra):''}${laChoNghi(p.emp)?' — '+esc(nhanChoNghi(p.emp)):''}">${lb}</span>`;
   }).join('') : `<span class="sq empty">— chưa xếp —</span>`;
@@ -8238,7 +8296,7 @@ function renderOtList(){
 // =====================================================================
 // 13b. CHỐNG ĐĂNG KÝ TRÙNG (1 người / 1 ngày ghi nhiều lần)
 // =====================================================================
-const LEAVE_LABEL = { nghi:'Nghỉ cả ngày', som:'Về sớm', muon:'Đi muộn' };
+const LEAVE_LABEL = { nghi:'Nghỉ cả ngày', som:'Về sớm', muon:'Đi muộn', giua:'Nghỉ giữa giờ' };
 // Trả về danh sách nhóm bản ghi bị trùng của 1 kho
 function findDuplicateRecords(khoId){
   const ids = new Set(khoEmployees(khoId).map(e=>e.id));
@@ -8328,6 +8386,29 @@ function pickerValue(id){
   const h = $(id+'H').value;
   if(h === '') return null;
   return Number(h) + Number($(id+'M').value)/60;
+}
+// ---- Nghỉ giữa giờ: chọn giờ đồng hồ Từ / Đến (giờ 6–22, phút 5 phút 1 nấc) -> 'HH:MM', số giờ nghỉ tự tính ----
+// Dùng chung cho Đăng ký nhanh (id 'qkGiua') và hộp "Đăng ký nghỉ phép" (id 'mLvGiua').
+function giuaHtml(id){
+  const o = k => `<div class="row2"><select id="${id}${k}H" aria-label="Giờ"><option value="">-- Giờ --</option>${Array.from({length:17}, (_, i)=>pad(i + 6)).map(h=>`<option value="${h}">${h} giờ</option>`).join('')}</select>
+    <select id="${id}${k}M" aria-label="Phút">${Array.from({length:12}, (_, i)=>pad(i * 5)).map(m=>`<option value="${m}">${m} phút</option>`).join('')}</select></div>`;
+  return `<label class="field-label">Nghỉ từ</label>${o('Tu')}<label class="field-label">Đến</label>${o('Den')}<div id="${id}Info" class="range-info"></div>`;
+}
+const GIUA_O = ['TuH', 'TuM', 'DenH', 'DenM'];
+function giuaDoc(id){
+  const v = k => $(id + k + 'H').value ? $(id + k + 'H').value + ':' + $(id + k + 'M').value : '';
+  const tu = v('Tu'), den = v('Den');
+  return { tu, den, gio: gioNghiGiua(tu, den) };
+}
+// Dòng tóm tắt dưới ô giờ + lỗi để chặn lúc lưu
+function giuaKiemTra(x){
+  if(!x.tu || !x.den) return { loi:'Chọn giờ bắt đầu và giờ kết thúc nghỉ giữa giờ', html:'' };
+  if(x.gio == null) return { loi:'Giờ kết thúc nghỉ phải sau giờ bắt đầu', html:'<span class="loi">⚠ Giờ kết thúc phải sau giờ bắt đầu</span>' };
+  if(x.gio <= 0) return { loi:'Khoảng này nằm trọn trong giờ nghỉ trưa', html:'<span class="loi">⚠ Khoảng này nằm trọn trong giờ nghỉ trưa 12:00 – 12:30</span>' };
+  if(x.gio >= 8) return { loi:'Nghỉ từ 8 giờ trở lên — chọn "Nghỉ cả ngày"', html:'<span class="loi">⚠ Nghỉ từ 8 giờ trở lên — chọn "Nghỉ cả ngày"</span>' };
+  const trua = (phutCua(x.den) - phutCua(x.tu)) - Math.round(x.gio * 60);
+  return { loi:'', html:`Nghỉ giữa giờ <b>${fmtHours(x.gio)}</b> (${x.tu} → ${x.den})`
+    + (trua ? ` <span class="phu">— không tính ${trua} phút nghỉ trưa ${NGHI_TRUA.join(' – ')}</span>` : '') };
 }
 function warnHtml(v){
   if(!v || !v.length) return '';
@@ -8435,10 +8516,11 @@ function leaveModal(empId){
     <label class="field-label">Nhân viên</label>
     <select id="mLvEmp">${emps.map(e=>`<option value="${e.id}" ${e.id===empId?'selected':''}>${esc(tenKemMaSo(e))}${CUR_KHO!=='vai'?` — ${esc(e.shift||'')}`:''}</option>`).join('')}</select>
     <label class="field-label">Loại</label>
-    <div class="row3">
+    <div class="row4">
       <button class="pick on red" data-lv="nghi">Nghỉ cả ngày</button>
       <button class="pick" data-lv="muon">Đi muộn</button>
       <button class="pick" data-lv="som">Về sớm</button>
+      <button class="pick" data-lv="giua">Nghỉ giữa giờ</button>
     </div>
     <label class="field-label" id="mLvDateLbl">Từ ngày</label><input type="date" id="mLvDate" value="${todayKey()}" min="${OT_HIEN_TU}">
     <div id="mLvToBox">
@@ -8447,49 +8529,69 @@ function leaveModal(empId){
       <label class="chk-dong"><input type="checkbox" id="mLvSkipSun" checked> Bỏ qua Chủ nhật</label>
       <div id="mLvRange" class="range-info"></div>
     </div>
-    <div id="mLvReason"><label class="field-label">Lý do nghỉ</label>
-      <select id="mLvReasonSel">${lyDoOptions(LEAVE_REASONS)}</select></div>
+    <div id="mLvReason"><label class="field-label" id="mLvReasonLbl">Lý do nghỉ</label>
+      <select id="mLvReasonSel">${lyDoOptions(LEAVE_REASONS.concat(LY_DO_KHAC))}</select>
+      <div id="mLvKhac" class="ld-khac" style="display:none;"></div></div>
     <div id="mLvHours" style="display:none;"><label class="field-label">Số giờ</label>${pickerHtml('mLv',[0,1,2,3,4,5,6,7],null)}</div>
+    <div id="mLvGiuaBox" style="display:none;">${giuaHtml('mLvGiua')}</div>
     <div class="btnrow" style="margin-top:16px; align-items:center;"><button id="mLvSave">Lưu</button><div id="mLvTon" class="lv-ton"></div></div>`);
-  // Nghỉ cả ngày được chọn nhiều ngày (Đến ngày); đi muộn / về sớm chỉ 1 ngày
+  // Lý do để lưu (có "Lý do khác" tự ghi)
+  const lyDo = ()=>lyDoDoc($('mLvReasonSel'), $('mLvKhac'));
+  // Số giờ: đi muộn / về sớm chọn ở ô giờ + phút, nghỉ giữa giờ tính từ giờ Từ / Đến (không tính nghỉ trưa)
+  const soGio = ()=>type==='giua' ? giuaDoc('mLvGiua').gio : pickerValue('mLv');
+  // Nghỉ cả ngày được chọn nhiều ngày (Đến ngày); đi muộn / về sớm / nghỉ giữa giờ chỉ 1 ngày
   const ngayNghi = ()=>dsNgayNghi($('mLvDate').value, type==='nghi' ? $('mLvDateTo').value : '', $('mLvSkipSun').checked);
   // Phép tồn của người đang chọn, trừ thử theo loại / số giờ / lý do
   const veTon = ()=>{
     toMauLyDo($('mLvReasonSel'));
+    lyDoKhacHien($('mLvReasonSel'), $('mLvKhac'));
+    const ld = lyDo();
     const r = ngayNghi();
     $('mLvRange').innerHTML = type==='nghi' ? tomTatNgayNghi(r) : '';
+    $('mLvGiuaInfo').innerHTML = type==='giua' ? giuaKiemTra(giuaDoc('mLvGiua')).html : '';
     const p = window.tpXemTruocHtml($('mLvEmp').value, r.ngay.length ? r.ngay : [$('mLvDate').value || todayKey()], type,
-                                    type==='nghi' ? 0 : pickerValue('mLv'), $('mLvReasonSel').value);
+                                    type==='nghi' ? 0 : soGio() || 0, ld.reason, ld.truPhep);
     $('mLvTon').innerHTML = `<span class="k">Phép tồn</span> <b class="v ${p.cls}">${p.gio}</b><span class="s">${p.ghi}</span>`;
   };
-  ['mLvEmp','mLvDate','mLvDateTo','mLvSkipSun','mLvReasonSel','mLvH','mLvM'].forEach(id=>$(id).addEventListener('change', veTon));
+  lyDoKhacGan($('mLvKhac'), veTon);
+  ['mLvEmp','mLvDate','mLvDateTo','mLvSkipSun','mLvReasonSel','mLvH','mLvM'].concat(GIUA_O.map(k=>'mLvGiua' + k)).forEach(id=>$(id).addEventListener('change', veTon));
   m.body.querySelectorAll('[data-lv]').forEach(b=>b.onclick=()=>{
     type = b.dataset.lv;
     m.body.querySelectorAll('[data-lv]').forEach(x=>x.className='pick'+(x.dataset.lv===type?' on red':''));
-    $('mLvReason').style.display = type==='nghi' ? 'block' : 'none';
-    $('mLvHours').style.display = type==='nghi' ? 'none' : 'block';
+    // nghỉ cả ngày: 4 lý do; đi muộn / về sớm / giữa giờ: tính vào phép năm hay không — loại nào cũng có "Lý do khác"
+    const sel = $('mLvReasonSel'), giu = sel.value, ds = (type==='nghi' ? LEAVE_REASONS : LEAVE_REASONS_GIO).concat(LY_DO_KHAC);
+    sel.innerHTML = lyDoOptions(ds);
+    if(ds.includes(giu)) sel.value = giu;
+    $('mLvReasonLbl').textContent = type==='nghi' ? 'Lý do nghỉ' : 'Tính vào phép năm hay không';
+    $('mLvHours').style.display = type==='muon' || type==='som' ? 'block' : 'none';
+    $('mLvGiuaBox').style.display = type==='giua' ? 'block' : 'none';
     $('mLvToBox').style.display = type==='nghi' ? 'block' : 'none';
     $('mLvDateLbl').textContent = type==='nghi' ? 'Từ ngày' : 'Ngày';
     veTon();
   });
   veTon();
   $('mLvSave').onclick = async ()=>{
+    const ld = lyDo();
+    if(ld.loi){ toast('⚠ ' + ld.loi); return; }
+    // truPhep / tu / den: undefined -> bản ghi cũ đang có thì bỏ đi (Object.assign bên dưới)
+    if(type==='giua'){ const kt = giuaKiemTra(giuaDoc('mLvGiua')); if(kt.loi){ toast('⚠ ' + kt.loi); return; } }
+    const g = type==='giua' ? giuaDoc('mLvGiua') : {};
     const extra = type==='nghi'
-      ? {reason: $('mLvReasonSel').value}
-      : {hours: pickerValue('mLv'), reason: $('mLvReasonSel').value};
+      ? {reason: ld.reason, truPhep: ld.truPhep}
+      : {hours: soGio(), reason: ld.reason, truPhep: ld.truPhep, tu: g.tu, den: g.den};
     if(type!=='nghi' && !extra.hours){ toast('⚠ Chọn số giờ'); return; }
     const eid = $('mLvEmp').value, dt = $('mLvDate').value;
     const r = ngayNghi();
     if(r.loi){ toast('⚠ ' + r.loi); return; }
     if(chanNgayAn(dt, ...r.ngay)) return;
     // Phép âm tối đa −16h: lý do "Nghỉ phép" làm tồn xuống dưới mức đó thì không lưu
-    const chanAm = window.tpChanAmPhep(eid, type==='nghi' ? r.ngay : [dt], type, extra.hours, extra.reason);
+    const chanAm = window.tpChanAmPhep(eid, type==='nghi' ? r.ngay : [dt], type, extra.hours, extra.reason, extra.truPhep);
     if(chanAm){ veTon(); $('mLvTon').innerHTML += `<span class="s"><b class="am">${esc(chanAm)}</b></span>`; toast('⛔ Vượt mức âm phép tối đa — chưa lưu'); return; }
     // Nghỉ nhiều ngày: ghi một lượt. Ngày đã có nghỉ cả ngày thì cập nhật lý do,
     // ngày có đi muộn / về sớm thì hỏi rồi thay bằng nghỉ cả ngày.
     if(type==='nghi' && r.ngay.length > 1){
       const chong = HR.leave.filter(l=>l.employeeId===eid && l.type!=='nghi' && r.ngay.includes(l.date));
-      if(chong.length && !await confirmBox(`${empName(eid)} đang có đi muộn / về sớm ở ${chong.length} ngày trong khoảng này (${[...new Set(chong.map(l=>ddmmNgay(l.date)))].join(', ')}). Ghi nghỉ cả ngày sẽ xoá các mục đó. Tiếp tục?`)) return;
+      if(chong.length && !await confirmBox(`${empName(eid)} đang có đi muộn / về sớm / nghỉ giữa giờ ở ${chong.length} ngày trong khoảng này (${[...new Set(chong.map(l=>ddmmNgay(l.date)))].join(', ')}). Ghi nghỉ cả ngày sẽ xoá các mục đó. Tiếp tục?`)) return;
       if(chong.length){ const bo = new Set(chong.map(l=>l.id)); HR.leave = HR.leave.filter(l=>!bo.has(l.id)); }
       const goc = Date.now();
       r.ngay.forEach((d, i)=>{
@@ -8506,7 +8608,7 @@ function leaveModal(empId){
     const full = HR.leave.find(l=>l.employeeId===eid && l.date===dt && l.type==='nghi');
     if(type!=='nghi' && full){
       m.close();
-      openModal('Không ghi được', `<div class="note warn"><b>${esc(empName(eid))}</b> đã đăng ký <b>nghỉ cả ngày</b> ${fmtVN(fromKey(dt))} rồi — không cần ghi thêm đi muộn / về sớm cho ngày này.</div>`);
+      openModal('Không ghi được', `<div class="note warn"><b>${esc(empName(eid))}</b> đã đăng ký <b>nghỉ cả ngày</b> ${fmtVN(fromKey(dt))} rồi — không cần ghi thêm đi muộn / về sớm / nghỉ giữa giờ cho ngày này.</div>`);
       return;
     }
     // (b) trùng đúng loại -> chỉ cho cập nhật, không tạo bản ghi thứ 2
@@ -9060,9 +9162,42 @@ function empFormModal(emp, khoId){
 let qkType = 'tangca', qkSub = 'nghi', qkSoNgayVuaLuu = null;
 // Chỉ lý do "Nghỉ phép" mới trừ phép năm. Ba lý do còn lại (không lương, ốm,
 // việc riêng) không trừ -> tô chữ màu riêng (xanh) cho dễ nhớ, dễ phân biệt.
-function lyDoKhongTru(r){ return !!r && String(r).trim() !== 'Nghỉ phép'; }
+// "Lý do khác" tuỳ nút Phép năm / Không lương nên không tô sẵn.
+function lyDoKhongTru(r){ return !!r && String(r).trim() !== 'Nghỉ phép' && r !== LY_DO_KHAC; }
+// Bản ghi nghỉ (có thể là lý do tự ghi) không trừ phép -> tô xanh
+const donKhongTru = l => !!l.reason && !truPhepNam(l.reason, l.truPhep);
 function lyDoOptions(ds){ return ds.map(r=>`<option${lyDoKhongTru(r) ? ' class="ld-khongtru"' : ''}>${r}</option>`).join(''); }
 function toMauLyDo(sel){ if(sel) sel.classList.toggle('ld-khongtru', lyDoKhongTru(sel.value)); }
+// ---- "Lý do khác" (mọi loại nghỉ): ô ghi lý do + chọn Phép năm / Không lương ----
+// Dùng chung cho Đăng ký nhanh (#qkKhac) và hộp "Đăng ký nghỉ phép" (ot-list.js). Nút đang chọn nằm ở box.dataset.phep.
+function lyDoKhacHtml(){
+  return `<input type="text" data-ld-ghi placeholder="Ghi lý do nghỉ…" autocomplete="off" maxlength="120">
+    <div class="row2"><button type="button" class="pick" data-ld-phep="1">Phép năm</button><button type="button" class="pick" data-ld-phep="0">Không lương</button></div>`;
+}
+function lyDoKhacGan(box, doi){
+  if(box.dataset.gan) return;
+  box.dataset.gan = '1';
+  if(!box.innerHTML.trim()) box.innerHTML = lyDoKhacHtml();
+  box.addEventListener('click', e=>{
+    const b = e.target.closest('[data-ld-phep]'); if(!b) return;
+    box.dataset.phep = b.dataset.ldPhep;
+    box.querySelectorAll('[data-ld-phep]').forEach(x=>x.className = 'pick' + (x === b ? ' on' + (b.dataset.ldPhep === '0' ? ' red' : '') : ''));
+    doi();
+  });
+  box.querySelector('[data-ld-ghi]').addEventListener('input', doi);
+}
+// Hiện / ẩn khung theo lý do đang chọn ở ô sel
+function lyDoKhacHien(sel, box){ box.style.display = sel.value === LY_DO_KHAC ? 'block' : 'none'; }
+// Lý do để lưu: { reason, truPhep, loi } — truPhep chỉ có khi chọn "Lý do khác" (chưa chọn nút thì undefined)
+function lyDoDoc(sel, box){
+  if(sel.value !== LY_DO_KHAC) return { reason:sel.value };
+  const ghi = box.querySelector('[data-ld-ghi]').value.trim(), p = box.dataset.phep;
+  const truPhep = p === '1' ? true : p === '0' ? false : undefined;
+  return { reason:ghi || LY_DO_KHAC, truPhep,
+           loi: !ghi ? 'Ghi lý do nghỉ vào ô "Lý do khác"' : truPhep === undefined ? 'Chọn "Phép năm" hoặc "Không lương" cho lý do khác' : '' };
+}
+// Ghi lý do vào bản ghi: lý do có sẵn thì bỏ truPhep cũ (nếu trước đó là lý do tự ghi)
+function ganLyDo(l, ld){ l.reason = ld.reason; if(typeof ld.truPhep === 'boolean') l.truPhep = ld.truPhep; else delete l.truPhep; }
 // Nghỉ nhiều ngày: danh sách ngày từ "tu" đến "den" (bỏ Chủ nhật nếu chọn).
 // "den" trống hoặc trùng "tu" = nghỉ 1 ngày. Trả { ngay:[], boCN:[], loi }.
 const NGHI_TOI_DA_NGAY = 31;
@@ -9123,15 +9258,18 @@ function renderQuickEntry(){
   if(keep && emps.some(e=>e.id===keep)) sel.value = keep;
   if(!$('qkDate').value) $('qkDate').value = todayKey();
   $('qkDate').min = $('qkDateTo').min = OT_HIEN_TU;          // ngày trước mốc hiện (01/10/2026) đang ẩn
-  // Nghỉ cả ngày dùng đủ 4 lý do; đi muộn / về sớm chỉ 2 lý do liên quan tới phép
+  // Nghỉ cả ngày dùng đủ 4 lý do; đi muộn / về sớm / nghỉ giữa giờ chỉ 2 lý do liên quan tới phép; loại nào cũng có "Lý do khác"
   (function(){
-    const ds = (qkType !== 'tangca' && qkSub !== 'nghi') ? LEAVE_REASONS_GIO : LEAVE_REASONS;
+    const ds = ((qkType !== 'tangca' && qkSub !== 'nghi') ? LEAVE_REASONS_GIO : LEAVE_REASONS).concat(LY_DO_KHAC);
     const sel = $('qkReason'), giu = sel.value;
     const hienTai = [...sel.options].map(o=>o.value).join('|');
     if(hienTai !== ds.join('|')){
       sel.innerHTML = lyDoOptions(ds);
       if(ds.includes(giu)) sel.value = giu;
     }
+    const khac = $('qkKhac');
+    lyDoKhacGan(khac, qkRecalc);
+    lyDoKhacHien(sel, khac);
   })();
 
   const isOT = qkType==='tangca';
@@ -9139,8 +9277,15 @@ function renderQuickEntry(){
   $('qkTypeLeave').className = 'pick' + (!isOT?' on red':'');
   $('qkLeaveSub').style.display = isOT ? 'none' : 'grid';
   $('qkLeaveSub').querySelectorAll('[data-sub]').forEach(b=>b.className = 'pick' + (b.dataset.sub===qkSub?' on red':''));
-  const showHours = isOT || qkSub!=='nghi';
+  const showHours = isOT || qkSub==='som' || qkSub==='muon';
   $('qkHourBox').style.display = showHours ? 'block' : 'none';
+  // nghỉ giữa giờ: chọn giờ Từ / Đến thay cho số giờ
+  const giua = $('qkGiuaBox');
+  if(!giua.innerHTML.trim()){
+    giua.innerHTML = giuaHtml('qkGiua');
+    GIUA_O.forEach(k=>$('qkGiua' + k).addEventListener('change', qkRecalc));
+  }
+  giua.style.display = !isOT && qkSub === 'giua' ? 'block' : 'none';
   $('qkReasonBox').style.display = isOT ? 'none' : 'block';
   const coKhoang = !isOT && qkSub === 'nghi';      // chỉ nghỉ cả ngày mới chọn được nhiều ngày
   $('qkToBox').style.display = coKhoang ? 'block' : 'none';
@@ -9160,8 +9305,14 @@ function renderQuickEntry(){
   qkRecalc();
   renderQkToday();
 }
+// Số giờ đi muộn / về sớm (ô giờ + phút) hoặc nghỉ giữa giờ (tính từ Từ / Đến); chưa chọn = 0
+function qkGioNghi(){
+  if(qkSub === 'giua') return giuaDoc('qkGiua').gio || 0;
+  return $('qkHour').value === '' ? 0 : Number($('qkHour').value) + Number($('qkMin').value)/60;
+}
 function qkRecalc(){
   $('qkRangeInfo').innerHTML = (qkType !== 'tangca' && qkSub === 'nghi') ? tomTatNgayNghi(qkNgayNghi()) : '';
+  if($('qkGiuaInfo')) $('qkGiuaInfo').innerHTML = (qkType !== 'tangca' && qkSub === 'giua') ? giuaKiemTra(giuaDoc('qkGiua')).html : '';
   renderQkStat();
   if(qkType!=='tangca' || !$('qkHour').value){ $('qkWarn').innerHTML=''; return; }
   const h = Number($('qkHour').value) + Number($('qkMin').value)/60;
@@ -9174,6 +9325,7 @@ function qkRecalc(){
 function renderQkStat(){
   const box = $('qkStat'); if(!box) return;
   toMauLyDo($('qkReason'));
+  lyDoKhacHien($('qkReason'), $('qkKhac'));
   const empId = $('qkEmp') ? $('qkEmp').value : '';
   const e = empId ? empById(empId) : null;
   if(!e){ box.innerHTML = ''; return; }
@@ -9188,13 +9340,16 @@ function renderQkStat(){
   const lanSom  = lv.filter(l=>l.type==='som');
   const gioMuon = lanMuon.reduce((a,l)=>a + (Number(l.hours)||0), 0);
   const gioSom  = lanSom.reduce((a,l)=>a + (Number(l.hours)||0), 0);
+  const lanGiua = lv.filter(l=>l.type==='giua');
+  const gioGiua = lanGiua.reduce((a,l)=>a + (Number(l.hours)||0), 0);
 
   const it = (k, v, cls, ghi)=>`<div class="it"><span class="k">${k}</span><span class="v ${cls||''}">${v}</span>${ghi ? `<span class="s">${ghi}</span>` : ''}</div>`;
   // Phép tồn (lấy từ Tồn phép năm), trừ thử theo loại / số giờ / lý do đang chọn
   const phep = () => {
-    const gioChon = $('qkHour').value === '' ? 0 : Number($('qkHour').value) + Number($('qkMin').value)/60;
+    const gioChon = qkGioNghi();
     const ngay = qkSub === 'nghi' ? qkNgayNghi().ngay : [$('qkDate').value || todayKey()];
-    const p = window.tpXemTruocHtml(empId, ngay.length ? ngay : [$('qkDate').value || todayKey()], qkSub, gioChon, $('qkReason').value);
+    const ld = lyDoDoc($('qkReason'), $('qkKhac'));
+    const p = window.tpXemTruocHtml(empId, ngay.length ? ngay : [$('qkDate').value || todayKey()], qkSub, gioChon, ld.reason, ld.truPhep);
     return it('Phép tồn', p.gio, p.cls, p.ghi);
   };
   // OT tuần (thứ 2 – thứ 7 của tuần chứa ngày đang chọn, sang tuần mới tự về 0)
@@ -9215,6 +9370,7 @@ function renderQkStat(){
     : it('Nghỉ cả ngày trong tháng', soNgayNghi + ' ngày', soNgayNghi ? 'hot' : '')
       + it('Đi muộn', `${lanMuon.length} lần${gioMuon ? ' · ' + fmtHours(gioMuon) : ''}`)
       + it('Về sớm', `${lanSom.length} lần${gioSom ? ' · ' + fmtHours(gioSom) : ''}`)
+      + it('Nghỉ giữa giờ', `${lanGiua.length} lần${gioGiua ? ' · ' + fmtHours(gioGiua) : ''}`)
       + phep();
   box.innerHTML = `<div class="qk-stat">
     <div class="hd">${esc(e.name)} — tháng ${thang}</div>
@@ -9223,13 +9379,13 @@ function renderQkStat(){
 function renderQkToday(){
   const ids = new Set(khoEmployees(CUR_KHO).map(e=>e.id));
   const today = todayKey();
-  const lb = {nghi:'Nghỉ cả ngày', som:'Về sớm', muon:'Đi muộn'};
+  const lb = LEAVE_LABEL;
   // Hiện ghi nhận của HÔM NAY và những NGÀY TIẾP THEO (không hiện ngày đã qua)
   const items = [
     ...HR.ot.filter(r=>ids.has(r.employeeId) && r.date>=today)
         .map(r=>({date:r.date, name:empName(r.employeeId), chip:`<span class="chip info">Tăng ca ${fmtHours(r.hours)}</span>`})),
     ...HR.leave.filter(l=>ids.has(l.employeeId) && l.date>=today)
-        .map(l=>({date:l.date, name:empName(l.employeeId), chip:`<span class="chip warn">${lb[l.type]}${l.hours?' · '+fmtHours(l.hours):''}</span>${l.reason?` <span class="ld-txt${lyDoKhongTru(l.reason) ? ' ld-khongtru' : ''}">${esc(l.reason)}</span>`:''}`})),
+        .map(l=>({date:l.date, name:empName(l.employeeId), chip:`<span class="chip warn">${lb[l.type]}${l.hours?' · '+fmtHours(l.hours):''}${khungGiua(l)?' ('+khungGiua(l)+')':''}</span>${l.reason?` <span class="ld-txt${donKhongTru(l) ? ' ld-khongtru' : ''}">${esc(l.reason)}</span>`:''}`})),
   ].sort((a,b)=>a.date.localeCompare(b.date) || a.name.localeCompare(b.name,'vi'));
 
   $('qkTodayBox').innerHTML = items.length
@@ -9249,34 +9405,41 @@ async function qkSubmit(){
     const ex = HR.ot.find(r=>r.employeeId===empId && r.date===date);
     if(ex){ ex.hours = h; ex.note = note; } else HR.ot.push({id:'ot'+Date.now(), employeeId:empId, date, hours:h, note});
   }else if(qkSub!=='nghi' && HR.leave.some(l=>l.employeeId===empId && l.date===date && l.type==='nghi')){
-    toast('⚠ Người này đã đăng ký nghỉ cả ngày — không ghi thêm đi muộn/về sớm');
+    toast('⚠ Người này đã đăng ký nghỉ cả ngày — không ghi thêm đi muộn / về sớm / nghỉ giữa giờ');
     return;
   }else if(qkSub==='nghi'){
     const r = qkNgayNghi();
     if(r.loi){ toast('⚠ ' + r.loi); return; }
-    if(qkChanAm(window.tpChanAmPhep(empId, r.ngay, 'nghi', 0, $('qkReason').value))) return;
+    const ld = lyDoDoc($('qkReason'), $('qkKhac'));
+    if(ld.loi){ toast('⚠ ' + ld.loi); return; }
+    if(qkChanAm(window.tpChanAmPhep(empId, r.ngay, 'nghi', 0, ld.reason, ld.truPhep))) return;
     if(r.ngay.length > 1){
       // Nhiều ngày: ngày nào đã có đi muộn / về sớm thì nghỉ cả ngày sẽ thay chỗ
       const chong = HR.leave.filter(l=>l.employeeId===empId && l.type!=='nghi' && r.ngay.includes(l.date));
-      if(chong.length && !await confirmBox(`${empName(empId)} đang có đi muộn / về sớm ở ${chong.length} ngày trong khoảng này (${[...new Set(chong.map(l=>ddmmNgay(l.date)))].join(', ')}). Ghi nghỉ cả ngày sẽ xoá các mục đó. Tiếp tục?`)) return;
+      if(chong.length && !await confirmBox(`${empName(empId)} đang có đi muộn / về sớm / nghỉ giữa giờ ở ${chong.length} ngày trong khoảng này (${[...new Set(chong.map(l=>ddmmNgay(l.date)))].join(', ')}). Ghi nghỉ cả ngày sẽ xoá các mục đó. Tiếp tục?`)) return;
       if(chong.length){ const bo = new Set(chong.map(l=>l.id)); HR.leave = HR.leave.filter(l=>!bo.has(l.id)); }
     }
-    const reason = $('qkReason').value, goc = Date.now();
+    const goc = Date.now();
     r.ngay.forEach((d, i)=>{
-      const ex = HR.leave.find(l=>l.employeeId===empId && l.date===d && l.type==='nghi');
-      if(ex){ ex.reason = reason; ex.note = note; }
-      else HR.leave.push({id:'lv'+goc+(r.ngay.length > 1 ? '_'+i : ''), employeeId:empId, date:d, type:'nghi', reason, note});
+      let ex = HR.leave.find(l=>l.employeeId===empId && l.date===d && l.type==='nghi');
+      if(!ex) HR.leave.push(ex = {id:'lv'+goc+(r.ngay.length > 1 ? '_'+i : ''), employeeId:empId, date:d, type:'nghi'});
+      ganLyDo(ex, ld); ex.note = note;
     });
     qkSoNgayVuaLuu = r.ngay;
   }else{
-    if($('qkHour').value === ''){ toast('⚠ Chọn số giờ'); return; }
-    const h = Number($('qkHour').value) + Number($('qkMin').value)/60;
+    // đi muộn / về sớm: số giờ chọn ở ô giờ + phút · nghỉ giữa giờ: tính từ giờ Từ / Đến (trừ nghỉ trưa)
+    const giua = qkSub === 'giua' ? giuaDoc('qkGiua') : null;
+    if(giua){ const kt = giuaKiemTra(giua); if(kt.loi){ toast('⚠ ' + kt.loi); return; } }
+    else if($('qkHour').value === ''){ toast('⚠ Chọn số giờ'); return; }
+    const h = qkGioNghi();
     if(h <= 0){ toast('⚠ 0 giờ 00 phút là không hợp lệ — chọn thêm số phút'); return; }
-    const ex = HR.leave.find(l=>l.employeeId===empId && l.date===date && l.type===qkSub);
-    const lyDo = $('qkReason').value;
-    if(qkChanAm(window.tpChanAmPhep(empId, [date], qkSub, h, lyDo))) return;
-    if(ex){ ex.hours = h; ex.note = note; ex.reason = lyDo; }
-    else HR.leave.push({id:'lv'+Date.now(), employeeId:empId, date, type:qkSub, hours:h, reason:lyDo, note});
+    let ex = HR.leave.find(l=>l.employeeId===empId && l.date===date && l.type===qkSub);
+    const ld = lyDoDoc($('qkReason'), $('qkKhac'));
+    if(ld.loi){ toast('⚠ ' + ld.loi); return; }
+    if(qkChanAm(window.tpChanAmPhep(empId, [date], qkSub, h, ld.reason, ld.truPhep))) return;
+    if(!ex) HR.leave.push(ex = {id:'lv'+Date.now(), employeeId:empId, date, type:qkSub});
+    ex.hours = h; ex.note = note; ganLyDo(ex, ld);
+    if(giua){ ex.tu = giua.tu; ex.den = giua.den; }
   }
   await saveHr();
   const nhieu = qkSoNgayVuaLuu && qkSoNgayVuaLuu.length > 1 ? qkSoNgayVuaLuu : null;
@@ -9466,12 +9629,13 @@ function renderCalendar(){
     const ot = an ? [] : HR.ot.filter(r=>ids.has(r.employeeId) && r.date===k);
     const ev = an ? [] : HR.events.filter(e=>e.warehouseId===CUR_KHO && e.date===k);
     const gc = an ? [] : HR.giaCong.filter(g=>g.warehouseId===CUR_KHO && g.date===k);
-    const nghi = lv.filter(l=>l.type==='nghi'), som = lv.filter(l=>l.type==='som'), muon = lv.filter(l=>l.type==='muon');
+    const nghi = lv.filter(l=>l.type==='nghi'), som = lv.filter(l=>l.type==='som'), muon = lv.filter(l=>l.type==='muon'), giua = lv.filter(l=>l.type==='giua');
     const has = lv.length + ot.length + ev.length + gc.length > 0;
     const tags = [];
     if(nghi.length) tags.push(`<span class="cal-tag" style="background:#d7263d">${nghi.length===1?esc(empName(nghi[0].employeeId).split(' ').slice(-1)[0]):nghi.length+' nghỉ'}</span>`);
     if(som.length) tags.push(`<span class="cal-tag" style="background:var(--st-som); color:var(--st-som-ink)">${som.length}S</span>`);
     if(muon.length) tags.push(`<span class="cal-tag" style="background:var(--st-muon); color:var(--st-muon-ink)">${muon.length}M</span>`);
+    if(giua.length) tags.push(`<span class="cal-tag" style="background:var(--st-giua); color:var(--st-giua-ink)" title="Nghỉ giữa giờ">${giua.length}G</span>`);
     if(ot.length) tags.push(`<span class="cal-tag" style="background:#2368b1">${new Set(ot.map(r=>r.employeeId)).size}-OT</span>`);
     // Gia công: in kèm 2 phiên bản chữ trong cùng 1 nhãn tím.
     // CSS quyết định hiện cái nào: máy tính -> mã đầy đủ (OSTESTẢI), điện thoại -> "OS".
@@ -9495,10 +9659,10 @@ function dayDetailModal(k){
   const lv = HR.leave.filter(l=>ids.has(l.employeeId) && l.date===k);
   const ev = HR.events.filter(e=>e.warehouseId===CUR_KHO && e.date===k);
   const gc = HR.giaCong.filter(g=>g.warehouseId===CUR_KHO && g.date===k);
-  const lb = {nghi:'Nghỉ cả ngày', som:'Về sớm', muon:'Đi muộn'};
+  const lb = LEAVE_LABEL;
   let html = '';
   if(ot.length) html += `<div class="field-label">TĂNG CA (${ot.length} người)</div>` + ot.map(r=>`<div class="rowline"><div><b>${esc(empName(r.employeeId))}</b></div><div style="display:flex;gap:8px;align-items:center"><span class="chip info">OT ${fmtHours(r.hours)}</span><button class="danger sm" data-dot="${r.id}">✕</button></div></div>`).join('');
-  if(lv.length) html += `<div class="field-label">NGHỈ PHÉP (${lv.length} người)</div>` + lv.map(l=>`<div class="rowline"><div><b>${esc(empName(l.employeeId))}</b>${l.reason?`<div style="font-size:11px;color:#888">${esc(l.reason)}</div>`:''}</div><div style="display:flex;gap:8px;align-items:center"><span class="chip warn">${lb[l.type]}${l.hours?' · '+fmtHours(l.hours):''}</span><button class="danger sm" data-dlv="${l.id}">✕</button></div></div>`).join('');
+  if(lv.length) html += `<div class="field-label">NGHỈ PHÉP (${lv.length} người)</div>` + lv.map(l=>`<div class="rowline"><div><b>${esc(empName(l.employeeId))}</b>${l.reason?`<div style="font-size:11px;color:#888">${esc(l.reason)}</div>`:''}</div><div style="display:flex;gap:8px;align-items:center"><span class="chip warn">${lb[l.type]}${l.hours?' · '+fmtHours(l.hours):''}${khungGiua(l)?' ('+khungGiua(l)+')':''}</span><button class="danger sm" data-dlv="${l.id}">✕</button></div></div>`).join('');
   if(ev.length) html += `<div class="field-label">SỰ KIỆN</div>` + ev.map(e=>`<div class="rowline"><div><b>${esc(e.title)}</b><div style="font-size:12px;color:#666">🕘 ${esc(e.time||'')}${e.room?' · '+esc(e.room):''}</div></div><button class="danger sm" data-dev="${e.id}">✕</button></div>`).join('');
   if(gc.length) html += `<div class="field-label">GIA CÔNG (${gc.length})</div>` + gc.map(g=>`<div class="rowline"><div><b style="color:var(--violet)">${esc(g.title)}</b><div style="font-size:12px;color:#666">Nhà máy: ${esc(g.factory)} · Loại xe: ${esc((VEHICLE_TYPES.find(v=>v.key===g.vehicleType)||{}).label||g.vehicleType)}${g.note?' · '+esc(g.note):''}</div></div><button class="danger sm" data-dgc="${g.id}">✕</button></div>`).join('');
   if(!html) html = '<p class="empty-msg">Không có dữ liệu.</p>';
@@ -10183,10 +10347,11 @@ function odBanDoNhiet(S, hm, khos){
 // Ký hiệu trong ô:
 //   (trống, cột vàng chữ đỏ) Chủ nhật · Lễ / Tết = ngày nghỉ lễ (tên có "Tết" -> Tết)
 //   P  = nghỉ phép cả ngày · KL = nghỉ không lương / nghỉ ốm / nghỉ việc riêng
-//   OT = có tăng ca · M = đi muộn · S = về sớm · x = đi làm đủ · HT = đi hỗ trợ · TS = thai sản
-//   Một ngày có nhiều việc (VD đi muộn mà vẫn tăng ca) -> ghi việc chính (nghỉ > OT > M > S), góc ô có vệt đỏ;
+//   OT = có tăng ca · M = đi muộn · S = về sớm · G = nghỉ giữa giờ · x = đi làm đủ · HT = đi hỗ trợ · TS = thai sản
+//   Một ngày có nhiều việc (VD đi muộn mà vẫn tăng ca) -> ghi việc chính (nghỉ > OT > M > S > G), góc ô có vệt đỏ;
 //   rê chuột vào ô xem đủ thông tin ngày đó.
-// Cuối dòng: Ngày công (ngày đi làm) · OT (giờ) · Phép (giờ) · Lễ/Tết (ngày) · Không phép (giờ: KL + đi muộn / về sớm không trừ phép)
+// Xuất Excel: sheet bảng chấm công + sheet "Nghỉ phép" (mỗi lần nghỉ / đi muộn / về sớm / nghỉ giữa giờ 1 dòng, có phép hay không, số giờ)
+// Cuối dòng: Ngày công (ngày đi làm) · OT (giờ) · Phép (giờ) · Lễ/Tết (ngày) · Không phép (giờ: KL + đi muộn / về sớm / giữa giờ không trừ phép)
 // Phạm vi: kho đang xem hoặc cả 3 kho. Chỉ từ tháng của OT_HIEN_TU (dữ liệu trước đó đang ẩn ở tab Tăng ca).
 // =====================================================================
 const CC = { pham:'kho', moc:new Date() };
@@ -10204,17 +10369,19 @@ function ccNguoi(khoId, ym){
   return khoEmployees(khoId).concat(khoDiHoTro(khoId), khoThaiSan(khoId), khoNghiTrongThang(khoId, ym))
     .filter(e=>!da.has(e.id) && da.add(e.id));
 }
-// Gom đơn theo "mã NV|ngày": { ot, nghi:[đơn], muon:[đơn], som:[đơn] } (bỏ ngày đang ẩn trước OT_HIEN_TU)
+// Gom đơn theo "mã NV|ngày": { ot, nghi:[đơn], muon:[đơn], som:[đơn], giua:[đơn] } (bỏ ngày đang ẩn trước OT_HIEN_TU)
 function ccGom(tu, den){
-  const m = new Map(), lay = k => m.get(k) || (m.set(k, { ot:0, otGhi:[], nghi:[], muon:[], som:[] }), m.get(k));
+  const m = new Map(), lay = k => m.get(k) || (m.set(k, { ot:0, otGhi:[], nghi:[], muon:[], som:[], giua:[] }), m.get(k));
   (HR.ot || []).forEach(r=>{ if(r.date < tu || r.date > den || !hienTC(r.date)) return;
     const o = lay(r.employeeId + '|' + r.date); o.ot += Number(r.hours) || 0; if(r.note) o.otGhi.push(r.note); });
   (HR.leave || []).forEach(r=>{ if(r.date < tu || r.date > den || !hienTC(r.date)) return;
     const o = lay(r.employeeId + '|' + r.date);
-    if(r.type === 'nghi') o.nghi.push(r); else if(r.type === 'muon') o.muon.push(r); else if(r.type === 'som') o.som.push(r); });
+    if(r.type === 'nghi') o.nghi.push(r); else if(r.type === 'muon') o.muon.push(r); else if(r.type === 'som') o.som.push(r); else if(r.type === 'giua') o.giua.push(r); });
   return m;
 }
-const ccTruPhep = r => r.reason === 'Nghỉ phép';             // đi muộn / về sớm có trừ vào phép năm không
+const ccTruPhep = r => truPhepNam(r.reason, r.truPhep);     // đi muộn / về sớm / giữa giờ có trừ vào phép năm không
+// nghỉ cả ngày tính là phép (P): lý do Nghỉ phép / chưa ghi lý do / lý do tự ghi chọn Phép năm
+const ccPhepNghi = r => !r.reason || truPhepNam(r.reason, r.truPhep);
 const ccGio = ds => ds.reduce((s, r)=>s + (Number(r.hours) || 0), 0);
 
 // 1 ô: { ma, cls, goc (vệt đỏ), tip:[{t,s}] } + phần cộng dồn cuối tháng
@@ -10224,21 +10391,24 @@ function ccO(e, k, g, le, homNay){
     return { ma:'', cls:'ngoai' + (cn ? ' cn' : ''), tip:[{ t:'Chưa vào làm / đã nghỉ việc' }] };
   if(dangThaiSan(e, k)) return { ma:cn ? '' : 'TS', cls:'ts' + (cn ? ' cn' : ''), tip:[{ t:'Nghỉ thai sản' }] };
   if(dangDiHoTro(e, k)) return { ma:cn ? '' : 'HT', cls:'ht' + (cn ? ' cn' : ''), tip:[{ t:'Đi hỗ trợ bộ phận khác' + (e.diHoTroNoi ? ' — ' + e.diHoTroNoi : '') }] };
-  const nghiHet = g && g.nghi.length, coOT = g && g.ot > 0, coM = g && g.muon.length, coS = g && g.som.length;
+  const nghiHet = g && g.nghi.length, coOT = g && g.ot > 0, coM = g && g.muon.length, coS = g && g.som.length, coG = g && g.giua.length;
   if(le) tip.push({ t:le, s:'Ngày nghỉ lễ' });
   if(g){
-    g.nghi.forEach(r=>tip.push({ t:`${r.reason === 'Nghỉ phép' || !r.reason ? 'Nghỉ phép' : r.reason} cả ngày`, s:r.note || '' }));
+    g.nghi.forEach(r=>tip.push({ t:`${r.reason === 'Nghỉ phép' || !r.reason ? 'Nghỉ phép' : r.reason} cả ngày`,
+      s:[typeof r.truPhep === 'boolean' ? (r.truPhep ? 'trừ vào phép năm' : 'không lương') : '', r.note || ''].filter(Boolean).join(' · ') }));
     if(coOT) tip.push({ t:`Tăng ca ${fmtHours(g.ot)}`, s:g.otGhi.join(' · ') });
     g.muon.forEach(r=>tip.push({ t:`Đi muộn ${fmtHours(Number(r.hours) || 0)}`, s:(ccTruPhep(r) ? 'trừ vào phép năm' : 'không trừ phép') + (r.note ? ' · ' + r.note : '') }));
     g.som.forEach(r=>tip.push({ t:`Về sớm ${fmtHours(Number(r.hours) || 0)}`, s:(ccTruPhep(r) ? 'trừ vào phép năm' : 'không trừ phép') + (r.note ? ' · ' + r.note : '') }));
+    g.giua.forEach(r=>tip.push({ t:`Nghỉ giữa giờ ${fmtHours(Number(r.hours) || 0)}${khungGiua(r) ? ' (' + khungGiua(r) + ')' : ''}`, s:(ccTruPhep(r) ? 'trừ vào phép năm' : 'không trừ phép') + (r.note ? ' · ' + r.note : '') }));
   }
-  const soViec = (nghiHet ? 1 : 0) + (coOT ? 1 : 0) + (coM ? 1 : 0) + (coS ? 1 : 0) + (le && (coOT || nghiHet) ? 1 : 0);
+  const soViec = (nghiHet ? 1 : 0) + (coOT ? 1 : 0) + (coM ? 1 : 0) + (coS ? 1 : 0) + (coG ? 1 : 0) + (le && (coOT || nghiHet) ? 1 : 0);
   let ma = '', cls = '';
   if(le){ ma = CC_LOAI_LE(le); cls = 'le'; }
-  else if(nghiHet){ const p = g.nghi.some(r=>r.reason === 'Nghỉ phép' || !r.reason); ma = p ? 'P' : 'KL'; cls = p ? 'p' : 'kl'; }
+  else if(nghiHet){ const p = g.nghi.some(ccPhepNghi); ma = p ? 'P' : 'KL'; cls = p ? 'p' : 'kl'; }
   else if(coOT){ ma = 'OT'; cls = 'ot'; }
   else if(coM){ ma = 'M'; cls = 'm'; }
   else if(coS){ ma = 'S'; cls = 's'; }
+  else if(coG){ ma = 'G'; cls = 'g'; }
   else if(!cn && k <= homNay){ ma = 'X'; cls = 'x'; tip.push({ t:'Đi làm đủ ca' }); }
   if(cn){ cls += ' cn'; if(!tip.length) tip.push({ t:'Chủ nhật — không đi làm' }); }
   return { ma, cls:cls.trim(), goc:soViec > 1, tip };
@@ -10267,8 +10437,8 @@ function renderChamCong(){
         else if(!n.cn && n.k <= homNay && !(x && x.nghi.length)) t.cong++;
         if(x){
           t.ot += x.ot;
-          x.nghi.forEach(r=>{ if(r.reason === 'Nghỉ phép' || !r.reason) t.phep += CC_CA; else t.kp += CC_CA; });
-          x.muon.concat(x.som).forEach(r=>{ if(ccTruPhep(r)) t.phep += Number(r.hours) || 0; else t.kp += Number(r.hours) || 0; });
+          x.nghi.forEach(r=>{ if(ccPhepNghi(r)) t.phep += CC_CA; else t.kp += CC_CA; });
+          x.muon.concat(x.som, x.giua).forEach(r=>{ if(ccTruPhep(r)) t.phep += Number(r.hours) || 0; else t.kp += Number(r.hours) || 0; });
         }
       }
       return `<td class="o ${c.cls}${c.goc ? ' goc' : ''}${n.k === homNay ? ' nay' : ''}"${c.tip.length
@@ -10302,20 +10472,48 @@ function renderChamCong(){
       <thead><tr><th class="stt" rowspan="2">STT</th><th class="ten" rowspan="2">Tên · mã số</th>
         ${ngays.map(n=>`<th class="d${n.cn ? ' cn' : ''}${n.le ? ' le' : ''}${n.k === homNay ? ' nay' : ''}"${n.le ? ` title="${esc(n.le)}"` : ''}>${pad(n.so)}</th>`).join('')}
         <th class="t" rowspan="2" title="Số ngày đi làm (thứ 2 – thứ 7, không tính ngày nghỉ cả ngày, ngày lễ)">Ngày<br>công</th>
-        <th class="t" rowspan="2">OT<br>(giờ)</th><th class="t" rowspan="2" title="Nghỉ phép cả ngày (8h) + đi muộn / về sớm trừ vào phép">Phép<br>(giờ)</th>
-        <th class="t" rowspan="2">Lễ<br>Tết</th><th class="t" rowspan="2" title="Nghỉ không lương / ốm / việc riêng (8h) + đi muộn / về sớm không trừ phép">Không<br>phép (giờ)</th></tr>
+        <th class="t" rowspan="2">OT<br>(giờ)</th><th class="t" rowspan="2" title="Nghỉ phép cả ngày (8h) + đi muộn / về sớm / nghỉ giữa giờ trừ vào phép">Phép<br>(giờ)</th>
+        <th class="t" rowspan="2">Lễ<br>Tết</th><th class="t" rowspan="2" title="Nghỉ không lương / ốm / việc riêng (8h) + đi muộn / về sớm / nghỉ giữa giờ không trừ phép">Không<br>phép (giờ)</th></tr>
       <tr>${ngays.map(n=>`<th class="thu${n.cn ? ' cn' : ''}${n.le ? ' le' : ''}">${n.thu}</th>`).join('')}</tr></thead>
       <tbody>${than || `<tr><td colspan="${soNgay + 7}" class="empty-msg">Không có nhân viên.</td></tr>`}</tbody>
     </table></div>
     <div class="cc-lg">
-      <span><i class="x">X</i>đi làm</span><span><i class="ot">OT</i>tăng ca</span><span><i class="m">M</i>đi muộn</span><span><i class="s">S</i>về sớm</span>
+      <span><i class="x">X</i>đi làm</span><span><i class="ot">OT</i>tăng ca</span><span><i class="m">M</i>đi muộn</span><span><i class="s">S</i>về sớm</span><span><i class="g">G</i>nghỉ giữa giờ</span>
       <span><i class="p">P</i>nghỉ phép</span><span><i class="kl">KL</i>không lương / ốm / việc riêng</span><span><i class="le">Lễ</i>lễ, Tết</span>
       <span><i class="cn"></i>Chủ nhật</span><span><i class="goc"></i>có nhiều việc trong ngày — rê chuột để xem</span>
       <span><i class="ht">HT</i>hỗ trợ</span><span><i class="ts">TS</i>thai sản</span>
     </div>`;
 }
 
-// Xuất Excel đúng bảng đang xem (ký hiệu + cột cộng cuối tháng)
+// Sheet "Nghỉ phép" của file xuất: mỗi lần nghỉ 1 dòng (nghỉ cả ngày / đi muộn / về sớm / nghỉ giữa giờ), đúng người + tháng của bảng đang xem.
+// Bỏ ngày người đó chưa vào làm / đã nghỉ việc / thai sản / đi hỗ trợ — giống phần cộng cuối dòng của bảng.
+function ccDsNghi(){
+  const y = CC.moc.getFullYear(), mo = CC.moc.getMonth(), ym = `${y}-${pad(mo + 1)}`, soNgay = new Date(y, mo + 1, 0).getDate();
+  const g = ccGom(`${ym}-01`, `${ym}-${pad(soNgay)}`), homNay = todayKey();
+  const khos = ccKhos(), ba = khos.length > 1, LB = LEAVE_LABEL;
+  const hang = [], tong = { co:0, khong:0 };
+  khos.forEach(k=>ccNguoi(k, ym).forEach(e=>{
+    for(let i = 1; i <= soNgay; i++){
+      const n = `${ym}-${pad(i)}`, x = g.get(e.id + '|' + n);
+      if(!x || /ngoai|ts|ht/.test(ccO(e, n, x, '', homNay).cls)) continue;
+      x.nghi.concat(x.muon, x.som, x.giua).forEach(r=>{
+        const phep = r.type === 'nghi' ? ccPhepNghi(r) : ccTruPhep(r);
+        const gio = r.type === 'nghi' ? CC_CA : Number(r.hours) || 0;
+        tong[phep ? 'co' : 'khong'] += gio;
+        hang.push([hang.length + 1, e.maSo || '', e.name].concat(ba ? [khoName(k)] : [],
+          [`${pad(i)}/${pad(mo + 1)}/${y}`, CC_THU[fromKey(n).getDay()], LB[r.type], khungGiua(r), phep ? 'Có phép' : 'Không phép', r.reason || '', Math.round(gio * 100) / 100]));
+      });
+    }
+  }));
+  const dau = ['STT', 'Mã số NV', 'Họ tên'].concat(ba ? ['Kho'] : [], ['Ngày', 'Thứ', 'Loại nghỉ', 'Thời gian', 'Có phép / Không phép', 'Lý do', 'Số giờ nghỉ']);
+  const trong = Array(dau.length - 3).fill('');             // dòng tổng: số giờ nằm đúng cột cuối
+  if(!hang.length) return [dau, ['', `Tháng ${pad(mo + 1)}/${y} không có ai nghỉ / đi muộn / về sớm / nghỉ giữa giờ`]];
+  const r2 = x => Math.round(x * 100) / 100;
+  return [dau].concat(hang, [[]],
+    [['', 'Tổng giờ có phép'].concat(trong, [r2(tong.co)]), ['', 'Tổng giờ không phép'].concat(trong, [r2(tong.khong)])]);
+}
+
+// Xuất Excel đúng bảng đang xem (ký hiệu + cột cộng cuối tháng) + sheet "Nghỉ phép" (từng lần nghỉ)
 function ccXuatExcel(){
   if(!window.XLSX){ toast('⚠ Chưa tải được thư viện Excel — kiểm tra mạng rồi tải lại trang'); return; }
   const bang = document.querySelector('#ccBox .cc-bang'); if(!bang) return;
@@ -10335,6 +10533,9 @@ function ccXuatExcel(){
   ws['!cols'] = [{ wch:5 }, { wch:30 }].concat(Array(31).fill({ wch:4 }), Array(5).fill({ wch:9 }));
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, `Cham cong ${pad(CC.moc.getMonth() + 1)}-${CC.moc.getFullYear()}`);
+  const wsNghi = XLSX.utils.aoa_to_sheet(ccDsNghi());
+  wsNghi['!cols'] = [{ wch:5 }, { wch:12 }, { wch:26 }].concat(ccKhos().length > 1 ? [{ wch:14 }] : [], [{ wch:12 }, { wch:6 }, { wch:14 }, { wch:15 }, { wch:12 }, { wch:24 }, { wch:12 }]);
+  XLSX.utils.book_append_sheet(wb, wsNghi, 'Nghỉ phép');
   XLSX.writeFile(wb, `BANG_CHAM_CONG_${CC.pham === 'all' ? '3KHO' : CUR_KHO}_${CC.moc.getFullYear()}-${pad(CC.moc.getMonth() + 1)}.xlsx`);
   toast('✓ Đã xuất bảng chấm công');
 }
@@ -12224,7 +12425,8 @@ window.renderTraining = taoBoSuuTap({
   // trong con số tồn rồi, không trừ lại lần nữa.
   function ngayChot(e){ return e.phepChot || ((e.phepMoc || '0000-00') + '-01'); }
   // Giờ phép đã dùng SAU ngày chốt. Nghỉ cả ngày vì phép = 8 giờ; đi muộn / về
-  // sớm ghi lý do "Nghỉ phép" thì trừ đúng số giờ. Lý do khác không trừ.
+  // sớm ghi lý do "Nghỉ phép" thì trừ đúng số giờ. Lý do tự ghi (Lý do khác) trừ khi
+  // chọn "Phép năm" (truPhep). Các lý do còn lại không trừ.
   // Đơn cho ngày tương lai TRỪ NGAY khi đăng ký, để số tồn luôn là số còn lại
   // thật sau mọi đơn đã đăng ký. Xoá đơn thì phép tự cộng trả lại.
   // denThang = 'YYYY-MM': chỉ tính tới hết tháng đó (dùng cho kiểm tra âm 3 tháng).
@@ -12234,7 +12436,7 @@ window.renderTraining = taoBoSuuTap({
     let g = 0;
     (HR.leave || []).forEach(l=>{
       if(l.employeeId !== empId || l.date <= tu || l.date > het) return;
-      if(String(l.reason || '').trim() !== 'Nghỉ phép') return;
+      if(!truPhepNam(l.reason, l.truPhep)) return;
       g += (l.type === 'nghi') ? TP_GIO_NGAY : (Number(l.hours) || 0);
     });
     return g;
@@ -12242,7 +12444,7 @@ window.renderTraining = taoBoSuuTap({
   function soLanKhongLuong(empId, chot){
     const tu = chot || '0000-00-00';
     return (HR.leave || []).filter(l => l.employeeId === empId && l.date > tu && l.date <= todayKey() &&
-      String(l.reason || '').trim() === 'Nghỉ không lương').length;
+      (l.truPhep === false || String(l.reason || '').trim() === 'Nghỉ không lương')).length;
   }
   function tinh(e, denThang){
     const gio = gioMoiThang(e);
@@ -12327,7 +12529,7 @@ window.renderTraining = taoBoSuuTap({
       + '10–15 năm <b>16 ngày</b> (10.66h) · 15–20 năm <b>17 ngày</b> (11.33h). Một ngày phép = 8 giờ.<br>'
       + 'Cộng phép: <b>vào ngày 01 mỗi tháng</b> cộng đủ một suất, không chia theo số ngày đã làm trong tháng.'
       + ` Lần cộng tới: <b>01/${thangSau()}</b>.<br>`
-      + 'Trừ phép: <b>nghỉ cả ngày vì phép</b> trừ 8 giờ · <b>đi muộn / về sớm ghi lý do Nghỉ phép</b> trừ đúng số giờ đã ghi · '
+      + 'Trừ phép: <b>nghỉ cả ngày vì phép</b> trừ 8 giờ · <b>đi muộn / về sớm / nghỉ giữa giờ ghi lý do Nghỉ phép</b> trừ đúng số giờ đã ghi · '
       + '<b>nghỉ không lương</b> và các lý do khác không trừ. Đơn cho ngày tương lai <b>trừ ngay khi đăng ký</b> (xoá đơn thì cộng trả lại).<br>'
       + `Phép âm tối đa: <b>${fmtG(TP_AM_TOI_DA)}</b> — không đăng ký được "Nghỉ phép" làm tồn xuống dưới mức này (vẫn đăng ký được lý do không trừ phép).`;
 
@@ -12449,17 +12651,18 @@ window.renderTraining = taoBoSuuTap({
   // Nếu ngày đó đã có bản ghi cùng loại (và đã bị trừ) thì bản mới sẽ thay
   // bản cũ, nên cộng trả phần cũ lại trước để khỏi trừ hai lần.
   // date có thể là 1 ngày hoặc danh sách ngày (nghỉ nhiều ngày: mỗi ngày −8 giờ).
-  window.tpXemTruoc = function(empId, date, type, hours, reason){
+  // truPhep: chỉ có với lý do tự ghi (Lý do khác) — true = trừ phép năm, false = không lương
+  window.tpXemTruoc = function(empId, date, type, hours, reason, truPhep){
     const e = empById(empId);
     if(!e || (chuaSet(e) && e.phepTon == null)) return { coSo:false };
     const ton = tinh(e).ton;
-    const laPhep = String(reason || '').trim() === 'Nghỉ phép';
+    const laPhep = truPhepNam(reason, truPhep);
     const ngay = Array.isArray(date) ? date : [date];
     const tru = !laPhep ? 0 : ngay.length * (type === 'nghi' ? TP_GIO_NGAY : (Number(hours) || 0));
     let traLai = 0;
     ngay.forEach(d=>{
       const cu = (HR.leave || []).find(l => l.employeeId === empId && l.date === d && l.type === type);
-      if(cu && cu.date > ngayChot(e) && String(cu.reason || '').trim() === 'Nghỉ phép')
+      if(cu && cu.date > ngayChot(e) && truPhepNam(cu.reason, cu.truPhep))
         traLai += (cu.type === 'nghi' ? TP_GIO_NGAY : (Number(cu.hours) || 0));
     });
     const sau = ton + traLai - tru;
@@ -12469,16 +12672,16 @@ window.renderTraining = taoBoSuuTap({
     return { coSo:true, ton, tru, laPhep, sau, vuotAm, fmt: fmtG };
   };
   // Trả về câu báo lỗi nếu đơn làm phép âm quá mức cho phép, ngược lại null.
-  window.tpChanAmPhep = function(empId, date, type, hours, reason){
-    const x = window.tpXemTruoc(empId, date, type, hours, reason);
+  window.tpChanAmPhep = function(empId, date, type, hours, reason, truPhep){
+    const x = window.tpXemTruoc(empId, date, type, hours, reason, truPhep);
     if(!x.coSo || !x.vuotAm) return null;
     return `${empName(empId)}: sau khi nghỉ phép còn ${fmtG(x.sau)}, vượt mức âm tối đa ${fmtG(TP_AM_TOI_DA)}. `
       + 'Không đăng ký được "Nghỉ phép" — chọn lý do không trừ phép (Nghỉ không lương, Nghỉ ốm, Nghỉ việc riêng).';
   };
   // Số hiện ra là phép tồn SAU khi trừ đơn đang chọn (13.41h -> chọn nghỉ cả
   // ngày vì phép -> 5.41h). Lý do không trừ phép thì giữ nguyên số tồn.
-  window.tpXemTruocHtml = function(empId, date, type, hours, reason){
-    const x = window.tpXemTruoc(empId, date, type, hours, reason);
+  window.tpXemTruocHtml = function(empId, date, type, hours, reason, truPhep){
+    const x = window.tpXemTruoc(empId, date, type, hours, reason, truPhep);
     if(!x.coSo) return { gio:'—', cls:'', ghi:'chưa cài đặt mức phép (mục Tồn phép năm)' };
     return { gio: fmtG(x.sau), cls: x.sau < 0 ? 'hot' : 'ok',
              ghi: x.vuotAm ? `<b class="am">⛔ Vượt mức âm tối đa ${fmtG(TP_AM_TOI_DA)} — chỉ đăng ký được lý do không trừ phép</b>` : '' };
@@ -12817,7 +13020,7 @@ const LS_MUC_KHO = { current: 'Phân công hiện tại', history: 'Lịch sử 
   positions: 'Vị trí làm việc', notes: 'Ghi chú', xuathang: 'Xuất hàng', hotroKK: 'Hỗ trợ / Kiểm kê',
   jobs: 'Danh sách vị trí', ca2: 'Ca 2', ca2Log: 'Nhật ký Ca 2', zones: 'Khu vực 5S',
   shelfTitle: 'Tên khu vực kệ', monthLimit: 'Hạn mức tăng ca tháng', settings: 'Cài đặt chung' };
-const LV_LB = { nghi: 'Nghỉ cả ngày', som: 'Về sớm', muon: 'Đi muộn' };
+const LV_LB = { nghi: 'Nghỉ cả ngày', som: 'Về sớm', muon: 'Đi muộn', giua: 'Nghỉ giữa giờ' };
 
 function lsGio(iso){
   if(!iso) return '';
@@ -12850,7 +13053,7 @@ function lsGiaTri(truong, v){
 function lsMoTaDon(loai, r){
   if(!r) return '';
   if(loai === 'ot') return `Tăng ca ${fmtHours(Number(r.hours) || 0)}${r.note ? ' · ' + r.note : ''}`;
-  if(loai === 'leave') return `${LV_LB[r.type] || r.type || 'Nghỉ'}${r.hours ? ' · ' + fmtHours(Number(r.hours)) : ''}${r.reason ? ' · ' + r.reason : ''}`;
+  if(loai === 'leave') return `${LV_LB[r.type] || r.type || 'Nghỉ'}${r.hours ? ' · ' + fmtHours(Number(r.hours)) : ''}${khungGiua(r) ? ' (' + khungGiua(r) + ')' : ''}${r.reason ? ' · ' + r.reason : ''}`;
   if(loai === 'employees') return [r.position, r.shift, r.warehouseId ? khoName(r.warehouseId) : ''].filter(Boolean).join(' · ');
   return r.title || '';
 }
@@ -13739,8 +13942,9 @@ function xuatExcel(){
 //          sl (số thùng lệch, null = chưa ghi), ngayNhap ('YYYY-MM-DD' | ''), ngayNhapGoc (chữ gốc khi không đọc được ngày),
 //          nguoiNhap, nguoiCat, nguoiLoi (mã người mắc lỗi như trong sổ: N.Đ.CHÍ · APP LỖI · X), ghiChu,
 //          loai (loại lỗi, chữ in hoa), tt (thứ tự trong ngày), nguoiTao, lucTao, nguoiSua, lucSua }
-//   buoi : 1 lần kiểm kê = { id, ngay, nhan (AM / PM / (1)…), thung (số thùng đã kiểm), ghiChu }
-//          -> độ chính xác tồn kho = 1 − thùng sai / thùng đã kiểm
+//   buoi : 1 lần kiểm kê = { id, ngay, nhan (AM / PM / (1)…), thung (số thùng đã kiểm), ghiChu,
+//          kiem:[{ ten (họ tên trong danh sách kho thành phẩm), trang (chữ tự ghi: 1-10, 1->10…) }] }
+//          -> độ chính xác tồn kho = 1 − thùng sai / thùng đã kiểm; nút "👤 Người kiểm" xem lại ngày -> người -> trang
 // Người mắc lỗi KHÔNG lưu mã nhân viên: lúc vẽ mới so mã "N.Đ.CHÍ" với danh sách kho thành phẩm (viết tắt họ tên).
 // Có trong danh sách -> hiện họ tên đầy đủ; không có (người đã nghỉ trước khi dùng app) -> giữ nguyên mã như sổ.
 // =====================================================================
@@ -14288,6 +14492,7 @@ function kkHtmlThanh(nams, sua, can, tenNg){
     <span class="kk-sp"></span>
     ${sua ? '<button class="sm" data-kk-act="them">＋ Ghi lỗi</button>' : ''}
     <button class="secondary sm" data-kk-act="buoi" title="Số thùng đã kiểm của từng buổi — để tính độ chính xác tồn kho">📅 Buổi kiểm kê</button>
+    <button class="secondary sm" data-kk-act="nguoikiem" title="Xem lại từng ngày kiểm kê: ai kiểm, trang nào">👤 Người kiểm</button>
     ${sua ? '<button class="secondary sm" data-kk-act="nap" title="Nạp file Excel sổ lỗi kiểm kê (chọn được nhiều file)">⬆ Nạp Excel</button>' : ''}
     ${can ? `<button class="sm kk-can" data-kk-act="kiemtra" title="Dòng có ngày nhập sau ngày kiểm kê, chưa ghi số lượng, tên người ghi thiếu">⚠ Cần xem lại · ${can}</button>` : ''}
     <button class="ghost sm" data-kk-act="xuat" title="Xuất báo cáo năm đang xem ra Excel">⬇ Excel</button>
@@ -14530,6 +14735,7 @@ function kkVeBang(){
 function kkHanhDong(a){
   if(a === 'them') kkMoForm(null);
   else if(a === 'buoi') kkMoBuoi();
+  else if(a === 'nguoikiem') kkMoNguoiKiem();
   else if(a === 'nap') kkChonFile();
   else if(a === 'kiemtra') kkMoKiemTra();
   else if(a === 'xuat') kkXuatExcel();
@@ -14696,18 +14902,42 @@ async function kkXoa(id){
 // ---------------------------------------------------------------------
 // BUỔI KIỂM KÊ (số thùng đã kiểm -> độ chính xác tồn kho)
 // ---------------------------------------------------------------------
+// Người kiểm của 1 buổi: [{ ten, trang }] — chọn tên trong danh sách kho thành phẩm (chỉ hiện tên), trang tự ghi
+const kkTenKho = () => [...new Set(khoEmployees('thanhpham').map(e=>e.name).filter(Boolean))].sort((a, b)=>a.localeCompare(b, 'vi'));
+const kkKiemTxt = b => (b.kiem || []).map(k=>k.ten + (k.trang ? ` (tr. ${k.trang})` : '')).join(', ');
+
 function kkMoBuoi(ngayGoiY){
-  const sua = kkDuocSua(), nam = KKL.nam;
-  let dangSua = null;
+  const sua = kkDuocSua(), nam = KKL.nam, dsTen = kkTenKho();
+  let dangSua = null, kiem = [];
   const m = openModal(`📅 Buổi kiểm kê — năm ${nam}`, '<div class="kk-buoi" data-buoi></div>', { esc:true });
   m.el.querySelector('.modal-card').classList.add('kk-rong');
   const host = m.body.querySelector('[data-buoi]');
+  // Các dòng "Người kiểm · trang" của form — vẽ riêng để thêm / bỏ dòng không mất chữ đang gõ ở ô khác
+  const docKiem = ()=>{
+    host.querySelectorAll('[data-k-ten]').forEach(o=>{ kiem[+o.dataset.kTen].ten = o.value; });
+    host.querySelectorAll('[data-k-trang]').forEach(o=>{ kiem[+o.dataset.kTrang].trang = o.value; });
+  };
+  const veKiem = ()=>{
+    const o = host.querySelector('[data-kiem]'); if(!o) return;
+    o.innerHTML = '<span class="kk-kiem-h">Người kiểm · trang</span>' + kiem.map((k, i)=>`<div class="kk-kiem-dong">
+        <select data-k-ten="${i}" aria-label="Người kiểm"><option value="">— Chọn người kiểm —</option>${(k.ten && !dsTen.includes(k.ten) ? [k.ten] : []).concat(dsTen)
+          .map(t=>`<option${t === k.ten ? ' selected' : ''}>${esc(t)}</option>`).join('')}</select>
+        <input type="text" data-k-trang="${i}" value="${esc(k.trang || '')}" placeholder="Trang: 1-10, 1->10…" autocomplete="off" aria-label="Trang">
+        <button class="ghost sm" data-k-bo="${i}" title="Bỏ dòng này">✕</button></div>`).join('')
+      + '<button class="ghost sm kk-kiem-them" data-k-them>＋ Thêm người kiểm</button>';
+  };
+  host.addEventListener('click', e=>{
+    if(e.target.closest('[data-k-them]')){ docKiem(); kiem.push({ ten:'', trang:'' }); veKiem(); const s = host.querySelectorAll('[data-k-ten]'); s[s.length - 1].focus(); }
+    const bo = e.target.closest('[data-k-bo]');
+    if(bo){ docKiem(); kiem.splice(+bo.dataset.kBo, 1); if(!kiem.length) kiem.push({ ten:'', trang:'' }); veKiem(); }
+  });
   const ve = goiY=>{
     const ds = kkCuaNam(KK.buoi, nam).sort((a, b)=>a.ngay.localeCompare(b.ngay) || kkChu(a.nhan).localeCompare(kkChu(b.nhan)));
     const coBuoi = new Set(ds.map(b=>b.ngay));
     const thieu = [...new Set(kkCuaNam(KK.loi, nam).filter(r=>!coBuoi.has(r.ngay)).map(r=>r.ngay))].sort();
     const x = dangSua ? KK.buoi.find(b=>b.id === dangSua) : null;
     const theoThang = Array.from({ length:12 }, (_, i)=>ds.filter(b=>+b.ngay.slice(5, 7) === i + 1)).map((d, i)=>({ m:i + 1, d })).filter(g=>g.d.length);
+    kiem = x && (x.kiem || []).length ? x.kiem.map(k=>({ ...k })) : [{ ten:'', trang:'' }];
     host.innerHTML = `
       <p class="kk-ghi">Mỗi buổi ghi <b>số thùng đã kiểm</b> để tính độ chính xác tồn kho (1 − thùng sai / thùng đã kiểm).
         Một ngày kiểm nhiều lượt thì mỗi lượt 1 dòng, ghi nhãn AM / PM / (1)…</p>
@@ -14717,21 +14947,26 @@ function kkMoBuoi(ngayGoiY){
         <label>Số thùng đã kiểm<input type="number" min="1" step="1" data-b="thung" value="${x ? esc(x.thung) : ''}" placeholder="VD: 45000"></label>
         <label>Ghi chú<input type="text" data-b="ghiChu" value="${esc(x ? x.ghiChu || '' : '')}" autocomplete="off"></label>
         <span class="kk-buoi-nut"><button data-b-luu>${x ? 'Lưu' : '＋ Thêm'}</button>${x ? '<button class="ghost" data-b-huy>Huỷ</button>' : ''}</span>
+        <div class="kk-kiem" data-kiem></div>
       </div>` : ''}
       ${thieu.length ? `<div class="kk-buoi-thieu">⚠ Ngày có ghi lỗi nhưng chưa có số thùng đã kiểm:
         ${thieu.map(k=>sua ? `<button class="kk-ngay-btn" data-b-ngay="${k}" title="Bấm để điền ngày này">${kkNgayVN(k).slice(0, 5)}</button>` : `<span>${kkNgayVN(k).slice(0, 5)}</span>`).join(' ')}</div>` : ''}
-      ${ds.length ? `<table class="kk-buoi-bang"><thead><tr><th>Ngày</th><th>Nhãn</th><th class="so">Số thùng đã kiểm</th><th>Ghi chú</th>${sua ? '<th></th>' : ''}</tr></thead>
-        <tbody>${theoThang.map(g=>`<tr class="th"><td colspan="${sua ? 5 : 4}">Tháng ${g.m} · ${g.d.length} buổi · ${kkSoVN(g.d.reduce((s, b)=>s + b.thung, 0))} thùng</td></tr>`
-          + g.d.map(b=>`<tr${b.id === dangSua ? ' class="dang"' : ''}><td>${kkNgayVN(b.ngay)}</td><td>${esc(b.nhan || '')}</td><td class="so">${kkSoVN(b.thung)}</td><td>${esc(b.ghiChu || '')}</td>
+      ${ds.length ? `<table class="kk-buoi-bang"><thead><tr><th>Ngày</th><th>Nhãn</th><th class="so">Số thùng đã kiểm</th><th>Người kiểm (trang)</th><th>Ghi chú</th>${sua ? '<th></th>' : ''}</tr></thead>
+        <tbody>${theoThang.map(g=>`<tr class="th"><td colspan="${sua ? 6 : 5}">Tháng ${g.m} · ${g.d.length} buổi · ${kkSoVN(g.d.reduce((s, b)=>s + b.thung, 0))} thùng</td></tr>`
+          + g.d.map(b=>`<tr${b.id === dangSua ? ' class="dang"' : ''}><td>${kkNgayVN(b.ngay)}</td><td>${esc(b.nhan || '')}</td><td class="so">${kkSoVN(b.thung)}</td><td class="nk">${esc(kkKiemTxt(b))}</td><td>${esc(b.ghiChu || '')}</td>
             ${sua ? `<td class="nut"><button class="ghost sm" data-b-sua="${esc(b.id)}">Sửa</button><button class="danger sm" data-b-xoa="${esc(b.id)}">✕</button></td>` : ''}</tr>`).join('')).join('')}</tbody></table>`
         : `<p class="kk-trong">Năm ${nam} chưa có buổi kiểm kê nào.</p>`}
       <div class="kk-buoi-tong">Cả năm ${nam}: <b>${kkSoVN(ds.length)}</b> buổi · <b>${kkSoVN(ds.reduce((s, b)=>s + b.thung, 0))}</b> thùng đã kiểm</div>`;
     if(!sua) return;
+    veKiem();
     const b = k => host.querySelector(`[data-b="${k}"]`);
     host.querySelector('[data-b-luu]').onclick = async ()=>{
-      const moi = { ngay:b('ngay').value, nhan:kkChu(b('nhan').value), thung:kkSo(b('thung').value), ghiChu:kkChu(b('ghiChu').value) };
+      docKiem();
+      const moi = { ngay:b('ngay').value, nhan:kkChu(b('nhan').value), thung:kkSo(b('thung').value), ghiChu:kkChu(b('ghiChu').value),
+                    kiem:kiem.map(k=>({ ten:kkChu(k.ten), trang:kkChu(k.trang) })).filter(k=>k.ten || k.trang) };
       if(!moi.ngay){ toast('⚠ Chọn ngày kiểm kê'); return; }
       if(!(moi.thung > 0)){ toast('⚠ Nhập số thùng đã kiểm'); return; }
+      if(moi.kiem.some(k=>!k.ten)){ toast('⚠ Có dòng ghi trang nhưng chưa chọn người kiểm'); return; }
       const id = dangSua;
       const ok = await kkGhi(d=>{
         if(id){ const y = d.buoi.find(z=>z.id === id); if(!y){ toast('⚠ Buổi này vừa bị người khác xoá'); return false; } Object.assign(y, moi, kkDauSua()); }
@@ -14751,6 +14986,42 @@ function kkMoBuoi(ngayGoiY){
     });
   };
   ve(ngayGoiY);
+}
+
+// ---------------------------------------------------------------------
+// NGƯỜI KIỂM: xem lại theo ngày kiểm -> người kiểm -> trang (ghi ở 📅 Buổi kiểm kê).
+// Mới đầu chỉ hiện danh sách ngày (mới nhất trên cùng); bấm ngày thì sổ ra tên + trang, bấm lần nữa thì thu lại.
+// ---------------------------------------------------------------------
+function kkMoNguoiKiem(){
+  const nam = KKL.nam, mo = new Set();
+  const m = openModal(`👤 Người kiểm — năm ${nam}`, '<div class="kk-nk" data-nk></div>', { esc:true });
+  const host = m.body.querySelector('[data-nk]');
+  const ve = ()=>{
+    const theoNgay = new Map();
+    kkCuaNam(KK.buoi, nam).filter(b=>(b.kiem || []).length)
+      .sort((a, b)=>kkChu(a.nhan).localeCompare(kkChu(b.nhan)))
+      .forEach(b=>{ if(!theoNgay.has(b.ngay)) theoNgay.set(b.ngay, []); theoNgay.get(b.ngay).push(b); });
+    const ngays = [...theoNgay.keys()].sort().reverse();
+    if(!ngays.length){
+      host.innerHTML = `<p class="kk-trong">Năm ${nam} chưa ghi người kiểm nào.${kkDuocSua() ? ' Ghi ở <b>📅 Buổi kiểm kê</b> (dòng "Người kiểm · trang").' : ''}</p>`;
+      return;
+    }
+    host.innerHTML = ngays.map(k=>{
+      const ds = theoNgay.get(k), soNg = new Set(ds.flatMap(b=>b.kiem.map(x=>x.ten))).size, dangMo = mo.has(k);
+      return `<div class="kk-nk-ngay${dangMo ? ' mo' : ''}">
+        <button class="kk-nk-h" data-nk-ngay="${k}" aria-expanded="${dangMo}"><span class="kk-mui">${dangMo ? '▾' : '▸'}</span>
+          <b>${kkNgayVN(k)}</b><small>${DOW_FULL[fromKey(k).getDay()]}</small><span class="dem">${soNg} người kiểm</span></button>
+        ${dangMo ? `<div class="kk-nk-ds">${ds.map(b=>(ds.length > 1 || b.nhan ? `<div class="kk-nk-nhan">${esc(b.nhan || 'Buổi không nhãn')} · ${kkSoVN(b.thung)} thùng</div>` : '')
+          + b.kiem.map(x=>`<div class="kk-nk-dong"><span class="ten">${esc(x.ten)}</span><span class="tr">${x.trang ? 'Trang ' + esc(x.trang) : '<i>chưa ghi trang</i>'}</span></div>`).join('')).join('')}</div>` : ''}
+      </div>`;
+    }).join('');
+  };
+  host.addEventListener('click', e=>{
+    const n = e.target.closest('[data-nk-ngay]'); if(!n) return;
+    const k = n.dataset.nkNgay; if(mo.has(k)) mo.delete(k); else mo.add(k);
+    ve();
+  });
+  ve();
 }
 
 // ---------------------------------------------------------------------
@@ -14999,9 +15270,10 @@ function kkXuatExcel(){
   ws2['!cols'] = [{ wch:5 }, { wch:12 }, { wch:11 }, { wch:11 }, { wch:9 }, { wch:12 }, { wch:12 }, { wch:11 }, { wch:13 }, { wch:60 }, { wch:20 }];
   XLSX.utils.book_append_sheet(wb, ws2, String(nam));
   // 3. Buổi kiểm kê
-  const ws3 = XLSX.utils.aoa_to_sheet([['NGÀY KIỂM KÊ', 'NHÃN', 'SỐ THÙNG ĐÃ KIỂM', 'GHI CHÚ']].concat(buoi.map(b=>[kkSerial(b.ngay), b.nhan || '', b.thung, b.ghiChu || ''])));
+  const ws3 = XLSX.utils.aoa_to_sheet([['NGÀY KIỂM KÊ', 'NHÃN', 'SỐ THÙNG ĐÃ KIỂM', 'GHI CHÚ', 'NGƯỜI KIỂM (TRANG)']]
+    .concat(buoi.map(b=>[kkSerial(b.ngay), b.nhan || '', b.thung, b.ghiChu || '', kkKiemTxt(b)])));
   kkDinhDang(ws3, [0], 'dd/mm/yyyy', 1); kkDinhDang(ws3, [2], '#,##0', 1);
-  ws3['!cols'] = [{ wch:14 }, { wch:8 }, { wch:18 }, { wch:30 }];
+  ws3['!cols'] = [{ wch:14 }, { wch:8 }, { wch:18 }, { wch:30 }, { wch:50 }];
   XLSX.utils.book_append_sheet(wb, ws3, `SỐ LƯỢNG ${nam}`);
   XLSX.writeFile(wb, `LOI_KIEM_KE_${nam}_${todayKey()}.xlsx`);
   toast(`✓ Đã xuất báo cáo năm ${nam}`);
