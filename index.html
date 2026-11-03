@@ -1824,8 +1824,16 @@
   .cn-seg button.on[data-q="sua"]{background:var(--teal); color:#fff;}
   .cn-seg button:disabled{opacity:.35; cursor:not-allowed; background:transparent;}
   /* giám sát: danh sách mục sidebar (luôn mở, không có dòng tích kho) */
-  .cn-kho.gs-muc{margin-top:6px;}
-  .cn-kho.gs-muc .cn-tabs{padding-top:0;}
+  /* cây quyền giám sát / khách: mục sidebar, kho sổ ra từng tab */
+  .cn-kho.cd-cay{margin-top:6px;}
+  .cn-kho.cd-cay .cn-tabs{padding-top:0;}
+  .cq-h .cq-mui{flex:0 0 22px; width:22px; height:22px; padding:0; border:0; background:transparent; color:var(--ink-soft);
+    font-size:13px; cursor:pointer;}
+  .cq-h button.cq-mui:hover{color:var(--blue-dark); opacity:1;}
+  .cq-h .t[data-mui]{cursor:pointer;}
+  .cq-h .t .cq-tom:empty{display:none;}
+  .cq-tabs{margin:0 0 4px 32px; padding-left:10px; border-left:2px solid #d6e9f0;}
+  .cq-tabs .cn-row .t{font-weight:500;}
   @media(max-width:700px){
     .cd-bang td.cd-nut{white-space:normal;}
     .cd-bang td.cd-nut button{margin:2px 0 2px 4px;}
@@ -3250,7 +3258,7 @@ function isUserTyping(){
 }
 
 // ---- MODAL ----
-// opt.esc: bấm Esc để đóng (chỉ bảng nằm trên cùng) · opt.onClose: chạy 1 lần khi bảng đóng (✕, bấm ra ngoài, Esc, close())
+// opt.esc: false = tắt phím Esc (mặc định Esc đóng bảng nằm trên cùng) · opt.onClose: chạy 1 lần khi bảng đóng (✕, Esc, close())
 function openModal(title, bodyHtml, opt){
   opt = opt || {};
   const back = document.createElement('div');
@@ -3266,8 +3274,9 @@ function openModal(title, bodyHtml, opt){
     back.remove();
     if(typeof opt.onClose === 'function') opt.onClose();
   };
-  if(opt.esc) document.addEventListener('keydown', phimEsc);
-  back.addEventListener('click', e=>{ if(e.target===back) close(); });
+  // Chỉ đóng bằng nút ✕ hoặc phím Esc — KHÔNG đóng khi bấm / nhả chuột ra ngoài cửa sổ
+  // (bôi đen chữ kéo lố ra ngoài là mất cửa sổ — người dùng chốt 02/11). opt.esc = false mới tắt Esc.
+  if(opt.esc !== false) document.addEventListener('keydown', phimEsc);
   back.querySelector('[data-x]').addEventListener('click', close);
   return { el: back, body: back.querySelector('.modal-body'), close };
 }
@@ -3498,7 +3507,8 @@ const MUC_XEM = [
   ...WAREHOUSES.map(w => ({ id: w.id, ten: w.name })),
   { id: 'lichsusua', ten: 'Lịch sử chỉnh sửa', canDangNhap: true },   // khách không xem được
 ];
-const AUTH = { token: null, user: null, khach: false, guestViews: MUC_XEM.filter(m => !m.canDangNhap).map(m => m.id) };
+// guestTabs: { kho: { tab: 'xem' } } — tab khách được xem (kho không có trong đây = xem cả kho)
+const AUTH = { token: null, user: null, khach: false, guestViews: MUC_XEM.filter(m => !m.canDangNhap).map(m => m.id), guestTabs: {} };
 let KHOI_DONG_XONG = false;          // main.js bật lên khi app đã tải xong
 
 // Gọi hàm RPC trên Supabase. Lỗi do máy chủ báo (APPWH_...) đổi thành câu dễ đọc.
@@ -3530,7 +3540,17 @@ function coSuaKho(khoId){
   if(!u) return false;
   return u.role === 'chu' || (u.role === 'giamsat' && (u.khos || []).includes(khoId));
 }
+// Bảng quyền từng tab của 1 kho { tab: 'xem' | 'sua' } — công nhân, giám sát (user.tabs), khách (guestTabs).
+// null = kho không có bảng riêng -> cả kho theo quyền kho như cũ.
+function bangTab(khoId){
+  const u = AUTH.user;
+  const t = u ? (u.role === 'chu' ? null : u.tabs) : AUTH.guestTabs;
+  const b = t && t[khoId];
+  return b && typeof b === 'object' ? b : null;
+}
 // Quyền với 1 tab trong kho: 'sua' | 'xem' | null (không được dùng — ẩn tab)
+// Giám sát / khách có bảng tab (Cài đặt tài khoản, người dùng chốt 02/11): theo bảng — chỉ là ẩn / khoá trên giao diện,
+// máy chủ vẫn cho giám sát ghi cả kho có tab "Sửa".
 function quyenTab(khoId, tab){
   if(laCongNhan()){
     const u = AUTH.user;
@@ -3538,13 +3558,15 @@ function quyenTab(khoId, tab){
     const q = ((u.tabs || {})[khoId] || {})[tab];
     return q === 'sua' || q === 'xem' ? q : null;
   }
-  if(coSuaKho(khoId)) return 'sua';
-  return coXem(khoId) ? 'xem' : null;
+  if(!coXem(khoId)) return null;
+  const b = bangTab(khoId);
+  if(b) return b[tab] === 'sua' && coSuaKho(khoId) ? 'sua' : (b[tab] === 'sua' || b[tab] === 'xem') ? 'xem' : null;
+  return coSuaKho(khoId) ? 'sua' : 'xem';
 }
 function coSuaTab(khoId, tab){ return quyenTab(khoId, tab) === 'sua'; }
 // Sửa được ít nhất 1 tab trong kho (để biết có gắn 👁 "chỉ xem" cạnh tên kho không)
 function coSuaTrongKho(khoId){
-  if(!laCongNhan()) return coSuaKho(khoId);
+  if(!laCongNhan() && !bangTab(khoId)) return coSuaKho(khoId);
   return tabCuaKho(khoId).some(t => coSuaTab(khoId, t.id));
 }
 // Có sửa được ít nhất một thứ gì không (khách / tài khoản chỉ xem: không)
@@ -3586,13 +3608,13 @@ function coSuaKhoa(key){
   if(laChuTrang()) return true;
   if(!coSuaGi()) return false;
   if(key === 'appwh-test-ghi') return true;
-  // Công nhân: tab đang mở phải được sửa (máy chủ chỉ biết khoá, không biết đang đứng ở tab nào)
-  if(laCongNhan() && VIEW === 'kho' && !coSuaTab(CUR_KHO, activeTab)) return false;
+  // Công nhân / giám sát có bảng tab: tab đang mở phải được sửa (máy chủ chỉ biết khoá, không biết đang đứng ở tab nào)
+  if((laCongNhan() || bangTab(CUR_KHO)) && VIEW === 'kho' && !coSuaTab(CUR_KHO, activeTab)) return false;
   if(key === KEY_HR || key === KEY_KHO) return true;   // máy chủ tự lọc theo kho / tab
   if(key === 'appwh-taisan-v1') return typeof taiSanDuocSua === 'function' && taiSanDuocSua();   // Tài sản WH: giám sát đã giao kho
   const k = khoCuaKhoa(key);
   if(!k) return false;
-  return laCongNhan() ? tabCuaKhoa(key).some(t => coSuaTab(k, t)) : coSuaKho(k);
+  return (laCongNhan() || bangTab(k)) ? tabCuaKhoa(key).some(t => coSuaTab(k, t)) : coSuaKho(k);
 }
 // Trang đang xem có ở chế độ chỉ xem không
 function dangChiXem(){
@@ -3610,7 +3632,7 @@ function moTaQuyen(u){
 function ghiPhien(){
   try{
     const v = AUTH.user ? { token: AUTH.token, user: AUTH.user } : (AUTH.khach ? { khach: true } : null);
-    if(v){ v.guestViews = AUTH.guestViews; localStorage.setItem(KHOA_PHIEN, JSON.stringify(v)); }
+    if(v){ v.guestViews = AUTH.guestViews; v.guestTabs = AUTH.guestTabs; localStorage.setItem(KHOA_PHIEN, JSON.stringify(v)); }
     else localStorage.removeItem(KHOA_PHIEN);
   }catch(e){}
 }
@@ -3619,7 +3641,12 @@ async function batDauPhien(){
   let nho = null;
   try{ nho = JSON.parse(localStorage.getItem(KHOA_PHIEN) || 'null'); }catch(e){}
   if(nho && Array.isArray(nho.guestViews)) AUTH.guestViews = nho.guestViews;
-  try{ const c = await rpc('appwh_public_config'); if(c && Array.isArray(c.guest_views)) AUTH.guestViews = c.guest_views; }catch(e){}
+  if(nho && nho.guestTabs && typeof nho.guestTabs === 'object') AUTH.guestTabs = nho.guestTabs;
+  try{
+    const c = await rpc('appwh_public_config');
+    if(c && Array.isArray(c.guest_views)) AUTH.guestViews = c.guest_views;
+    if(c) AUTH.guestTabs = c.guest_tabs && typeof c.guest_tabs === 'object' ? c.guest_tabs : {};
+  }catch(e){}
 
   if(nho && nho.token){
     try{
@@ -3797,7 +3824,7 @@ function chiXemHoanTac(which, opt){
   if(!KHOI_DONG_XONG || (opt && opt.tuDong)) return false;   // lưu tự động / lúc khởi động: bỏ qua lặng lẽ
   CHAN_OK_DEN = Date.now() + 1500;
   toast('👁 Chỉ xem — ' + (AUTH.user
-    ? (VIEW === 'kho' ? (laCongNhan() ? 'tài khoản chỉ được xem tab này' : `bạn không có quyền sửa ${khoName(CUR_KHO).toLowerCase()}`) : 'tài khoản không có quyền sửa')
+    ? (VIEW === 'kho' ? ((laCongNhan() || bangTab(CUR_KHO)) ? 'tài khoản chỉ được xem tab này' : `bạn không có quyền sửa ${khoName(CUR_KHO).toLowerCase()}`) : 'tài khoản không có quyền sửa')
     : 'đăng nhập để chỉnh sửa') + '. Thay đổi chưa được lưu.');
   try{
     if(which === 'hr' && lastRawHr){ HR = Object.assign(defaultHr(), JSON.parse(lastRawHr)); ensureSkills(); }
@@ -4405,8 +4432,8 @@ let FULL_MODE = false;
 try{ FULL_MODE = localStorage.getItem('appwh-fullmode') === '1'; }catch(e){}
 function manHinhHep(){ return window.innerWidth <= PHONE_W; }
 // Tài khoản không được xem kho thành phẩm thì điện thoại cũng hiện bản đầy đủ
-// (công nhân: chỉ khi được dùng tab Tăng ca/Nghỉ phép của kho thành phẩm)
-function isPhoneMode(){ return manHinhHep() && !FULL_MODE && coXem('thanhpham') && (!laCongNhan() || !!quyenTab('thanhpham', 'tangca')); }
+// (chỉ khi được dùng tab Tăng ca/Nghỉ phép của kho thành phẩm)
+function isPhoneMode(){ return manHinhHep() && !FULL_MODE && coXem('thanhpham') && !!quyenTab('thanhpham', 'tangca'); }
 function applyPhoneMode(){
   const on = isPhoneMode();
   document.body.classList.toggle('phone', on);
@@ -12725,9 +12752,105 @@ window.renderTraining = taoBoSuuTap({
 let CD_DS = null;          // { users:[...], guest_views:[...] } — lần tải gần nhất
 let CD_DANG_TAI = false;
 let CD_LOI = '';           // lỗi lần tải gần nhất — không tự tải lại liên tục khi máy chủ lỗi
+let CD_ST_KHACH = null;    // cây quyền khách đang sửa dở — giữ qua các lần vẽ lại (đồng bộ), tải lại danh sách / lưu xong mới bỏ
+const NHAN_QUYEN = { '': 'Ẩn', xem: 'Xem', sua: 'Sửa' };
+const cdLaKho = id => WAREHOUSES.some(w => w.id === id);
+
+// ---- Cây quyền của giám sát / khách (người dùng chốt 02/11) ----
+// Mỗi mục sidebar 1 dòng Ẩn / Xem / Sửa; 3 kho có mũi tên ▸ / ▾ sổ ra từng tab (giống công nhân).
+// st = { muc: { id: '' | 'xem' }, tab: { kho: { tab: 'xem' | 'sua' } } } — sửa thẳng trên st.
+// coSua = false (khách): chỉ Ẩn / Xem. Mục không phải kho chỉ Ẩn / Xem.
+function cdCayHtml(dsMuc, coSua){
+  const Q = coSua ? ['', 'xem', 'sua'] : ['', 'xem'];
+  const seg = (attr, khoaSua) => `<div class="cn-seg" ${attr}>${Q.map(q => `<button type="button" data-q="${q}"${q === 'sua' && khoaSua
+    ? ' disabled title="Mục này chỉ xem được"' : ''}>${NHAN_QUYEN[q]}</button>`).join('')}</div>`;
+  return `<div class="cn-kho on cd-cay"><div class="cn-tabs">
+    <div class="cn-nhanh"><span>Đặt tất cả:</span>${Q.map(q => `<button type="button" data-tatca="${q}">${NHAN_QUYEN[q]}</button>`).join('')}</div>
+    ${dsMuc.map(x => { const kho = cdLaKho(x.id), ds = kho ? tabCuaKho(x.id) : [];
+      return `<div class="cq-muc" data-cqmuc="${x.id}">
+        <div class="cn-row cq-h">
+          ${kho ? '<button type="button" class="cq-mui" data-mui title="Sổ ra / thu vào các tab">▸</button>' : '<span class="cq-mui"></span>'}
+          <span class="t"${kho ? ' data-mui' : ''}>${esc(x.ten)}<small class="cq-tom"></small></span>
+          ${seg(`data-muc="${x.id}"`, !kho)}
+        </div>
+        ${kho ? `<div class="cq-tabs" hidden>${ds.map(t => `<div class="cn-row">
+            <span class="t">${esc(t.ten)}${t.cha ? `<small>trong ${esc(ds.find(y => y.id === t.cha).ten)}</small>` : ''}</span>
+            ${seg(`data-tab="${t.id}"`)}</div>`).join('')}</div>` : ''}
+      </div>`; }).join('')}
+  </div></div>`;
+}
+function cdCayGan(box, st, dsMuc, coSua){
+  // quyền của dòng mục: kho = chung của các tab (các tab khác nhau -> null, không nút nào sáng)
+  const quyenMuc = id => {
+    if(!cdLaKho(id)) return st.muc[id] || '';
+    const ds = tabCuaKho(id).map(t => (st.tab[id] || {})[t.id] || '');
+    return ds.every(v => v === ds[0]) ? ds[0] : null;
+  };
+  const datKho = (k, q) => { st.tab[k] = {}; if(q) tabCuaKho(k).forEach(t => { st.tab[k][t.id] = q; }); };
+  const ve = () => box.querySelectorAll('[data-cqmuc]').forEach(el => {
+    const id = el.dataset.cqmuc, v = quyenMuc(id);
+    el.querySelectorAll('[data-muc] [data-q]').forEach(b => b.classList.toggle('on', b.dataset.q === v));
+    if(!cdLaKho(id)) return;
+    const t = st.tab[id] || {};
+    el.querySelectorAll('[data-tab]').forEach(sg => sg.querySelectorAll('[data-q]').forEach(b => b.classList.toggle('on', b.dataset.q === (t[sg.dataset.tab] || ''))));
+    const ds = Object.values(t), sua = ds.filter(x => x === 'sua').length, xem = ds.filter(x => x === 'xem').length;
+    const tb = el.querySelector('.cq-tabs');                    // kho đang sổ (giữ khi vẽ lại)
+    if(st.mo && st.mo[id] && tb.hidden){ tb.hidden = false; el.querySelector('button.cq-mui').textContent = '▾'; }
+    el.querySelector('.cq-tom').textContent = !ds.length ? 'ẩn cả kho'
+      : `${ds.length}/${tabCuaKho(id).length} tab` + (coSua ? ` · ${sua} sửa · ${xem} xem` : '');
+  });
+  box.onclick = e => {
+    const nut = e.target.closest('button, [data-mui]');
+    if(!nut || nut.disabled) return;
+    const el = nut.closest('[data-cqmuc]');
+    if(nut.dataset.mui !== undefined){
+      const tb = el.querySelector('.cq-tabs'), mui = el.querySelector('button.cq-mui');
+      tb.hidden = !tb.hidden; mui.textContent = tb.hidden ? '▸' : '▾';
+      st.mo = st.mo || {}; st.mo[el.dataset.cqmuc] = !tb.hidden;
+      return;
+    }
+    if(nut.dataset.tatca !== undefined){
+      const q = nut.dataset.tatca;
+      dsMuc.forEach(x => { if(cdLaKho(x.id)) datKho(x.id, q); else st.muc[x.id] = q === 'sua' ? 'xem' : q; });
+    }else if(nut.dataset.q !== undefined){
+      const q = nut.dataset.q, k = el.dataset.cqmuc, sg = nut.closest('[data-tab]');
+      if(sg){ st.tab[k] = st.tab[k] || {}; if(q) st.tab[k][sg.dataset.tab] = q; else delete st.tab[k][sg.dataset.tab]; }
+      else if(cdLaKho(k)) datKho(k, q);
+      else st.muc[k] = q;
+    }
+    ve();
+  };
+  ve();
+}
+// Trạng thái cây từ quyền đang lưu. bang = bảng tab đã lưu { kho: {...} }; kho chưa có bảng thì cả kho theo qKho(kho).
+function cdCayTu(dsMuc, bang, qKho, xemMuc){
+  const st = { muc: {}, tab: {} };
+  dsMuc.forEach(x => {
+    if(!cdLaKho(x.id)){ st.muc[x.id] = xemMuc(x.id) ? 'xem' : ''; return; }
+    const b = bang && bang[x.id];
+    if(b && typeof b === 'object'){ st.tab[x.id] = { ...b }; return; }
+    st.tab[x.id] = {};
+    const q = qKho(x.id);
+    if(q) tabCuaKho(x.id).forEach(t => { st.tab[x.id][t.id] = q; });
+  });
+  return st;
+}
+// Cây -> { tabs, views, khos } để gửi máy chủ (kho có tab "Sửa" = kho được giao)
+function cdCayRa(dsMuc, st){
+  const r = { tabs: {}, views: [], khos: [] };
+  dsMuc.forEach(x => {
+    if(!cdLaKho(x.id)){ if(st.muc[x.id] === 'xem') r.views.push(x.id); return; }
+    const t = st.tab[x.id] || {};
+    if(!Object.keys(t).length) return;
+    r.tabs[x.id] = t; r.views.push(x.id);
+    if(Object.values(t).includes('sua')) r.khos.push(x.id);
+  });
+  return r;
+}
 
 async function cdTai(){
   CD_DANG_TAI = true;
+  CD_ST_KHACH = null;
   try{ CD_DS = await rpc('appwh_admin_list', { p_token: AUTH.token }); CD_LOI = ''; }
   catch(e){ CD_DS = null; CD_LOI = e.message || 'lỗi không rõ'; }
   CD_DANG_TAI = false;
@@ -12755,21 +12878,27 @@ function renderCaiDat(){
   const users = CD_DS.users || [];
   const guest = CD_DS.guest_views || [];
   const dem = r => users.filter(u => u.role === r).length;
-  // công nhân: tab được sửa / được xem của từng kho
+  // công nhân / giám sát có bảng tab: tab được sửa / được xem của từng kho
+  const coBang = u => u.role === 'congnhan' || (u.role === 'giamsat' && !!u.tabs && Object.keys(u.tabs).length > 0);
+  const khoBang = u => WAREHOUSES.map(w => w.id).filter(k => (u.tabs || {})[k]);
   const cnTab = (u, k, q) => tabCuaKho(k).filter(t => ((u.tabs || {})[k] || {})[t.id] === q).map(t => t.ten);
   const khoTxt = u => u.role === 'chu' ? '<span class="cd-mo">Tất cả</span>'
-    : u.role === 'giamsat' ? ((u.khos || []).map(k => `<span class="chip info">${esc(khoName(k))}</span>`).join(' ') || '<span class="chip warn">Chưa giao kho</span>')
-    : u.role === 'congnhan' ? ((u.khos || []).map(k => {
+    : coBang(u) ? (khoBang(u).map(k => {
         const s = cnTab(u, k, 'sua');
         return s.length ? `<div class="cd-cn"><span class="chip info">${esc(khoName(k))}</span> ${esc(s.join(', '))}</div>` : '';
       }).join('') || '<span class="cd-mo">Không sửa tab nào</span>')
+    : u.role === 'giamsat' ? ((u.khos || []).map(k => `<span class="chip info">${esc(khoName(k))}</span>`).join(' ') || '<span class="chip warn">Chưa giao kho</span>')
     : '<span class="cd-mo">—</span>';
   const xemTxt = u => u.role === 'chu' ? '<span class="cd-mo">Tất cả</span>'
-    : u.role === 'congnhan' ? ((u.khos || []).map(k => {
+    : coBang(u) ? ([...khoBang(u).map(k => {
         const x = cnTab(u, k, 'xem');
         return x.length ? `<div class="cd-cn"><b>${esc(khoName(k))}</b>: ${esc(x.join(', '))}</div>` : '';
-      }).join('') || '<span class="cd-mo">—</span>')
+      }), u.role === 'giamsat' ? MUC_XEM.filter(m => !cdLaKho(m.id) && (u.views || []).includes(m.id)).map(m => `<div class="cd-cn">${esc(m.ten)}</div>`).join('') : '']
+      .join('') || '<span class="cd-mo">—</span>')
     : (MUC_XEM.filter(m => (u.views || []).includes(m.id) || (u.khos || []).includes(m.id)).map(m => esc(m.ten)).join(', ') || '<span class="chip warn">Không mục nào</span>');
+  // Khách: cây mục sidebar / tab (chỉ Ẩn / Xem)
+  const MUC_KHACH = MUC_XEM.filter(m => !m.canDangNhap);
+  const stKhach = CD_ST_KHACH = CD_ST_KHACH || cdCayTu(MUC_KHACH, CD_DS.guest_tabs, k => guest.includes(k) ? 'xem' : '', id => guest.includes(id));
 
   page.innerHTML = `
     <div class="panel">
@@ -12801,10 +12930,8 @@ function renderCaiDat(){
 
     <div class="panel">
       <h2>Khách (không đăng nhập)</h2>
-      <p class="cd-ghi">Khách chỉ xem, không sửa được gì. Đánh dấu những mục sidebar khách được xem:</p>
-      <div class="cd-chon" id="cdKhach">${MUC_XEM.filter(m => !m.canDangNhap).map(m => `
-        <label><input type="checkbox" value="${m.id}"${guest.includes(m.id) ? ' checked' : ''}> ${esc(m.ten)}</label>`).join('')}
-      </div>
+      <p class="cd-ghi">Khách chỉ xem, không sửa được gì. Chọn mục sidebar khách được xem — bấm ▸ ở kho để chọn từng tab:</p>
+      <div id="cdKhach">${cdCayHtml(MUC_KHACH, false)}</div>
       <button class="sm" id="cdLuuKhach" style="margin-top:10px;">Lưu quyền của khách</button>
       <p class="cd-ghi cd-mo">Lưu ý: ẩn mục sidebar chỉ ẩn trên giao diện. Dữ liệu vẫn đọc được bằng khoá công khai của trang — quyền <b>ghi</b> mới được máy chủ chặn thật.</p>
     </div>`;
@@ -12814,13 +12941,20 @@ function renderCaiDat(){
   page.querySelectorAll('[data-sua]').forEach(b => b.onclick = () => cdMoSua(users.find(u => u.id === b.dataset.sua)));
   page.querySelectorAll('[data-mk]').forEach(b => b.onclick = () => cdDatMatKhau(users.find(u => u.id === b.dataset.mk)));
   page.querySelectorAll('[data-xoa]').forEach(b => b.onclick = () => cdXoa(users.find(u => u.id === b.dataset.xoa)));
+  cdCayGan($('cdKhach'), stKhach, MUC_KHACH, false);
   $('cdLuuKhach').onclick = async () => {
-    const views = [...$('cdKhach').querySelectorAll('input:checked')].map(i => i.value);
+    const { views, tabs } = cdCayRa(MUC_KHACH, stKhach);
     try{
       await rpc('appwh_admin_set_guest_views', { p_token: AUTH.token, p_views: views });
       CD_DS.guest_views = views; AUTH.guestViews = views;
+    }catch(e){ toast('⚠ ' + e.message); return; }
+    try{
+      await rpc('appwh_admin_set_guest_tabs', { p_token: AUTH.token, p_tabs: tabs });
+      CD_DS.guest_tabs = tabs; AUTH.guestTabs = tabs;
       toast('✓ Đã lưu quyền của khách');
-    }catch(e){ toast('⚠ ' + e.message); }
+    }catch(e){
+      toast('⚠ Đã lưu mục sidebar của khách, nhưng máy chủ chưa lưu được từng tab — cần chạy file supabase/appwh-quyen-tab.sql trên Supabase');
+    }
   };
 }
 
@@ -12830,13 +12964,15 @@ function cdMoSua(u){
   u = u || { username: '', display_name: '', role: 'giamsat', khos: [], views: MUC_XEM.map(m => m.id), tabs: {}, active: true };
   // Quyền từng tab của công nhân: { kho: { tab: 'xem' | 'sua' } } — sửa trên bản sao, bấm Lưu mới gửi
   const TABS = JSON.parse(JSON.stringify(u.role === 'congnhan' ? (u.tabs || {}) : {}));
-  const NHAN_Q = { '': 'Ẩn', xem: 'Xem', sua: 'Sửa' };
-  // Giám sát: mỗi mục sidebar 1 quyền { muc: '' (ẩn) | 'xem' | 'sua' } (người dùng chốt 02/11 — giống công nhân).
-  // Kho: Sửa = được giao kho (khos — máy chủ chặn ghi thật), Xem = views. Mục khác chỉ Ẩn / Xem.
-  // "Ẩn" chỉ giấu trên giao diện: dữ liệu vẫn đọc được bằng khoá công khai của trang (người dùng đã biết, chấp nhận).
-  const laKho = id => WAREHOUSES.some(w => w.id === id);
-  const GS = {};
-  MUC_XEM.forEach(x => { GS[x.id] = laKho(x.id) && (u.khos || []).includes(x.id) ? 'sua' : (u.views || []).includes(x.id) ? 'xem' : ''; });
+  const NHAN_Q = NHAN_QUYEN;
+  // Giám sát: cây mục sidebar, kho sổ ra từng tab Ẩn / Xem / Sửa (người dùng chốt 02/11 — giống công nhân).
+  // Lưu: tabs = bảng tab từng kho, khos = kho có tab "Sửa" (máy chủ chặn ghi theo kho), views = mục được xem.
+  // "Ẩn" / "Xem" từng tab chỉ là giao diện: dữ liệu vẫn đọc được bằng khoá công khai của trang (người dùng đã biết, chấp nhận).
+  // Giám sát cũ chưa có bảng tab: kho được giao = mọi tab Sửa, kho được xem = mọi tab Xem.
+  const laGs = u.role === 'giamsat';
+  const GS = cdCayTu(MUC_XEM, laGs ? u.tabs : null,
+    k => laGs && (u.khos || []).includes(k) ? 'sua' : (u.views || []).includes(k) ? 'xem' : '',
+    id => (u.views || []).includes(id));
   const cnKhoHtml = w => {
     const on = u.role === 'congnhan' && (u.khos || []).includes(w.id);
     return `<div class="cn-kho${on ? ' on' : ''}" data-cnkho="${w.id}">
@@ -12863,15 +12999,9 @@ function cdMoSua(u){
     <div class="cd-ghi cd-mo" data-mota></div>
     <div data-gskhoi>
       <label class="field-label">Mục sidebar được dùng</label>
-      <div class="cd-ghi cd-mo"><b>Ẩn</b> — không thấy mục đó ở menu · <b>Xem</b> — chỉ xem · <b>Sửa</b> — sửa dữ liệu kho đó (chỉ có ở 3 kho).
-        "Ẩn" chỉ giấu trên giao diện.</div>
-      <div class="cn-kho on gs-muc"><div class="cn-tabs">
-        <div class="cn-nhanh"><span>Đặt tất cả:</span>${Object.keys(NHAN_Q).map(qq => `<button type="button" data-tatca="${qq}">${NHAN_Q[qq]}</button>`).join('')}</div>
-        ${MUC_XEM.map(x => `<div class="cn-row">
-          <span class="t">${esc(x.ten)}${laKho(x.id) ? '' : '<small>mục này giám sát chỉ xem được</small>'}</span>
-          <div class="cn-seg" data-muc="${x.id}">${Object.keys(NHAN_Q).map(qq => `<button type="button" data-q="${qq}"${qq === 'sua' && !laKho(x.id) ? ' disabled title="Mục này giám sát chỉ xem được"' : ''}>${NHAN_Q[qq]}</button>`).join('')}</div>
-        </div>`).join('')}
-      </div></div>
+      <div class="cd-ghi cd-mo">Bấm ▸ ở kho để sổ ra từng tab. <b>Ẩn</b> — không thấy ở menu · <b>Xem</b> — chỉ xem ·
+        <b>Sửa</b> — xem và sửa (chỉ có ở 3 kho). Chọn ở dòng kho = đặt cho mọi tab của kho đó.</div>
+      ${cdCayHtml(MUC_XEM, true)}
     </div>
     <div data-xemkhoi>
       <label class="field-label">Được xem mục sidebar</label>
@@ -12928,17 +13058,8 @@ function cdMoSua(u){
     };
     veCnKho(box);
   });
-  // ---- Khối giám sát: mỗi mục sidebar chọn Ẩn / Xem / Sửa (Sửa chỉ có ở 3 kho) ----
-  const veGs = () => q('[data-gskhoi]').querySelectorAll('[data-muc]').forEach(sg => {
-    sg.querySelectorAll('[data-q]').forEach(b => b.classList.toggle('on', b.dataset.q === (GS[sg.dataset.muc] || '')));
-  });
-  q('[data-gskhoi]').onclick = e => {
-    const nut = e.target.closest('button'); if(!nut || nut.disabled) return;
-    if(nut.dataset.tatca !== undefined) MUC_XEM.forEach(x => { GS[x.id] = nut.dataset.tatca === 'sua' && !laKho(x.id) ? 'xem' : nut.dataset.tatca; });
-    else if(nut.dataset.q !== undefined) GS[nut.closest('[data-muc]').dataset.muc] = nut.dataset.q;
-    veGs();
-  };
-  veGs();
+  // ---- Khối giám sát: cây mục sidebar / tab ----
+  cdCayGan(q('[data-gskhoi] .cd-cay'), GS, MUC_XEM, true);
   q('[data-no]').onclick = m.close;
   q('[data-ok]').onclick = async () => {
     const btn = q('[data-ok]'), err = q('[data-err]');
@@ -12953,10 +13074,9 @@ function cdMoSua(u){
     };
     if(moi) goi.password = q('[data-k="password"]').value;
     if(goi.role === 'giamsat'){
-      // kho chọn Sửa -> khos (đồng thời được xem); mục chọn Xem / Sửa -> views; Ẩn -> không có ở đâu
-      goi.khos = MUC_XEM.filter(x => laKho(x.id) && GS[x.id] === 'sua').map(x => x.id);
-      goi.views = MUC_XEM.filter(x => GS[x.id] === 'xem' || GS[x.id] === 'sua').map(x => x.id);
-      if(!goi.khos.length){ err.textContent = 'Chọn "Sửa" cho ít nhất 1 kho của giám sát'; return; }
+      // kho có tab Sửa -> khos; mục / kho có Xem hoặc Sửa -> views; bảng tab -> tabs
+      Object.assign(goi, cdCayRa(MUC_XEM, GS));
+      if(!goi.khos.length){ err.textContent = 'Chọn "Sửa" cho ít nhất 1 tab của giám sát'; return; }
     }
     if(goi.role === 'congnhan'){
       // chỉ giữ kho được tích và có ít nhất 1 tab không ẩn
@@ -12973,7 +13093,10 @@ function cdMoSua(u){
     try{
       const kq = await rpc('appwh_admin_save_user', { p_token: AUTH.token, p_user: goi });
       m.close();
-      toast(moi ? `✓ Đã tạo tài khoản ${kq.username}` : '✓ Đã lưu tài khoản');
+      // máy chủ chưa chạy appwh-quyen-tab.sql thì bỏ lặng lẽ bảng tab của giám sát -> báo để khỏi tưởng đã lưu
+      if(goi.role === 'giamsat' && !(kq.tabs && Object.keys(kq.tabs).length))
+        toast('⚠ Đã lưu kho Sửa / Xem, nhưng máy chủ chưa lưu được từng tab — cần chạy file supabase/appwh-quyen-tab.sql trên Supabase');
+      else toast(moi ? `✓ Đã tạo tài khoản ${kq.username}` : '✓ Đã lưu tài khoản');
       // Sửa chính mình -> cập nhật quyền đang dùng
       if(AUTH.user && kq.id === AUTH.user.id){ AUTH.user = kq; ghiPhien(); sauKhiDoiTaiKhoan(); }
       CD_DS = null; renderCaiDat();
