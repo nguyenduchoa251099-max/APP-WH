@@ -3476,15 +3476,17 @@ function setUnsaved(which, err){
 const KHOA_PHIEN = 'appwh-auth';     // localStorage: { token, user } hoặc { khach: true }
 const VAI_TRO = { chu: 'Chủ trang', giamsat: 'Giám sát', congnhan: 'Công nhân', xem: 'Chỉ xem' };
 // Các tab trong 1 kho — dùng để cấp quyền từng tab cho công nhân.
+// Thứ tự = thứ tự menu (kho thành phẩm: Năng lực, 5S, Đổi ca, Training ngay sau Tổng quan — người dùng chốt 02/11).
 // khos: tab chỉ có ở những kho này; cha: (kho thành phẩm) tab nằm bên trong tab khác;
 // tenKho: tên riêng của tab ở kho đó (không có thì dùng ten).
 // Danh sách này phải khớp với appwh__key_tab / appwh__kho_sub_tab trong supabase/appwh-auth.sql.
 const TAB_KHO = [
   { id:'dashboard', ten:'Tổng quan' },
-  { id:'phancong',  ten:'Năng lực',          cha:'dashboard' },
+  { id:'phancong',  ten:'Năng lực' },
   { id:'lichsu',    ten:'Lịch sử',           khos:['vai','phulieu'] },
-  { id:'so5s',      ten:'Phụ trách 5S',      cha:'dashboard' },
-  { id:'doica',     ten:'Đổi ca',            khos:['thanhpham'], cha:'dashboard' },
+  { id:'so5s',      ten:'Phụ trách 5S' },
+  { id:'doica',     ten:'Đổi ca',            khos:['thanhpham'] },
+  { id:'wi',        ten:'Training',          khos:['thanhpham'] },
   { id:'xuathang',  ten:'Xuất hàng',         khos:['thanhpham'] },
   { id:'checkct',   ten:'Check hàng',        khos:['thanhpham'] },
   { id:'scanos',    ten:'SCAN OS',           khos:['thanhpham'] },
@@ -3494,7 +3496,6 @@ const TAB_KHO = [
   { id:'kiemke',    ten:'Kiểm kê',           khos:['thanhpham'] },
   { id:'hotrokk',   ten:'Hỗ trợ / KK',       tenKho:{ vai:'Hỗ trợ', phulieu:'Hỗ trợ' } },
   { id:'tangca',    ten:'Tăng ca/Nghỉ phép' },
-  { id:'wi',        ten:'Training',          khos:['thanhpham'], cha:'dashboard' },
   { id:'training',  ten:'Training',          khos:['vai','phulieu'] },
   { id:'ghichu',    ten:'Ghi chú',           khos:['vai','phulieu'] },
 ];
