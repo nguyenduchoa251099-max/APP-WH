@@ -1385,6 +1385,15 @@
    Màu ô theo ký hiệu, luôn kèm chữ (không chỉ dựa vào màu). Vệt đỏ góc ô = ngày có nhiều việc. */
   .cc-bar{display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin-bottom:12px;}
   .cc-sp{flex:1;}
+  /* Tổng giờ làm cả kho (07/11): hành chính − nghỉ + tăng ca, tới hôm nay */
+  .cc-tong{display:flex; align-items:baseline; flex-wrap:wrap; gap:4px 8px; padding:6px 12px; border-radius:10px; cursor:help;
+    background:linear-gradient(180deg,#eef6ff,#f7fbff); border:1px solid #c9def3; font-variant-numeric:tabular-nums;}
+  .cc-tong .l{font-size:11.5px; font-weight:800; letter-spacing:.04em; text-transform:uppercase; color:var(--ink-soft);}
+  .cc-tong b{font-size:20px; font-weight:800; color:#14507d; line-height:1.1;}
+  .cc-tong .ct{font-size:12px; color:var(--ink-soft);}
+  .cc-tong .ct i{font-style:normal; font-weight:700;}
+  .cc-tong .ct .tru{color:#b42318;}
+  .cc-tong .ct .cong{color:#1f7a45;}
   /* chỉ kéo ngang; bảng dài bao nhiêu thì trang dài bấy nhiêu (không có thanh cuộn dọc riêng) */
   .cc-wrap{overflow-x:auto; overflow-y:hidden; border:1px solid var(--line); border-radius:10px;}
   table.cc-bang{width:auto; border-collapse:separate; border-spacing:0; font-size:12px; font-variant-numeric:tabular-nums;}
@@ -2252,6 +2261,194 @@
   }
 
 </style>
+<style>/* css/modules/lienhoan.css */
+/* Tab "🎉 Liên hoan" — kho thành phẩm, chỉ chủ trang (js/modules/lienhoan/lienhoan.js)
+   Tông ấm (đỏ cam → vàng) cho không khí liên hoan; vai trò: Tham gia xanh dương · Đóng góp vàng cam · Được mời xanh lá.
+   File PDF: dựng bằng pdfmake (chữ thật, lhNoiDungPdf trong lienhoan.js) — không dùng CSS / hộp in. */
+  #lhBox{display:flex; flex-direction:column; gap:14px; --lh-do:#e5484d; --lh-cam:#f76b15; --lh-vang:#f5a524; --lh-dam:#7a1f2b;
+    --lh-tg:#2a78d6; --lh-dg:#d97706; --lh-moi:#16a34a;}
+
+  /* ---------- đầu trang danh sách ---------- */
+  .lh-dau{display:flex; flex-wrap:wrap; align-items:center; gap:12px 18px; padding:18px 22px; border-radius:14px; color:#fff;
+    background:radial-gradient(circle at 92% 18%, rgba(255,255,255,.22) 0 46px, transparent 47px),
+               radial-gradient(circle at 80% 92%, rgba(255,255,255,.14) 0 30px, transparent 31px),
+               linear-gradient(120deg, var(--lh-do), var(--lh-cam) 55%, var(--lh-vang)); box-shadow:0 6px 18px rgba(229,72,77,.22);}
+  .lh-dau-chu{flex:1; min-width:240px;}
+  .lh-dau h2{margin:0; font-size:22px; font-weight:800; letter-spacing:.01em;}
+  .lh-dau p{margin:4px 0 0; font-size:13.5px; opacity:.95;}
+  .lh-rieng{display:inline-block; margin-left:6px; padding:1px 9px; border-radius:999px; background:rgba(0,0,0,.18); font-size:12px; font-weight:700;}
+  .lh-nut-moi{background:#fff; color:var(--lh-do); border:0; font-weight:800; font-size:14.5px; padding:10px 18px; border-radius:11px;
+    box-shadow:0 3px 10px rgba(122,31,43,.25);}
+  .lh-nut-moi:hover{opacity:1; transform:translateY(-1px);}
+  .lh-dau-nut{display:flex; flex-wrap:wrap; gap:8px; align-items:center;}
+  .lh-nut-qr{background:rgba(255,255,255,.16); color:#fff; border:1px solid rgba(255,255,255,.7); font-weight:700; font-size:13px;
+    padding:9px 14px; border-radius:11px;}
+  .lh-nut-qr:hover{opacity:1; background:rgba(255,255,255,.26);}
+
+  .lh-kpi{display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:12px;}
+  .lh-kpi > div{background:#fff; border:1px solid var(--line); border-top:4px solid var(--lh-vang); border-radius:12px; padding:12px 15px; box-shadow:var(--bong);}
+  .lh-kpi > div.cam{border-top-color:var(--lh-cam);}
+  .lh-kpi b{display:block; font-size:24px; font-weight:800; color:var(--ink); font-variant-numeric:tabular-nums;}
+  .lh-kpi span{font-size:12.5px; color:var(--ink-soft); font-weight:600;}
+
+  /* ---------- khối có ▾ / ▸ ---------- */
+  .lh-card{background:#fff; border:1px solid var(--line); border-radius:12px; box-shadow:var(--bong); padding:12px 16px 14px; min-width:0;}
+  .lh-card.thu{padding-bottom:12px;}
+  .lh-h{display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+  .lh-h b{font-size:15px; font-weight:800; color:var(--ink); cursor:pointer;}
+  .lh-mui{border:0; background:var(--paper); color:var(--ink-soft); width:26px; height:26px; padding:0; border-radius:7px; font-size:13px; line-height:1;}
+  .lh-tom{margin-left:auto; font-size:12.5px; color:var(--ink-soft); font-weight:600; font-variant-numeric:tabular-nums;}
+  .lh-noi{margin-top:10px;}
+  .lh-trong{color:var(--ink-soft); font-size:13px; margin:6px 0;}
+
+  /* ---------- thẻ từng buổi ---------- */
+  .lh-ds{display:grid; grid-template-columns:repeat(auto-fill, minmax(330px, 1fr)); gap:10px;}
+  .lh-the{display:flex; align-items:center; gap:12px; text-align:left; background:#fff; color:var(--ink); border:1px solid var(--line);
+    border-left:4px solid var(--lh-cam); border-radius:11px; padding:10px 12px; font-weight:400; min-width:0;}
+  .lh-the.xong{border-left-color:var(--lh-moi);}
+  .lh-the:hover{opacity:1; border-color:var(--lh-cam); box-shadow:0 3px 10px rgba(16,24,40,.08);}
+  .lh-lich{flex:0 0 52px; display:flex; flex-direction:column; align-items:center; border-radius:9px; overflow:hidden; border:1px solid #f3c9b4; background:#fff8f2;}
+  .lh-lich b{font-size:20px; font-weight:800; color:var(--lh-dam); line-height:1.25;}
+  .lh-lich i{font-style:normal; width:100%; text-align:center; font-size:10.5px; font-weight:700; color:#fff; background:var(--lh-cam); padding:1px 0;}
+  .lh-the-noi{flex:1; min-width:0; display:flex; flex-direction:column; gap:3px;}
+  .lh-the-noi .t{font-size:14.5px; font-weight:800; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .lh-the-noi .d{font-size:12px; color:var(--ink-soft); font-variant-numeric:tabular-nums;}
+  .lh-the-noi .d b{color:var(--ink);}
+  .lh-thanh{display:block; height:6px; border-radius:99px; background:#f1e7df; overflow:hidden;}
+  .lh-thanh i{display:block; height:100%; border-radius:99px; background:linear-gradient(90deg, var(--lh-vang), var(--lh-moi));}
+  .lh-thanh.to{height:9px; margin:4px 0 2px;}
+  .lh-nhan{flex:0 0 auto; font-size:11.5px; font-weight:800; padding:3px 9px; border-radius:999px; white-space:nowrap;}
+  .lh-nhan.dang{background:#fff1e0; color:#b54708;}
+  .lh-nhan.xong{background:#dcfae6; color:#067647;}
+
+  /* ---------- 1 buổi: thanh công cụ + phần đầu ---------- */
+  .lh-bar{display:flex; flex-wrap:wrap; align-items:center; gap:8px 10px;}
+  .lh-sp{flex:1;}
+  .lh-tt{font-size:12.5px; font-weight:700; color:var(--ink-soft);}
+  .lh-tt.xong{color:#067647;} .lh-tt.loi{color:#b42318;} .lh-tt.cho, .lh-tt.dang{color:#b54708;}
+  button.lh-xoa:hover{color:#b42318; border-color:#f0b8bf;}
+  .lh-hero{display:flex; flex-wrap:wrap; align-items:stretch; gap:14px 20px; padding:16px 20px; border-radius:14px; color:#fff;
+    background:radial-gradient(circle at 96% 12%, rgba(255,255,255,.2) 0 40px, transparent 41px), linear-gradient(120deg, var(--lh-dam), var(--lh-do) 55%, var(--lh-cam));
+    box-shadow:0 6px 18px rgba(122,31,43,.22);}
+  .lh-hero-trai{flex:1; min-width:260px; display:flex; flex-direction:column; gap:8px;}
+  .lh-hero .lh-tieude{margin:0; font-size:22px; font-weight:800; color:#fff; background:rgba(255,255,255,.12); border:1px dashed rgba(255,255,255,.5);
+    border-radius:10px; padding:6px 10px; width:100%;}
+  .lh-hero h2.lh-tieude{background:none; border:0; padding:0;}
+  .lh-hero input.lh-tieude::placeholder{color:rgba(255,255,255,.7);}
+  .lh-hero input.lh-tieude:focus{background:rgba(255,255,255,.2); outline:none; border-style:solid;}
+  .lh-ghichu{font-size:14px; font-weight:700; background:rgba(0,0,0,.16); border-radius:8px; padding:4px 10px; align-self:flex-start;}
+  .lh-meta{display:flex; flex-wrap:wrap; gap:8px 16px; font-size:13.5px; font-weight:700;}
+  .lh-meta label{display:flex; align-items:center; gap:6px; margin:0; color:#fff;}
+  .lh-meta input{width:auto; min-width:150px; padding:5px 9px; font-size:13px; border-radius:8px; border:0; color:var(--ink); background:rgba(255,255,255,.92);}
+  .lh-hero-so{display:flex; flex-direction:column; justify-content:center; align-items:flex-end; text-align:right; min-width:190px;
+    padding:10px 16px; border-radius:12px; background:rgba(255,255,255,.16);}
+  .lh-hero-so span{font-size:12px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; opacity:.9;}
+  .lh-hero-so b{font-size:30px; font-weight:800; line-height:1.15; font-variant-numeric:tabular-nums;}
+  .lh-hero-so small{font-size:12px; opacity:.92;}
+
+  /* ---------- khoản chi + cách chia ---------- */
+  .lh-luoi{display:grid; grid-template-columns:minmax(0, 1.1fr) minmax(0, 1fr); gap:14px; align-items:start;}
+  @media (max-width:860px){ .lh-luoi{grid-template-columns:1fr;} .lh-kpi{grid-template-columns:1fr;} }
+  .lh-khoan-ds{display:flex; flex-direction:column; gap:7px;}
+  .lh-khoan{display:grid; grid-template-columns:minmax(0, 1fr) 150px auto; gap:7px; align-items:center;}
+  .lh-khoan input{padding:7px 10px; font-size:13.5px;}
+  .lh-tien-o{text-align:right; font-weight:700; font-variant-numeric:tabular-nums;}
+  .lh-them-k{margin-top:8px;}
+  .lh-khoan-tong{display:flex; justify-content:space-between; align-items:baseline; margin-top:10px; padding:9px 12px; border-radius:10px;
+    background:#fff6ee; border:1px solid #f9d6bd; font-weight:800; color:var(--lh-dam);}
+  .lh-khoan-tong b{font-size:18px; font-variant-numeric:tabular-nums;}
+  .lh-so, .lh-thu{display:flex; flex-direction:column; gap:5px; font-size:13.5px;}
+  .lh-thu{margin-top:12px; padding-top:10px; border-top:1px dashed var(--line);}
+  .lh-so .dong, .lh-thu .dong{display:flex; justify-content:space-between; align-items:baseline; gap:10px; color:var(--ink-soft);}
+  .lh-so .dong b, .lh-thu .dong b{color:var(--ink); font-variant-numeric:tabular-nums; white-space:nowrap;}
+  .lh-so .dong.chinh{border-top:1px solid var(--line-soft); padding-top:5px;}
+  .lh-so .dong.moi{background:#eef5ff; border-radius:8px; padding:6px 9px; color:#1d4f80; font-weight:700;}
+  .lh-so .dong.moi b{font-size:17px; color:#14507d;}
+  .lh-thu .dong.da b{color:#067647;}
+  .lh-thu .dong.thieu{color:#b42318; font-weight:700;} .lh-thu .dong.thieu b{color:#b42318;}
+  .lh-thu .dong.du{color:#067647; font-weight:800;} .lh-thu .dong.du b{color:#067647;}
+  .lh-canh{font-size:12.5px; color:#b54708; background:#fff7e6; border-radius:8px; padding:6px 9px;}
+  .lh-nho{font-size:12px; color:var(--ink-soft);}
+
+  /* ---------- thành viên ---------- */
+  .lh-tv-bar{display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; margin-bottom:10px;}
+  .lh-tv-ngoai{display:inline-flex; gap:6px; align-items:center;}
+  .lh-tv-ngoai input{width:200px; padding:6px 10px; font-size:13px;}
+  .lh-bang-wrap{overflow-x:auto;}
+  table.lh-bang{width:100%; border-collapse:collapse; font-size:13.5px;}
+  .lh-bang th{font-size:11.5px; font-weight:800; letter-spacing:.04em; text-transform:uppercase; color:var(--ink-soft); text-align:left;
+    padding:7px 8px; border-bottom:2px solid var(--line); white-space:nowrap;}
+  .lh-bang td{padding:7px 8px; border-bottom:1px solid var(--line-soft); vertical-align:middle;}
+  .lh-bang tbody tr{border-left:4px solid transparent;}
+  .lh-bang tbody tr.thamgia td:first-child{box-shadow:inset 4px 0 0 var(--lh-tg);}
+  .lh-bang tbody tr.donggop td:first-child{box-shadow:inset 4px 0 0 var(--lh-dg);}
+  .lh-bang tbody tr.moi td:first-child{box-shadow:inset 4px 0 0 var(--lh-moi);}
+  .lh-bang tbody tr.da td{background:#f2fbf5;}
+  .lh-bang .stt{width:44px; text-align:center; color:var(--ink-soft); font-weight:700;}
+  .lh-bang .ten b{display:block;}
+  .lh-bang .ten small{font-size:11.5px; color:var(--ink-soft);}
+  .lh-ngoai{font-style:normal; color:#7a3fbf; font-weight:700;}
+  .lh-bang .tien{text-align:right; white-space:nowrap; font-variant-numeric:tabular-nums;}
+  .lh-bang .tien input{width:140px;}
+  .lh-bang .tien b{font-size:14px;}
+  .lh-bang .da{white-space:nowrap;}
+  .lh-bang .bo{width:40px; text-align:right;}
+  .lh-mien{display:inline-block; padding:2px 9px; border-radius:999px; background:#dcfae6; color:#067647; font-size:12px; font-weight:800;}
+  .lh-mo{color:var(--line);}
+  .lh-vai{display:inline-flex; background:#f2f4f7; border-radius:9px; padding:2px; gap:2px;}
+  .lh-vai button{border:0; background:transparent; color:var(--ink-soft); font-size:12px; font-weight:700; padding:5px 9px; border-radius:7px; white-space:nowrap;}
+  .lh-vai button:hover:not(:disabled){color:var(--ink); opacity:1;}
+  .lh-vai button.on{color:#fff; box-shadow:0 1px 3px rgba(16,24,40,.18);}
+  .lh-vai button.on.thamgia{background:var(--lh-tg);}
+  .lh-vai button.on.donggop{background:var(--lh-dg);}
+  .lh-vai button.on.moi{background:var(--lh-moi);}
+  .lh-vai button:disabled{cursor:default;}
+  .lh-vai button:disabled:not(.on){display:none;}
+  .lh-tick{display:inline-flex; align-items:center; gap:6px; margin:0; font-size:12.5px; font-weight:700; color:#b42318; cursor:pointer;}
+  .lh-tick input{width:18px; height:18px; accent-color:var(--lh-moi); cursor:pointer;}
+  tr.da .lh-tick{color:#067647;}
+  .lh-bang tfoot td{padding:10px 8px; font-weight:800; color:var(--ink); border-top:2px solid var(--line); background:#fffaf5;}
+  .lh-bang tfoot .tien b{font-size:17px; color:#067647;}
+  .lh-bang tfoot small{font-weight:600; color:var(--ink-soft);}
+
+  /* ---------- lưu buổi ---------- */
+  .lh-chot{display:flex; flex-wrap:wrap; justify-content:flex-end; align-items:center; gap:10px 16px; padding:12px 16px; border-radius:12px;
+    background:#fff; border:1px solid var(--line); box-shadow:var(--bong);}
+  .lh-chot-ghi{flex:1; min-width:220px; font-size:13.5px; color:var(--ink-soft);}
+  .lh-chot-ghi b{color:#b42318;}
+  .lh-nut-chot{font-size:15px; font-weight:800; padding:11px 22px; border-radius:11px; border:0; color:#fff;
+    background:linear-gradient(120deg, var(--lh-do), var(--lh-cam)); box-shadow:0 4px 12px rgba(229,72,77,.3);}
+  .lh-nut-chot:disabled{background:#d0d5dd; box-shadow:none; color:#fff; cursor:not-allowed;}
+  .lh-chot-xong{flex:1; font-size:14px; font-weight:700; color:#067647;}
+
+  /* ---------- hộp chọn người ---------- */
+  .modal-card.lh-chon-card{width:min(560px, 96vw);}
+  .lh-chon-dau{display:flex; justify-content:space-between; align-items:center; margin:10px 0 6px; font-size:13px; color:var(--ink-soft);}
+  .lh-chon-dau label{display:flex; align-items:center; gap:6px; margin:0; font-weight:700; color:var(--ink);}
+  .lh-chon-ds{max-height:52vh; overflow:auto; border:1px solid var(--line-soft); border-radius:10px;}
+  .lh-chon{display:flex; align-items:baseline; gap:8px; margin:0; padding:7px 10px; border-bottom:1px solid var(--line-soft); cursor:pointer; font-size:13.5px;}
+  .lh-chon:hover{background:#fff8f2;}
+  .lh-chon small{color:var(--ink-soft); font-size:12px; margin-left:auto; text-align:right;}
+  .lh-chon.co{opacity:.6;}
+  .lh-chon input{flex:0 0 auto;}
+
+  /* ---------- ⚙ Mã QR nhận tiền ---------- */
+  .lh-qr-ghi{font-size:13px; color:var(--ink-soft); margin:0 0 10px;}
+  .lh-qr-xem{margin-top:14px;}
+  .lh-qr-cho{font-size:13px; color:var(--ink-soft); padding:14px; text-align:center; background:var(--paper); border-radius:10px;}
+  .lh-qr-nut{display:flex; justify-content:flex-end; gap:8px; margin-top:16px;}
+  /* thẻ QR xem thử (file PDF dựng bằng pdfmake trong lienhoan.js, không dùng CSS này) */
+  .lhp-qr{display:flex; align-items:center; gap:14px; padding:12px 14px; border:2px solid #f5a524; border-radius:12px; background:#fffaf3;
+    font-family:Arial, Helvetica, sans-serif; color:#1c2024; -webkit-print-color-adjust:exact; print-color-adjust:exact; break-inside:avoid;}
+  .lhp-qr-ma{flex:0 0 138px; width:138px; height:138px; background:#fff; border-radius:8px; padding:4px;}
+  .lhp-qr-ma svg{display:block; width:100%; height:100%;}
+  .lhp-qr-chu{display:flex; flex-direction:column; gap:2px; min-width:0; font-size:12px;}
+  .lhp-qr-chu > b{font-size:14px; color:#7a1f2b; margin-bottom:2px;}
+  .lhp-qr-chu .nh{font-weight:800; color:#c8102e;}
+  .lhp-qr-chu .ten{font-size:15px; font-weight:800; letter-spacing:.02em;}
+  .lhp-qr-chu .stk{font-size:16px; font-weight:800; font-variant-numeric:tabular-nums; letter-spacing:.04em;}
+
+</style>
 </head>
 <body>
 <div id="shell">
@@ -2308,6 +2505,8 @@
     <button data-tab="kiemke">📋 Kiểm kê</button>
     <button data-tab="hotrokk">🤝 Hỗ trợ</button>
     <button data-tab="tangca">⏱ Tăng ca/Nghỉ phép</button>
+    <!-- Liên hoan: chỉ kho thành phẩm, chỉ chủ trang (duocDungTab trong js/core/navigation.js) -->
+    <button data-tab="lienhoan">🎉 Liên hoan</button>
     <button data-tab="training">🎓 Training</button>
     <button data-tab="ghichu">📝 Ghi chú</button>
     <span class="spacer"></span>
@@ -2585,6 +2784,9 @@
 
   <!-- ============ TAB: KIỂM KÊ (kho thành phẩm) — js/modules/kiemke ============ -->
   <main class="tabpage" id="tab-kiemke"><div class="kk" id="kkBox"></div></main>
+
+  <!-- ============ TAB: LIÊN HOAN (kho thành phẩm, chỉ chủ trang) — js/modules/lienhoan ============ -->
+  <main class="tabpage" id="tab-lienhoan"><div class="lh" id="lhBox"></div></main>
 
   <!-- ============ TAB: TĂNG CA / NGHỈ PHÉP ============ -->
 <main class="tabpage" id="tab-hotrokk">
@@ -4505,7 +4707,11 @@ const TP_QUAN_LY = [
   { tab:'wi',       ic:'🎓', ten:'Training',     mo:'Hướng dẫn công việc theo từng vị trí' },
 ];
 // Tài khoản được dùng tab này ở kho đang mở không (công nhân chỉ dùng các tab được cấp)
-function duocDungTab(t){ return quyenTab(CUR_KHO, t) !== null; }
+// Liên hoan: chỉ kho thành phẩm, chỉ chủ trang (người dùng chốt 07/11 — chưa cấp được cho ai, nên không có trong TAB_KHO)
+function duocDungTab(t){
+  if(t === 'lienhoan') return CUR_KHO === 'thanhpham' && laChuTrang();
+  return quyenTab(CUR_KHO, t) !== null;
+}
 // Tab đang sáng ở menu: đứng ở tab con thì sáng tab cha (nếu tab cha được dùng)
 function tabCha(t){ const c = CUR_KHO === 'thanhpham' && TP_TAB_CHA[t]; return (c && duocDungTab(c)) ? c : t; }
 
@@ -4544,6 +4750,7 @@ function switchTab(name){
   if(TAB_KHO_TP.includes(name)){ moAppKhoTP(name); return; }
   if(name === 'tangca' && activeTab !== 'tangca') vaoTangCa();
   if(name === 'kiemke' && activeTab !== 'kiemke' && window.kiemKeTaiLai) kiemKeTaiLai();   // mở tab thì tải sổ kiểm kê mới nhất
+  if(name === 'lienhoan' && activeTab !== 'lienhoan' && window.lienHoanTaiLai) lienHoanTaiLai();
   activeTab = name;
   document.querySelectorAll('.tabpage').forEach(el=>el.classList.remove('active'));
   $('tab-' + name).classList.add('active');
@@ -4654,7 +4861,7 @@ function veMenuSidebar(){
 // Tên tab ngắn của kho thành phẩm — CHỈ dùng ở hàng tab ngang (menu trái giữ tên đầy đủ trong index.html, người dùng chốt 30/10).
 // Cùng tên với hàng tab ngang của app Kho TP (TP_MENU.ten trong js/core/sidebar.js bên đó)
 const TEN_TAB_TP = { dashboard:'🏠 Tổng quan', xuathang:'🚚 Shipment', checkct:'🔎 Check', scanos:'📦 SCAN OS',
-  donghang:'🚛 Layout', rack:'🗄️ T2 CT', kiemke:'📋 Kiểm kê', hotrokk:'🤝 Hỗ trợ', tangca:'⏱ OT / Leave' };
+  donghang:'🚛 Layout', rack:'🗄️ T2 CT', kiemke:'📋 Kiểm kê', hotrokk:'🤝 Hỗ trợ', tangca:'⏱ OT / Leave', lienhoan:'🎉 Liên hoan' };
 // Kho thành phẩm có tab "Đổi ca"; tab "Vị trí & Năng lực" đổi tên thành "Năng lực" và bỏ bảng phân công
 function applyTabVisibility(){
   if(applyPhoneMode()){          // điện thoại: 1 kho, 1 tab, không cần thanh tab
@@ -4775,6 +4982,7 @@ function render(){
   if(activeTab === 'so5s') renderZones();
   if(activeTab === 'hotrokk') hkRender();
   if(activeTab === 'kiemke') renderKiemKe();
+  if(activeTab === 'lienhoan') renderLienHoan();
   if(activeTab === 'wi') renderWI();
   if(activeTab === 'training') renderTraining();
   if(activeTab === 'doica') renderRotation();
@@ -10368,6 +10576,9 @@ function odBanDoNhiet(S, hm, khos){
 // Xuất Excel: sheet bảng chấm công + sheet "Nghỉ phép" (mỗi lần nghỉ / đi muộn / về sớm / nghỉ giữa giờ 1 dòng, có phép hay không, số giờ)
 // Cuối dòng: Ngày công (ngày đi làm) · OT (giờ) · Phép (giờ) · Lễ/Tết (ngày) · Không phép (giờ: KL + đi muộn / về sớm / giữa giờ không trừ phép)
 // Phạm vi: kho đang xem hoặc cả 3 kho. Chỉ từ tháng của OT_HIEN_TU (dữ liệu trước đó đang ẩn ở tab Tăng ca).
+// Thanh trên cùng: TỔNG GIỜ LÀM cả kho (người dùng chốt 07/11) = giờ hành chính (ngày làm việc T2–T7, không lễ, × 8h)
+//   − giờ nghỉ (nghỉ cả ngày 8h + đi muộn / về sớm / giữa giờ, có phép lẫn không phép) + giờ tăng ca.
+//   Chỉ tính các ngày tới hôm nay; bỏ ngày chưa vào làm / đã nghỉ việc / thai sản / đi hỗ trợ (giống phần cộng cuối dòng).
 // =====================================================================
 const CC = { pham:'kho', moc:new Date() };
 const CC_CA = 8;                                            // 1 ngày nghỉ = 8 giờ
@@ -10442,8 +10653,9 @@ function renderChamCong(){
   const thangDau = OT_HIEN_TU.slice(0, 7), lui = ym > thangDau, kyNay = ym === homNay.slice(0, 7);
   const nut = (k, v, cur, txt) => `<button data-cc-${k}="${v}" class="${v === cur ? 'on' : ''}">${txt}</button>`;
 
-  const dong = (e, stt) => {
+  const dong = (e, stt, S) => {
     const t = { cong:0, ot:0, phep:0, le:0, kp:0 };
+    S.nguoi++;
     const o = ngays.map(n=>{
       const x = g.get(e.id + '|' + n.k), c = ccO(e, n.k, x, n.le, homNay);
       // cộng dồn cuối tháng
@@ -10454,6 +10666,15 @@ function renderChamCong(){
           t.ot += x.ot;
           x.nghi.forEach(r=>{ if(ccPhepNghi(r)) t.phep += CC_CA; else t.kp += CC_CA; });
           x.muon.concat(x.som, x.giua).forEach(r=>{ if(ccTruPhep(r)) t.phep += Number(r.hours) || 0; else t.kp += Number(r.hours) || 0; });
+        }
+        // tổng giờ làm cả kho (tới hôm nay)
+        if(n.k <= homNay){
+          const ngayLam = !n.cn && !n.le;
+          if(ngayLam) S.chuan += CC_CA;
+          if(x){
+            S.ot += x.ot;
+            if(ngayLam) S.nghi += x.nghi.length ? CC_CA : ccGio(x.muon.concat(x.som, x.giua));
+          }
         }
       }
       return `<td class="o ${c.cls}${c.goc ? ' goc' : ''}${n.k === homNay ? ' nay' : ''}"${c.tip.length
@@ -10466,12 +10687,24 @@ function renderChamCong(){
       <td class="t">${t.le || ''}</td><td class="t kp">${t.kp ? fmtHours(t.kp) : ''}</td></tr>`;
   };
   let stt = 0;
-  const than = khos.map(k=>{
+  const TG = khos.map(k=>({ k, nguoi:0, chuan:0, nghi:0, ot:0 }));      // tổng giờ làm từng kho
+  const than = khos.map((k, i)=>{
     const ds = ccNguoi(k, ym);
     if(!ds.length) return '';
     return (ba ? `<tr class="nhom"><td colspan="${soNgay + 7}">${esc(khoName(k))} <span>${ds.length} người</span></td></tr>` : '')
-      + ds.map(e=>dong(e, ++stt)).join('');
+      + ds.map(e=>dong(e, ++stt, TG[i])).join('');
   }).join('');
+  const tg = TG.reduce((s, x)=>({ nguoi:s.nguoi + x.nguoi, chuan:s.chuan + x.chuan, nghi:s.nghi + x.nghi, ot:s.ot + x.ot }), { nguoi:0, chuan:0, nghi:0, ot:0 });
+  const tongGio = x => x.chuan - x.nghi + x.ot;
+  // giờ có dấu phân cách nghìn: 12.345h30
+  const gioTo = h => fmtHours(Math.max(0, h)).replace(/^\d+/, s=>Number(s).toLocaleString('vi-VN'));
+  const denNgay = ym < homNay.slice(0, 7) ? `cả tháng ${pad(mo + 1)}` : ym === homNay.slice(0, 7) ? `tính đến ${homNay.slice(8)}/${homNay.slice(5, 7)}` : 'tháng chưa tới';
+  const tipTong = (ba ? TG.map(x=>`${khoName(x.k)}: ${gioTo(tongGio(x))} (${x.nguoi} người)`).join('\n') + '\n\n' : '')
+    + 'Giờ hành chính = ngày làm việc (thứ 2 – thứ 7, không tính lễ) × 8h\n− giờ nghỉ (nghỉ cả ngày 8h + đi muộn / về sớm / nghỉ giữa giờ, có phép và không phép)\n+ giờ tăng ca';
+  const theTong = `<div class="cc-tong" title="${esc(tipTong)}">
+      <span class="l">Tổng giờ làm${ba ? ' 3 kho' : ''}</span><b>${gioTo(tongGio(tg))}</b>
+      <span class="ct">= hành chính ${gioTo(tg.chuan)} <i class="tru">− nghỉ ${gioTo(tg.nghi)}</i> <i class="cong">+ tăng ca ${gioTo(tg.ot)}</i>
+        · ${tg.nguoi} người · ${denNgay}</span></div>`;
 
   box.innerHTML = `
     <div class="cc-bar">
@@ -10479,6 +10712,7 @@ function renderChamCong(){
       <div class="od-ky"><button data-cc-doi="-1"${lui ? '' : ' disabled'} title="${lui ? 'Tháng trước' : 'Bảng chấm công có từ tháng ' + thangDau.slice(5) + '/' + thangDau.slice(0, 4)}">‹</button>
         <b>Tháng ${pad(mo + 1)}/${y}</b><button data-cc-doi="1" title="Tháng sau">›</button></div>
       ${kyNay ? '' : '<button class="od-nay" data-cc-doi="0">Tháng này</button>'}
+      ${theTong}
       <span class="cc-sp"></span>
       <button class="secondary sm" data-cc-toan>${box.classList.contains('toan') ? '✕ Thoát toàn màn hình' : '⛶ Toàn màn hình'}</button>
       <button class="secondary sm" data-cc-xuat>⬇ Xuất Excel</button>
@@ -13201,8 +13435,11 @@ function lsTenKhoa(key){
   if(/^appwh-donghang/.test(key)) return 'Đóng hàng (danh mục mã hàng / xe)';
   if(/^appwh-scanos/.test(key)) return 'SCAN OS';
   if(/^appwh-scan/.test(key)) return 'SCAN';
+  if(/^appwh-lienhoan/.test(key)) return 'Liên hoan (kho thành phẩm)';
   return key;
 }
+// Liên hoan chỉ chủ trang thấy (người dùng chốt 07/11) -> tài khoản khác không thấy cả dòng nhật ký của mục này
+const lsDuocXem = a => laChuTrang() || !(a.loai === 'muc' && /^appwh-lienhoan/.test(String(a.rec_id || '')));
 // Cột "Mục": đơn của ai, ngày nào / phần nào của kho
 function lsMucTen(a){
   if(a.loai === 'kho'){
@@ -13258,7 +13495,7 @@ async function moLichSuDon(loai, id){
 
 // ---- Trang Lịch sử chỉnh sửa ----
 const LS_LOC = { kho: '', loai: '', nguoi: '', tim: '', tu: '', den: '' };
-let LS_DS = null, LS_HET = false, LS_DANG_TAI = false, LS_LOI = '';
+let LS_DS = null, LS_HET = false, LS_DANG_TAI = false, LS_LOI = '', LS_CUOI = null;
 const LS_TRANG = 100;
 
 function lsBoLoc(){
@@ -13276,10 +13513,12 @@ async function lsTai(themTiep){
   if(VIEW === 'lichsusua') renderLichSuSua();
   try{
     const f = lsBoLoc();
-    if(themTiep && LS_DS && LS_DS.length) f.truoc = LS_DS[LS_DS.length - 1].id;
+    if(themTiep && LS_CUOI) f.truoc = LS_CUOI;
     const ds = await rpc('appwh_audit_list', { p_token: AUTH.token, p_loc: f }) || [];
-    LS_DS = themTiep ? (LS_DS || []).concat(ds) : ds;
     LS_HET = ds.length < LS_TRANG;
+    if(ds.length) LS_CUOI = ds[ds.length - 1].id; else if(!themTiep) LS_CUOI = null;   // tải tiếp từ dòng cuối máy chủ trả (kể cả dòng bị ẩn)
+    const xem = ds.filter(lsDuocXem);
+    LS_DS = themTiep ? (LS_DS || []).concat(xem) : xem;
   }catch(e){
     LS_LOI = e.message || 'lỗi không rõ';
     if(!LS_DS) LS_DS = [];
@@ -15425,6 +15664,701 @@ function kkIn(){
   const xong = ()=>{ document.body.classList.remove('kk-in'); document.title = cu; window.removeEventListener('afterprint', xong); };
   window.addEventListener('afterprint', xong);
   setTimeout(()=>window.print(), 60);
+}
+
+</script>
+<script>/* js/modules/lienhoan/lienhoan.js */
+// Tab "🎉 Liên hoan" (kho thành phẩm) — ghi lại các buổi liên hoan: khoản chi, thành viên, ai đóng bao nhiêu, đã thu chưa.
+// CHỈ CHỦ TRANG thấy (người dùng chốt 07/11: "trước mắt ẩn toàn bộ") — duocDungTab() trong core/navigation.js,
+// menu bên app Kho TP: TP_MENU (chu:true) trong js/core/sidebar.js.
+// =====================================================================
+// Dữ liệu: khoá appwh-lienhoan-v1 (appwh_storage). Khoá không thuộc kho / tab nào -> máy chủ (appwh_save) chỉ cho chủ trang ghi.
+//   Ẩn tab chỉ ẩn giao diện: như mọi dữ liệu trong appwh_storage, vẫn đọc được bằng khoá công khai của trang.
+// { v:1, buoi:[ { id, ten, ngay, diaDiem,
+//     khoan:[ { id, ten, tien } ],                    — các khoản chi (tiền ăn, rượu, hát…), cộng hết = tổng chi
+//     tv:[ { id, eid, ten, ma, vai, tien, da } ],     — thành viên: eid = mã nhân viên kho TP ('' = người ngoài);
+//                                                       vai 'thamgia' | 'donggop' | 'moi'; tien = số người đóng góp tự nhập; da = đã đóng
+//     xong, ghiChu, lucLuu, nguoiLuu, nguoiTao, lucTao } ] }   — xong = thu đủ và đã bấm Lưu (ghiChu = tên ghi chú lúc lưu)
+//   qr: { bin, ngan, stk, ten } — tài khoản nhận tiền (⚙ Mã QR nhận tiền), dùng chung mọi buổi; KHÔNG ghi trong code
+//   (code app chính nằm trên GitHub công khai)
+// Chia tiền: người đóng góp đóng số tự nhập · người được mời miễn phí ·
+//   người tham gia = (tổng chi − tiền người đóng góp) chia đều, làm tròn tới nghìn (171.200 -> 171.000 · 190.900 -> 191.000).
+// Sửa gì cũng tự lưu (0,8 giây sau lần gõ cuối). Thu đủ -> nút "💾 Lưu buổi liên hoan" -> vào lịch sử.
+// ⬇ Xuất PDF: tải thẳng file .pdf (không mở hộp in) — người dùng chốt 07/11: chỉ tên (không mã số), không cột "Đã đóng",
+//   không khối "Cách chia", kèm mã VietQR của tài khoản nhận tiền. PDF chữ thật dựng bằng pdfmake (+ phông Roboto); mã QR xem thử
+//   trong ⚙ Cài đặt vẽ bằng qrcode-generator — các thư viện (cdnjs) chỉ tải khi cần.
+// =====================================================================
+const LH_KEY = 'appwh-lienhoan-v1';
+const LH_KHOA_THU = 'appwh-lh-thu';             // các mục đang thu (▾/▸), nhớ trên máy này
+const LH_VAI = {
+  thamgia:{ ten:'Tham gia', ic:'🙋', mo:'Chia đều phần tiền còn lại' },
+  donggop:{ ten:'Đóng góp', ic:'💝', mo:'Đóng số tiền tự nhập' },
+  moi:    { ten:'Được mời', ic:'🎁', mo:'Miễn phí' },
+};
+const LH_GOI_Y = ['Tiền ăn', 'Tiền rượu / bia', 'Tiền hát karaoke', 'Tiền nước / hoa quả', 'Tiền quà', 'Tiền xe', 'Chi phí khác'];
+const LH_THU_TUAN = ['Chủ nhật', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7'];
+// Ngân hàng (mã BIN của NAPAS — dùng trong mã VietQR)
+const LH_NH = [
+  { bin:'970407', ten:'Techcombank' }, { bin:'970436', ten:'Vietcombank' }, { bin:'970415', ten:'VietinBank' },
+  { bin:'970418', ten:'BIDV' }, { bin:'970405', ten:'Agribank' }, { bin:'970422', ten:'MB Bank' }, { bin:'970416', ten:'ACB' },
+  { bin:'970432', ten:'VPBank' }, { bin:'970423', ten:'TPBank' }, { bin:'970403', ten:'Sacombank' }, { bin:'970437', ten:'HDBank' },
+  { bin:'970441', ten:'VIB' }, { bin:'970443', ten:'SHB' }, { bin:'970431', ten:'Eximbank' }, { bin:'970426', ten:'MSB' },
+  { bin:'970448', ten:'OCB' }, { bin:'970440', ten:'SeABank' }, { bin:'970449', ten:'LPBank' }, { bin:'970428', ten:'Nam A Bank' },
+  { bin:'970409', ten:'Bac A Bank' }, { bin:'970425', ten:'ABBANK' }, { bin:'970454', ten:'Ban Viet (BVBank)' },
+  { bin:'970412', ten:'PVcomBank' }, { bin:'970452', ten:'Kienlongbank' }, { bin:'970419', ten:'NCB' } ];
+const LH_QR_LIB_URL = 'https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js';
+const LH_PDF_LIB = { pdf:'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js',
+                     phong:'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js' };   // phông Roboto (đủ dấu tiếng Việt)
+let LH = null, LH_TAI = false, LH_DANG_TAI = null;
+let LH_MO = null;                                // id buổi đang mở; null = danh sách các buổi
+const LH_BAN = new Set();                        // id buổi có thay đổi chưa lưu lên máy chủ
+let LH_HEN = null, LH_DANG_LUU = false, LH_TT = '', LH_LUC = null, LH_LOI = '';
+let LH_THU = new Set();
+try{ LH_THU = new Set(JSON.parse(lsGet(LH_KHOA_THU) || '[]')); }catch(e){}
+
+const lhId = () => 'l' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+const lhTien = n => Math.round(Number(n) || 0).toLocaleString('vi-VN') + 'đ';
+const lhSoO = n => n ? Math.round(n).toLocaleString('vi-VN') : '';        // số trong ô nhập (0 = để trống)
+const lhBuoi = id => LH && LH.buoi.find(b=>b.id === id);
+const lhTen = b => b.ghiChu || b.ten || 'Liên hoan';
+const lhNguoi = () => (AUTH.user && (AUTH.user.display_name || AUTH.user.username)) || '';
+// Thứ tự hiện (màn hình + PDF): đóng góp -> tham gia -> được mời (người dùng chốt 07/11); cùng vai giữ thứ tự thêm vào
+const LH_THU_TU = { donggop:0, thamgia:1, moi:2 };
+const lhXep = ds => ds.map((t, i)=>[t, i]).sort((a, c)=>((LH_THU_TU[a[0].vai] ?? 9) - (LH_THU_TU[c[0].vai] ?? 9)) || a[1] - c[1]).map(x=>x[0]);
+// "2.500.000" · "2500000" · "500k" · "2tr5" · "2,5tr" -> số đồng
+function lhDocTien(s){
+  s = String(s || '').toLowerCase().replace(/\s+/g, '').replace(/đ|vnd/g, '');
+  const m = /^(\d+(?:[.,]\d+)?)(k|tr|trieu|triệu)(\d*)$/.exec(s);
+  if(m){
+    const he = m[2] === 'k' ? 1e3 : 1e6;
+    let v = parseFloat(m[1].replace(',', '.')) * he;
+    if(m[3]) v += Number(m[3]) * he / Math.pow(10, m[3].length);
+    return Math.round(v);
+  }
+  const so = s.replace(/[.,]/g, '');
+  return /^\d+$/.test(so) ? Number(so) : 0;
+}
+
+// ---------------------------------------------------------------------
+// TÍNH TIỀN
+// ---------------------------------------------------------------------
+function lhTinh(b){
+  const cong = (ds, f) => ds.reduce((s, x)=>s + (Number(f(x)) || 0), 0);
+  const tong = cong(b.khoan, k=>k.tien);
+  const dg = b.tv.filter(t=>t.vai === 'donggop'), tg = b.tv.filter(t=>t.vai === 'thamgia');
+  const tienDg = cong(dg, t=>t.tien), conLai = tong - tienDg;
+  const moiNguoi = tg.length && conLai > 0 ? Math.round(conLai / tg.length / 1000) * 1000 : 0;
+  const tien = t => t.vai === 'moi' ? 0 : t.vai === 'donggop' ? (Number(t.tien) || 0) : moiNguoi;
+  const phaiThu = cong(b.tv, tien), canThu = b.tv.filter(t=>tien(t) > 0);
+  const chuaDong = canThu.filter(t=>!t.da);
+  return { tong, tienDg, conLai, moiNguoi, tien, phaiThu, canThu, chuaDong,
+    daThu:cong(canThu.filter(t=>t.da), tien), du:phaiThu - tong,
+    nTg:tg.length, nDg:dg.length, nMoi:b.tv.length - tg.length - dg.length,
+    thuHet:tong > 0 && b.tv.length > 0 && !chuaDong.length };
+}
+
+// ---------------------------------------------------------------------
+// TẢI / LƯU
+// ---------------------------------------------------------------------
+function lhChuan(o){
+  return { v:1, qr:o && o.qr && typeof o.qr === 'object' && o.qr.stk ? o.qr : null,
+    buoi:(Array.isArray(o && o.buoi) ? o.buoi : []).filter(b=>b && b.id)
+    .map(b=>({ ...b, khoan:Array.isArray(b.khoan) ? b.khoan : [], tv:Array.isArray(b.tv) ? b.tv : [] })) };
+}
+async function lhDocServer(){ const raw = await sbGet(LH_KEY); return lhChuan(raw ? JSON.parse(raw) : null); }
+// Tải lại mà vẫn giữ các buổi đang sửa dở chưa kịp lưu
+function lhTai(){
+  if(LH_DANG_TAI) return LH_DANG_TAI;
+  LH_DANG_TAI = (async ()=>{
+    try{
+      const o = await lhDocServer();
+      if(LH) LH_BAN.forEach(id=>{ const b = lhBuoi(id), i = o.buoi.findIndex(x=>x.id === id);
+        if(!b){ if(i >= 0) o.buoi.splice(i, 1); } else if(i >= 0) o.buoi[i] = b; else o.buoi.push(b); });
+      LH = o; lsSet(LH_KEY, JSON.stringify(LH));
+    }catch(e){
+      if(!LH){ try{ LH = lhChuan(JSON.parse(lsGet(LH_KEY) || 'null')); }catch(_){ LH = lhChuan(null); } }
+      toast('⚠ Không tải được dữ liệu liên hoan từ máy chủ — đang xem bản lưu trên máy này');
+    }
+    LH_TAI = true;
+  })().finally(()=>{ LH_DANG_TAI = null; });
+  return LH_DANG_TAI;
+}
+window.lienHoanTaiLai = ()=>{ if(laChuTrang()) lhTai().then(()=>{ if(VIEW === 'kho' && activeTab === 'lienhoan') renderLienHoan(); }); };
+function lhHenLuu(id){
+  LH_BAN.add(id);
+  clearTimeout(LH_HEN);
+  LH_TT = 'cho'; lhVeTT();
+  LH_HEN = setTimeout(lhLuuNgay, 800);
+}
+// Ghi các buổi có thay đổi: đọc bản mới nhất trên máy chủ -> thay đúng các buổi đó -> ghi + đọc lại kiểm tra.
+// Trả true khi đã lưu xong mọi thay đổi.
+async function lhLuuNgay(){
+  clearTimeout(LH_HEN); LH_HEN = null;
+  if(LH_DANG_LUU){ await new Promise(r=>setTimeout(r, 300)); return lhLuuNgay(); }
+  if(!LH_BAN.size) return true;
+  LH_DANG_LUU = true; LH_TT = 'dang'; lhVeTT();
+  const ids = [...LH_BAN]; LH_BAN.clear();
+  let ok = false;
+  try{
+    const o = await lhDocServer();
+    ids.forEach(id=>{
+      const b = lhBuoi(id), i = o.buoi.findIndex(x=>x.id === id);
+      if(!b){ if(i >= 0) o.buoi.splice(i, 1); return; }            // đã xoá buổi
+      const ban = JSON.parse(JSON.stringify(b));
+      if(i >= 0) o.buoi[i] = ban; else o.buoi.push(ban);
+    });
+    const raw = JSON.stringify(o);
+    await sbSetVerified(LH_KEY, raw);
+    lsSet(LH_KEY, raw);
+    // buổi máy khác vừa sửa: theo máy chủ · buổi vừa lưu / đang sửa tiếp: giữ bản trên màn hình
+    const giu = new Map(LH.buoi.map(b=>[b.id, b])), dangSua = id => ids.includes(id) || LH_BAN.has(id);
+    const moi = o.buoi.map(x=>dangSua(x.id) && giu.has(x.id) ? giu.get(x.id) : x);
+    LH_BAN.forEach(id=>{ if(giu.has(id) && !moi.some(x=>x.id === id)) moi.push(giu.get(id)); });
+    LH.buoi = moi; LH.qr = o.qr;
+    LH_TT = 'xong'; LH_LUC = new Date(); ok = true;
+  }catch(e){
+    ids.forEach(id=>LH_BAN.add(id));
+    LH_TT = 'loi'; LH_LOI = e.message || String(e);
+    toast('⚠ Chưa lưu được liên hoan lên máy chủ: ' + LH_LOI);
+  }finally{
+    LH_DANG_LUU = false; lhVeTT();
+  }
+  if(ok && LH_BAN.size) return lhLuuNgay();
+  return ok;
+}
+window.addEventListener('beforeunload', e=>{ if(LH_BAN.size || LH_DANG_LUU){ e.preventDefault(); e.returnValue = ''; } });
+function lhVeTT(){
+  const el = $('lhTT'); if(!el) return;
+  el.className = 'lh-tt ' + LH_TT;
+  el.innerHTML = LH_TT === 'cho' ? '● Chờ lưu…' : LH_TT === 'dang' ? '⏳ Đang lưu…'
+    : LH_TT === 'xong' ? `✓ Đã lưu ${pad(LH_LUC.getHours())}:${pad(LH_LUC.getMinutes())}`
+    : LH_TT === 'loi' ? `⚠ Chưa lưu được <button class="ghost sm" data-lh-thulai title="${esc(LH_LOI)}">↻ Thử lại</button>` : '';
+}
+
+// ---------------------------------------------------------------------
+// VẼ
+// ---------------------------------------------------------------------
+function renderLienHoan(lam){
+  const box = $('lhBox'); if(!box) return;
+  lhGanSuKien(box);
+  if(!laChuTrang()){
+    box.innerHTML = '<div class="panel lh-rong"><h2>🎉 Liên hoan</h2><p>Mục này hiện chỉ chủ trang xem được.</p></div>';
+    return;
+  }
+  if(!LH_TAI){
+    box.innerHTML = '<div class="panel"><p class="cd-mo">⏳ Đang tải dữ liệu liên hoan…</p></div>';
+    lhTai().then(()=>{ if(VIEW === 'kho' && activeTab === 'lienhoan') renderLienHoan(true); });
+    return;
+  }
+  const b = LH_MO && lhBuoi(LH_MO);
+  if(LH_MO && !b) LH_MO = null;
+  // app vẽ lại (đồng bộ nền…) trong lúc đang gõ: chỉ cập nhật số, không vẽ lại ô đang gõ (lam = thao tác của tab này: vẽ lại hẳn)
+  const go = document.activeElement;
+  if(!lam && b && box.dataset.mo === b.id && go && box.contains(go) && go.matches('input, textarea')){ lhVeSo(b); return; }
+  if(b) lhVeBuoi(box, b); else lhVeDs(box);
+}
+// Khối có tiêu đề + ▾ / ▸ thu - mở (thu vẫn hiện số tóm tắt)
+const lhMuc = (k, tieu, tom, noi, them) => `<section class="lh-card${LH_THU.has(k) ? ' thu' : ''}${them ? ' ' + them : ''}">
+    <div class="lh-h"><button class="lh-mui" data-lh-thu="${k}" title="${LH_THU.has(k) ? 'Mở mục này' : 'Thu gọn mục này'}">${LH_THU.has(k) ? '▸' : '▾'}</button>
+      <b data-lh-thu="${k}">${tieu}</b><span class="lh-tom" data-lh-tom="${k}">${tom}</span></div>
+    ${LH_THU.has(k) ? '' : `<div class="lh-noi">${noi}</div>`}</section>`;
+
+// ---- Danh sách các buổi ----
+function lhVeDs(box){
+  box.dataset.mo = '';
+  const ds = LH.buoi.slice().sort((a, c)=>String(c.ngay || '').localeCompare(String(a.ngay || '')) || String(c.lucTao || '').localeCompare(String(a.lucTao || '')));
+  const dang = ds.filter(b=>!b.xong), xong = ds.filter(b=>b.xong);
+  const nam = String(new Date().getFullYear()), xongNam = xong.filter(b=>String(b.ngay || '').startsWith(nam));
+  const tongCua = arr => arr.reduce((s, b)=>s + lhTinh(b).tong, 0);
+  const the = b => {
+    const t = lhTinh(b), pt = t.phaiThu ? Math.min(100, Math.round(t.daThu / t.phaiThu * 100)) : 0, d = b.ngay ? fromKey(b.ngay) : null;
+    return `<button class="lh-the${b.xong ? ' xong' : ''}" data-lh-mo="${esc(b.id)}" title="Mở buổi liên hoan này">
+      <span class="lh-lich"><b>${d ? pad(d.getDate()) : '--'}</b><i>${d ? 'T' + (d.getMonth() + 1) + '/' + d.getFullYear() : ''}</i></span>
+      <span class="lh-the-noi"><span class="t">${esc(lhTen(b))}</span>
+        <span class="d">${b.ghiChu && b.ten && b.ghiChu !== b.ten ? esc(b.ten) + ' · ' : ''}${b.tv.length} người${b.diaDiem ? ' · 📍 ' + esc(b.diaDiem) : ''}</span>
+        <span class="lh-thanh"><i style="width:${pt}%"></i></span>
+        <span class="d">Tổng chi <b>${lhTien(t.tong)}</b> · đã thu ${lhTien(t.daThu)} / ${lhTien(t.phaiThu)}</span></span>
+      <span class="lh-nhan ${b.xong ? 'xong' : 'dang'}">${b.xong ? '✓ Đã chốt' : '⏳ Đang thu'}</span></button>`;
+  };
+  box.innerHTML = `
+    <div class="lh-dau">
+      <div class="lh-dau-chu"><h2>🎉 Liên hoan</h2>
+        <p>Ghi lại các buổi liên hoan của kho — chia tiền, thu tiền, xuất PDF. <span class="lh-rieng" title="Các tài khoản khác không thấy mục này">🔒 Chỉ chủ trang thấy</span></p></div>
+      <div class="lh-dau-nut">
+        <button class="lh-nut-qr" data-lh-qr title="Tài khoản nhận tiền — in mã QR kèm PDF">${LH.qr ? '📱 Mã QR: ' + esc(LH.qr.ngan) + ' ••' + esc(String(LH.qr.stk).slice(-3)) : '⚙ Mã QR nhận tiền'}</button>
+        <button class="lh-nut-moi" data-lh-moi>＋ Buổi liên hoan mới</button>
+      </div>
+    </div>
+    <div class="lh-kpi">
+      <div><b>${xongNam.length}</b><span>buổi đã chốt năm ${nam}</span></div>
+      <div><b>${lhTien(tongCua(xongNam))}</b><span>tổng chi năm ${nam}</span></div>
+      <div class="${dang.length ? 'cam' : ''}"><b>${dang.length}</b><span>buổi đang thu tiền</span></div>
+    </div>
+    ${dang.length ? lhMuc('dang', '⏳ Đang thu tiền', `${dang.length} buổi`, `<div class="lh-ds">${dang.map(the).join('')}</div>`) : ''}
+    ${lhMuc('lichsu', '📚 Lịch sử các buổi liên hoan', `${xong.length} buổi${xong.length ? ' · ' + lhTien(tongCua(xong)) : ''}`,
+      xong.length ? `<div class="lh-ds">${xong.map(the).join('')}</div>`
+        : '<p class="lh-trong">Chưa có buổi nào được lưu. Bấm <b>＋ Buổi liên hoan mới</b> để bắt đầu.</p>')}`;
+}
+
+// ---- 1 buổi ----
+function lhTomHtml(b, t){
+  const pt = t.phaiThu ? Math.min(100, Math.round(t.daThu / t.phaiThu * 100)) : 0;
+  return `<div class="lh-so">
+      <div class="dong"><span>Tổng chi</span><b>${lhTien(t.tong)}</b></div>
+      <div class="dong"><span>💝 Người đóng góp (${t.nDg})</span><b>− ${lhTien(t.tienDg)}</b></div>
+      <div class="dong chinh"><span>Còn lại chia đều</span><b>${lhTien(Math.max(0, t.conLai))}</b></div>
+      <div class="dong moi"><span>🙋 Mỗi người tham gia (${t.nTg} người)</span><b>${lhTien(t.moiNguoi)}</b></div>
+      <div class="dong"><span>🎁 Người được mời (${t.nMoi})</span><b>Miễn phí</b></div>
+      ${t.conLai < 0 ? `<div class="lh-canh">Tiền đóng góp nhiều hơn tổng chi ${lhTien(-t.conLai)} — người tham gia không phải đóng.</div>`
+        : t.du && t.nTg ? `<div class="lh-nho">Làm tròn tới nghìn: thu ${t.du > 0 ? 'dư' : 'thiếu'} ${lhTien(Math.abs(t.du))} so với tổng chi.</div>` : ''}
+    </div>
+    <div class="lh-thu">
+      <div class="dong"><span>Phải thu</span><b>${lhTien(t.phaiThu)}</b></div>
+      <div class="dong da"><span>Đã thu</span><b>${lhTien(t.daThu)}</b></div>
+      <div class="lh-thanh to"><i style="width:${pt}%"></i></div>
+      <div class="dong ${t.chuaDong.length ? 'thieu' : 'du'}"><span>${t.chuaDong.length ? `Còn thiếu · ${t.chuaDong.length} người chưa đóng` : (t.canThu.length ? '🎉 Đã thu đủ' : 'Chưa có ai phải đóng')}</span>
+        <b>${lhTien(t.phaiThu - t.daThu)}</b></div>
+    </div>`;
+}
+function lhVeBuoi(box, b){
+  box.dataset.mo = b.id;
+  const sua = !b.xong, t = lhTinh(b), dis = sua ? '' : ' disabled';
+  const d = b.ngay ? fromKey(b.ngay) : null;
+  const khoan = b.khoan.map(k=>`<div class="lh-khoan" data-lh-k="${esc(k.id)}">
+      <input type="text" list="lhGoiY" data-lh-kten value="${esc(k.ten)}" placeholder="Tên khoản (VD: Tiền ăn)" maxlength="60"${dis}>
+      <input type="text" class="lh-tien-o" data-lh-ktien value="${lhSoO(k.tien)}" inputmode="numeric" placeholder="0" title="Gõ số tiền — VD 2500000, 2.500.000, 500k, 2tr5"${dis}>
+      ${sua ? '<button class="ghost sm" data-lh-xoak title="Bỏ khoản này">✕</button>' : ''}</div>`).join('');
+  const vai = tv => `<div class="lh-vai">${Object.keys(LH_VAI).map(v=>`<button data-lh-vai="${v}" class="${tv.vai === v ? 'on ' + v : ''}" title="${LH_VAI[v].mo}"${dis}>${LH_VAI[v].ic} ${LH_VAI[v].ten}</button>`).join('')}</div>`;
+  const tien = tv => tv.vai === 'moi' ? '<span class="lh-mien">Miễn phí</span>'
+    : tv.vai === 'donggop' ? (sua ? `<input type="text" class="lh-tien-o" data-lh-tvtien value="${lhSoO(tv.tien)}" inputmode="numeric" placeholder="Nhập số tiền">` : `<b>${lhTien(tv.tien)}</b>`)
+    : `<b data-lh-tvso>${lhTien(t.moiNguoi)}</b>`;
+  const dong = (tv, i) => `<tr data-lh-tv="${esc(tv.id)}" class="${tv.vai}${tv.da && tv.vai !== 'moi' ? ' da' : ''}">
+      <td class="stt">${i + 1}</td>
+      <td class="ten"><b>${esc(tv.ten)}</b><small>${tv.eid ? esc(tv.ma || 'Kho thành phẩm') : '<i class="lh-ngoai">Người ngoài</i>'}</small></td>
+      <td>${vai(tv)}</td>
+      <td class="tien">${tien(tv)}</td>
+      <td class="da">${tv.vai === 'moi' ? '<span class="lh-mo">—</span>'
+        : `<label class="lh-tick"><input type="checkbox" data-lh-da${tv.da ? ' checked' : ''}${dis}><span>${tv.da ? 'Đã đóng' : 'Chưa đóng'}</span></label>`}</td>
+      <td class="bo">${sua ? '<button class="ghost sm" data-lh-xoatv title="Bỏ khỏi danh sách">✕</button>' : ''}</td></tr>`;
+  const tvNoi = `
+    ${sua ? `<div class="lh-tv-bar">
+        <button class="secondary sm" data-lh-themkho>＋ Thêm từ danh sách kho thành phẩm</button>
+        <span class="lh-tv-ngoai"><input type="text" data-lh-ngoai placeholder="Tên người ngoài" maxlength="60" autocomplete="off">
+          <button class="ghost sm" data-lh-themngoai>＋ Người ngoài</button></span>
+      </div>` : ''}
+    ${b.tv.length ? `<div class="lh-bang-wrap"><table class="lh-bang">
+      <thead><tr><th class="stt">STT</th><th>Danh sách tham gia</th><th>Vai trò</th><th class="tien">Số tiền</th><th class="da">Đã đóng tiền</th><th></th></tr></thead>
+      <tbody>${lhXep(b.tv).map(dong).join('')}</tbody>
+      <tfoot><tr><td colspan="3">Tổng tiền thu được</td><td class="tien"><b data-lh-dathu>${lhTien(t.daThu)}</b><small data-lh-phaithu> / ${lhTien(t.phaiThu)}</small></td>
+        <td colspan="2" data-lh-dem>${t.canThu.length - t.chuaDong.length}/${t.canThu.length} người đã đóng</td></tr></tfoot>
+    </table></div>` : '<p class="lh-trong">Chưa có ai. Bấm <b>＋ Thêm từ danh sách kho thành phẩm</b> hoặc ghi tên người ngoài.</p>'}`;
+  box.innerHTML = `
+    <div class="lh-bar">
+      <button class="ghost sm" data-lh-ve>← Các buổi liên hoan</button>
+      <span class="lh-nhan ${b.xong ? 'xong' : 'dang'}">${b.xong ? '✓ Đã chốt' + (b.lucLuu ? ' · ' + fmtVN(new Date(b.lucLuu)) : '') : '⏳ Đang thu tiền'}</span>
+      <span class="lh-tt" id="lhTT"></span>
+      <span class="lh-sp"></span>
+      <button class="ghost sm" data-lh-qr title="Tài khoản nhận tiền — mã QR in kèm PDF">${LH.qr ? '📱 Mã QR' : '⚙ Mã QR nhận tiền'}</button>
+      <button class="secondary sm" data-lh-pdf title="Tải file PDF: chỉ tên, số tiền, mã QR chuyển khoản (không có cột Đã đóng tiền)">⬇ Xuất PDF</button>
+      ${b.xong ? '<button class="ghost sm" data-lh-molai title="Mở lại để sửa">✏ Mở lại để sửa</button>' : ''}
+      <button class="ghost sm lh-xoa" data-lh-xoabuoi title="Xoá hẳn buổi liên hoan này">🗑 Xoá buổi</button>
+    </div>
+    <div class="lh-hero">
+      <div class="lh-hero-trai">
+        ${sua ? `<input type="text" class="lh-tieude" data-lh-ten value="${esc(b.ten)}" placeholder="Tiêu đề buổi liên hoan" maxlength="100">`
+              : `<h2 class="lh-tieude">${esc(b.ten || 'Liên hoan')}</h2>`}
+        ${b.xong && b.ghiChu && b.ghiChu !== b.ten ? `<div class="lh-ghichu">📝 ${esc(b.ghiChu)}</div>` : ''}
+        <div class="lh-meta">
+          <label>📅 ${sua ? `<input type="date" data-lh-ngay value="${esc(b.ngay || '')}">` : esc(d ? LH_THU_TUAN[d.getDay()] + ', ' + fmtVN(d) : '')}</label>
+          <label>📍 ${sua ? `<input type="text" data-lh-diadiem value="${esc(b.diaDiem || '')}" placeholder="Địa điểm (không bắt buộc)" maxlength="80">` : esc(b.diaDiem || '—')}</label>
+        </div>
+      </div>
+      <div class="lh-hero-so"><span>Tổng chi</span><b data-lh-tong>${lhTien(t.tong)}</b><small data-lh-heroso>${b.tv.length} người · mỗi người tham gia ${lhTien(t.moiNguoi)}</small></div>
+    </div>
+    <div class="lh-luoi">
+      ${lhMuc('khoan', '💰 Các khoản chi', `<span data-lh-tomk>${b.khoan.length} khoản · ${lhTien(t.tong)}</span>`,
+        `<div class="lh-khoan-ds">${khoan || '<p class="lh-trong">Chưa có khoản chi nào.</p>'}</div>
+         ${sua ? '<button class="ghost sm lh-them-k" data-lh-themk>＋ Thêm khoản chi</button>' : ''}
+         <div class="lh-khoan-tong"><span>Tổng chi</span><b data-lh-tong>${lhTien(t.tong)}</b></div>
+         <datalist id="lhGoiY">${LH_GOI_Y.map(g=>`<option value="${esc(g)}">`).join('')}</datalist>`)}
+      ${lhMuc('tom', '🧮 Cách chia & thu tiền', `<span data-lh-tomt>Đã thu ${lhTien(t.daThu)} / ${lhTien(t.phaiThu)}</span>`,
+        `<div id="lhTom">${lhTomHtml(b, t)}</div>`)}
+    </div>
+    ${lhMuc('tv', '👥 Thành viên', `<span data-lh-tomtv>${b.tv.length} người · ${t.nTg} tham gia · ${t.nDg} đóng góp · ${t.nMoi} được mời</span>`, tvNoi, 'lh-tv')}
+    <div class="lh-chot">
+      ${b.xong ? `<div class="lh-chot-xong">✓ Buổi này đã thu đủ và lưu vào lịch sử${b.nguoiLuu ? ' bởi ' + esc(b.nguoiLuu) : ''}${b.lucLuu ? ' lúc ' + fmtVN(new Date(b.lucLuu)) : ''}.</div>`
+        : `<div class="lh-chot-ghi" data-lh-chotghi></div><button class="lh-nut-chot" data-lh-chot>💾 Lưu buổi liên hoan</button>`}
+    </div>`;
+  lhVeTT();
+  lhVeChot(b, t);
+}
+// Cập nhật các con số (đang gõ thì không vẽ lại cả trang để khỏi mất chỗ con trỏ)
+function lhVeSo(b){
+  const box = $('lhBox'); if(!box || box.dataset.mo !== b.id) return;
+  const t = lhTinh(b);
+  box.querySelectorAll('[data-lh-tong]').forEach(el=>el.textContent = lhTien(t.tong));
+  const hs = box.querySelector('[data-lh-heroso]'); if(hs) hs.textContent = `${b.tv.length} người · mỗi người tham gia ${lhTien(t.moiNguoi)}`;
+  box.querySelectorAll('[data-lh-tvso]').forEach(el=>el.textContent = lhTien(t.moiNguoi));
+  const set = (s, v) => { const el = box.querySelector(s); if(el) el.textContent = v; };
+  set('[data-lh-dathu]', lhTien(t.daThu)); set('[data-lh-phaithu]', ' / ' + lhTien(t.phaiThu));
+  set('[data-lh-dem]', `${t.canThu.length - t.chuaDong.length}/${t.canThu.length} người đã đóng`);
+  set('[data-lh-tomk]', `${b.khoan.length} khoản · ${lhTien(t.tong)}`);
+  set('[data-lh-tomt]', `Đã thu ${lhTien(t.daThu)} / ${lhTien(t.phaiThu)}`);
+  const tom = $('lhTom'); if(tom) tom.innerHTML = lhTomHtml(b, t);
+  lhVeChot(b, t);
+}
+function lhVeChot(b, t){
+  const nut = document.querySelector('#lhBox [data-lh-chot]'), ghi = document.querySelector('#lhBox [data-lh-chotghi]');
+  if(!nut) return;
+  nut.disabled = !t.thuHet;
+  if(ghi) ghi.innerHTML = t.thuHet ? '🎉 Đã thu đủ tiền — bấm Lưu để đặt tên ghi chú và đưa buổi này vào lịch sử.'
+    : !t.tong ? 'Nhập các khoản chi trước.' : !b.tv.length ? 'Thêm thành viên trước.'
+    : `Còn <b>${t.chuaDong.length} người</b> chưa đóng (${lhTien(t.phaiThu - t.daThu)}) — thu đủ thì nút Lưu mới bật.`;
+}
+
+// ---------------------------------------------------------------------
+// THAO TÁC
+// ---------------------------------------------------------------------
+function lhMoi(){
+  const b = { id:lhId(), ten:'Liên hoan kho thành phẩm', ngay:todayKey(), diaDiem:'',
+    khoan:[{ id:lhId(), ten:'Tiền ăn', tien:0 }], tv:[], xong:false, ghiChu:'', nguoiTao:lhNguoi(), lucTao:new Date().toISOString() };
+  LH.buoi.push(b); LH_MO = b.id;
+  lhHenLuu(b.id);
+  renderLienHoan(true);
+  window.scrollTo(0, 0);
+}
+// Hộp chọn người từ danh sách kho thành phẩm (đang làm + đi hỗ trợ + thai sản), người đã có thì đánh dấu sẵn
+function lhChonNguoi(b){
+  const da = new Set();
+  const ds = khoEmployees('thanhpham').concat(khoDiHoTro('thanhpham'), khoThaiSan('thanhpham')).filter(e=>!da.has(e.id) && da.add(e.id));
+  const co = new Set(b.tv.map(t=>t.eid).filter(Boolean));
+  const m = openModal('＋ Thêm từ danh sách kho thành phẩm', `
+    <input type="text" data-tim placeholder="🔍 Tìm tên / mã số" autocomplete="off">
+    <div class="lh-chon-dau"><label><input type="checkbox" data-tatca> Chọn tất cả</label><span>${co.size ? `${co.size} người đã có trong danh sách` : ''}</span></div>
+    <div class="lh-chon-ds">${ds.map(e=>`<label class="lh-chon${co.has(e.id) ? ' co' : ''}" data-ten="${esc(normName(e.name + ' ' + (e.maSo || '')))}">
+        <input type="checkbox" value="${esc(e.id)}"${co.has(e.id) ? ' checked disabled' : ''}>
+        <b>${esc(e.name)}</b><small>${esc([e.maSo, e.position, e.diHoTro ? 'đi hỗ trợ' : '', e.thaiSan ? 'thai sản' : ''].filter(Boolean).join(' · '))}</small></label>`).join('')
+      || '<p class="lh-trong">Kho thành phẩm chưa có nhân viên.</p>'}</div>
+    <div class="row2" style="margin-top:14px;"><button class="ghost" data-no>Huỷ</button><button data-ok>Thêm</button></div>`);
+  m.el.querySelector('.modal-card').classList.add('lh-chon-card');
+  const hop = () => [...m.body.querySelectorAll('.lh-chon input:not(:disabled)')];
+  const dem = () => { const n = hop().filter(i=>i.checked).length; m.body.querySelector('[data-ok]').textContent = n ? `Thêm ${n} người` : 'Thêm'; };
+  m.body.querySelector('[data-tim]').addEventListener('input', e=>{
+    const q = normName(e.target.value);
+    m.body.querySelectorAll('.lh-chon').forEach(l=>{ l.hidden = !!q && !l.dataset.ten.includes(q); });
+  });
+  m.body.querySelector('[data-tatca]').addEventListener('change', e=>{ hop().filter(i=>!i.closest('.lh-chon').hidden).forEach(i=>i.checked = e.target.checked); dem(); });
+  m.body.addEventListener('change', e=>{ if(e.target.matches('.lh-chon input')) dem(); });
+  m.body.querySelector('[data-no]').onclick = m.close;
+  m.body.querySelector('[data-ok]').onclick = ()=>{
+    const them = hop().filter(i=>i.checked).map(i=>ds.find(e=>e.id === i.value)).filter(Boolean);
+    them.forEach(e=>b.tv.push({ id:lhId(), eid:e.id, ten:e.name, ma:e.maSo || '', vai:'thamgia', tien:0, da:false }));
+    m.close();
+    if(them.length){ lhHenLuu(b.id); renderLienHoan(true); toast(`✓ Đã thêm ${them.length} người`); }
+  };
+  setTimeout(()=>m.body.querySelector('[data-tim]').focus(), 30);
+}
+function lhThemNgoai(b){
+  const o = document.querySelector('#lhBox [data-lh-ngoai]'), ten = o ? o.value.replace(/\s+/g, ' ').trim() : '';
+  if(!ten){ if(o) o.focus(); toast('Gõ tên người ngoài rồi bấm ＋ Người ngoài'); return; }
+  b.tv.push({ id:lhId(), eid:'', ten, ma:'', vai:'thamgia', tien:0, da:false });
+  lhHenLuu(b.id); renderLienHoan(true);
+  const o2 = document.querySelector('#lhBox [data-lh-ngoai]'); if(o2) o2.focus();
+}
+async function lhChot(b){
+  const t = lhTinh(b);
+  if(!t.thuHet){ toast('Thu đủ tiền của mọi người rồi mới lưu được'); return; }
+  const kq = await promptBox('💾 Lưu buổi liên hoan', [{ key:'ghiChu', label:'Tên ghi chú cho buổi liên hoan',
+    value:b.ghiChu || `${b.ten || 'Liên hoan'}${b.ngay ? ' ' + fmtVN(fromKey(b.ngay)) : ''}`, placeholder:'VD: Liên hoan mừng xuất đủ hàng tháng 11' }]);
+  if(!kq) return;
+  b.ghiChu = kq.ghiChu || b.ten || 'Liên hoan';
+  b.xong = true; b.lucLuu = new Date().toISOString(); b.nguoiLuu = lhNguoi();
+  LH_BAN.add(b.id);
+  const ok = await lhLuuNgay();
+  renderLienHoan(true);
+  if(ok) toast(`🎉 Đã lưu "${b.ghiChu}" vào lịch sử liên hoan`);
+}
+async function lhXoaBuoi(b){
+  if(!await confirmBox(`Xoá hẳn buổi "${lhTen(b)}"? Không khôi phục được.`)) return;
+  LH.buoi = LH.buoi.filter(x=>x.id !== b.id);
+  LH_BAN.add(b.id); LH_MO = null;
+  renderLienHoan(true);
+  if(await lhLuuNgay()) toast('Đã xoá buổi liên hoan');
+}
+
+// ---------------------------------------------------------------------
+// MÃ QR NHẬN TIỀN (VietQR) — in kèm PDF cho mọi người quét chuyển khoản
+// ---------------------------------------------------------------------
+// Nội dung mã theo chuẩn EMVCo của NAPAS, giống mã ngân hàng tự sinh (đã đối chiếu mã Techcombank thật 07/11).
+// KHÔNG điền sẵn nội dung chuyển khoản (người dùng chốt 07/11): để ngân hàng người chuyển tự ghi mặc định (có tên người chuyển)
+// -> chủ tài khoản biết ai đã chuyển. Tham số tien / noiDung giữ lại nhưng app không dùng.
+//   00 01 · 01 11 (mã tĩnh) / 12 (có số tiền) · 38 = A000000727 + [BIN + số TK] + QRIBFTTA · 53 704 (VND) · [54 số tiền] · 58 VN
+//   · [62 > 08 nội dung chuyển khoản] · 63 CRC-16/CCITT. Chữ trong mã chỉ dùng A–Z, 0–9 (độ dài tính theo ký tự = byte).
+function lhVietQr(bin, stk, tien, noiDung){
+  const o = (id, v) => id + String(v.length).padStart(2, '0') + v;
+  const nd = String(noiDung || '').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/gi, 'D').toUpperCase().replace(/[^A-Z0-9 -]/g, '').trim().slice(0, 25);
+  const s = o('00', '01') + o('01', tien ? '12' : '11')
+    + o('38', o('00', 'A000000727') + o('01', o('00', bin) + o('01', stk)) + o('02', 'QRIBFTTA'))
+    + o('53', '704') + (tien ? o('54', String(Math.round(tien))) : '') + o('58', 'VN')
+    + (nd ? o('62', o('08', nd)) : '') + '6304';
+  let c = 0xFFFF;
+  for(let i = 0; i < s.length; i++){ c ^= s.charCodeAt(i) << 8; for(let j = 0; j < 8; j++) c = (c & 0x8000) ? ((c << 1) ^ 0x1021) & 0xFFFF : (c << 1) & 0xFFFF; }
+  return s + c.toString(16).toUpperCase().padStart(4, '0');
+}
+// Thư viện ngoài (cdnjs): chỉ tải lần đầu cần — vẽ mã QR (cài đặt / xuất PDF), tạo file PDF
+const LH_TAI_JS = {};
+function lhTaiJs(url, co, ten){
+  if(co()) return Promise.resolve();
+  if(LH_TAI_JS[url]) return LH_TAI_JS[url];
+  return LH_TAI_JS[url] = new Promise((xong, loi)=>{
+    const s = document.createElement('script');
+    s.src = url;
+    s.onload = ()=>co() ? xong() : loi(new Error(`Thư viện ${ten} lỗi`));
+    s.onerror = ()=>{ delete LH_TAI_JS[url]; s.remove(); loi(new Error(`Không tải được thư viện ${ten} — kiểm tra mạng`)); };
+    document.head.appendChild(s);
+  });
+}
+const lhTaiQrLib = () => lhTaiJs(LH_QR_LIB_URL, ()=>!!window.qrcode, 'vẽ mã QR');
+const lhTaiPdfLib = async () => {
+  await lhTaiJs(LH_PDF_LIB.pdf, ()=>!!window.pdfMake, 'tạo PDF');
+  await lhTaiJs(LH_PDF_LIB.phong, ()=>!!(window.pdfMake && pdfMake.vfs && Object.keys(pdfMake.vfs).length), 'phông chữ PDF');
+};
+// Mã QR -> SVG (nét vuông, in sắc), viền trắng 4 ô theo chuẩn
+function lhQrSvg(text){
+  const qr = qrcode(0, 'M'); qr.addData(text); qr.make();
+  const n = qr.getModuleCount(); let d = '';
+  for(let r = 0; r < n; r++) for(let c = 0; c < n; c++) if(qr.isDark(r, c)) d += `M${c} ${r}h1v1h-1z`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-4 -4 ${n + 8} ${n + 8}" shape-rendering="crispEdges">`
+    + `<rect x="-4" y="-4" width="${n + 8}" height="${n + 8}" fill="#fff"/><path d="${d}" fill="#000"/></svg>`;
+}
+const lhStkDep = s => String(s || '').replace(/(\d{4})(?=\d)/g, '$1 ');          // 19037141358016 -> 1903 7141 3580 16
+// Thẻ QR xem thử trong ⚙ Mã QR nhận tiền (file PDF vẽ mã bằng pdfmake)
+function lhQrThe(q, b){
+  return `<div class="lhp-qr">
+    <div class="lhp-qr-ma">${lhQrSvg(lhVietQr(q.bin, q.stk))}</div>
+    <div class="lhp-qr-chu"><b>Quét mã để chuyển tiền</b>
+      <span class="nh">${esc(q.ngan || '')}</span><span class="ten">${esc(q.ten || '')}</span><span class="stk">${esc(lhStkDep(q.stk))}</span></div>
+  </div>`;
+}
+// ⚙ Mã QR nhận tiền: ngân hàng + số tài khoản + tên chủ tài khoản (dùng chung mọi buổi). sau(): chạy tiếp sau khi lưu
+function lhCaiQr(sau){
+  const q = LH.qr || {};
+  const m = openModal('⚙ Mã QR nhận tiền', `
+    <p class="lh-qr-ghi">Mã QR in kèm PDF để mọi người quét chuyển khoản (chuẩn VietQR). Nhập 1 lần, dùng cho mọi buổi liên hoan.</p>
+    <label class="field-label">Ngân hàng</label>
+    <select data-qr-nh>${LH_NH.map(n=>`<option value="${n.bin}"${n.bin === (q.bin || '970407') ? ' selected' : ''}>${esc(n.ten)}</option>`).join('')}</select>
+    <label class="field-label">Số tài khoản</label>
+    <input type="text" data-qr-stk value="${esc(q.stk || '')}" inputmode="numeric" placeholder="Chỉ gồm chữ số" maxlength="24" autocomplete="off">
+    <label class="field-label">Tên chủ tài khoản</label>
+    <input type="text" data-qr-ten value="${esc(q.ten || '')}" placeholder="VD: NGUYEN VAN A" maxlength="50" autocomplete="off">
+    <div class="lh-qr-xem" data-qr-xem></div>
+    <div class="lh-qr-nut"><button class="ghost" data-no>Huỷ</button>
+      ${q.stk ? '<button class="ghost" data-bo>Bỏ mã QR</button>' : ''}<button data-ok>💾 Lưu</button></div>`);
+  const lay = () => ({ bin:m.body.querySelector('[data-qr-nh]').value,
+    ngan:(LH_NH.find(n=>n.bin === m.body.querySelector('[data-qr-nh]').value) || {}).ten || '',
+    stk:m.body.querySelector('[data-qr-stk]').value.replace(/\D/g, ''),
+    ten:m.body.querySelector('[data-qr-ten]').value.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/gi, 'D').toUpperCase().replace(/\s+/g, ' ').trim() });
+  const xem = m.body.querySelector('[data-qr-xem]');
+  const veXem = ()=>{
+    const v = lay();
+    if(v.stk.length < 6){ xem.innerHTML = '<p class="lh-qr-cho">Nhập số tài khoản để xem trước mã QR.</p>'; return; }
+    if(!window.qrcode){ xem.innerHTML = '<p class="lh-qr-cho">⏳ Đang tải thư viện vẽ mã QR…</p>'; return; }
+    xem.innerHTML = lhQrThe(v, LH_MO && lhBuoi(LH_MO));
+  };
+  lhTaiQrLib().then(veXem, e=>{ xem.innerHTML = `<p class="lh-qr-cho">⚠ ${esc(e.message)}</p>`; });
+  veXem();
+  m.body.addEventListener('input', veXem); m.body.addEventListener('change', veXem);
+  m.body.querySelector('[data-no]').onclick = m.close;
+  const luu = async qr => {
+    m.body.querySelectorAll('button').forEach(x=>x.disabled = true);
+    try{
+      const o = await lhDocServer();
+      o.qr = qr;
+      const raw = JSON.stringify(o);
+      await sbSetVerified(LH_KEY, raw);
+      lsSet(LH_KEY, raw); LH.qr = qr;
+      m.close();
+      toast(qr ? '✓ Đã lưu mã QR nhận tiền' : 'Đã bỏ mã QR nhận tiền');
+      renderLienHoan(true);
+      if(qr && typeof sau === 'function') sau();
+    }catch(e){
+      m.body.querySelectorAll('button').forEach(x=>x.disabled = false);
+      toast('⚠ Chưa lưu được: ' + (e.message || e));
+    }
+  };
+  m.body.querySelector('[data-ok]').onclick = ()=>{
+    const v = lay();
+    if(v.stk.length < 6){ toast('⚠ Nhập số tài khoản (chỉ gồm chữ số)'); return; }
+    if(!v.ten){ toast('⚠ Nhập tên chủ tài khoản'); return; }
+    luu(v);
+  };
+  const bo = m.body.querySelector('[data-bo]'); if(bo) bo.onclick = ()=>luu(null);
+}
+
+// ---------------------------------------------------------------------
+// XUẤT FILE PDF (người dùng chốt 07/11: tải thẳng file .pdf, không mở hộp in) — chỉ tên, không cột "Đã đóng",
+// không khối "Cách chia", mã QR nhận tiền; 2 cột: trái = khoản chi + mã QR · phải = danh sách đóng tiền.
+// Dựng bằng pdfmake: CHỮ THẬT (phông Roboto, đủ dấu tiếng Việt) + mã QR dạng nét -> phóng to bao nhiêu cũng sắc, file nhẹ
+// (bản chụp ảnh trang trước đó bị mờ khi phóng to / gửi Zalo — người dùng báo 07/11). Bảng dài tự sang trang, lặp dòng tiêu đề.
+// ---------------------------------------------------------------------
+const LH_MAU_PDF = { dam:'#7a1f2b', do:'#b8323a', vang:'#f5a524', nen:'#fff6ee', the:'#fffaf3', chu:'#1c2024', xam:'#5b6470',
+  ke:'#e7ebf1', xen:'#fbf7f3', vai:{ donggop:['#b54708', '#fff1e0'], thamgia:['#1d4f80', '#e6f0fb'], moi:['#067647', '#dcfae6'] } };
+// Nội dung file PDF (định dạng pdfmake). coQr: in kèm mã QR nhận tiền (LH.qr)
+function lhNoiDungPdf(b, coQr){
+  const t = lhTinh(b), d = b.ngay ? fromKey(b.ngay) : null, M = LH_MAU_PDF, ds = lhXep(b.tv);
+  const nguoi = lhNguoi();
+  // kẻ ngang mảnh giữa các dòng, dòng cuối (tổng) kẻ vàng đậm; không kẻ dọc
+  const ke = cuoiVang => ({ vLineWidth:()=>0, paddingLeft:()=>5, paddingRight:()=>5, paddingTop:()=>3, paddingBottom:()=>3,
+    hLineWidth:(i, n)=>i === 0 ? 1.5 : i === n.table.body.length - 1 && cuoiVang ? 1.5 : i === n.table.body.length ? 0 : 0.5,
+    hLineColor:(i, n)=>i === 0 || (i === n.table.body.length - 1 && cuoiVang) ? M.vang : M.ke });
+  const tieuDe = s => ({ text:s, bold:true, color:M.dam, fontSize:10.5, margin:[0, 0, 0, 4] });
+  const tong = (nhan, so, cot) => [{ text:nhan, bold:true, fillColor:M.nen, colSpan:cot }, ...Array(cot - 1).fill({}),
+    { text:so, bold:true, alignment:'right', fillColor:M.nen }];
+  const khoan = b.khoan.filter(k=>k.ten || k.tien);
+  const bangKhoan = { table:{ widths:['*', 'auto'],
+      body:khoan.map(k=>[k.ten || 'Khoản chi', { text:lhTien(k.tien), alignment:'right' }]).concat([tong('Tổng chi', lhTien(t.tong), 1)]) },
+    layout:ke(true) };
+  const q = LH.qr;
+  const theQr = coQr && q ? { margin:[0, 12, 0, 0], table:{ widths:['*'], body:[[{ fillColor:M.the, margin:[0, 6, 0, 6], stack:[
+      { qr:lhVietQr(q.bin, q.stk), fit:105, eccLevel:'M', alignment:'center', margin:[0, 0, 0, 5] },
+      { text:'Quét mã để chuyển tiền', bold:true, color:M.dam, fontSize:8.5, alignment:'center' },
+      { text:q.ngan || '', bold:true, color:'#c8102e', fontSize:8.5, alignment:'center' },
+      { text:q.ten || '', bold:true, fontSize:9, alignment:'center' },
+      { text:lhStkDep(q.stk), bold:true, fontSize:9.5, alignment:'center' } ] }]] },
+    layout:{ hLineWidth:()=>1, vLineWidth:()=>1, hLineColor:()=>M.vang, vLineColor:()=>M.vang } } : null;
+  const dau = ['STT', 'HỌ TÊN', 'VAI TRÒ', 'SỐ TIỀN'].map((s, i)=>({ text:s, bold:true, color:'#fff', fillColor:M.dam, fontSize:7.5,
+    alignment:i === 0 ? 'center' : i === 3 ? 'right' : 'left' }));
+  const bangTv = { table:{ headerRows:1, widths:[18, '*', 'auto', 'auto'], body:[dau,
+      ...ds.map((tv, i)=>{ const v = M.vai[tv.vai] || [M.xam, '#fff'];
+        return [{ text:String(i + 1), color:M.xam, alignment:'center' }, { text:tv.ten, bold:true },
+          { text:' ' + (LH_VAI[tv.vai] ? LH_VAI[tv.vai].ten : '') + ' ', color:v[0], background:v[1], bold:true, fontSize:7.5 },
+          { text:tv.vai === 'moi' ? 'Miễn phí' : lhTien(t.tien(tv)), alignment:'right' }]; }),
+      tong('Tổng thu', lhTien(t.phaiThu), 3)] },
+    layout:{ ...ke(true), fillColor:i=>i > 0 && i <= ds.length && i % 2 === 0 ? M.xen : null } };
+  const dong2 = [d ? LH_THU_TUAN[d.getDay()] + ', ' + fmtVN(d) : '', b.diaDiem || ''].filter(Boolean).join('  ·  ');
+  return {
+    pageSize:'A4', pageMargins:[28, 28, 28, 34],
+    info:{ title:lhTen(b), author:nguoi, subject:'Liên hoan kho thành phẩm' },
+    defaultStyle:{ font:'Roboto', fontSize:9, color:M.chu, lineHeight:1.15 },
+    footer:(trang, soTrang)=>({ text:`Lập ngày ${fmtVN(new Date())}${nguoi ? ' · ' + nguoi : ''} · Kho thành phẩm${soTrang > 1 ? `    Trang ${trang}/${soTrang}` : ''}`,
+      alignment:'right', fontSize:7.5, color:M.xam, margin:[28, 10, 28, 0] }),
+    content:[
+      // dải đầu trang: 1 ô nền đỏ (2 ô liền nhau sẽ lộ vệt nối)
+      { table:{ widths:['*'], body:[[{ fillColor:M.do, margin:[10, 9, 10, 9], columns:[
+          { width:'*', stack:[
+            { text:b.ten || 'Liên hoan', fontSize:16, bold:true, color:'#fff' },
+            dong2 ? { text:dong2, fontSize:9, color:'#fff', margin:[0, 3, 0, 0] } : '',
+            b.ghiChu && b.ghiChu !== b.ten ? { text:b.ghiChu, fontSize:9, bold:true, color:'#fff', margin:[0, 2, 0, 0] } : '' ] },
+          { width:'auto', stack:[
+            { text:'TỔNG CHI', fontSize:7.5, bold:true, color:'#fff', alignment:'right' },
+            { text:lhTien(t.tong), fontSize:16, bold:true, color:'#fff', alignment:'right' } ] } ] }]] },
+        layout:'noBorders' },
+      { columns:[
+          { width:150, stack:[tieuDe('Các khoản chi'), bangKhoan, theQr].filter(Boolean) },
+          { width:'*', stack:[tieuDe(`Danh sách đóng tiền · ${b.tv.length} người`), bangTv] } ],
+        columnGap:14, margin:[0, 12, 0, 0] } ] };
+}
+async function lhXuatPdf(b, nut){
+  const coQr = !!(LH.qr && LH.qr.stk);
+  if(!coQr && await confirmBox('Chưa cài mã QR nhận tiền. Cài ngay để file PDF có mã cho mọi người quét chuyển khoản? (Huỷ = xuất không có mã QR)')){
+    lhCaiQr(()=>lhXuatPdf(b));
+    return;
+  }
+  const cu = nut ? nut.textContent : '';
+  if(nut){ nut.disabled = true; nut.textContent = '⏳ Đang tạo PDF…'; }
+  try{
+    await lhTaiPdfLib();
+    const blob = await new Promise((xong, loi)=>{
+      try{ pdfMake.createPdf(lhNoiDungPdf(b, coQr)).getBlob(xong); }catch(e){ loi(e); }
+    });
+    const ten = `Lien hoan - ${lhTen(b)}${b.ngay ? ' - ' + fmtVN(fromKey(b.ngay)).replace(/\//g, '-') : ''}`.replace(/[\\/:*?"<>|]+/g, '-') + '.pdf';
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = ten;
+    document.body.appendChild(a); a.click();
+    setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+    toast(`✓ Đã xuất file PDF: ${ten}`);
+  }catch(e){ toast('⚠ Chưa xuất được PDF: ' + (e.message || e)); }
+  finally{ if(nut && nut.isConnected){ nut.disabled = false; nut.textContent = cu; } }
+}
+
+// ---------------------------------------------------------------------
+// SỰ KIỆN (gắn 1 lần vào #lhBox)
+// ---------------------------------------------------------------------
+function lhGanSuKien(box){
+  if(box.dataset.lhGan) return;
+  box.dataset.lhGan = '1';
+  const buoi = () => LH_MO && lhBuoi(LH_MO);
+  const tvCua = (b, el) => { const tr = el.closest('[data-lh-tv]'); return tr && b.tv.find(t=>t.id === tr.dataset.lhTv); };
+  const khoanCua = (b, el) => { const r = el.closest('[data-lh-k]'); return r && b.khoan.find(k=>k.id === r.dataset.lhK); };
+  box.addEventListener('input', e=>{
+    const b = buoi(), el = e.target; if(!b || b.xong) return;
+    if(el.matches('[data-lh-ten]')) b.ten = el.value;
+    else if(el.matches('[data-lh-diadiem]')) b.diaDiem = el.value;
+    else if(el.matches('[data-lh-kten]')){ const k = khoanCua(b, el); if(k) k.ten = el.value; }
+    else if(el.matches('[data-lh-ktien]')){ const k = khoanCua(b, el); if(k) k.tien = lhDocTien(el.value); }
+    else if(el.matches('[data-lh-tvtien]')){ const tv = tvCua(b, el); if(tv) tv.tien = lhDocTien(el.value); }
+    else return;
+    lhVeSo(b); lhHenLuu(b.id);
+  });
+  // rời ô tiền: viết lại cho dễ đọc (2500000 -> 2.500.000)
+  box.addEventListener('focusout', e=>{
+    if(e.target.matches('.lh-tien-o')) e.target.value = lhSoO(lhDocTien(e.target.value));
+  });
+  box.addEventListener('change', e=>{
+    const b = buoi(), el = e.target; if(!b || b.xong) return;
+    if(el.matches('[data-lh-ngay]')){ b.ngay = el.value; lhHenLuu(b.id); return; }
+    if(el.matches('[data-lh-da]')){
+      const tv = tvCua(b, el); if(!tv) return;
+      tv.da = el.checked;
+      const tr = el.closest('tr'); tr.classList.toggle('da', tv.da);
+      const nh = el.parentElement.querySelector('span'); if(nh) nh.textContent = tv.da ? 'Đã đóng' : 'Chưa đóng';
+      lhVeSo(b); lhHenLuu(b.id);
+    }
+  });
+  box.addEventListener('keydown', e=>{
+    if(e.key !== 'Enter') return;
+    const b = buoi(); if(!b) return;
+    if(e.target.matches('[data-lh-ngoai]')){ e.preventDefault(); lhThemNgoai(b); }
+    else if(e.target.matches('[data-lh-kten], [data-lh-ktien]')) e.target.blur();
+  });
+  box.addEventListener('click', async e=>{
+    const n = e.target.closest('button'); if(!n || n.disabled) return;
+    if(n.dataset.lhThu){ const k = n.dataset.lhThu; LH_THU.has(k) ? LH_THU.delete(k) : LH_THU.add(k);
+      lsSet(LH_KHOA_THU, JSON.stringify([...LH_THU])); renderLienHoan(true); return; }
+    if(n.matches('[data-lh-mo]')){ LH_MO = n.dataset.lhMo; renderLienHoan(true); window.scrollTo(0, 0); return; }
+    if(n.matches('[data-lh-moi]')){ lhMoi(); return; }
+    if(n.matches('[data-lh-qr]')){ lhCaiQr(); return; }
+    if(n.matches('[data-lh-thulai]')){ lhLuuNgay(); return; }
+    const b = buoi(); if(!b) return;
+    if(n.matches('[data-lh-ve]')){ LH_MO = null; renderLienHoan(true); window.scrollTo(0, 0); return; }
+    if(n.matches('[data-lh-pdf]')){ lhXuatPdf(b, n); return; }
+    if(n.matches('[data-lh-xoabuoi]')){ lhXoaBuoi(b); return; }
+    if(n.matches('[data-lh-molai]')){ b.xong = false; lhHenLuu(b.id); renderLienHoan(true); toast('✏ Đã mở lại — sửa xong thu đủ thì bấm Lưu lại'); return; }
+    if(b.xong) return;
+    if(n.matches('[data-lh-themk]')){
+      b.khoan.push({ id:lhId(), ten:'', tien:0 }); lhHenLuu(b.id); renderLienHoan(true);
+      const o = box.querySelector('.lh-khoan:last-child [data-lh-kten]'); if(o) o.focus();
+      return;
+    }
+    if(n.matches('[data-lh-xoak]')){ const k = khoanCua(b, n); b.khoan = b.khoan.filter(x=>x !== k); lhHenLuu(b.id); renderLienHoan(true); return; }
+    if(n.matches('[data-lh-vai]')){
+      const tv = tvCua(b, n); if(!tv || tv.vai === n.dataset.lhVai) return;
+      tv.vai = n.dataset.lhVai; if(tv.vai === 'moi') tv.da = false;
+      lhHenLuu(b.id); renderLienHoan(true);
+      if(tv.vai === 'donggop'){ const o = box.querySelector(`[data-lh-tv="${tv.id}"] [data-lh-tvtien]`); if(o) o.focus(); }
+      return;
+    }
+    if(n.matches('[data-lh-xoatv]')){ const tv = tvCua(b, n); b.tv = b.tv.filter(x=>x !== tv); lhHenLuu(b.id); renderLienHoan(true); return; }
+    if(n.matches('[data-lh-themkho]')){ lhChonNguoi(b); return; }
+    if(n.matches('[data-lh-themngoai]')){ lhThemNgoai(b); return; }
+    if(n.matches('[data-lh-chot]')){ lhChot(b); return; }
+  });
+  // bấm chữ tiêu đề mục cũng thu / mở
+  box.addEventListener('click', e=>{
+    const t = e.target.closest('b[data-lh-thu]'); if(!t) return;
+    const k = t.dataset.lhThu; LH_THU.has(k) ? LH_THU.delete(k) : LH_THU.add(k);
+    lsSet(LH_KHOA_THU, JSON.stringify([...LH_THU])); renderLienHoan(true);
+  });
 }
 
 </script>
